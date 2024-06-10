@@ -1,0 +1,125 @@
+{{ template "app/nav" . }}
+
+<main tipo="personas_container" class="flex flex-wrap items-center justify-center flex-grow gap-4 pb-2 overflow-x-auto">
+
+	{{ range .Personas -}}
+	<article tipo="persona_item" id="{{ .PersonaID }}" class="relative flex flex-col items-center justify-center p-4 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96 min-h-32">
+	
+		<a href="/lista/{{ .PersonaID }}" class="text-4xl" tabindex="-1"><i class="fa-solid fa-person"></i></a>
+		<a href="/lista/{{ .PersonaID }}" class="text-lg font-medium">{{ .Nombre }}</a>
+
+		<p class="pt-2 text-sm opacity-75">{{ .Descripcion }}</p>
+
+		<span class="absolute top-0 left-0 px-1 bg-cyan-900 opacity-75 cursor-pointer rounded-br-md rounded-tl-md" tipo="handle">
+			<i class="px-2 py-2 fa-solid fa-grip"></i>
+		</span>
+		<span class="absolute top-0 right-0 px-1 bg-cyan-900 opacity-75 rounded-tr-md rounded-bl-md">
+			<button type="button" onclick="showPersonaForm(this.parentNode.parentNode.id)"><i class="px-2 py-2 fa fa-pen"></i></button>
+		</span>
+	</article>
+	{{ end }}
+
+	<!-- Agregar persona -->
+	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')"><i class="fa-solid fa-plus"></i></button>
+
+</main>
+
+<dialog id="frmPerNueva" class="p-3 rounded-lg">
+	<header class="flex flex-wrap items-center gap-3 pb-2">
+		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Agregar persona</h2>
+		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+	</header>
+	<form autocomplete="off" class="flex flex-col gap-4" hx-post="/personas">
+		<div>
+			<label for="newPers_01">Nombre</label>
+			<input id="newPers_01" name="nombre" value="" type="text" class="form-control">
+		</div>
+		<div>
+			<label for="newPers_02">Descripción</label>
+			<input id="newPers_02" name="descripcion" value="" type="text" class="form-control">
+		</div>
+		<button type="submit" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
+	</form>
+</dialog>
+
+{{ range .Personas }}
+<dialog id="frmPer{{ .PersonaID }}" class="p-3 rounded-lg">
+	<header class="flex flex-wrap items-center gap-3 pb-2">
+		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
+		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+	</header>
+	<form autocomplete="off" class="flex flex-col gap-4" hx-patch="/personas/{{ .PersonaID }}">
+		<div>
+			<label for="{{ .PersonaID }}_01">Nombre</label>
+			<input id="{{ .PersonaID }}_01" name="nombre" value="{{ .Nombre }}" type="text" class="form-control">
+		</div>
+		<div>
+			<label for="{{ .PersonaID }}_02">Descripción</label>
+			<input id="{{ .PersonaID }}_02" name="descripcion" value="{{ .Descripcion }}" type="text" class="form-control">
+		</div>
+		
+		<button type="button" hx-delete="/personas/{{ .PersonaID}}" hx-confirm="¿Eliminar persona {{ .Nombre }}?" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">Eliminar</button>
+
+		<button type="submit" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
+	</form>
+</dialog>
+{{ end 	}}
+
+<!-- ======================================================== -->
+<script src="/assets/js/Sortable.min.js"></script>
+
+<script>
+
+	function showPersonaForm(personaID) {
+		let form = document.getElementById(`frmPer${personaID}`);
+		form.showModal();
+		let input = form.querySelector("input");
+		input.focus();
+		input.selectionEnd = input.value.length;
+	}
+
+	// ================================================================ //
+	// ========== Reordenar =========================================== //
+
+	function reordenarPersona(personaID, newPosicion) {
+		console.debug(`reordenarPersona(id:${personaID}, pos:${newPosicion})`)
+		if (personaID == null) {
+			return console.error("No se puede reordenar persona sin ID")
+		}
+		let formData = new FormData();
+		formData.append("newPosicion", newPosicion);
+		fetch(`/nodos/${personaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
+	}
+
+	function handleResponse(response) {
+		response.text().then((msg) => {
+			if (response.status >= 200 && response.status < 300) {
+				console.log(msg)
+			} else {
+				alert(msg)
+			}
+			// Recargar carriles con HTMX
+			document.querySelector("[tipo='personas_container']").dispatchEvent(new Event("reloadPersonas"))
+		})
+	}
+	
+	var zonaCarriles = new Sortable(document.querySelector("[tipo='personas_container']"), {
+		group: "carriles", animation: 150, swapThreshold: 0.50,
+		draggable: "[tipo='persona_item']",
+		handle: "[tipo='handle']",
+		onStart: function(event) {
+			event.item.classList.add("opacity-50")
+		},
+		onEnd: function(event) {
+			event.item.classList.remove("opacity-50")
+			let personaID = event.item.id
+			if (personaID == null) { 
+				return console.error("personaID null") 
+			}
+			if (event.oldIndex != event.newIndex){
+				return reordenarPersona(personaID, event.newIndex + 1)
+			}
+		},
+	});
+
+</script>

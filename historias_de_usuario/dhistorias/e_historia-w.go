@@ -1,0 +1,199 @@
+package dhistorias
+
+import (
+	"monorepo/gecko"
+	"monorepo/historias_de_usuario/ust"
+)
+
+const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
+
+func prioridadValida(prioridad int) bool {
+	return prioridad >= 0 && prioridad <= 3
+}
+
+func AgregarHistoria(padreID int, his ust.Historia, repo Repo) error {
+	op := gecko.NewOp("AgregarHistoria").Ctx("padreID", padreID)
+
+	// Validar historia
+	if his.HistoriaID == 0 {
+		return op.Msg("el ID de la historia debe estar definido")
+	}
+	if his.Titulo == "" {
+		return op.Msg("el título no puede estar vacío")
+	}
+	if !prioridadValida(his.Prioridad) {
+		return op.Msg(prioridadInvalidaMsg)
+	}
+
+	// Validar padre
+	padre, err := repo.GetNodo(padreID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if padre.EsTarea() {
+		return op.Msg("el nodo padre es una tarea y no puede tener historias")
+	}
+
+	// Insertar en la base de datos
+	err = repo.InsertHistoria(his)
+	if err != nil {
+		return op.Err(err)
+	}
+	err = agregarNodo(padreID, his.HistoriaID, "his", repo)
+	if err != nil {
+		return op.Err(err)
+	}
+
+	return nil
+}
+
+func ActualizarHistoria(historiaID int, his ust.Historia, repo Repo) error {
+	op := gecko.NewOp("ActualizarHistoria").Ctx("historiaID", historiaID)
+
+	if his.HistoriaID == 0 {
+		return op.Msg("el ID de la historia debe estar definido")
+	}
+	if his.Titulo == "" {
+		return op.Msg("el título no puede estar vacío")
+	}
+	if !prioridadValida(his.Prioridad) {
+		return op.Msg(prioridadInvalidaMsg)
+	}
+
+	oldHis, err := repo.GetHistoria(historiaID)
+	if err != nil {
+		return op.Err(err)
+	}
+
+	if oldHis.HistoriaID != his.HistoriaID {
+		return op.Msg("no se puede cambiar el ID de la historia aún")
+	}
+	oldHis.Titulo = his.Titulo
+	oldHis.Objetivo = his.Objetivo
+	oldHis.Prioridad = his.Prioridad
+	oldHis.Completada = his.Completada
+
+	err = repo.UpdateHistoria(*oldHis)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+func PriorizarHistoria(historiaID int, prioridad int, repo Repo) error {
+	op := gecko.NewOp("PriorizarHistoria").Ctx("historiaID", historiaID)
+
+	if !prioridadValida(prioridad) {
+		return op.Msg(prioridadInvalidaMsg)
+	}
+
+	his, err := repo.GetHistoria(historiaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if his.Prioridad == prioridad {
+		return nil
+	}
+	his.Prioridad = prioridad
+
+	err = repo.UpdateHistoria(*his)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+func MarcarHistoria(historiaID int, completada bool, repo Repo) error {
+	op := gecko.NewOp("MarcarHistoria").Ctx("historiaID", historiaID)
+	his, err := repo.GetHistoria(historiaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if his.Completada == completada {
+		return nil
+	}
+	his.Completada = completada
+	err = repo.UpdateHistoria(*his)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+func EliminarHistoria(historiaID int, repo Repo) error {
+	op := gecko.NewOp("EliminarHistoria").Ctx("historiaID", historiaID)
+	his, err := repo.GetHistoria(historiaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	hijos, err := repo.ListNodosByPadreID(his.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if len(hijos) > 0 {
+		return op.Msg("la historia tiene hijos y no puede ser eliminada")
+	}
+	tareas, err := repo.ListTareasByPadreID(his.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if len(tareas) > 0 {
+		return op.Msg("la historia tiene tareas y no puede ser eliminada")
+	}
+	err = repo.EliminarNodo(his.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	err = repo.DeleteHistoria(his.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
+	op := gecko.NewOp("MoverHistoria")
+	if historiaID == 0 {
+		return op.Msg("No se especificó qué historia mover")
+	}
+	if nuevoPadreID == 0 {
+		return op.Msg("No se especificó a qué padre mover la historia")
+	}
+	if historiaID == nuevoPadreID {
+		return op.Msg("No se puede mover la historia hacia sí misma")
+	}
+	nodo, err := repo.GetNodo(historiaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if !nodo.EsHistoria() {
+		return op.Msgf("El nodo %v no es historia, sino %v", nodo.NodoID, nodo.NodoTbl)
+	}
+	if nodo.PadreID == nuevoPadreID {
+		return op.Msg("No se moverá porque sigue siendo el mismo padre")
+	}
+
+	// TODO: Get ancestros de historia
+	nueva, err := GetHistoriasDePadre(nuevoPadreID, repo)
+	if err != nil {
+		return op.Err(err)
+	}
+	for _, ancestro := range nueva.Ancestros {
+		if ancestro.HistoriaID == historiaID {
+			return op.Msg("La historia no puede ser hija de su propio descendiente")
+		}
+	}
+
+	nuevoPadre, err := repo.GetNodo(nuevoPadreID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if !(nuevoPadre.EsPersona() || nuevoPadre.EsHistoria()) {
+		return op.Msgf("El nuevo padre debe ser historia o persona pero es %v", nuevoPadre.NodoTbl)
+	}
+	err = repo.MoverNodo(nodo.NodoID, nuevoPadreID)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}

@@ -1,0 +1,188 @@
+{{ template "app/nav" . }}
+
+{{ with .Agregado -}}
+<header class="mb-4 space-y-1">
+	{{ with .Persona -}}
+	<h3>
+		<a href="/lista/{{ .PersonaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">1.<i class="fa-solid fa-person"></i></a>
+		<span class="opacity-50">Como</span>
+		<a href="/lista/{{ .PersonaID }}" class="text-xl lowercase">{{ .Nombre }}</a>
+		<span class="opacity-50">quiero...</span>
+	</h3>
+	{{ end -}}
+	
+	{{ range .Ancestros -}}
+	<h3>
+		<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
+		<a href="/lista/{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
+		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
+	</h3>
+	{{ end -}}
+
+	{{ with .Abuelo -}}
+	<h3>
+		<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
+		<a href="/lista/{{ .PadreID }}#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
+		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
+	</h3>
+	<p>
+		{{ .Objetivo }}
+	</p>
+	{{ end -}}
+</header>
+{{ end -}}
+
+<main class="flex-grow overflow-y-auto">
+	<div class="flex flex-col items-stretch max-w-5xl gap-4 pb-2 mx-auto">
+
+		{{ range .Tareas -}}
+		<div id="{{ .TareaID }}" class="flex items-center gap-4 p-3 bg-cyan-900 rounded-md shadow-lg">
+
+			{{ if .Finalizada }}✅{{ end }}
+			{{ if .EnCurso }}⏳{{ end }}
+			{{ if .EnPausa }}⏸️{{ end }}
+
+			<p class="grow">
+				{{ .Descripcion }}
+				{{ if .Impedimentos -}}
+				<br>
+				<i class="text-sm text-orange-300">
+					{{ .Impedimentos }}	
+				</i>
+				{{- end }}
+				<br>
+				<span class="text-sm opacity-75">
+					{{ if .TiempoEstimado }}{{ .TiempoEstimadoString }}{{ end }}
+					{{ if .TiempoReal }}<span class="px-1 mr-1 bg-black bg-opacity-40 rounded-md">{{ .TiempoRealString }}</span>{{ end }}
+				</span>
+			</p>
+
+			<span class="px-2 py-1 mr-1 text-xs bg-black bg-opacity-40 rounded-md">
+				{{- .Tipo.Etiqueta -}}
+			</span>
+
+			<div>
+				<button onclick="document.getElementById('edit{{ .TareaID }}').showModal()">Editar</button>
+			</div>
+
+			{{ if .NoIniciada -}}
+			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+				Iniciar
+			</button>
+			{{ else if .EnCurso -}}
+			<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+				Pausar
+			</button>
+			<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+				Terminar
+			</button>
+			{{ else if .EnPausa -}}
+			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+				Continuar
+			</button>
+			{{ else if .Finalizada -}}
+			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar">
+				Reiniciar
+			</button>
+			{{ end }}
+		</div>
+		
+		<dialog id="edit{{ .TareaID }}" class="p-3 rounded-lg">
+			<header class="flex flex-wrap items-center gap-3 pb-2">
+				<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar tarea</h2>
+				<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+			</header>
+			<form autocomplete="off" hx-patch="/tareas/{{ .TareaID }}" class="flex flex-col max-w-sm gap-2">
+				<div class="flex gap-2">
+					<div>
+						<label for="upd_02">TareaID</label>
+						<input id="upd_02" name="tarea_id" type="text" placeholder="" value="{{ .TareaID }}" class="form-control" readonly>
+					</div>
+					<div>
+						<label for="upd_02">HistoriaID</label>
+						<input id="upd_02" name="historia_id" type="text" placeholder="" value="{{ .HistoriaID }}" class="form-control" readonly>
+					</div>
+				</div>
+				<div>
+					<label for="upd_03">Tipo de tarea</label>
+					<select id="upd_03" name="tipo" class="form-control">
+						{{ $tipo := .Tipo }}
+						{{ range $.ListaTipoTarea -}}
+						<option value="{{ .String }}" {{ if eq $tipo.String .String }}selected{{ end }}>{{ .Etiqueta }}</option>
+						{{ end }}
+					</select>
+				</div>
+				<!-- <div>
+					<label for="upd_04">Descripción</label>
+					<input id="upd_04" name="descripcion" type="text" placeholder="" value="{{ .Descripcion }}" class="form-control">
+				</div> -->
+				<div>
+					<label for="upd_04">Descripción</label>
+					<textarea id="upd_04" class="form-control" name="descripcion" rows="2">{{ .Descripcion }}</textarea>
+				</div>
+				<div>
+					<label for="upd_05">Impedimentos</label>
+					<input id="upd_05" name="impedimentos" type="text" placeholder="" value="{{ .Impedimentos }}" class="form-control">
+				</div>
+				<div>
+					<label for="upd_06">Tiempo estimado</label>
+					<input id="upd_06" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}" class="form-control">
+				</div>
+				<div class="pt-4">
+					<button type="submit" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+						Guardar cambios
+					</button>
+				</div>
+			</form>
+		</dialog>
+
+		{{ end }}
+
+		<div class="h-6">
+
+		</div>
+		
+		<form autocomplete="off" hx-post="/historias/{{ .Historia.HistoriaID }}/tareas" class="flex items-end gap-4 p-3 bg-cyan-900 rounded-md shadow-lg">
+			<div class="grow">
+				<label for="in_02">Nueva tarea</label>
+				<input autofocus id="in_02" name="descripcion" type="text" placeholder="" value="" class="form-control">
+			</div>
+			<div class="max-w-48">
+				<label for="in_01">Tipo</label>
+				<select id="in_01" name="tipo" class="form-control">
+					{{ range $.ListaTipoTarea -}}
+					<option value="{{ .String }}">{{ .Etiqueta }}</option>
+					{{ end }}
+				</select>
+			</div>
+			<div class="max-w-32">
+				<label for="in_03">Estimación</label>
+				<input id="in_03" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="" class="form-control">
+			</div>
+			<div>
+				<button type="submit" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+					Agregar
+				</button>
+			</div>
+		</form>
+
+	</div>
+</main>
+
+<footer class="flex flex-col items-center gap-4 p-4">
+	<a href="/intervalos">Tareas en progreso</a>
+</footer>
+
+<script>
+
+	// Ubicar una tarea seleccionada mediante el URL fragment.
+	if (window.location.hash) {
+		let tarea = document.getElementById(window.location.hash.substr(1));
+		if (tarea != null) {
+			tarea.classList.add("border-indigo-600");
+			tarea.classList.add("border-2");
+			tarea.scrollIntoView();
+		}
+	}
+
+</script>

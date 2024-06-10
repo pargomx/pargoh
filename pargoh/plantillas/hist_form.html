@@ -1,0 +1,42 @@
+{{ with .Historia }}
+<header class="flex flex-wrap items-center gap-3 pb-2">
+	<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
+	<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+</header>
+<form hx-patch="/historias/{{ .HistoriaID }}" hx-target="#msgStack" hx-swap="innerHTML">
+	<div class="pb-2">
+		<label for="pinput1">HistoriaID</label>
+		<input class="form-control" name="historia_id" id="pinput1" type="text" inputmode="numeric" value="{{ .HistoriaID }}" />
+	</div>
+	<div class="pb-2">
+		<label for="pinput2">Título*</label>
+		<input class="form-control" name="titulo" id="pinput2" type="text" placeholder="¿Qué?" value="{{ .Titulo }}" />
+	</div>
+	<div class="pb-2">
+		<label for="pinput3">Objetivo</label>
+		<input class="form-control" name="objetivo" id="pinput3" type="text" placeholder="¿Para qué?" value="{{ .Objetivo }}" />
+	</div>
+	<div class="pb-2">
+		<label for="pinput4">Prioridad</label>
+		<select class="form-control" name="prioridad" id="pinput4">
+			<option value="0" {{ if eq .Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
+			<option value="1" {{ if eq .Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
+			<option value="2" {{ if eq .Prioridad 2 }}selected{{ end }}>🤔 Should</option>
+			<option value="3" {{ if eq .Prioridad 3 }}selected{{ end }}>🤩 Must</option>
+		</select>
+		<!-- <input name="prioridad" id="pinput4" type="number" min="0" max="3" placeholder="ejemplo" value="{{ .Prioridad }}" /> -->
+	</div>
+	<div class="pb-2">
+		<label for="pinput5">Estatus</label>
+		<select class="form-control" name="completada" id="pinput5">
+			<option value="0">Pendiente</option>
+			<option value="1" {{ if .Completada }}selected{{ end }}>✅ Completada</option>
+		</select>
+	</div>
+	<div class="pt-2">
+		<button type="submit" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+			Guardar
+		</button>
+	</div>
+</form>
+{{ end }}
