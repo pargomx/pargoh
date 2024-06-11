@@ -1,0 +1,64 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+
+		{
+			"label": "tailwind", "detail": "Compilar estilos CSS",
+			"command": "tailwindcss -i ./assets/source.css -o ./assets/css/estilo.css",
+			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
+		
+		{
+			"label": "install", "detail": "Instalar aplicación",
+			"command": "CGO_ENABLED=0 go install ./pargoh && echo 'app instalada!'",
+			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
+		
+		{
+			"label": "deploy", "detail": "Enviar binario al servidor",
+			"command": "GOOS=linux CGO_ENABLED=0 go build -o /tmp/pargoh ./pargoh && rsync -avh --progress /tmp/pargoh ${input:remoteHost}:~/bin/ && echo 'Listo :D'",
+			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
+
+		// ================================================================ //
+		// ========== EJECUTAR AQUÍ ======================================= //
+		{
+			"label": "pargoh here", "detail": "Ejecutar",
+			"command": "pargoh -p 5151",
+			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["install"]
+		},
+		{
+			"label": "pargoh tailwind", "detail": "Tailwind pargoh y ejecutar en pargo",
+			"command": "pargoh -p 5151",
+			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["tailwind", "install"]
+		},
+
+		// ================================================================ //
+		// ========== EJECUTAR FECIAR ===================================== //
+		{
+			"label": "pargoh feciar", "detail": "Ejecutar pargoh en feciar",
+			"command": "pargoh -dir /home/andrew/proyectos/feciar",
+			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["install"]
+		},
+		{
+			"label": "pargoh feciar tailwind", "detail": "Tailwind pargoh y ejecutar en feciar",
+			"command": "pargoh -dir /home/andrew/proyectos/feciar",
+			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["tailwind", "install"]
+		},
+
+	],
+	"inputs": [
+		{
+			"id": "remoteHost", "description": "Dirección del remote host",
+			"default": "avenet.mx", "type": "promptString"
+		},
+	]
+}
