@@ -69,12 +69,8 @@ func main() {
 	g.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 
 	// ================================================================ //
-	// ================================================================ //
 
-	g.GET("/", getInicio)
-
-	// ================================================================ //
-
+	g.GET("/", srv.getPersonas)
 	g.GET("/personas", srv.getPersonas)
 	g.POS("/personas", srv.postPersona)
 	g.PCH("/personas/{persona_id}", srv.patchPersona)

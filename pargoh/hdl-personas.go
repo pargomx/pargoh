@@ -12,7 +12,7 @@ func (s *servidor) getPersonas(c *gecko.Context) error {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":   "Personas en el dominio",
+		"Titulo":   "Pargo - Personas",
 		"Personas": Personas,
 	}
 	return c.RenderOk("personas", data)
