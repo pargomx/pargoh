@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"flag"
 	"fmt"
 	"net/http"
@@ -11,15 +10,13 @@ import (
 
 	"monorepo/assets"
 	"monorepo/historias_de_usuario/sqliteust"
-	"monorepo/pargoh/migraciones"
+	"monorepo/htmltmpl"
+	"monorepo/migraciones"
 	"monorepo/sqlitedb"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/plantillas"
 )
-
-//go:embed plantillas
-var plantillasFS embed.FS
 
 var puerto = ""       // Default: 5050
 var directorio = ""   // Default: directorio actual
@@ -58,7 +55,7 @@ func main() {
 	repos := sqliteust.NuevoRepositorio(sqliteDB)
 	srv := &servidor{db: sqliteDB, repo: repos}
 
-	tpls, err := plantillas.NuevoServicioPlantillasEmbebidas(plantillasFS, "plantillas")
+	tpls, err := plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
 	if err != nil {
 		fatal(err.Error())
 	}
