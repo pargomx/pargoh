@@ -1,8 +1,9 @@
 package dhistorias
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
+
+	"github.com/pargomx/gecko"
 )
 
 const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"

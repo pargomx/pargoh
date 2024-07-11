@@ -1,9 +1,10 @@
 package sqliteust
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
 	"net/http"
+
+	"github.com/pargomx/gecko"
 )
 
 // ListHistorias devuelve todos los registros de las historias de usuario

@@ -1,8 +1,9 @@
 package dhistorias
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
+
+	"github.com/pargomx/gecko"
 )
 
 func InsertarPersona(per ust.Persona, repo Repo) error {

@@ -2,8 +2,9 @@ package dhistorias
 
 import (
 	"fmt"
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
+
+	"github.com/pargomx/gecko"
 )
 
 func GetHistoriasDePadre(padreID int, repo Repo) (*HistoriaConNietos, error) {

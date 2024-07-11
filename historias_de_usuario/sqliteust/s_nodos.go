@@ -1,10 +1,11 @@
 package sqliteust
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
 	"net/http"
 	"strings"
+
+	"github.com/pargomx/gecko"
 )
 
 // InsertNodo valida el registro y lo inserta en la base de datos.

@@ -10,11 +10,12 @@ import (
 	"syscall"
 
 	"monorepo/assets"
-	"monorepo/gecko"
-	"monorepo/gecko/plantillas"
 	"monorepo/historias_de_usuario/sqliteust"
 	"monorepo/pargoh/migraciones"
 	"monorepo/sqlitedb"
+
+	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/plantillas"
 )
 
 //go:embed plantillas

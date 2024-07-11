@@ -2,8 +2,9 @@ package dhistorias
 
 import (
 	"fmt"
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
+
+	"github.com/pargomx/gecko"
 )
 
 func GetNodo(id int, repo Repo) (*Nodo, error) {

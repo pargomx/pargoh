@@ -1,8 +1,9 @@
 package main
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/dhistorias"
+
+	"github.com/pargomx/gecko"
 )
 
 func (s *servidor) reordenarNodo(c *gecko.Context) error {

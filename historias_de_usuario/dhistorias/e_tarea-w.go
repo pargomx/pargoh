@@ -1,9 +1,10 @@
 package dhistorias
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
 	"time"
+
+	"github.com/pargomx/gecko"
 )
 
 func AgregarTarea(tarea ust.Tarea, repo Repo) error {

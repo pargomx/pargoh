@@ -5,8 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
+
+	"github.com/pargomx/gecko"
 )
 
 //  ================================================================  //

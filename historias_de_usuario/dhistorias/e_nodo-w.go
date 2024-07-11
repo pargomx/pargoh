@@ -1,8 +1,9 @@
 package dhistorias
 
 import (
-	"monorepo/gecko"
 	"monorepo/historias_de_usuario/ust"
+
+	"github.com/pargomx/gecko"
 )
 
 // Inserta el nodo en la última posición dentro de los hijos del nodo padre dado.
