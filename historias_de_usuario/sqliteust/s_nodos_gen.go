@@ -5,9 +5,9 @@ import (
 	"errors"
 	"strings"
 
-	"monorepo/historias_de_usuario/ust"
-
 	"github.com/pargomx/gecko/gko"
+
+	"monorepo/historias_de_usuario/ust"
 )
 
 //  ================================================================  //
@@ -22,9 +22,6 @@ const columnasNodo string = "nodo_id, nodo_tbl, padre_id, padre_tbl, nivel, posi
 //
 // FROM nodos
 const fromNodo string = "FROM nodos "
-
-//  ================================================================  //
-//  ========== MYSQL/TBL-INSERT ====================================  //
 
 //  ================================================================  //
 //  ========== MYSQL/TBL-UPDATE ====================================  //
@@ -61,8 +58,6 @@ func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 //  ================================================================  //
 //  ========== MYSQL/TBL-DELETE ====================================  //
 
-// DeleteNodo elimina permanentemente un registro del nodo de la base de datos.
-// Error si el registro no existe o si no se da la clave primaria.
 func (s *Repositorio) DeleteNodo(NodoID int) error {
 	const op string = "mysqlust.DeleteNodo"
 	if NodoID == 0 {
@@ -110,7 +105,7 @@ func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo, op string) error 
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("el nodo no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Nodo no se encuentra").Op(op)
 		}
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
@@ -164,20 +159,15 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]ust.Nodo, error
 //  ================================================================  //
 //  ========== MYSQL/LIST_BY =======================================  //
 
-// ListNodosByPadreID retorna los registros a partir de PadreID.
 func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]ust.Nodo, error) {
 	const op string = "mysqlust.ListNodosByPadreID"
 	if PadreID == 0 {
 		return nil, gko.ErrDatoInvalido().Msg("PadreID sin especificar").Ctx(op, "param_indefinido")
 	}
-	where := "WHERE padre_id = ?"
-	argumentos := []any{}
-	argumentos = append(argumentos, PadreID)
-
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodo+" "+fromNodo+
-			where,
-		argumentos...,
+			"WHERE padre_id = ?",
+		PadreID,
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)

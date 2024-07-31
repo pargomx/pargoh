@@ -5,9 +5,9 @@ import (
 	"errors"
 	"strings"
 
-	"monorepo/historias_de_usuario/ust"
-
 	"github.com/pargomx/gecko/gko"
+
+	"monorepo/historias_de_usuario/ust"
 )
 
 //  ================================================================  //
@@ -43,7 +43,7 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gko.Err(err).Op(op)
+			return gko.ErrYaExiste().Err(err).Op(op)
 		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
 			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
 		} else {

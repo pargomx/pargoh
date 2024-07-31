@@ -5,9 +5,9 @@ import (
 	"errors"
 	"strings"
 
-	"monorepo/historias_de_usuario/ust"
-
 	"github.com/pargomx/gecko/gko"
+
+	"monorepo/historias_de_usuario/ust"
 )
 
 //  ================================================================  //
@@ -88,8 +88,6 @@ func (s *Repositorio) UpdatePersona(per ust.Persona) error {
 //  ================================================================  //
 //  ========== MYSQL/TBL-DELETE ====================================  //
 
-// DeletePersona elimina permanentemente un registro de la persona del dominio de la base de datos.
-// Error si el registro no existe o si no se da la clave primaria.
 func (s *Repositorio) DeletePersona(PersonaID int) error {
 	const op string = "mysqlust.DeletePersona"
 	if PersonaID == 0 {
@@ -137,7 +135,7 @@ func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona, op string) 
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("la persona del dominio no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Persona del dominio no se encuentra").Op(op)
 		}
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
@@ -191,7 +189,6 @@ func (s *Repositorio) scanRowsPersona(rows *sql.Rows, op string) ([]ust.Persona,
 //  ================================================================  //
 //  ========== MYSQL/LIST ==========================================  //
 
-// ListPersonas devuelve todos los registros de las personajes
 func (s *Repositorio) ListPersonas() ([]ust.Persona, error) {
 	const op string = "mysqlust.ListPersonas"
 	rows, err := s.db.Query(

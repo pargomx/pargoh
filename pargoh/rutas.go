@@ -63,7 +63,7 @@ func main() {
 	if err != nil {
 		gko.FatalError(err)
 	}
-	s.repo = sqliteust.NuevoRepositorio(s.db)
+	s.repo = sqliteust.NuevoRepo(s.db)
 
 	tpls, err := plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
 	if err != nil {
