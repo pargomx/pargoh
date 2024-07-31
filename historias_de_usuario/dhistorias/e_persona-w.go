@@ -3,11 +3,11 @@ package dhistorias
 import (
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func InsertarPersona(per ust.Persona, repo Repo) error {
-	op := gecko.NewOp("InsertarPersona")
+	op := gko.Op("InsertarPersona")
 	if per.Nombre == "" {
 		return op.Msg("Persona sin nombre")
 	}
@@ -23,7 +23,7 @@ func InsertarPersona(per ust.Persona, repo Repo) error {
 }
 
 func ActualizarPersona(per ust.Persona, repo Repo) error {
-	op := gecko.NewOp("ActualizarPersona")
+	op := gko.Op("ActualizarPersona")
 	if per.Nombre == "" {
 		return op.Msg("Persona sin nombre")
 	}
@@ -35,7 +35,7 @@ func ActualizarPersona(per ust.Persona, repo Repo) error {
 }
 
 func EliminarPersona(personaID int, repo Repo) error {
-	op := gecko.NewOp("EliminarPersona")
+	op := gko.Op("EliminarPersona")
 	per, err := repo.GetPersona(personaID)
 	if err != nil {
 		return op.Err(err)

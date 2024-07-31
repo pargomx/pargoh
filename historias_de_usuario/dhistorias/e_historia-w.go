@@ -3,7 +3,7 @@ package dhistorias
 import (
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
@@ -13,7 +13,7 @@ func prioridadValida(prioridad int) bool {
 }
 
 func AgregarHistoria(padreID int, his ust.Historia, repo Repo) error {
-	op := gecko.NewOp("AgregarHistoria").Ctx("padreID", padreID)
+	op := gko.Op("AgregarHistoria").Ctx("padreID", padreID)
 
 	// Validar historia
 	if his.HistoriaID == 0 {
@@ -49,7 +49,7 @@ func AgregarHistoria(padreID int, his ust.Historia, repo Repo) error {
 }
 
 func ActualizarHistoria(historiaID int, his ust.Historia, repo Repo) error {
-	op := gecko.NewOp("ActualizarHistoria").Ctx("historiaID", historiaID)
+	op := gko.Op("ActualizarHistoria").Ctx("historiaID", historiaID)
 
 	if his.HistoriaID == 0 {
 		return op.Msg("el ID de la historia debe estar definido")
@@ -82,7 +82,7 @@ func ActualizarHistoria(historiaID int, his ust.Historia, repo Repo) error {
 }
 
 func PriorizarHistoria(historiaID int, prioridad int, repo Repo) error {
-	op := gecko.NewOp("PriorizarHistoria").Ctx("historiaID", historiaID)
+	op := gko.Op("PriorizarHistoria").Ctx("historiaID", historiaID)
 
 	if !prioridadValida(prioridad) {
 		return op.Msg(prioridadInvalidaMsg)
@@ -105,7 +105,7 @@ func PriorizarHistoria(historiaID int, prioridad int, repo Repo) error {
 }
 
 func MarcarHistoria(historiaID int, completada bool, repo Repo) error {
-	op := gecko.NewOp("MarcarHistoria").Ctx("historiaID", historiaID)
+	op := gko.Op("MarcarHistoria").Ctx("historiaID", historiaID)
 	his, err := repo.GetHistoria(historiaID)
 	if err != nil {
 		return op.Err(err)
@@ -122,7 +122,7 @@ func MarcarHistoria(historiaID int, completada bool, repo Repo) error {
 }
 
 func EliminarHistoria(historiaID int, repo Repo) error {
-	op := gecko.NewOp("EliminarHistoria").Ctx("historiaID", historiaID)
+	op := gko.Op("EliminarHistoria").Ctx("historiaID", historiaID)
 	his, err := repo.GetHistoria(historiaID)
 	if err != nil {
 		return op.Err(err)
@@ -153,7 +153,7 @@ func EliminarHistoria(historiaID int, repo Repo) error {
 }
 
 func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
-	op := gecko.NewOp("MoverHistoria")
+	op := gko.Op("MoverHistoria")
 	if historiaID == 0 {
 		return op.Msg("No se especificó qué historia mover")
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,95 +14,106 @@ import (
 	"monorepo/sqlitedb"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/plantillas"
 )
 
-var puerto = ""       // Default: 5050
-var directorio = ""   // Default: directorio actual
-var databasePath = "" // Default: _pargo/pargo.sqlite
+// Información de compilación establecida con:
+//
+//	BUILD_INFO="$(date -I):$(git log --format="%H" -n 1)"
+//	go BUILD_INFO -ldflags "-X main.BUILD_INFO=$BUILD_INFO -X main.ambiente=dev"
+var BUILD_INFO string // Información de compilación [ fecha:commit_hash ]
+var AMBIENTE string   // Ambiente de ejecución [ dev / prod ]
+
+type configs struct {
+	puerto       int    // Puerto TCP del servidor
+	directorio   string // Default: directorio actual
+	databasePath string // Default: _pargo/pargo.sqlite
+}
 
 type servidor struct {
-	db   *sqlitedb.SqliteDB
-	repo *sqliteust.Repositorio
+	cfg   configs
+	gecko *gecko.Gecko
+	db    *sqlitedb.SqliteDB
+	repo  *sqliteust.Repositorio
 }
 
 func main() {
+	gko.LogInfof("Versión:%s:%s", BUILD_INFO, AMBIENTE)
 
-	// Setup
-	gecko.MostrarMensajeEnErrores = true
-	gecko.PrintLogTimestamps = false
+	s := servidor{
+		gecko: gecko.New(),
+	}
 
 	// Parámetros de ejecución
-	flag.StringVar(&directorio, "dir", "", "directorio raíz del proyecto")
-	flag.StringVar(&databasePath, "db", "_pargo/historias.db", "ubicación de la db sqlite")
-	flag.StringVar(&puerto, "p", "5050", "el servidor escuchará en este puerto")
+	flag.StringVar(&s.cfg.directorio, "dir", "", "directorio raíz de la aplicación")
+	flag.StringVar(&s.cfg.databasePath, "db", "historias.db", "ubicación de la db sqlite")
+	flag.IntVar(&s.cfg.puerto, "p", 5050, "el servidor escuchará en este puerto")
 	flag.Parse()
-	if directorio != "" {
-		err := os.Chdir(directorio)
+	if s.cfg.directorio != "" {
+		err := os.Chdir(s.cfg.directorio)
 		if err != nil {
-			fatal("directorio de proyecto inválido: " + err.Error())
+			gko.FatalExit("directorio de proyecto inválido: " + err.Error())
 		}
 	}
+	var err error
 
 	// Repositorio
-	sqliteDB, err := sqlitedb.NuevoRepositorio(databasePath, migraciones.MigracionesFS)
+	s.db, err = sqlitedb.NuevoRepositorio(s.cfg.databasePath, migraciones.MigracionesFS)
 	if err != nil {
-		fatal(err.Error())
+		gko.FatalError(err)
 	}
-
-	// Servicios
-	repos := sqliteust.NuevoRepositorio(sqliteDB)
-	srv := &servidor{db: sqliteDB, repo: repos}
+	s.repo = sqliteust.NuevoRepositorio(s.db)
 
 	tpls, err := plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
 	if err != nil {
-		fatal(err.Error())
+		gko.FatalError(err)
 	}
-	g := gecko.New()
-	g.Renderer = tpls
-	g.TmplBaseLayout = "app/layout"
+	s.gecko.Renderer = tpls
+	s.gecko.TmplBaseLayout = "app/layout"
 
-	g.StaticFS("/assets", assets.AssetsFS)
-	g.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
+	s.exportarFile()
 
 	// ================================================================ //
 
-	g.GET("/", srv.getPersonas)
-	g.GET("/personas", srv.getPersonas)
-	g.POS("/personas", srv.postPersona)
-	g.PCH("/personas/{persona_id}", srv.patchPersona)
-	g.DEL("/personas/{persona_id}", srv.deletePersona)
+	s.gecko.StaticFS("/assets", assets.AssetsFS)
+	s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 
-	g.GET("/arbol", srv.getArbolCompleto)
-	g.GET("/lista/{nodo_id}", srv.getHistoriasLista)
-	g.GET("/tablero/{nodo_id}", srv.getHistoriasTablero)
-	g.GET("/prioritarias", srv.getHistoriasPrioritarias)
-	g.GET("/historias/{historia_id}", srv.getTareasDeHistoria)
+	s.gecko.GET("/", s.getPersonas)
+	s.gecko.GET("/personas", s.getPersonas)
+	s.gecko.POS("/personas", s.postPersona)
+	s.gecko.PCH("/personas/{persona_id}", s.patchPersona)
+	s.gecko.DEL("/personas/{persona_id}", s.deletePersona)
 
-	g.PCH("/historias/{historia_id}", srv.patchHistoria)
-	g.DEL("/historias/{historia_id}", srv.deleteHistoria)
-	g.GET("/historias/{historia_id}/form", srv.formHistoria)
-	g.GET("/historias/{historia_id}/mover", srv.moverHistoriaForm)
-	g.POS("/historias/{historia_id}/mover", srv.moverHistoria)
-	g.POS("/historias/{historia_id}/priorizar", srv.priorizarHistoria)
-	g.POS("/historias/{historia_id}/marcar", srv.marcarHistoria)
-	g.POS("/historias/{historia_id}/tareas", srv.postTarea)
+	s.gecko.GET("/arbol", s.getArbolCompleto)
+	s.gecko.GET("/lista/{nodo_id}", s.getHistoriasLista)
+	s.gecko.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
+	s.gecko.GET("/prioritarias", s.getHistoriasPrioritarias)
+	s.gecko.GET("/historias/{historia_id}", s.getTareasDeHistoria)
 
-	g.POS("/nodos/{nodo_id}", srv.postHistoria)
-	g.POS("/nodos/{nodo_id}/reordenar", srv.reordenarNodo)
+	s.gecko.PCH("/historias/{historia_id}", s.patchHistoria)
+	s.gecko.DEL("/historias/{historia_id}", s.deleteHistoria)
+	s.gecko.GET("/historias/{historia_id}/form", s.formHistoria)
+	s.gecko.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
+	s.gecko.POS("/historias/{historia_id}/mover", s.moverHistoria)
+	s.gecko.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
+	s.gecko.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
+	s.gecko.POS("/historias/{historia_id}/tareas", s.postTarea)
 
-	g.PCH("/tareas/{tarea_id}", srv.modificarTarea)
-	g.POS("/tareas/{tarea_id}/iniciar", srv.iniciarTarea)
-	g.POS("/tareas/{tarea_id}/pausar", srv.pausarTarea)
-	g.POS("/tareas/{tarea_id}/terminar", srv.terminarTarea)
+	s.gecko.POS("/nodos/{nodo_id}", s.postHistoria)
+	s.gecko.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
 
-	g.GET("/intervalos", srv.getIntervalos)
+	s.gecko.PCH("/tareas/{tarea_id}", s.modificarTarea)
+	s.gecko.POS("/tareas/{tarea_id}/iniciar", s.iniciarTarea)
+	s.gecko.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
+	s.gecko.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
 
-	g.GET("/export.md", srv.exportarMarkdown)
+	s.gecko.GET("/intervalos", s.getIntervalos)
+
+	s.gecko.GET("/export.md", s.exportarMarkdown)
 
 	// LOG SQLITE
-	g.GET("/log", func(c *gecko.Context) error { sqliteDB.ToggleLog(); return c.StatusOk("Log toggled") })
-	// sqliteDB.ToggleLog()
+	s.gecko.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })
 
 	// ================================================================ //
 	// ================================================================ //
@@ -113,32 +123,18 @@ func main() {
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		for sig := range ch {
-			err = sqliteDB.Close()
+			err = s.db.Close()
 			if err != nil {
 				fmt.Println("sqliteDB.Close: ", err.Error())
 			}
 			fmt.Println("")
-			gecko.LogInfof("servidor terminado: %v", sig.String())
+			gko.LogInfof("servidor terminado: %v", sig.String())
 			os.Exit(0)
 		}
 	}()
 
-	// Listen and serve
-	serv := http.Server{
-		Addr:    ":" + puerto,
-		Handler: g,
-	}
-	gecko.LogInfof("pargo escuchando en :%v", puerto)
-	err = serv.ListenAndServe()
+	err = s.gecko.IniciarEnPuerto(s.cfg.puerto)
 	if err != nil {
-		fatal(err.Error())
+		gko.FatalError(err)
 	}
-}
-
-// ================================================================ //
-// ========== UTILS =============================================== //
-
-func fatal(msg string) {
-	fmt.Println("[FATAL] " + msg)
-	os.Exit(1)
 }

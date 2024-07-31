@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func GetHistoriasDePadre(padreID int, repo Repo) (*HistoriaConNietos, error) {
-	op := gecko.NewOp("GetHistoriaConHistorias").Ctx("padreID", padreID)
+	op := gko.Op("GetHistoriaConHistorias").Ctx("padreID", padreID)
 
 	padre, err := repo.GetNodo(padreID)
 	if err != nil {

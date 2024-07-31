@@ -4,11 +4,11 @@ import (
 	"monorepo/historias_de_usuario/ust"
 	"time"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func AgregarTarea(tarea ust.Tarea, repo Repo) error {
-	op := gecko.NewOp("AgregarTarea")
+	op := gko.Op("AgregarTarea")
 	err := validarTarea(tarea, op, repo)
 	if err != nil {
 		return err
@@ -22,7 +22,7 @@ func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 }
 
 func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
-	op := gecko.NewOp("ActualizarTarea")
+	op := gko.Op("ActualizarTarea")
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
 		return op.Err(err)
@@ -53,7 +53,7 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	return nil
 }
 
-func validarTarea(tarea ust.Tarea, op *gecko.Gkerror, repo Repo) error {
+func validarTarea(tarea ust.Tarea, op *gko.Error, repo Repo) error {
 	if tarea.TareaID == 0 {
 		return op.Msg("Debe asignarse un ID nuevo a la tarea")
 	}
@@ -76,7 +76,7 @@ func validarTarea(tarea ust.Tarea, op *gecko.Gkerror, repo Repo) error {
 // ================================================================ //
 // ========== Intervalos ========================================== //
 
-func actualizarTiempoReal(tar *ust.Tarea, op *gecko.Gkerror, repo Repo) error {
+func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 	intervalos, err := repo.ListIntervalosByTareaID(tar.TareaID)
 	if err != nil {
 		return op.Err(err)
@@ -100,7 +100,7 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gecko.Gkerror, repo Repo) error {
 }
 
 func IniciarTarea(tareaID int, repo Repo) error {
-	op := gecko.NewOp("IniciarTarea").Ctx("tareaID", tareaID)
+	op := gko.Op("IniciarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
 		return op.Err(err)
@@ -137,7 +137,7 @@ func IniciarTarea(tareaID int, repo Repo) error {
 }
 
 func PausarTarea(tareaID int, repo Repo) error {
-	op := gecko.NewOp("PausarTarea").Ctx("tareaID", tareaID)
+	op := gko.Op("PausarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
 		return op.Err(err)
@@ -180,7 +180,7 @@ func PausarTarea(tareaID int, repo Repo) error {
 }
 
 func FinalizarTarea(tareaID int, repo Repo) error {
-	op := gecko.NewOp("FinalizarTarea").Ctx("tareaID", tareaID)
+	op := gko.Op("FinalizarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
 		return op.Err(err)

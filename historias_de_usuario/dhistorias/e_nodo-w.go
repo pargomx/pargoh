@@ -3,12 +3,12 @@ package dhistorias
 import (
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 // Inserta el nodo en la última posición dentro de los hijos del nodo padre dado.
 func agregarNodo(padreID int, nodoID int, tipo string, repo Repo) error {
-	op := gecko.NewOp("dhistorias.agregarNodo").Ctx("padreID", padreID).Ctx("tipo", tipo)
+	op := gko.Op("dhistorias.agregarNodo").Ctx("padreID", padreID).Ctx("tipo", tipo)
 	if padreID == 0 && tipo != ust.TipoNodoPersona {
 		return op.Msg("padreID sin especificar para nodo no persona")
 	}

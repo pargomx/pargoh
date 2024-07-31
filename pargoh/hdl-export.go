@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"monorepo/historias_de_usuario/dhistorias"
+	"os"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func (s *servidor) exportarMarkdown(c *gecko.Context) error {
@@ -14,4 +17,13 @@ func (s *servidor) exportarMarkdown(c *gecko.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (s *servidor) exportarFile() {
+	buf := new(bytes.Buffer)
+	err := dhistorias.ExportarMarkdown(buf, s.repo)
+	if err != nil {
+		gko.FatalError(err)
+	}
+	os.WriteFile("/home/andrew/proyectos/PARGO/pargoh/export.md", buf.Bytes(), 0644)
 }

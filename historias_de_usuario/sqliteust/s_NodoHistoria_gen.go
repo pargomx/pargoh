@@ -3,11 +3,10 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"net/http"
 
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 //  ================================================================  //
@@ -35,9 +34,9 @@ func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gecko.NewErr(http.StatusNotFound).Msg("Historia de usuario no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Historia de usuario no se encuentra").Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 
 	return nil
@@ -51,7 +50,7 @@ func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria,
 func (s *Repositorio) GetNodoHistoria(HistoriaID int) (*ust.NodoHistoria, error) {
 	const op string = "mysqlust.GetNodoHistoria"
 	if HistoriaID == 0 {
-		return nil, gecko.NewErr(http.StatusBadRequest).Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
@@ -78,7 +77,7 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 			&nhist.HistoriaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
 		)
 		if err != nil {
-			return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
 
 		items = append(items, nhist)
@@ -92,7 +91,7 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 func (s *Repositorio) ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistoria, error) {
 	const op string = "mysqlust.ListNodoHistoriasByPadreID"
 	if PadreID == 0 {
-		return nil, gecko.NewErr(http.StatusBadRequest).Msg("PadreID sin especificar").Ctx(op, "param_indefinido")
+		return nil, gko.ErrDatoInvalido().Msg("PadreID sin especificar").Ctx(op, "param_indefinido")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
@@ -100,7 +99,7 @@ func (s *Repositorio) ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistori
 		PadreID,
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }

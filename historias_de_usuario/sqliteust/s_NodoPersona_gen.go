@@ -2,11 +2,10 @@ package sqliteust
 
 import (
 	"database/sql"
-	"net/http"
 
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 //  ================================================================  //
@@ -39,7 +38,7 @@ func (s *Repositorio) scanRowsNodoPersona(rows *sql.Rows, op string) ([]ust.Nodo
 			&nper.PersonaID, &nper.Nombre, &nper.Descripcion, &nper.PadreID, &nper.PadreTbl, &nper.Nivel, &nper.Posicion,
 		)
 		if err != nil {
-			return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
 
 		items = append(items, nper)
@@ -56,7 +55,7 @@ func (s *Repositorio) ListNodosPersonas() ([]ust.NodoPersona, error) {
 		"SELECT " + columnasNodoPersona + " " + fromNodoPersona + " ORDER BY nod.posicion",
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsNodoPersona(rows, op)
 }

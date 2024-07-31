@@ -3,12 +3,11 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"net/http"
 	"strings"
 
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 //  ================================================================  //
@@ -31,11 +30,11 @@ const fromTarea string = "FROM tareas "
 func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 	const op string = "mysqlust.InsertTarea"
 	if tar.TareaID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	err := tar.Validar()
 	if err != nil {
-		return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec("INSERT INTO tareas "+
 		"(tarea_id, historia_id, tipo, descripcion, impedimentos, tiempo_estimado, tiempo_real, estatus) "+
@@ -44,11 +43,11 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gecko.NewErr(http.StatusConflict).Err(err).Op(op)
+			return gko.Err(err).Op(op)
 		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
+			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
 		} else {
-			return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return gko.ErrInesperado().Err(err).Op(op)
 		}
 	}
 	return nil
@@ -61,11 +60,11 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 	const op string = "mysqlust.UpdateTarea"
 	if tar.TareaID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	err := tar.Validar()
 	if err != nil {
-		return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec(
 		"UPDATE tareas SET "+
@@ -75,7 +74,7 @@ func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 		tar.TareaID,
 	)
 	if err != nil {
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	return nil
 }
@@ -86,7 +85,7 @@ func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 func (s *Repositorio) DeleteTarea(TareaID int) error {
 	const op string = "mysqlust.DeleteTarea"
 	if TareaID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	// Verificar que solo se borre un registro.
 	var num int
@@ -95,14 +94,14 @@ func (s *Repositorio) DeleteTarea(TareaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gecko.NewErr(http.StatusNotFound).Err(ust.ErrTareaNotFound).Op(op)
+			return gko.ErrNoEncontrado().Err(ust.ErrTareaNotFound).Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
-		return gecko.NewErr(http.StatusInternalServerError).Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
+		return gko.ErrInesperado().Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
 	} else if num == 0 {
-		return gecko.NewErr(http.StatusNotFound).Err(ust.ErrTareaNotFound).Op(op).Msg("cero resultados")
+		return gko.ErrNoEncontrado().Err(ust.ErrTareaNotFound).Op(op).Msg("cero resultados")
 	}
 	// Eliminar registro
 	_, err = s.db.Exec(
@@ -111,9 +110,9 @@ func (s *Repositorio) DeleteTarea(TareaID int) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1451 (23000)") {
-			return gecko.NewErr(http.StatusConflict).Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
+			return gko.ErrYaExiste().Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
 		} else {
-			return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return gko.ErrInesperado().Err(err).Op(op)
 		}
 	}
 	return nil
@@ -130,9 +129,9 @@ func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea, op string) erro
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gecko.NewErr(http.StatusNotFound).Msg("Tarea no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Tarea no se encuentra").Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	tar.Tipo = ust.SetTipoTareaDB(tipo)
 	return nil
@@ -146,7 +145,7 @@ func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea, op string) erro
 func (s *Repositorio) GetTarea(TareaID int) (*ust.Tarea, error) {
 	const op string = "mysqlust.GetTarea"
 	if TareaID == 0 {
-		return nil, gecko.NewErr(http.StatusBadRequest).Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasTarea+" "+fromTarea+
@@ -173,7 +172,7 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 			&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.TiempoEstimado, &tar.TiempoReal, &tar.Estatus,
 		)
 		if err != nil {
-			return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
 		tar.Tipo = ust.SetTipoTareaDB(tipo)
 		items = append(items, tar)
@@ -187,7 +186,7 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error) {
 	const op string = "mysqlust.ListTareasByHistoriaID"
 	if HistoriaID == 0 {
-		return nil, gecko.NewErr(http.StatusBadRequest).Msg("HistoriaID sin especificar").Ctx(op, "param_indefinido")
+		return nil, gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "param_indefinido")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasTarea+" "+fromTarea+
@@ -195,7 +194,7 @@ func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error
 		HistoriaID,
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsTarea(rows, op)
 }

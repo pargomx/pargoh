@@ -3,12 +3,11 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"net/http"
 	"strings"
 
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 //  ================================================================  //
@@ -31,14 +30,14 @@ const fromHistoria string = "FROM historias "
 func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 	const op string = "mysqlust.InsertHistoria"
 	if his.HistoriaID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	if his.Titulo == "" {
-		return gecko.NewErr(http.StatusBadRequest).Msg("Titulo sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido().Msg("Titulo sin especificar").Ctx(op, "required_sin_valor")
 	}
 	err := his.Validar()
 	if err != nil {
-		return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec("INSERT INTO historias "+
 		"(historia_id, titulo, objetivo, prioridad, completada) "+
@@ -47,11 +46,11 @@ func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gecko.NewErr(http.StatusConflict).Err(err).Op(op)
+			return gko.ErrYaExiste().Err(err).Op(op)
 		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
+			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
 		} else {
-			return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return gko.ErrInesperado().Err(err).Op(op)
 		}
 	}
 	return nil
@@ -64,14 +63,14 @@ func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 func (s *Repositorio) UpdateHistoria(his ust.Historia) error {
 	const op string = "mysqlust.UpdateHistoria"
 	if his.HistoriaID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	if his.Titulo == "" {
-		return gecko.NewErr(http.StatusBadRequest).Msg("Titulo sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido().Msg("Titulo sin especificar").Ctx(op, "required_sin_valor")
 	}
 	err := his.Validar()
 	if err != nil {
-		return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec(
 		"UPDATE historias SET "+
@@ -81,7 +80,7 @@ func (s *Repositorio) UpdateHistoria(his ust.Historia) error {
 		his.HistoriaID,
 	)
 	if err != nil {
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	return nil
 }
@@ -92,7 +91,7 @@ func (s *Repositorio) UpdateHistoria(his ust.Historia) error {
 func (s *Repositorio) DeleteHistoria(HistoriaID int) error {
 	const op string = "mysqlust.DeleteHistoria"
 	if HistoriaID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	// Verificar que solo se borre un registro.
 	var num int
@@ -101,14 +100,14 @@ func (s *Repositorio) DeleteHistoria(HistoriaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gecko.NewErr(http.StatusNotFound).Err(ust.ErrHistoriaNotFound).Op(op)
+			return gko.ErrNoEncontrado().Err(ust.ErrHistoriaNotFound).Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
-		return gecko.NewErr(http.StatusInternalServerError).Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
+		return gko.ErrInesperado().Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
 	} else if num == 0 {
-		return gecko.NewErr(http.StatusNotFound).Err(ust.ErrHistoriaNotFound).Op(op).Msg("cero resultados")
+		return gko.ErrNoEncontrado().Err(ust.ErrHistoriaNotFound).Op(op).Msg("cero resultados")
 	}
 	// Eliminar registro
 	_, err = s.db.Exec(
@@ -117,9 +116,9 @@ func (s *Repositorio) DeleteHistoria(HistoriaID int) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1451 (23000)") {
-			return gecko.NewErr(http.StatusConflict).Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
+			return gko.ErrYaExiste().Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
 		} else {
-			return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return gko.ErrInesperado().Err(err).Op(op)
 		}
 	}
 	return nil
@@ -136,9 +135,9 @@ func (s *Repositorio) scanRowHistoria(row *sql.Row, his *ust.Historia, op string
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gecko.NewErr(http.StatusNotFound).Msg("Historia de usuario no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Historia de usuario no se encuentra").Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 
 	return nil
@@ -152,7 +151,7 @@ func (s *Repositorio) scanRowHistoria(row *sql.Row, his *ust.Historia, op string
 func (s *Repositorio) GetHistoria(HistoriaID int) (*ust.Historia, error) {
 	const op string = "mysqlust.GetHistoria"
 	if HistoriaID == 0 {
-		return nil, gecko.NewErr(http.StatusBadRequest).Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasHistoria+" "+fromHistoria+
@@ -179,7 +178,7 @@ func (s *Repositorio) scanRowsHistoria(rows *sql.Rows, op string) ([]ust.Histori
 			&his.HistoriaID, &his.Titulo, &his.Objetivo, &his.Prioridad, &his.Completada,
 		)
 		if err != nil {
-			return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
 
 		items = append(items, his)
@@ -196,7 +195,7 @@ func (s *Repositorio) ListHistorias() ([]ust.Historia, error) {
 		"SELECT " + columnasHistoria + " " + fromHistoria,
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsHistoria(rows, op)
 }

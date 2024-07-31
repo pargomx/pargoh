@@ -5,12 +5,13 @@ import (
 	"monorepo/historias_de_usuario/ust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func (s *servidor) postTarea(c *gecko.Context) error {
 	estimado, err := ust.NuevaDuración(c.FormVal("tiempo_estimado"))
 	if err != nil {
-		return c.ErrBadRequest(err)
+		return err
 	}
 	tarea := ust.Tarea{
 		TareaID:        ust.NewRandomID(),
@@ -24,14 +25,14 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	c.LogInfof("Tarea %d insertada", tarea.TareaID)
+	gko.LogInfof("Tarea %d insertada", tarea.TareaID)
 	return c.RefreshHTMX()
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context) error {
 	estimado, err := ust.NuevaDuración(c.FormVal("tiempo_estimado"))
 	if err != nil {
-		return c.ErrBadRequest(err)
+		return err
 	}
 	tarea := ust.Tarea{
 		TareaID:        c.FormInt("tarea_id"),
@@ -45,7 +46,7 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	c.LogInfof("Tarea %d actualizada", tarea.TareaID)
+	gko.LogInfof("Tarea %d actualizada", tarea.TareaID)
 	return c.RefreshHTMX()
 }
 

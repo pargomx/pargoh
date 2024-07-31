@@ -2,9 +2,8 @@ package sqliteust
 
 import (
 	"monorepo/historias_de_usuario/ust"
-	"net/http"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 // ListHistorias devuelve todos los registros de las historias de usuario
@@ -15,7 +14,7 @@ func (s *Repositorio) ListHistoriasByPadreID(nodoID int) ([]ust.Historia, error)
 			"JOIN nodos ON nodo_id = historia_id WHERE padre_id = ? ORDER BY posicion", nodoID,
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsHistoria(rows, op)
 }
@@ -28,7 +27,7 @@ func (s *Repositorio) ListHistoriasPrioritarias() ([]ust.NodoHistoria, error) {
 			"ORDER BY (his.prioridad * nod.nivel) + 20 - nod.posicion DESC LIMIT 50",
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }

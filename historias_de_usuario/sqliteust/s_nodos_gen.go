@@ -3,12 +3,11 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"net/http"
 	"strings"
 
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 //  ================================================================  //
@@ -34,17 +33,17 @@ const fromNodo string = "FROM nodos "
 func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 	const op string = "mysqlust.UpdateNodo"
 	if nod.NodoID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	if nod.NodoTbl == "" {
-		return gecko.NewErr(http.StatusBadRequest).Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido().Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
 	}
 	if nod.PadreTbl == "" {
-		return gecko.NewErr(http.StatusBadRequest).Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido().Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
 	}
 	err := nod.Validar()
 	if err != nil {
-		return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec(
 		"UPDATE nodos SET "+
@@ -54,7 +53,7 @@ func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 		nod.NodoID,
 	)
 	if err != nil {
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	return nil
 }
@@ -67,7 +66,7 @@ func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 func (s *Repositorio) DeleteNodo(NodoID int) error {
 	const op string = "mysqlust.DeleteNodo"
 	if NodoID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	// Verificar que solo se borre un registro.
 	var num int
@@ -76,14 +75,14 @@ func (s *Repositorio) DeleteNodo(NodoID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gecko.NewErr(http.StatusNotFound).Err(ust.ErrNodoNotFound).Op(op)
+			return gko.ErrNoEncontrado().Err(ust.ErrNodoNotFound).Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
-		return gecko.NewErr(http.StatusInternalServerError).Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
+		return gko.ErrInesperado().Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
 	} else if num == 0 {
-		return gecko.NewErr(http.StatusNotFound).Err(ust.ErrNodoNotFound).Op(op).Msg("cero resultados")
+		return gko.ErrNoEncontrado().Err(ust.ErrNodoNotFound).Op(op).Msg("cero resultados")
 	}
 	// Eliminar registro
 	_, err = s.db.Exec(
@@ -92,9 +91,9 @@ func (s *Repositorio) DeleteNodo(NodoID int) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1451 (23000)") {
-			return gecko.NewErr(http.StatusConflict).Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
+			return gko.ErrYaExiste().Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
 		} else {
-			return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return gko.ErrInesperado().Err(err).Op(op)
 		}
 	}
 	return nil
@@ -111,9 +110,9 @@ func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo, op string) error 
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gecko.NewErr(http.StatusNotFound).Msg("el nodo no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("el nodo no se encuentra").Op(op)
 		}
-		return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return gko.ErrInesperado().Err(err).Op(op)
 	}
 
 	return nil
@@ -127,7 +126,7 @@ func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo, op string) error 
 func (s *Repositorio) GetNodo(NodoID int) (*ust.Nodo, error) {
 	const op string = "mysqlust.GetNodo"
 	// if NodoID == 0 {
-	// 	return nil, gecko.NewErr(http.StatusBadRequest).Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+	// 	return nil, gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
 	// }
 	row := s.db.QueryRow(
 		"SELECT "+columnasNodo+" "+fromNodo+
@@ -154,7 +153,7 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]ust.Nodo, error
 			&nod.NodoID, &nod.NodoTbl, &nod.PadreID, &nod.PadreTbl, &nod.Nivel, &nod.Posicion,
 		)
 		if err != nil {
-			return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
 
 		items = append(items, nod)
@@ -169,7 +168,7 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]ust.Nodo, error
 func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]ust.Nodo, error) {
 	const op string = "mysqlust.ListNodosByPadreID"
 	if PadreID == 0 {
-		return nil, gecko.NewErr(http.StatusBadRequest).Msg("PadreID sin especificar").Ctx(op, "param_indefinido")
+		return nil, gko.ErrDatoInvalido().Msg("PadreID sin especificar").Ctx(op, "param_indefinido")
 	}
 	where := "WHERE padre_id = ?"
 	argumentos := []any{}
@@ -181,7 +180,7 @@ func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]ust.Nodo, error) {
 		argumentos...,
 	)
 	if err != nil {
-		return nil, gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+		return nil, gko.ErrInesperado().Err(err).Op(op)
 	}
 	return s.scanRowsNodo(rows, op)
 }

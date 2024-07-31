@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"monorepo/historias_de_usuario/ust"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func GetNodo(id int, repo Repo) (*Nodo, error) {
-	op := gecko.NewOp("GetNodo").Ctx("id", id)
+	op := gko.Op("GetNodo").Ctx("id", id)
 	nod, err := repo.GetNodo(id)
 	if err != nil {
 		return nil, op.Err(err)
@@ -33,7 +33,7 @@ func GetNodo(id int, repo Repo) (*Nodo, error) {
 }
 
 func GetHijosDeNodo(id int, repo Repo) ([]Nodo, error) {
-	op := gecko.NewOp("GetHijosDeNodo").Ctx("id", id)
+	op := gko.Op("GetHijosDeNodo").Ctx("id", id)
 	nod, err := repo.GetNodo(id)
 	if err != nil {
 		return nil, op.Err(err)
@@ -66,7 +66,7 @@ func GetHijosDeNodo(id int, repo Repo) ([]Nodo, error) {
 }
 
 func GetNodoConHijos(id int, repo Repo) (*NodoConHijos, error) {
-	op := gecko.NewOp("GetNodoConHijos").Ctx("id", id)
+	op := gko.Op("GetNodoConHijos").Ctx("id", id)
 	nod, err := GetNodo(id, repo)
 	if err != nil {
 		return nil, op.Err(err)
@@ -89,7 +89,7 @@ func GetNodoConHijos(id int, repo Repo) (*NodoConHijos, error) {
 }
 
 func GetArbolCompleto(repo Repo) ([]Arbol, error) {
-	op := gecko.NewOp("GetArbolCompleto")
+	op := gko.Op("GetArbolCompleto")
 	personas, err := repo.ListNodosPersonas()
 	if err != nil {
 		return nil, op.Err(err)

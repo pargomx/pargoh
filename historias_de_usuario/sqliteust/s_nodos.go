@@ -2,27 +2,26 @@ package sqliteust
 
 import (
 	"monorepo/historias_de_usuario/ust"
-	"net/http"
 	"strings"
 
-	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 // InsertNodo valida el registro y lo inserta en la base de datos.
 func (s *Repositorio) InsertNodo(nod ust.Nodo) error {
 	const op string = "sqliteust.InsertNodo"
 	if nod.NodoID == 0 {
-		return gecko.NewErr(http.StatusBadRequest).Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	if nod.NodoTbl == "" {
-		return gecko.NewErr(http.StatusBadRequest).Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido().Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
 	}
 	if nod.PadreTbl == "" {
-		return gecko.NewErr(http.StatusBadRequest).Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido().Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
 	}
 	err := nod.Validar()
 	if err != nil {
-		return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec("INSERT INTO nodos "+
 		"(nodo_id, nodo_tbl, padre_id, padre_tbl, nivel, posicion) "+
@@ -31,18 +30,18 @@ func (s *Repositorio) InsertNodo(nod ust.Nodo) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gecko.NewErr(http.StatusConflict).Err(err).Op(op)
+			return gko.ErrYaExiste().Err(err).Op(op)
 		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gecko.NewErr(http.StatusBadRequest).Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
+			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
 		} else {
-			return gecko.NewErr(http.StatusInternalServerError).Err(err).Op(op)
+			return gko.ErrInesperado().Err(err).Op(op)
 		}
 	}
 	return nil
 }
 
 func (s *Repositorio) EliminarNodo(nodoID int) error {
-	op := gecko.NewOp("sqliteust.EliminarNodo")
+	op := gko.Op("sqliteust.EliminarNodo")
 	if nodoID == 0 {
 		return op.Msg("NodoID sin especificar")
 	}
@@ -62,7 +61,7 @@ func (s *Repositorio) EliminarNodo(nodoID int) error {
 }
 
 func (s *Repositorio) MoverNodo(nodoID int, nuevoPadreID int) error {
-	op := gecko.NewOp("sqliteust.MoverNodo")
+	op := gko.Op("sqliteust.MoverNodo")
 	nodo, err := s.GetNodo(nodoID)
 	if err != nil {
 		return op.Err(err)
@@ -112,7 +111,7 @@ func (s *Repositorio) actualizarNivelDeDescendientes(nodoID int) error {
 
 // La cambia de posición respecto a sus hermanos, o sea en el mismo padre.
 func (s *Repositorio) ReordenarNodo(nodoID int, oldPosicion int, newPosicion int) error {
-	var op = gecko.NewOp("sqliteust.ReordenarNodo").Ctx("id", nodoID).Ctx("old", oldPosicion).Ctx("new", newPosicion)
+	var op = gko.Op("sqliteust.ReordenarNodo").Ctx("id", nodoID).Ctx("old", oldPosicion).Ctx("new", newPosicion)
 	if oldPosicion == newPosicion {
 		return nil
 	}
@@ -129,7 +128,7 @@ func (s *Repositorio) ReordenarNodo(nodoID int, oldPosicion int, newPosicion int
 		return op.Op("contar_hermanos").Err(err)
 	}
 	if newPosicion < 1 || newPosicion > hermanos {
-		return op.Msgf("posición %v inválida para nodo %v que tiene %v hermanos", newPosicion, nodoID, hermanos).Code(400)
+		return op.Msgf("posición %v inválida para nodo %v que tiene %v hermanos", newPosicion, nodoID, hermanos)
 	}
 
 	// Se utilizan posiciones negativas temporales porque no se puede confiar en el orden
