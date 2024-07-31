@@ -26,4 +26,9 @@ func (s *servidor) exportarFile() {
 		gko.FatalError(err)
 	}
 	os.WriteFile("/home/andrew/proyectos/PARGO/pargoh/export.md", buf.Bytes(), 0644)
+
+	err = dhistorias.ExportarDocx(s.repo, "/home/andrew/proyectos/PARGO/pargoh/export.docx")
+	if err != nil {
+		gko.FatalError(err)
+	}
 }

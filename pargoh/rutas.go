@@ -72,7 +72,7 @@ func main() {
 	s.gecko.Renderer = tpls
 	s.gecko.TmplBaseLayout = "app/layout"
 
-	s.exportarFile()
+	// s.exportarFile()
 
 	// ================================================================ //
 
