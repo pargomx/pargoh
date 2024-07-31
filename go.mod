@@ -5,7 +5,7 @@ go 1.22.2
 require (
 	github.com/gingfrederik/docx v0.0.1
 	github.com/glebarez/go-sqlite v1.22.0
-	github.com/pargomx/gecko v0.0.0-20240724025738-f7e3856106d1
+	github.com/pargomx/gecko v0.0.0-20240731073343-f203c5d6c532
 )
 
 require (
