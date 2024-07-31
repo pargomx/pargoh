@@ -134,7 +134,7 @@ func EliminarHistoria(historiaID int, repo Repo) error {
 	if len(hijos) > 0 {
 		return op.Msg("la historia tiene hijos y no puede ser eliminada")
 	}
-	tareas, err := repo.ListTareasByPadreID(his.HistoriaID)
+	tareas, err := repo.ListTareasByHistoriaID(his.HistoriaID)
 	if err != nil {
 		return op.Err(err)
 	}

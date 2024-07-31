@@ -15,7 +15,7 @@ func GetHistoriasDePadre(padreID int, repo Repo) (*HistoriaConNietos, error) {
 		return nil, op.Err(err)
 	}
 
-	tareas, err := repo.ListTareasByPadreID(padre.NodoID)
+	tareas, err := repo.ListTareasByHistoriaID(padre.NodoID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
@@ -97,7 +97,7 @@ func GetHistoriasDePadre(padreID int, repo Repo) (*HistoriaConNietos, error) {
 		if err != nil {
 			return nil, op.Err(err)
 		}
-		tareasDeNieto, err := repo.ListTareasByPadreID(hijo.HistoriaID)
+		tareasDeNieto, err := repo.ListTareasByHistoriaID(hijo.HistoriaID)
 		if err != nil {
 			return nil, op.Err(err)
 		}

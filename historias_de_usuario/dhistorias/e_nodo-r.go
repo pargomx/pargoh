@@ -121,7 +121,7 @@ func getHistoriaRecursiva(his ust.NodoHistoria, repo Repo) HistoriaRecursiva {
 	if err != nil {
 		fmt.Println("getHistoriaConHijos: %w", err)
 	}
-	historia.Tareas, err = repo.ListTareasByPadreID(his.HistoriaID)
+	historia.Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
 	if err != nil {
 		fmt.Println("getHistoriaConHijos: %w", err)
 	}
