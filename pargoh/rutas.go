@@ -99,6 +99,8 @@ func main() {
 
 	g.GET("/intervalos", srv.getIntervalos)
 
+	g.GET("/export.md", srv.exportarMarkdown)
+
 	// LOG SQLITE
 	g.GET("/log", func(c *gecko.Context) error { sqliteDB.ToggleLog(); return c.StatusOk("Log toggled") })
 	// sqliteDB.ToggleLog()
