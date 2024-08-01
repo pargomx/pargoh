@@ -12,8 +12,8 @@ type Historia struct {
 }
 
 var (
-	ErrHistoriaNotFound      error = errors.New("la Historia de usuario no se encuentra")
-	ErrHistoriaAlreadyExists error = errors.New("la Historia de usuario ya existe")
+	ErrHistoriaNotFound      error = errors.New("la historia de usuario no se encuentra")
+	ErrHistoriaAlreadyExists error = errors.New("la historia de usuario ya existe")
 )
 
 func (his *Historia) Validar() error {

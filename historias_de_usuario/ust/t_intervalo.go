@@ -10,8 +10,8 @@ type Intervalo struct {
 }
 
 var (
-	ErrIntervaloNotFound      error = errors.New("el Intervalo no se encuentra")
-	ErrIntervaloAlreadyExists error = errors.New("el Intervalo ya existe")
+	ErrIntervaloNotFound      error = errors.New("el intervalo no se encuentra")
+	ErrIntervaloAlreadyExists error = errors.New("el intervalo ya existe")
 )
 
 func (interv *Intervalo) Validar() error {

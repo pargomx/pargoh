@@ -2,6 +2,8 @@ package ust
 
 import (
 	"errors"
+
+	"github.com/pargomx/gecko/gko"
 )
 
 // Tarea corresponde a un elemento de la tabla 'tareas'.
@@ -17,8 +19,8 @@ type Tarea struct {
 }
 
 var (
-	ErrTareaNotFound      error = errors.New("la Tarea no se encuentra")
-	ErrTareaAlreadyExists error = errors.New("la Tarea ya existe")
+	ErrTareaNotFound      error = errors.New("la tarea no se encuentra")
+	ErrTareaAlreadyExists error = errors.New("la tarea ya existe")
 )
 
 func (tar *Tarea) Validar() error {
@@ -204,40 +206,6 @@ func (e TipoTarea) EsWebUi() bool {
 	return e.ID == TipoTareaWebUi.ID
 }
 
-func (i *Tarea) EsTipoTodos() bool {
-	return i.Tipo.Es(TipoTareaTodos)
-}
-func (i *Tarea) EsTipoIndefinido() bool {
-	return i.Tipo.Es(TipoTareaIndefinido)
-}
-func (i *Tarea) EsTipoPlan() bool {
-	return i.Tipo.Es(TipoTareaPlan)
-}
-func (i *Tarea) EsTipoAsk() bool {
-	return i.Tipo.Es(TipoTareaAsk)
-}
-func (i *Tarea) EsTipoDominio() bool {
-	return i.Tipo.Es(TipoTareaDominio)
-}
-func (i *Tarea) EsTipoDb() bool {
-	return i.Tipo.Es(TipoTareaDb)
-}
-func (i *Tarea) EsTipoConf() bool {
-	return i.Tipo.Es(TipoTareaConf)
-}
-func (i *Tarea) EsTipoRepo() bool {
-	return i.Tipo.Es(TipoTareaRepo)
-}
-func (i *Tarea) EsTipoAdapt() bool {
-	return i.Tipo.Es(TipoTareaAdapt)
-}
-func (i *Tarea) EsTipoHandlr() bool {
-	return i.Tipo.Es(TipoTareaHandlr)
-}
-func (i *Tarea) EsTipoWebUi() bool {
-	return i.Tipo.Es(TipoTareaWebUi)
-}
-
 // Recibe la forma .String
 func SetTipoTareaDB(str string) TipoTarea {
 	for _, e := range ListaTipoTarea {
@@ -246,8 +214,10 @@ func SetTipoTareaDB(str string) TipoTarea {
 		}
 	}
 	if str == TipoTareaTodos.String {
+		gko.LogWarn("ust.SetTipoTarea: TipoTareaTodos es inválido en DB")
 		return TipoTareaIndefinido
 	}
+	gko.LogWarnf("ust.SetTipoTarea inválido: '%v'", str)
 	return TipoTareaIndefinido
 }
 
@@ -261,6 +231,7 @@ func SetTipoTareaFiltro(str string) TipoTarea {
 			return e
 		}
 	}
+	gko.LogWarnf("ust.SetTipoTarea inválido: '%v'", str)
 	return TipoTareaIndefinido
 }
 
@@ -277,7 +248,9 @@ func (i *Tarea) SetTipo(str string) {
 		}
 	}
 	if str == TipoTareaTodos.String {
+		gko.LogWarn("ust.SetTipoTarea: TipoTareaTodos es inválido en DB")
 		i.Tipo = TipoTareaIndefinido
 	}
+	gko.LogWarnf("ust.SetTipoTarea inválido: '%v'", str)
 	i.Tipo = TipoTareaIndefinido
 }
