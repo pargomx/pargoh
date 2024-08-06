@@ -3,7 +3,7 @@ package dhistorias
 import (
 	"fmt"
 	"io"
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/ust"
 	"strings"
 
 	"github.com/gingfrederik/docx"

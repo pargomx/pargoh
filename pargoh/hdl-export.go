@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"monorepo/historias_de_usuario/dhistorias"
+	"monorepo/dhistorias"
 	"os"
 
 	"github.com/pargomx/gecko"

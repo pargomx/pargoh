@@ -1,7 +1,7 @@
 package main
 
 import (
-	"monorepo/historias_de_usuario/dhistorias"
+	"monorepo/dhistorias"
 
 	"github.com/pargomx/gecko"
 )

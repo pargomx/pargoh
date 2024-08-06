@@ -1,7 +1,7 @@
 package sqliteust
 
 import (
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/ust"
 	"strings"
 
 	"github.com/pargomx/gecko/gko"

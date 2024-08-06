@@ -2,7 +2,7 @@ package dhistorias
 
 import (
 	"fmt"
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/ust"
 
 	"github.com/pargomx/gecko/gko"
 )

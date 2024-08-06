@@ -1,9 +1,9 @@
 package main
 
 import (
-	"monorepo/historias_de_usuario/dhistorias"
-	"monorepo/historias_de_usuario/sqliteust"
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/dhistorias"
+	"monorepo/sqliteust"
+	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
 )

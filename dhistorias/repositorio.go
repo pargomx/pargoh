@@ -1,6 +1,6 @@
 package dhistorias
 
-import "monorepo/historias_de_usuario/ust"
+import "monorepo/ust"
 
 type Repo interface {
 

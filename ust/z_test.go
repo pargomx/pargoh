@@ -1,7 +1,7 @@
 package ust_test
 
 import (
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/ust"
 	"testing"
 )
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/pargomx/gecko/gko"
 
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/ust"
 )
 
 //  ================================================================  //

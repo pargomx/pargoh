@@ -1,6 +1,6 @@
 package dhistorias
 
-import "monorepo/historias_de_usuario/ust"
+import "monorepo/ust"
 
 type HistoriaConNietos struct {
 	Persona   ust.Persona        // Siempre hay persona

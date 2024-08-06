@@ -1,8 +1,8 @@
 package main
 
 import (
-	"monorepo/historias_de_usuario/dhistorias"
-	"monorepo/historias_de_usuario/ust"
+	"monorepo/dhistorias"
+	"monorepo/ust"
 	"strings"
 
 	"github.com/pargomx/gecko"
