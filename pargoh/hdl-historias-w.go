@@ -13,7 +13,7 @@ func (s *servidor) postHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	repotx := sqliteust.NuevoRepo(s.db)
+	repotx := sqliteust.NuevoRepo(tx)
 	nuevaHistoria := ust.Historia{
 		HistoriaID: ust.NewRandomID(),
 		Titulo:     c.FormVal("titulo"),
