@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/pargomx/gecko"
-	"github.com/pargomx/gecko/gko"
 )
 
 func (s *servidor) exportarMarkdown(c *gecko.Context) error {
@@ -19,16 +18,17 @@ func (s *servidor) exportarMarkdown(c *gecko.Context) error {
 	return nil
 }
 
-func (s *servidor) exportarFile() {
+func (s *servidor) exportarFile(c *gecko.Context) error {
 	buf := new(bytes.Buffer)
 	err := dhistorias.ExportarMarkdown(buf, s.repo)
 	if err != nil {
-		gko.FatalError(err)
+		return err
 	}
 	os.WriteFile("/home/andrew/proyectos/PARGO/pargoh/export.md", buf.Bytes(), 0644)
 
 	err = dhistorias.ExportarDocx(s.repo, "/home/andrew/proyectos/PARGO/pargoh/export.docx")
 	if err != nil {
-		gko.FatalError(err)
+		return err
 	}
+	return c.StatusOk("Exportación realizada")
 }
