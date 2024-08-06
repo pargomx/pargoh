@@ -24,9 +24,9 @@ func (s *servidor) exportarFile(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	os.WriteFile("/home/andrew/proyectos/PARGO/pargoh/export.md", buf.Bytes(), 0644)
+	os.WriteFile("export.md", buf.Bytes(), 0644)
 
-	err = dhistorias.ExportarDocx(s.repo, "/home/andrew/proyectos/PARGO/pargoh/export.docx")
+	err = dhistorias.ExportarDocx(s.repo, "export.docx")
 	if err != nil {
 		return err
 	}
