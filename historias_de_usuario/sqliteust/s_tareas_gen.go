@@ -3,7 +3,6 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"strings"
 
 	"github.com/pargomx/gecko/gko"
 
@@ -11,62 +10,34 @@ import (
 )
 
 //  ================================================================  //
-//  ========== MYSQL/CONSTANTES ====================================  //
+//  ========== INSERT ==============================================  //
 
-// Lista de columnas separadas por coma para usar en consulta SELECT
-// en conjunto con scanRow o scanRows, ya que las columnas coinciden
-// con los campos escaneados.
-const columnasTarea string = "tarea_id, historia_id, tipo, descripcion, impedimentos, tiempo_estimado, tiempo_real, estatus"
-
-// Origen de los datos de ust.Tarea
-//
-// FROM tareas
-const fromTarea string = "FROM tareas "
-
-//  ================================================================  //
-//  ========== MYSQL/TBL-INSERT ====================================  //
-
-// InsertTarea valida el registro y lo inserta en la base de datos.
 func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
-	const op string = "mysqlust.InsertTarea"
+	const op string = "InsertTarea"
 	if tar.TareaID == 0 {
-		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
-	err := tar.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec("INSERT INTO tareas "+
+	_, err := s.db.Exec("INSERT INTO tareas "+
 		"(tarea_id, historia_id, tipo, descripcion, impedimentos, tiempo_estimado, tiempo_real, estatus) "+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?) ",
 		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.TiempoEstimado, tar.TiempoReal, tar.Estatus,
 	)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op)
-		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
-		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
-		}
+		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/TBL-UPDATE ====================================  //
+//  ========== UPDATE ==============================================  //
 
 // UpdateTarea valida y sobreescribe el registro en la base de datos.
 func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
-	const op string = "mysqlust.UpdateTarea"
+	const op string = "UpdateTarea"
 	if tar.TareaID == 0 {
-		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
-	err := tar.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec(
+	_, err := s.db.Exec(
 		"UPDATE tareas SET "+
 			"tarea_id=?, historia_id=?, tipo=?, descripcion=?, impedimentos=?, tiempo_estimado=?, tiempo_real=?, estatus=? "+
 			"WHERE tarea_id = ?",
@@ -80,14 +51,11 @@ func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 }
 
 //  ================================================================  //
-//  ========== MYSQL/TBL-DELETE ====================================  //
+//  ========== EXISTE ==============================================  //
 
-func (s *Repositorio) DeleteTarea(TareaID int) error {
-	const op string = "mysqlust.DeleteTarea"
-	if TareaID == 0 {
-		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
-	}
-	// Verificar que solo se borre un registro.
+// Retorna error nil si existe solo un registro con esta clave primaria.
+func (s *Repositorio) ExisteTarea(TareaID int) error {
+	const op string = "ExisteTarea"
 	var num int
 	err := s.db.QueryRow("SELECT COUNT(tarea_id) FROM tareas WHERE tarea_id = ?",
 		TareaID,
@@ -99,53 +67,85 @@ func (s *Repositorio) DeleteTarea(TareaID int) error {
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
+		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrTareaNotFound).Op(op).Msg("cero resultados")
-	}
-	// Eliminar registro
-	_, err = s.db.Exec(
-		"DELETE FROM tareas WHERE tarea_id = ?",
-		TareaID,
-	)
-	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1451 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
-		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
-		}
+		return gko.ErrNoEncontrado().Err(ust.ErrTareaNotFound).Op(op)
 	}
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROW ======================================  //
+//  ========== DELETE ==============================================  //
+
+func (s *Repositorio) DeleteTarea(TareaID int) error {
+	const op string = "DeleteTarea"
+	if TareaID == 0 {
+		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+	}
+	err := s.ExisteTarea(TareaID)
+	if err != nil {
+		return gko.Err(err).Op(op)
+	}
+	_, err = s.db.Exec(
+		"DELETE FROM tareas WHERE tarea_id = ?",
+		TareaID,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op)
+	}
+	return nil
+}
+
+//  ================================================================  //
+//  ========== CONSTANTES ==========================================  //
+
+// Lista de columnas separadas por coma para usar en consulta SELECT
+// en conjunto con scanRow o scanRows, ya que las columnas coinciden
+// con los campos escaneados.
+//
+//	tarea_id,
+//	historia_id,
+//	tipo,
+//	descripcion,
+//	impedimentos,
+//	tiempo_estimado,
+//	tiempo_real,
+//	estatus
+const columnasTarea string = "tarea_id, historia_id, tipo, descripcion, impedimentos, tiempo_estimado, tiempo_real, estatus"
+
+// Origen de los datos de ust.Tarea
+//
+//	FROM tareas
+const fromTarea string = "FROM tareas "
+
+//  ================================================================  //
+//  ========== SCAN ================================================  //
 
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
-func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea, op string) error {
+func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
 	var tipo string
 	err := row.Scan(
 		&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.TiempoEstimado, &tar.TiempoReal, &tar.Estatus,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Tarea no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Tarea no se encuentra")
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado().Err(err)
 	}
 	tar.Tipo = ust.SetTipoTareaDB(tipo)
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/GET ===========================================  //
+//  ========== GET =================================================  //
 
 // GetTarea devuelve un Tarea de la DB por su clave primaria.
 // Error si no encuentra ninguno, o si encuentra más de uno.
 func (s *Repositorio) GetTarea(TareaID int) (*ust.Tarea, error) {
-	const op string = "mysqlust.GetTarea"
+	const op string = "GetTarea"
 	if TareaID == 0 {
-		return nil, gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasTarea+" "+fromTarea+
@@ -153,11 +153,15 @@ func (s *Repositorio) GetTarea(TareaID int) (*ust.Tarea, error) {
 		TareaID,
 	)
 	tar := &ust.Tarea{}
-	return tar, s.scanRowTarea(row, tar, op)
+	err := s.scanRowTarea(row, tar)
+	if err != nil {
+		return nil, err
+	}
+	return tar, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROWS =====================================  //
+//  ========== SCAN ================================================  //
 
 // scanRowsTarea escanea cada row en la struct Tarea
 // y devuelve un slice con todos los items.
@@ -181,12 +185,12 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 }
 
 //  ================================================================  //
-//  ========== MYSQL/LIST_BY =======================================  //
+//  ========== LIST_BY =============================================  //
 
 func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error) {
-	const op string = "mysqlust.ListTareasByHistoriaID"
+	const op string = "ListTareasByHistoriaID"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoInvalido().Msg("HistoriaID sin especificar").Ctx(op, "param_indefinido")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("param_indefinido")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasTarea+" "+fromTarea+

@@ -77,7 +77,7 @@ func (s *servidor) getIntervalos(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	abiertos, err := s.repo.ListIntervalosAbiertos()
+	abiertos, err := s.repo.ListIntervalosRecientesAbiertos()
 	if err != nil {
 		return err
 	}

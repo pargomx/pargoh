@@ -45,7 +45,7 @@ func (s *servidor) getHistoriasTablero(c *gecko.Context) error {
 }
 
 func (s *servidor) getHistoriasPrioritarias(c *gecko.Context) error {
-	Historias, err := s.repo.ListHistoriasPrioritarias()
+	Historias, err := s.repo.ListNodoHistoriasPrioritarias()
 	if err != nil {
 		return err
 	}

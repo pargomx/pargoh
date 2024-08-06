@@ -3,7 +3,6 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"strings"
 
 	"github.com/pargomx/gecko/gko"
 
@@ -11,38 +10,21 @@ import (
 )
 
 //  ================================================================  //
-//  ========== MYSQL/CONSTANTES ====================================  //
-
-// Lista de columnas separadas por coma para usar en consulta SELECT
-// en conjunto con scanRow o scanRows, ya que las columnas coinciden
-// con los campos escaneados.
-const columnasNodo string = "nodo_id, nodo_tbl, padre_id, padre_tbl, nivel, posicion"
-
-// Origen de los datos de ust.Nodo
-//
-// FROM nodos
-const fromNodo string = "FROM nodos "
-
-//  ================================================================  //
-//  ========== MYSQL/TBL-UPDATE ====================================  //
+//  ========== UPDATE ==============================================  //
 
 // UpdateNodo valida y sobreescribe el registro en la base de datos.
 func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
-	const op string = "mysqlust.UpdateNodo"
+	const op string = "UpdateNodo"
 	if nod.NodoID == 0 {
-		return gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("NodoID sin especificar").Str("pk_indefinida")
 	}
 	if nod.NodoTbl == "" {
-		return gko.ErrDatoInvalido().Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoIndef().Op(op).Msg("NodoTbl sin especificar").Str("required_sin_valor")
 	}
 	if nod.PadreTbl == "" {
-		return gko.ErrDatoInvalido().Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoIndef().Op(op).Msg("PadreTbl sin especificar").Str("required_sin_valor")
 	}
-	err := nod.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec(
+	_, err := s.db.Exec(
 		"UPDATE nodos SET "+
 			"nodo_id=?, nodo_tbl=?, padre_id=?, padre_tbl=?, nivel=?, posicion=? "+
 			"WHERE nodo_id = ?",
@@ -56,14 +38,11 @@ func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 }
 
 //  ================================================================  //
-//  ========== MYSQL/TBL-DELETE ====================================  //
+//  ========== EXISTE ==============================================  //
 
-func (s *Repositorio) DeleteNodo(NodoID int) error {
-	const op string = "mysqlust.DeleteNodo"
-	if NodoID == 0 {
-		return gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
-	}
-	// Verificar que solo se borre un registro.
+// Retorna error nil si existe solo un registro con esta clave primaria.
+func (s *Repositorio) ExisteNodo(NodoID int) error {
+	const op string = "ExisteNodo"
 	var num int
 	err := s.db.QueryRow("SELECT COUNT(nodo_id) FROM nodos WHERE nodo_id = ?",
 		NodoID,
@@ -75,53 +54,81 @@ func (s *Repositorio) DeleteNodo(NodoID int) error {
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
+		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrNodoNotFound).Op(op).Msg("cero resultados")
+		return gko.ErrNoEncontrado().Err(ust.ErrNodoNotFound).Op(op)
 	}
-	// Eliminar registro
+	return nil
+}
+
+//  ================================================================  //
+//  ========== DELETE ==============================================  //
+
+func (s *Repositorio) DeleteNodo(NodoID int) error {
+	const op string = "DeleteNodo"
+	if NodoID == 0 {
+		return gko.ErrDatoIndef().Op(op).Msg("NodoID sin especificar").Str("pk_indefinida")
+	}
+	err := s.ExisteNodo(NodoID)
+	if err != nil {
+		return gko.Err(err).Op(op)
+	}
 	_, err = s.db.Exec(
 		"DELETE FROM nodos WHERE nodo_id = ?",
 		NodoID,
 	)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1451 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
-		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
-		}
+		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROW ======================================  //
+//  ========== CONSTANTES ==========================================  //
+
+// Lista de columnas separadas por coma para usar en consulta SELECT
+// en conjunto con scanRow o scanRows, ya que las columnas coinciden
+// con los campos escaneados.
+//
+//	nodo_id,
+//	nodo_tbl,
+//	padre_id,
+//	padre_tbl,
+//	nivel,
+//	posicion
+const columnasNodo string = "nodo_id, nodo_tbl, padre_id, padre_tbl, nivel, posicion"
+
+// Origen de los datos de ust.Nodo
+//
+//	FROM nodos
+const fromNodo string = "FROM nodos "
+
+//  ================================================================  //
+//  ========== SCAN ================================================  //
 
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
-func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo, op string) error {
-
+func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo) error {
 	err := row.Scan(
 		&nod.NodoID, &nod.NodoTbl, &nod.PadreID, &nod.PadreTbl, &nod.Nivel, &nod.Posicion,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Nodo no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Nodo no se encuentra")
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado().Err(err)
 	}
-
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/GET ===========================================  //
+//  ========== GET =================================================  //
 
 // GetNodo devuelve un Nodo de la DB por su clave primaria.
 // Error si no encuentra ninguno, o si encuentra más de uno.
 func (s *Repositorio) GetNodo(NodoID int) (*ust.Nodo, error) {
-	const op string = "mysqlust.GetNodo"
+	// const op string = "GetNodo"
 	// if NodoID == 0 {
-	// 	return nil, gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+	// 	return nil, gko.ErrDatoIndef().Op(op).Msg("NodoID sin especificar").Str("pk_indefinida")
 	// }
 	row := s.db.QueryRow(
 		"SELECT "+columnasNodo+" "+fromNodo+
@@ -129,11 +136,15 @@ func (s *Repositorio) GetNodo(NodoID int) (*ust.Nodo, error) {
 		NodoID,
 	)
 	nod := &ust.Nodo{}
-	return nod, s.scanRowNodo(row, nod, op)
+	err := s.scanRowNodo(row, nod)
+	if err != nil {
+		return nil, err
+	}
+	return nod, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROWS =====================================  //
+//  ========== SCAN ================================================  //
 
 // scanRowsNodo escanea cada row en la struct Nodo
 // y devuelve un slice con todos los items.
@@ -143,26 +154,24 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]ust.Nodo, error
 	items := []ust.Nodo{}
 	for rows.Next() {
 		nod := ust.Nodo{}
-
 		err := rows.Scan(
 			&nod.NodoID, &nod.NodoTbl, &nod.PadreID, &nod.PadreTbl, &nod.Nivel, &nod.Posicion,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
-
 		items = append(items, nod)
 	}
 	return items, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/LIST_BY =======================================  //
+//  ========== LIST_BY =============================================  //
 
 func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]ust.Nodo, error) {
-	const op string = "mysqlust.ListNodosByPadreID"
+	const op string = "ListNodosByPadreID"
 	if PadreID == 0 {
-		return nil, gko.ErrDatoInvalido().Msg("PadreID sin especificar").Ctx(op, "param_indefinido")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("PadreID sin especificar").Str("param_indefinido")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodo+" "+fromNodo+

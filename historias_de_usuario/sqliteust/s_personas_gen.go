@@ -3,7 +3,6 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"strings"
 
 	"github.com/pargomx/gecko/gko"
 
@@ -11,68 +10,40 @@ import (
 )
 
 //  ================================================================  //
-//  ========== MYSQL/CONSTANTES ====================================  //
+//  ========== INSERT ==============================================  //
 
-// Lista de columnas separadas por coma para usar en consulta SELECT
-// en conjunto con scanRow o scanRows, ya que las columnas coinciden
-// con los campos escaneados.
-const columnasPersona string = "persona_id, nombre, descripcion"
-
-// Origen de los datos de ust.Persona
-//
-// FROM personas
-const fromPersona string = "FROM personas "
-
-//  ================================================================  //
-//  ========== MYSQL/TBL-INSERT ====================================  //
-
-// InsertPersona valida el registro y lo inserta en la base de datos.
 func (s *Repositorio) InsertPersona(per ust.Persona) error {
-	const op string = "mysqlust.InsertPersona"
+	const op string = "InsertPersona"
 	if per.PersonaID == 0 {
-		return gko.ErrDatoInvalido().Msg("PersonaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
 	}
 	if per.Nombre == "" {
-		return gko.ErrDatoInvalido().Msg("Nombre sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoIndef().Op(op).Msg("Nombre sin especificar").Str("required_sin_valor")
 	}
-	err := per.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec("INSERT INTO personas "+
+	_, err := s.db.Exec("INSERT INTO personas "+
 		"(persona_id, nombre, descripcion) "+
 		"VALUES (?, ?, ?) ",
 		per.PersonaID, per.Nombre, per.Descripcion,
 	)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op)
-		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
-		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
-		}
+		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/TBL-UPDATE ====================================  //
+//  ========== UPDATE ==============================================  //
 
 // UpdatePersona valida y sobreescribe el registro en la base de datos.
 func (s *Repositorio) UpdatePersona(per ust.Persona) error {
-	const op string = "mysqlust.UpdatePersona"
+	const op string = "UpdatePersona"
 	if per.PersonaID == 0 {
-		return gko.ErrDatoInvalido().Msg("PersonaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
 	}
 	if per.Nombre == "" {
-		return gko.ErrDatoInvalido().Msg("Nombre sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoIndef().Op(op).Msg("Nombre sin especificar").Str("required_sin_valor")
 	}
-	err := per.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec(
+	_, err := s.db.Exec(
 		"UPDATE personas SET "+
 			"persona_id=?, nombre=?, descripcion=? "+
 			"WHERE persona_id = ?",
@@ -86,14 +57,11 @@ func (s *Repositorio) UpdatePersona(per ust.Persona) error {
 }
 
 //  ================================================================  //
-//  ========== MYSQL/TBL-DELETE ====================================  //
+//  ========== EXISTE ==============================================  //
 
-func (s *Repositorio) DeletePersona(PersonaID int) error {
-	const op string = "mysqlust.DeletePersona"
-	if PersonaID == 0 {
-		return gko.ErrDatoInvalido().Msg("PersonaID sin especificar").Ctx(op, "pk_indefinida")
-	}
-	// Verificar que solo se borre un registro.
+// Retorna error nil si existe solo un registro con esta clave primaria.
+func (s *Repositorio) ExistePersona(PersonaID int) error {
+	const op string = "ExistePersona"
 	var num int
 	err := s.db.QueryRow("SELECT COUNT(persona_id) FROM personas WHERE persona_id = ?",
 		PersonaID,
@@ -105,53 +73,78 @@ func (s *Repositorio) DeletePersona(PersonaID int) error {
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Msgf("abortado porque serían borrados %v registros", num)
+		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrPersonaNotFound).Op(op).Msg("cero resultados")
+		return gko.ErrNoEncontrado().Err(ust.ErrPersonaNotFound).Op(op)
 	}
-	// Eliminar registro
+	return nil
+}
+
+//  ================================================================  //
+//  ========== DELETE ==============================================  //
+
+func (s *Repositorio) DeletePersona(PersonaID int) error {
+	const op string = "DeletePersona"
+	if PersonaID == 0 {
+		return gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
+	}
+	err := s.ExistePersona(PersonaID)
+	if err != nil {
+		return gko.Err(err).Op(op)
+	}
 	_, err = s.db.Exec(
 		"DELETE FROM personas WHERE persona_id = ?",
 		PersonaID,
 	)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1451 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op).Msg("Este registro es referenciado por otros y no se puede eliminar")
-		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
-		}
+		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROW ======================================  //
+//  ========== CONSTANTES ==========================================  //
+
+// Lista de columnas separadas por coma para usar en consulta SELECT
+// en conjunto con scanRow o scanRows, ya que las columnas coinciden
+// con los campos escaneados.
+//
+//	persona_id,
+//	nombre,
+//	descripcion
+const columnasPersona string = "persona_id, nombre, descripcion"
+
+// Origen de los datos de ust.Persona
+//
+//	FROM personas
+const fromPersona string = "FROM personas "
+
+//  ================================================================  //
+//  ========== SCAN ================================================  //
 
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
-func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona, op string) error {
-
+func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona) error {
 	err := row.Scan(
 		&per.PersonaID, &per.Nombre, &per.Descripcion,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Persona del dominio no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Persona del dominio no se encuentra")
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado().Err(err)
 	}
-
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/GET ===========================================  //
+//  ========== GET =================================================  //
 
 // GetPersona devuelve un Persona de la DB por su clave primaria.
 // Error si no encuentra ninguno, o si encuentra más de uno.
 func (s *Repositorio) GetPersona(PersonaID int) (*ust.Persona, error) {
-	const op string = "mysqlust.GetPersona"
+	const op string = "GetPersona"
 	if PersonaID == 0 {
-		return nil, gko.ErrDatoInvalido().Msg("PersonaID sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasPersona+" "+fromPersona+
@@ -159,11 +152,15 @@ func (s *Repositorio) GetPersona(PersonaID int) (*ust.Persona, error) {
 		PersonaID,
 	)
 	per := &ust.Persona{}
-	return per, s.scanRowPersona(row, per, op)
+	err := s.scanRowPersona(row, per)
+	if err != nil {
+		return nil, err
+	}
+	return per, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROWS =====================================  //
+//  ========== SCAN ================================================  //
 
 // scanRowsPersona escanea cada row en la struct Persona
 // y devuelve un slice con todos los items.
@@ -173,24 +170,22 @@ func (s *Repositorio) scanRowsPersona(rows *sql.Rows, op string) ([]ust.Persona,
 	items := []ust.Persona{}
 	for rows.Next() {
 		per := ust.Persona{}
-
 		err := rows.Scan(
 			&per.PersonaID, &per.Nombre, &per.Descripcion,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
-
 		items = append(items, per)
 	}
 	return items, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/LIST ==========================================  //
+//  ========== LIST ================================================  //
 
 func (s *Repositorio) ListPersonas() ([]ust.Persona, error) {
-	const op string = "mysqlust.ListPersonas"
+	const op string = "ListPersonas"
 	rows, err := s.db.Query(
 		"SELECT " + columnasPersona + " " + fromPersona,
 	)

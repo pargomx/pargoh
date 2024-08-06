@@ -3,7 +3,6 @@ package sqliteust
 import (
 	"database/sql"
 	"errors"
-	"strings"
 
 	"github.com/pargomx/gecko/gko"
 
@@ -11,68 +10,40 @@ import (
 )
 
 //  ================================================================  //
-//  ========== MYSQL/CONSTANTES ====================================  //
+//  ========== INSERT ==============================================  //
 
-// Lista de columnas separadas por coma para usar en consulta SELECT
-// en conjunto con scanRow o scanRows, ya que las columnas coinciden
-// con los campos escaneados.
-const columnasIntervalo string = "tarea_id, inicio, fin"
-
-// Origen de los datos de ust.Intervalo
-//
-// FROM intervalos
-const fromIntervalo string = "FROM intervalos "
-
-//  ================================================================  //
-//  ========== MYSQL/TBL-INSERT ====================================  //
-
-// InsertIntervalo valida el registro y lo inserta en la base de datos.
 func (s *Repositorio) InsertIntervalo(interv ust.Intervalo) error {
-	const op string = "mysqlust.InsertIntervalo"
+	const op string = "InsertIntervalo"
 	if interv.TareaID == 0 {
-		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
 	if interv.Inicio == "" {
-		return gko.ErrDatoInvalido().Msg("Inicio sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
 	}
-	err := interv.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec("INSERT INTO intervalos "+
+	_, err := s.db.Exec("INSERT INTO intervalos "+
 		"(tarea_id, inicio, fin) "+
 		"VALUES (?, ?, ?) ",
 		interv.TareaID, interv.Inicio, interv.Fin,
 	)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op)
-		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
-		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
-		}
+		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/TBL-UPDATE ====================================  //
+//  ========== UPDATE ==============================================  //
 
 // UpdateIntervalo valida y sobreescribe el registro en la base de datos.
 func (s *Repositorio) UpdateIntervalo(interv ust.Intervalo) error {
-	const op string = "mysqlust.UpdateIntervalo"
+	const op string = "UpdateIntervalo"
 	if interv.TareaID == 0 {
-		return gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
 	if interv.Inicio == "" {
-		return gko.ErrDatoInvalido().Msg("Inicio sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
 	}
-	err := interv.Validar()
-	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
-	}
-	_, err = s.db.Exec(
+	_, err := s.db.Exec(
 		"UPDATE intervalos SET "+
 			"tarea_id=?, inicio=?, fin=? "+
 			"WHERE tarea_id = ? AND inicio = ?",
@@ -86,36 +57,51 @@ func (s *Repositorio) UpdateIntervalo(interv ust.Intervalo) error {
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROW ======================================  //
+//  ========== CONSTANTES ==========================================  //
+
+// Lista de columnas separadas por coma para usar en consulta SELECT
+// en conjunto con scanRow o scanRows, ya que las columnas coinciden
+// con los campos escaneados.
+//
+//	tarea_id,
+//	inicio,
+//	fin
+const columnasIntervalo string = "tarea_id, inicio, fin"
+
+// Origen de los datos de ust.Intervalo
+//
+//	FROM intervalos
+const fromIntervalo string = "FROM intervalos "
+
+//  ================================================================  //
+//  ========== SCAN ================================================  //
 
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
-func (s *Repositorio) scanRowIntervalo(row *sql.Row, interv *ust.Intervalo, op string) error {
-
+func (s *Repositorio) scanRowIntervalo(row *sql.Row, interv *ust.Intervalo) error {
 	err := row.Scan(
 		&interv.TareaID, &interv.Inicio, &interv.Fin,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Intervalo no se encuentra").Op(op)
+			return gko.ErrNoEncontrado().Msg("Intervalo no se encuentra")
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado().Err(err)
 	}
-
 	return nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/GET ===========================================  //
+//  ========== GET =================================================  //
 
 // GetIntervalo devuelve un Intervalo de la DB por su clave primaria.
 // Error si no encuentra ninguno, o si encuentra más de uno.
 func (s *Repositorio) GetIntervalo(TareaID int, Inicio string) (*ust.Intervalo, error) {
-	const op string = "mysqlust.GetIntervalo"
+	const op string = "GetIntervalo"
 	if TareaID == 0 {
-		return nil, gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
 	if Inicio == "" {
-		return nil, gko.ErrDatoInvalido().Msg("Inicio sin especificar").Ctx(op, "pk_indefinida")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasIntervalo+" "+fromIntervalo+
@@ -123,11 +109,15 @@ func (s *Repositorio) GetIntervalo(TareaID int, Inicio string) (*ust.Intervalo, 
 		TareaID, Inicio,
 	)
 	interv := &ust.Intervalo{}
-	return interv, s.scanRowIntervalo(row, interv, op)
+	err := s.scanRowIntervalo(row, interv)
+	if err != nil {
+		return nil, err
+	}
+	return interv, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROWS =====================================  //
+//  ========== SCAN ================================================  //
 
 // scanRowsIntervalo escanea cada row en la struct Intervalo
 // y devuelve un slice con todos los items.
@@ -137,26 +127,24 @@ func (s *Repositorio) scanRowsIntervalo(rows *sql.Rows, op string) ([]ust.Interv
 	items := []ust.Intervalo{}
 	for rows.Next() {
 		interv := ust.Intervalo{}
-
 		err := rows.Scan(
 			&interv.TareaID, &interv.Inicio, &interv.Fin,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
-
 		items = append(items, interv)
 	}
 	return items, nil
 }
 
 //  ================================================================  //
-//  ========== MYSQL/LIST_BY =======================================  //
+//  ========== LIST_BY =============================================  //
 
 func (s *Repositorio) ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, error) {
-	const op string = "mysqlust.ListIntervalosByTareaID"
+	const op string = "ListIntervalosByTareaID"
 	if TareaID == 0 {
-		return nil, gko.ErrDatoInvalido().Msg("TareaID sin especificar").Ctx(op, "param_indefinido")
+		return nil, gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("param_indefinido")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasIntervalo+" "+fromIntervalo+

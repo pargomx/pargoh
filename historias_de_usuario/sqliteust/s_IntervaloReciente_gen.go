@@ -9,22 +9,37 @@ import (
 )
 
 //  ================================================================  //
-//  ========== MYSQL/CONSTANTES ====================================  //
+//  ========== CONSTANTES ==========================================  //
 
 // Lista de columnas separadas por coma para usar en consulta SELECT
 // en conjunto con scanRow o scanRows, ya que las columnas coinciden
 // con los campos escaneados.
+//
+//	coalesce(tar.historia_id, 0),
+//	interv.tarea_id,
+//	interv.inicio,
+//	interv.fin,
+//	coalesce(tar.tipo, ''),
+//	coalesce(tar.descripcion, ''),
+//	coalesce(tar.impedimentos, ''),
+//	coalesce(tar.tiempo_estimado, 0),
+//	coalesce(tar.tiempo_real, 0),
+//	coalesce(tar.estatus, 0),
+//	coalesce(his.titulo, ''),
+//	coalesce(his.objetivo, ''),
+//	coalesce(his.completada, 0),
+//	coalesce(his.prioridad, 0)
 const columnasIntervaloReciente string = "coalesce(tar.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(tar.tipo, ''), coalesce(tar.descripcion, ''), coalesce(tar.impedimentos, ''), coalesce(tar.tiempo_estimado, 0), coalesce(tar.tiempo_real, 0), coalesce(tar.estatus, 0), coalesce(his.titulo, ''), coalesce(his.objetivo, ''), coalesce(his.completada, 0), coalesce(his.prioridad, 0)"
 
 // Origen de los datos de ust.IntervaloReciente
 //
-// FROM intervalos interv
-// INNER JOIN tareas tar ON tar.tarea_id = interv.tarea_id
-// INNER JOIN historias his ON his.historia_id = tar.historia_id
+//	FROM intervalos interv
+//	INNER JOIN tareas tar ON tar.tarea_id = interv.tarea_id
+//	INNER JOIN historias his ON his.historia_id = tar.historia_id
 const fromIntervaloReciente string = "FROM intervalos interv INNER JOIN tareas tar ON tar.tarea_id = interv.tarea_id INNER JOIN historias his ON his.historia_id = tar.historia_id "
 
 //  ================================================================  //
-//  ========== MYSQL/SCAN-ROWS =====================================  //
+//  ========== SCAN ================================================  //
 
 // scanRowsIntervaloReciente escanea cada row en la struct IntervaloReciente
 // y devuelve un slice con todos los items.
@@ -48,10 +63,10 @@ func (s *Repositorio) scanRowsIntervaloReciente(rows *sql.Rows, op string) ([]us
 }
 
 //  ================================================================  //
-//  ========== MYSQL/LIST ==========================================  //
+//  ========== LIST  ===============================================  //
 
 func (s *Repositorio) ListIntervalosRecientes() ([]ust.IntervaloReciente, error) {
-	const op string = "mysqlust.ListIntervalosRecientes"
+	const op string = "ListIntervalosRecientes"
 	rows, err := s.db.Query(
 		"SELECT " + columnasIntervaloReciente + " " + fromIntervaloReciente +
 			"WHERE interv.fin <> '' ORDER BY interv.inicio DESC LIMIT 20",
@@ -62,8 +77,11 @@ func (s *Repositorio) ListIntervalosRecientes() ([]ust.IntervaloReciente, error)
 	return s.scanRowsIntervaloReciente(rows, op)
 }
 
-func (s *Repositorio) ListIntervalosAbiertos() ([]ust.IntervaloReciente, error) {
-	const op string = "mysqlust.ListIntervalosAbiertos"
+//  ================================================================  //
+//  ========== LIST ABIERTOS =======================================  //
+
+func (s *Repositorio) ListIntervalosRecientesAbiertos() ([]ust.IntervaloReciente, error) {
+	const op string = "ListIntervalosRecientesAbiertos"
 	rows, err := s.db.Query(
 		"SELECT " + columnasIntervaloReciente + " " + fromIntervaloReciente +
 			"WHERE interv.fin == '' ORDER BY interv.inicio DESC LIMIT 20",
