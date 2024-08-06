@@ -29,6 +29,7 @@ type configs struct {
 	puerto       int    // Puerto TCP del servidor
 	directorio   string // Default: directorio actual
 	databasePath string // Default: _pargo/pargo.sqlite
+	logDB        bool   // Log de consultas a la base de datos
 }
 
 type servidor struct {
@@ -49,6 +50,7 @@ func main() {
 	flag.StringVar(&s.cfg.directorio, "dir", "", "directorio raíz de la aplicación")
 	flag.StringVar(&s.cfg.databasePath, "db", "historias.db", "ubicación de la db sqlite")
 	flag.IntVar(&s.cfg.puerto, "p", 5050, "el servidor escuchará en este puerto")
+	flag.BoolVar(&s.cfg.logDB, "logdb", false, "log de consultas a la base de datos")
 	flag.Parse()
 	if s.cfg.directorio != "" {
 		err := os.Chdir(s.cfg.directorio)
@@ -62,6 +64,9 @@ func main() {
 	s.db, err = sqlitedb.NuevoRepositorio(s.cfg.databasePath, migraciones.MigracionesFS)
 	if err != nil {
 		gko.FatalError(err)
+	}
+	if s.cfg.logDB {
+		s.db.ToggleLog()
 	}
 	s.repo = sqliteust.NuevoRepo(s.db)
 

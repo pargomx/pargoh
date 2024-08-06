@@ -11,6 +11,8 @@ import (
 	_ "github.com/glebarez/go-sqlite"
 )
 
+// INFO: esta es la versión más actualizada del paquete: 2024-08-06.
+
 var pragmaConfig = "?_pragma=foreign_keys(1)&_busy_timeout=1000"
 
 // Wrapper para "database/sql" con sqlite que permite loggear sentencias.
