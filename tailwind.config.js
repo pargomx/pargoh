@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-	"./pargoh/plantillas/*.html",
-	"./pargoh/plantillas/**/*.html",
+	"./htmltmpl/*.html",
+	"./htmltmpl/**/*.html",
 	
 ],
   theme: {
