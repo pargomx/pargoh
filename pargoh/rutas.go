@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"monorepo/assets"
+	"monorepo/dhistorias"
 	"monorepo/htmltmpl"
 	"monorepo/migraciones"
 	"monorepo/sqlitedb"
@@ -84,6 +85,7 @@ func main() {
 	s.gecko.StaticFS("/assets", assets.AssetsFS)
 	s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 
+	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
 	s.GET("/", s.getPersonas)
 	s.GET("/personas", s.getPersonas)
 	s.POS("/personas", s.postPersona)
