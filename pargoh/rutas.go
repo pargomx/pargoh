@@ -105,6 +105,10 @@ func main() {
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
 
+	s.GET("/historias/{historia_id}/viaje", s.getViajeDeHistoria)
+	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
+	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
+
 	s.POS("/nodos/{nodo_id}", s.postHistoria)
 	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
 

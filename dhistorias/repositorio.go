@@ -1,6 +1,8 @@
 package dhistorias
 
-import "monorepo/ust"
+import (
+	"monorepo/ust"
+)
 
 type Repo interface {
 
@@ -20,6 +22,7 @@ type Repo interface {
 	ListNodosPersonas() ([]ust.NodoPersona, error)
 
 	// Historias
+	ExisteHistoria(HistoriaID int) error
 	InsertHistoria(his ust.Historia) error
 	UpdateHistoria(ust.Historia) error
 	DeleteHistoria(historiaID int) error
@@ -37,4 +40,11 @@ type Repo interface {
 	InsertIntervalo(interv ust.Intervalo) error
 	UpdateIntervalo(interv ust.Intervalo) error
 	ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, error)
+
+	// Viajes
+	InsertTramo(tra ust.Tramo) error
+	UpdateTramo(tra ust.Tramo) error
+	ExisteTramo(HistoriaID int, Posicion int) error
+	DeleteTramo(HistoriaID int, Posicion int) error
+	ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error)
 }

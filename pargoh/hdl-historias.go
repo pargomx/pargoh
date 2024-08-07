@@ -109,6 +109,46 @@ func (s *servidor) getTareasDeHistoria(c *gecko.Context) error {
 	return c.RenderOk("hist_tareas", data)
 }
 
+func (s *servidor) getViajeDeHistoria(c *gecko.Context) error {
+	historia, err := s.repo.GetNodoHistoria(c.PathInt("historia_id"))
+	if err != nil {
+		return err
+	}
+	tramos, err := s.repo.ListTramosByHistoriaID(historia.HistoriaID)
+	if err != nil {
+		return err
+	}
+	agg, err := dhistorias.GetHistoriasDePadre(historia.HistoriaID, s.repo)
+	if err != nil {
+		return err
+	}
+	data := map[string]any{
+		"Titulo":   "Tareas",
+		"Historia": historia,
+		"Tramos":   tramos,
+		"Agregado": agg,
+
+		"ListaTipoTarea": ust.ListaTipoTarea,
+	}
+	return c.RenderOk("historia", data)
+}
+
+func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
+	err := dhistorias.NuevoTramoDeViaje(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
+func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
+	err := dhistorias.EliminarTramoDeViaje(s.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
 func (s *servidor) getArbolCompleto(c *gecko.Context) error {
 	arboles, err := dhistorias.GetArbolCompleto(s.repo)
 	if err != nil {
