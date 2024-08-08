@@ -24,7 +24,7 @@ import (
 //	BUILD_INFO="$(date -I):$(git log --format="%H" -n 1)"
 //	go BUILD_INFO -ldflags "-X main.BUILD_INFO=$BUILD_INFO -X main.ambiente=dev"
 var BUILD_INFO string // Información de compilación [ fecha:commit_hash ]
-var AMBIENTE string   // Ambiente de ejecución [ dev / prod ]
+var AMBIENTE string   // Ambiente de ejecución [ DEV / PROD ]
 
 type configs struct {
 	puerto       int    // Puerto TCP del servidor
@@ -75,7 +75,7 @@ func main() {
 
 	if s.cfg.sourceDir != "" {
 		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
-		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillas(s.cfg.sourceDir + "/htmltmpl")
+		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillas(s.cfg.sourceDir+"/htmltmpl", AMBIENTE == "DEV")
 	} else {
 		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
 	}
