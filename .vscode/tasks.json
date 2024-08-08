@@ -7,6 +7,13 @@
 			"command": "tailwindcss -i ./assets/source.css -o ./assets/css/estilo.css",
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
+
+		{
+			"label": "tailwind watch", "detail": "Compilar estilos CSS",
+			"command": "tailwindcss -w -i ./assets/source.css -o ./assets/css/estilo.css",
+			"isBackground": true,
+			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
 		
 		{
 			"label": "install", "detail": "Instalar aplicación",
