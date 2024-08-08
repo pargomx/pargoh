@@ -31,6 +31,7 @@ type configs struct {
 	directorio   string // Default: directorio actual
 	databasePath string // Default: _pargo/pargo.sqlite
 	logDB        bool   // Log de consultas a la base de datos
+	sourceDir    string // Directorio raíz para leer assets y plantillas (shadow embed)
 }
 
 type servidor struct {
@@ -52,6 +53,7 @@ func main() {
 	flag.StringVar(&s.cfg.databasePath, "db", "historias.db", "ubicación de la db sqlite")
 	flag.IntVar(&s.cfg.puerto, "p", 5050, "el servidor escuchará en este puerto")
 	flag.BoolVar(&s.cfg.logDB, "logdb", false, "log de consultas a la base de datos")
+	flag.StringVar(&s.cfg.sourceDir, "src", "", "directorio con assets y htmltmpl para no usar embeded")
 	flag.Parse()
 	if s.cfg.directorio != "" {
 		err := os.Chdir(s.cfg.directorio)
@@ -71,19 +73,27 @@ func main() {
 	}
 	s.repo = sqliteust.NuevoRepo(s.db)
 
-	tpls, err := plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
+	if s.cfg.sourceDir != "" {
+		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
+		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillas(s.cfg.sourceDir + "/htmltmpl")
+	} else {
+		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
+	}
 	if err != nil {
 		gko.FatalError(err)
 	}
-	s.gecko.Renderer = tpls
-	s.gecko.TmplBaseLayout = "app/layout"
 
-	// s.exportarFile()
+	s.gecko.TmplBaseLayout = "app/layout"
 
 	// ================================================================ //
 
-	s.gecko.StaticFS("/assets", assets.AssetsFS)
-	s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
+	if s.cfg.sourceDir != "" {
+		s.gecko.StaticAbs("/assets", s.cfg.sourceDir+"/assets")
+		s.gecko.File("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico")
+	} else {
+		s.gecko.StaticFS("/assets", assets.AssetsFS)
+		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
+	}
 
 	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
 	s.GET("/", s.getPersonas)
