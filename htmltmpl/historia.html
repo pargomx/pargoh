@@ -20,7 +20,7 @@
 	</h3>
 	{{ end -}}
 
-	{{ with .Abuelo -}}
+	{{ with .Historia -}}
 	<h3>
 		<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
 		<a href="/lista/{{ .PadreID }}#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
@@ -30,7 +30,7 @@
 
 </header>
 
-{{ with .Abuelo }}
+{{ with .Historia }}
 <form hx-patch="/historias/{{ .HistoriaID }}" hx-target="#msgStack" hx-swap="innerHTML" class="p-4 space-y-1">
 	<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
 	<div>
@@ -79,14 +79,38 @@
 		{{ end }}
 	</ol>
 
-	<form hx-post="/historias/{{ .Abuelo.HistoriaID }}/viaje">
+	<form hx-post="/historias/{{ .Historia.HistoriaID }}/viaje">
 		<input type="text" name="texto" class="form-control" placeholder="Agregar un tramo al viaje">
 	</form>
 </div>
 
+<div class="p-4">
+	<h3 class="text-xl">Descendientes</h3>
+	<ul class="pl-8 list-[revert]">
+		{{ range .Descendientes }}
+		<li class="p-1">
+			{{ .Historia.Titulo }}
+			<button type="button" hx-get="/historias/{{ .Historia.HistoriaID }}" class="float-right opacity-10 hover:opacity-100">👁️</button>
+
+			<ul class="pl-5 list-[revert]">
+				{{ range .Descendientes }}
+				<li class="p-1">
+					{{ .Historia.Titulo }}
+				</li>
+				{{ end }}
+			</ul>
+		</li>
+		{{ end }}
+	</ul>
+
+	<form>
+		<input autocomplete="off" name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="form-control">
+	</form>
+</div>
+
 <main class="flex-grow overflow-y-auto">
-	<div tipo="carriles_container" hx-get="/lista/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex flex-col items-stretch max-w-5xl gap-4 pb-2 mx-auto">
-		{{ range .Padres }}{{ with .Padre }}
+	<div tipo="carriles_container" hx-get="/lista/{{ with .Historia }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex flex-col items-stretch max-w-5xl gap-4 pb-2 mx-auto">
+		{{ range .Descendientes }}{{ with .Historia }}
 		<div tipo="carril" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-900 rounded-md shadow-lg">
 			
 			<span tipo="carril_handle" class="mr-1 cursor-pointer">⣿</span>
@@ -117,7 +141,7 @@
 		</div>
 		{{ end }}{{ end }}
 		<div class="pt-2">
-			<input id="nuevaHistoria" autocomplete="off" name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" placeholder="Agregar historia..." class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+			<input id="nuevaHistoria" autocomplete="off" name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ with .Historia }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" placeholder="Agregar historia..." class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
 		</div>
 	</div>
 </main>

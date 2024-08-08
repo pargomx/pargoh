@@ -109,23 +109,13 @@ func (s *servidor) getTareasDeHistoria(c *gecko.Context) error {
 	return c.RenderOk("hist_tareas", data)
 }
 
-func (s *servidor) getViajeDeHistoria(c *gecko.Context) error {
-	historia, err := s.repo.GetNodoHistoria(c.PathInt("historia_id"))
-	if err != nil {
-		return err
-	}
-	tramos, err := s.repo.ListTramosByHistoriaID(historia.HistoriaID)
-	if err != nil {
-		return err
-	}
-	agg, err := dhistorias.GetHistoriasDePadre(historia.HistoriaID, s.repo)
+func (s *servidor) getHistoria(c *gecko.Context) error {
+	agg, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
 	if err != nil {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":   "Tareas",
-		"Historia": historia,
-		"Tramos":   tramos,
+		"Titulo":   "Historia a detalle",
 		"Agregado": agg,
 
 		"ListaTipoTarea": ust.ListaTipoTarea,
@@ -164,8 +154,8 @@ func (s *servidor) getArbolCompleto(c *gecko.Context) error {
 	return c.StatusOk(res)
 }
 func printHistRec(his dhistorias.HistoriaRecursiva, nivel int) string {
-	res := strings.Repeat(" ", nivel) + "-" + his.Padre.Titulo + "\n"
-	for _, hijo := range his.Hijos {
+	res := strings.Repeat(" ", nivel) + "-" + his.Historia.Titulo + "\n"
+	for _, hijo := range his.Descendientes {
 		res += printHistRec(hijo, nivel+1)
 	}
 	return res

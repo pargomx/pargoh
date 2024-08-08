@@ -8,6 +8,17 @@ type HistoriaConNietos struct {
 	Abuelo    *ust.NodoHistoria  // No siempre hay padre
 	Padres    []HistoriaConHijos // Puede haber o no hijos
 	Tareas    []ust.Tarea        // Puede haber o no tareas
+	Tramos    []ust.Tramo        // Puede haber o no tramos
+}
+
+type Historia struct {
+	Historia ust.NodoHistoria
+	Persona  ust.Persona
+	Tareas   []ust.Tarea
+	Tramos   []ust.Tramo
+
+	Ancestros     []ust.NodoHistoria
+	Descendientes []HistoriaRecursiva
 }
 
 type HistoriaConHijos struct {
@@ -21,7 +32,6 @@ type Arbol struct {
 	Historias []HistoriaRecursiva
 }
 type HistoriaRecursiva struct {
-	Padre  ust.NodoHistoria
-	Hijos  []HistoriaRecursiva
-	Tareas []ust.Tarea
+	Historia      ust.NodoHistoria
+	Descendientes []HistoriaRecursiva
 }

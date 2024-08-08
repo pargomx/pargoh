@@ -42,10 +42,12 @@
 			<span class="px-2 py-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50">{{ .Nivel }}.{{ .Posicion }}</span>
 
 			{{ if .NumTareas -}}
-			<a href="/historias/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a>
+			<!-- <a href="/historias/{{ .HistoriaID }}/tarea" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
 			{{ else -}}
-			<a href="/lista/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a>
+			<!-- <a href="/lista/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
 			{{ end }}
+			<a href="/historias/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a>
+
 			
 			{{ if .NumHistorias -}}
 			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-800 rounded" title="Historias">{{ .NumHistorias }}&nbsp;🧔🏻</a>

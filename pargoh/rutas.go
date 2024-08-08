@@ -96,7 +96,7 @@ func main() {
 	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
 	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
 	s.GET("/prioritarias", s.getHistoriasPrioritarias)
-	s.GET("/historias/{historia_id}", s.getTareasDeHistoria)
+	s.GET("/historias/{historia_id}", s.getHistoria)
 
 	s.PCH("/historias/{historia_id}", s.patchHistoria)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
@@ -105,9 +105,10 @@ func main() {
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
 	s.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
+
+	s.GET("/historias/{historia_id}/tareas", s.getTareasDeHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
 
-	s.GET("/historias/{historia_id}/viaje", s.getViajeDeHistoria)
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
 

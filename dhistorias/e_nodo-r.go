@@ -113,20 +113,15 @@ func GetArbolCompleto(repo Repo) ([]Arbol, error) {
 
 func getHistoriaRecursiva(his ust.NodoHistoria, repo Repo) HistoriaRecursiva {
 	historia := HistoriaRecursiva{
-		Padre:  his,
-		Hijos:  nil,
-		Tareas: nil,
+		Historia:      his,
+		Descendientes: nil,
 	}
 	hijos, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
 	if err != nil {
 		fmt.Println("getHistoriaConHijos: %w", err)
 	}
-	historia.Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
-	if err != nil {
-		fmt.Println("getHistoriaConHijos: %w", err)
-	}
 	for _, hijo := range hijos {
-		historia.Hijos = append(historia.Hijos, getHistoriaRecursiva(hijo, repo))
+		historia.Descendientes = append(historia.Descendientes, getHistoriaRecursiva(hijo, repo))
 	}
 	return historia
 }
