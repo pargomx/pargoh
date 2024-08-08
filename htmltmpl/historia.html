@@ -5,7 +5,6 @@
 <header class="space-y-1">
 	{{ with .Persona -}}
 	<h3>
-		<a href="/lista/{{ .PersonaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">1.<i class="fa-solid fa-person"></i></a>
 		<span class="opacity-50">Como</span>
 		<a href="/lista/{{ .PersonaID }}" class="text-xl lowercase">{{ .Nombre }}</a>
 		<span class="opacity-50">quiero...</span>
@@ -14,16 +13,7 @@
 	
 	{{ range .Ancestros -}}
 	<h3>
-		<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
 		<a href="/lista/{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
-		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
-	</h3>
-	{{ end -}}
-
-	{{ with .Historia -}}
-	<h3>
-		<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
-		<a href="/lista/{{ .PadreID }}#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
 		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
 	</h3>
 	{{ end -}}
@@ -31,19 +21,14 @@
 </header>
 
 {{ with .Historia }}
-<form hx-patch="/historias/{{ .HistoriaID }}" hx-target="#msgStack" hx-swap="innerHTML" class="p-4 space-y-1">
+<form hx-patch="/historias/{{ .HistoriaID }}" hx-target="#msgStack" hx-swap="innerHTML" class="space-y-1">
 	<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-	<div>
-		<!-- <label for="txt_hist_nombre">Historia {{ .Nivel }}.{{ .Posicion }}</label> -->
-		<input id="txt_hist_nombre" name="titulo" type="text" value="{{ .Titulo }}" class="text-2xl form-control"/>
-	</div>
-	<div>
-		<!-- <label for="txt_hist_empatia">Contexto</label> -->
-		<textarea id="txt_hist_empatia" name="objetivo" cols="30" rows="3" class="form-control">{{ .Objetivo }}</textarea>
-	</div>
-	<div class="flex items-end gap-4">
+	<div class="flex items-end gap-4 pb-2">
+		<div class="grow">
+			<input id="txt_hist_nombre" name="titulo" type="text" value="{{ .Titulo }}" class="w-full px-2 py-1 text-2xl font-medium text-white border-b border-cyan-800 outline-none bg-cyan-950/50 focus:border-blue-400 focus:shadow-md">
+		</div>
 		<div>
-			<label for="txt_hist_prioridad">Prioridad</label>
+			<!-- <label for="txt_hist_prioridad">Prioridad</label> -->
 			<select class="form-control" name="prioridad" id="txt_hist_prioridad">
 				<option value="0" {{ if eq .Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
 				<option value="1" {{ if eq .Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
@@ -52,17 +37,17 @@
 			</select>
 		</div>
 		<div>
-			<label for="txt_hist_estatus">Estatus</label>
+			<!-- <label for="txt_hist_estatus">Estatus</label> -->
 			<select class="form-control" name="completada" id="txt_hist_estatus">
 				<option value="0">Pendiente</option>
 				<option value="1" {{ if .Completada }}selected{{ end }}>✅ Completada</option>
 			</select>
 		</div>
-		<div>
-			<button type="submit" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
-				Guardar
-			</button>
-		</div>
+	</div>
+	<div>
+		<textarea autosize="true" id="txt_hist_empatia" name="objetivo" cols="30" rows="1" placeholder="Descripción del contexto..." 
+			class="w-full px-2 py-1 text-base font-medium border-b border-cyan-800 outline-none resize-none max-h-96 bg-cyan-950/50 focus:border-blue-400 focus:shadow-md"
+		>{{ .Objetivo }}</textarea>
 	</div>
 </form>
 {{ end }}

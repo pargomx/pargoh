@@ -204,3 +204,13 @@ document.querySelectorAll('table').forEach(tbl => {
 		col[1].addEventListener("click", () => sortTableByIdAndColumn(tbl.id, col[0]) )
 	}
 });
+
+// ================================================================ //
+// ========== AUTOSIZE TEXTAREA =================================== //
+
+document.querySelectorAll("textarea[autosize='true']").forEach(txtarea => {
+	txtarea.addEventListener("input", function() {
+		this.style.height = "auto";
+		this.style.height = (this.scrollHeight+2) + "px"; // +2px por el border para evitar scrollbars
+	});
+});

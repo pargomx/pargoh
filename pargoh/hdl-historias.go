@@ -115,7 +115,7 @@ func (s *servidor) getHistoria(c *gecko.Context) error {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":   "Historia a detalle",
+		"Titulo":   agg.Historia.Titulo,
 		"Agregado": agg,
 
 		"ListaTipoTarea": ust.ListaTipoTarea,
