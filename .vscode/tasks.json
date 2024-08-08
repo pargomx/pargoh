@@ -7,7 +7,6 @@
 			"command": "tailwindcss -i ./assets/source.css -o ./assets/css/estilo.css",
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
-
 		{
 			"label": "tailwind watch", "detail": "Compilar estilos CSS",
 			"command": "tailwindcss -w -i ./assets/source.css -o ./assets/css/estilo.css",
@@ -17,62 +16,46 @@
 		
 		{
 			"label": "install", "detail": "Instalar aplicación",
-			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=DEV\" ./pargoh && echo 'app instalada!'",
+			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=DEV\" ./pargoh && echo 'Instalado ºuº)/'",
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
 		
 		{
 			"label": "deploy", "detail": "Enviar binario al servidor",
-			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && rsync -avh --progress /tmp/pargoh ${input:remoteHost}:~/bin/ && echo 'Listo :D'",
+			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && rsync -avh --progress /tmp/pargoh ${input:remoteHost}:~/bin/ && echo 'Enviado :D'",
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
 
 		// ================================================================ //
-		// ========== EJECUTAR AQUÍ ======================================= //
-		{
-			"label": "pargoh here", "detail": "Ejecutar",
-			"command": "pargoh -p 5151",
-			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
-			"isBackground": true,
-			"dependsOrder": "sequence", "dependsOn": ["install"]
-		},
-		{
-			"label": "pargoh tailwind", "detail": "Tailwind pargoh y ejecutar en pargo",
-			"command": "pargoh -p 5151",
-			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
-			"isBackground": true,
-			"dependsOrder": "sequence", "dependsOn": ["tailwind", "install"]
-		},
+		// ========== EJECUTAR ============================================ //
 
-		// ================================================================ //
-		// ========== EJECUTAR FECIAR ===================================== //
 		{
-			"label": "pargoh dev", "detail": "Ejecutar pargoh en copia experimental",
-			"command": "pargoh -dir /home/andrew/descargas",
-			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
-			"isBackground": true,
-			"dependsOrder": "sequence", "dependsOn": ["install"]
-		},
-		{
-			"label": "pargoh mac", "detail": "Ejecutar pargoh en copia experimental",
-			"command": "pargoh -src=/Users/andrew/proyectos/pargoh -dir /Users/andrew/Downloads/pargoh",
+			"label": "Start here", "detail": "Ejecutar en directorio de proyecto",
+			"command": "pargoh -p 5050",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
 		},
 		{
-			"label": "pargoh feciar", "detail": "Ejecutar pargoh en feciar",
-			"command": "pargoh -dir /home/andrew/proyectos/feciar",
-			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"label": "Start dev", "detail": "Ejecutar en directorio de prueba",
+			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/descargas",
+			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
 		},
 		{
-			"label": "pargoh feciar tailwind", "detail": "Tailwind pargoh y ejecutar en feciar",
-			"command": "pargoh -dir /home/andrew/proyectos/feciar",
-			"type": "shell", "presentation": { "echo": false, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"label": "Start mac", "detail": "Ejecutar en directorio de prueba mac",
+			"command": "pargoh -src=/Users/andrew/proyectos/pargoh -dir=/Users/andrew/Downloads/pargoh",
+			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
-			"dependsOrder": "sequence", "dependsOn": ["tailwind", "install"]
+			"dependsOrder": "sequence", "dependsOn": ["install"]
+		},
+		{
+			"label": "Start feciar", "detail": "Ejecutar en proyecto feciar",
+			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/proyectos/feciar",
+			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["install"]
 		},
 
 	],
