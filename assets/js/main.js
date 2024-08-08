@@ -208,9 +208,17 @@ document.querySelectorAll('table').forEach(tbl => {
 // ================================================================ //
 // ========== AUTOSIZE TEXTAREA =================================== //
 
-document.querySelectorAll("textarea[autosize='true']").forEach(txtarea => {
-	txtarea.addEventListener("input", function() {
-		this.style.height = "auto";
-		this.style.height = (this.scrollHeight+2) + "px"; // +2px por el border para evitar scrollbars
-	});
-});
+// Los textarea se ajustan automáticamente a su contenido.
+// Pueden tener cualquier border-width, max-height o rows.
+const tx = document.getElementsByTagName("textarea");
+for (let i = 0; i < tx.length; i++) {
+    let style = window.getComputedStyle(tx[i]); // obtener y considerar border para evitar scrollbars.
+    let bTop = parseFloat(style.getPropertyValue('border-top-width'));
+    let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
+    let borderPx = Math.ceil(bTop + bBottom);
+    tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight + borderPx) + "px;");
+    tx[i].addEventListener("input", function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight + borderPx) + "px";
+    }, false);
+}
