@@ -222,3 +222,13 @@ for (let i = 0; i < tx.length; i++) {
         this.style.height = (this.scrollHeight + borderPx) + "px";
     }, false);
 }
+
+// ================================================================ //
+// ================================================================ //
+
+// Por default todos los input tienen autocomplete="off", a menos que se especifique lo contrario.
+document.querySelectorAll('input').forEach(input => {
+	if (input.getAttribute("autocomplete") == null) {
+		input.setAttribute("autocomplete", "off")
+	}
+});

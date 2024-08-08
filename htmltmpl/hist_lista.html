@@ -65,7 +65,7 @@
 		</div>
 		{{ end }}{{ end }}
 		<div class="pt-2">
-			<input id="nuevaHistoria" autocomplete="off" name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" placeholder="Agregar historia..." class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+			<input id="nuevaHistoria" name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" placeholder="Agregar historia..." class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
 		</div>
 	</div>
 </main>

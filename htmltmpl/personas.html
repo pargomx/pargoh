@@ -29,7 +29,7 @@
 		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Agregar persona</h2>
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
 	</header>
-	<form autocomplete="off" class="flex flex-col gap-4" hx-post="/personas">
+	<form class="flex flex-col gap-4" hx-post="/personas">
 		<div>
 			<label for="newPers_01">Nombre</label>
 			<input id="newPers_01" name="nombre" value="" type="text" class="form-control">
@@ -48,7 +48,7 @@
 		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
 	</header>
-	<form autocomplete="off" class="flex flex-col gap-4" hx-patch="/personas/{{ .PersonaID }}">
+	<form class="flex flex-col gap-4" hx-patch="/personas/{{ .PersonaID }}">
 		<div>
 			<label for="{{ .PersonaID }}_01">Nombre</label>
 			<input id="{{ .PersonaID }}_01" name="nombre" value="{{ .Nombre }}" type="text" class="form-control">
