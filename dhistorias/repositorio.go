@@ -46,5 +46,6 @@ type Repo interface {
 	UpdateTramo(tra ust.Tramo) error
 	ExisteTramo(HistoriaID int, Posicion int) error
 	DeleteTramo(HistoriaID int, Posicion int) error
+	GetTramo(HistoriaID int, Posicion int) (*ust.Tramo, error)
 	ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error)
 }

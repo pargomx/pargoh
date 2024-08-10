@@ -2,6 +2,7 @@ package sqliteust
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/pargomx/gecko/gko"
 
@@ -107,14 +108,6 @@ func (s *Repositorio) DeleteTramo(HistoriaID int, Posicion int) error {
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
-	_, err = s.db.Exec(
-		"UPDATE tramos SET posicion = posicion - 1 "+
-			"WHERE historia_id = ? AND posicion > ?",
-		HistoriaID, Posicion,
-	)
-	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
-	}
 	return nil
 }
 
@@ -135,6 +128,49 @@ const columnasTramo string = "historia_id, posicion, texto, imagen"
 //
 //	FROM tramos
 const fromTramo string = "FROM tramos "
+
+//  ================================================================  //
+//  ========== SCAN ================================================  //
+
+// Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
+func (s *Repositorio) scanRowTramo(row *sql.Row, tra *ust.Tramo) error {
+	err := row.Scan(
+		&tra.HistoriaID, &tra.Posicion, &tra.Texto, &tra.Imagen,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return gko.ErrNoEncontrado().Msg("Tramo no se encuentra")
+		}
+		return gko.ErrInesperado().Err(err)
+	}
+	return nil
+}
+
+//  ================================================================  //
+//  ========== GET =================================================  //
+
+// GetTramo devuelve un Tramo de la DB por su clave primaria.
+// Error si no encuentra ninguno, o si encuentra más de uno.
+func (s *Repositorio) GetTramo(HistoriaID int, Posicion int) (*ust.Tramo, error) {
+	const op string = "GetTramo"
+	if HistoriaID == 0 {
+		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+	}
+	if Posicion == 0 {
+		return nil, gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+	}
+	row := s.db.QueryRow(
+		"SELECT "+columnasTramo+" "+fromTramo+
+			"WHERE historia_id = ? AND posicion = ?",
+		HistoriaID, Posicion,
+	)
+	tra := &ust.Tramo{}
+	err := s.scanRowTramo(row, tra)
+	if err != nil {
+		return nil, err
+	}
+	return tra, nil
+}
 
 //  ================================================================  //
 //  ========== SCAN ================================================  //
