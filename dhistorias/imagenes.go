@@ -60,6 +60,27 @@ func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio strin
 		return err
 	}
 
-	gko.LogInfof("Nueva foto %v", Tramo.Imagen)
+	gko.LogInfof("Imagen nueva %v", Tramo.Imagen)
+	return nil
+}
+
+func EliminarFotoTramo(HistoriaID int, Posicion int, directorio string, repo Repo) error {
+	Tramo, err := repo.GetTramo(HistoriaID, Posicion)
+	if err != nil {
+		return err
+	}
+	if Tramo.Imagen == "" {
+		return gko.ErrDatoInvalido().Msg("No hay imagen que eliminar")
+	}
+	err = os.Remove(filepath.Join(directorio, Tramo.Imagen))
+	if err != nil {
+		return gko.Err(err).Op("EliminarFotoTramo")
+	}
+	Tramo.Imagen = ""
+	err = repo.UpdateTramo(*Tramo)
+	if err != nil {
+		return err
+	}
+	gko.LogInfof("Imagen eliminada %v", Tramo.Imagen)
 	return nil
 }

@@ -47,3 +47,17 @@ func (s *servidor) putImagen(directorio string) gecko.HandlerFunc {
 		return c.RefreshHTMX()
 	}
 }
+
+func (s *servidor) deleteImagen(directorio string) gecko.HandlerFunc {
+	if directorio == "" {
+		gko.LogWarn("Directorio para guardar fotos indefinido")
+		return func(c *gecko.Context) error { return gko.ErrNoDisponible().Msg("Fotos no disponibles") }
+	}
+	return func(c *gecko.Context) error {
+		err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), directorio, s.repo)
+		if err != nil {
+			return err
+		}
+		return c.RefreshHTMX()
+	}
+}

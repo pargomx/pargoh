@@ -124,6 +124,7 @@ func main() {
 
 	s.gecko.StaticAbs("/imagenes", "/Users/andrew/Downloads/pargoh/capturas") // TODO: por qué no funciona StaticSub cuando se cambió el directorio con -dir
 	s.POS("/imagenes", s.putImagen("capturas"))
+	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagen("capturas"))
 
 	s.POS("/nodos/{nodo_id}", s.postHistoria)
 	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
