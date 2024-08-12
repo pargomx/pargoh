@@ -13,6 +13,13 @@
 			"isBackground": true,
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
+
+		{
+			"label": "pargocode", "detail": "Pargo Code Generation Server",
+			"command": "pargo",
+			"isBackground": true,
+			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
 		
 		{
 			"label": "install", "detail": "Instalar aplicación",
