@@ -108,7 +108,8 @@ func main() {
 	s.GET("/prioritarias", s.getHistoriasPrioritarias)
 	s.GET("/historias/{historia_id}", s.getHistoria)
 
-	s.PCH("/historias/{historia_id}", s.patchHistoria)
+	s.PUT("/historias/{historia_id}", s.putHistoria)
+	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.GET("/historias/{historia_id}/form", s.formHistoria)
 	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)

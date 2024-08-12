@@ -19,15 +19,12 @@
 	{{ end -}}
 
 	{{ with .Historia }}
-	<form id="patchHistoria" hx-patch="/historias/{{ .HistoriaID }}" hx-target="#msgStack" hx-swap="innerHTML" class="space-y-1">
-		<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-	</form>
 	<div class="flex items-end gap-4 mb-4">
 		<div class="grow">
-			<input form="patchHistoria" id="txt_hist_nombre" name="titulo" type="text" value="{{ .Titulo }}" class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
+			<input hx-patch="/historias/{{ .HistoriaID }}/titulo" hx-swap="none" name="value" hx-trigger="keyup changed delay:2s" id="txt_hist_nombre" type="text" value="{{ .Titulo }}" class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
 		</div>
 		<div>
-			<select form="patchHistoria" class="form-control" name="prioridad" id="txt_hist_prioridad">
+			<select hx-patch="/historias/{{ .HistoriaID }}/prioridad" hx-swap="none" name="value" id="txt_hist_prioridad" class="form-control">
 				<option value="0" {{ if eq .Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
 				<option value="1" {{ if eq .Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
 				<option value="2" {{ if eq .Prioridad 2 }}selected{{ end }}>🤔 Should</option>
@@ -35,7 +32,7 @@
 			</select>
 		</div>
 		<div>
-			<select form="patchHistoria" class="form-control" name="completada" id="txt_hist_estatus">
+			<select hx-patch="/historias/{{ .HistoriaID }}/completada" hx-swap="none" name="value" class="form-control" id="txt_hist_estatus">
 				<option value="0">Pendiente</option>
 				<option value="1" {{ if .Completada }}selected{{ end }}>✅ Completada</option>
 			</select>
@@ -43,7 +40,7 @@
 	</div>
 
 	<div class="mb-4">
-		<textarea form="patchHistoria" id="txt_hist_empatia" name="objetivo" cols="30" rows="1" placeholder="Descripción del contexto..." 
+		<textarea hx-patch="/historias/{{ .HistoriaID }}/objetivo" hx-swap="none" name="value" hx-trigger="keyup changed delay:2s" id="txt_hist_empatia" cols="30" rows="1" placeholder="Descripción del contexto..." 
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none resize-none max-h-96 focus:border-blue-400 placeholder:text-slate-600"
 		>{{ .Objetivo }}</textarea>
 	</div>

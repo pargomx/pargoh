@@ -31,7 +31,7 @@
 			<span tipo="carril_handle" class="mr-1 cursor-pointer">⣿</span>
 			<span tipo="carril_titulo" class="font-medium text-center">{{ .Titulo }}</span>
 			<button tipo="carril_edit" type="button" onclick="showEditCarril({{ .HistoriaID }})" class="float-right text-sm"><i class="px-2 py-1 fa fa-pen"></i></button>
-			<input tipo="carril_edit" name="titulo" value="{{ .Titulo }}" hx-target="#titulo{{ .HistoriaID }}" hx-patch="/historias/{{ .HistoriaID }}" type="text" class="hidden form-control">
+			<input tipo="carril_edit" name="titulo" value="{{ .Titulo }}" hx-target="#titulo{{ .HistoriaID }}" hx-put="/historias/{{ .HistoriaID }}" type="text" class="hidden form-control">
 			<a tipo="carril_expand" href="/historias/{{ .HistoriaID }}" class="float-right text-sm"><i class="px-2 py-1 fa fa-eye"></i></a>
 			<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Nivel }}</span>
 		</header>

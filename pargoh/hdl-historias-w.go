@@ -33,7 +33,7 @@ func (s *servidor) postHistoria(c *gecko.Context) error {
 	return c.StatusOk("Historia creada")
 }
 
-func (s *servidor) patchHistoria(c *gecko.Context) error {
+func (s *servidor) putHistoria(c *gecko.Context) error {
 	err := dhistorias.ActualizarHistoria(
 		c.PathInt("historia_id"),
 		ust.Historia{
@@ -49,6 +49,19 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 		return err
 	}
 	return c.StatusAccepted("Historia actualizada")
+}
+
+func (s *servidor) patchHistoria(c *gecko.Context) error {
+	err := dhistorias.ParcharHistoria(
+		c.PathInt("historia_id"),
+		c.PathVal("param"),
+		c.FormVal("value"),
+		s.repo,
+	)
+	if err != nil {
+		return err
+	}
+	return c.StatusAccepted("Historia parchada")
 }
 
 func (s *servidor) priorizarHistoria(c *gecko.Context) error {

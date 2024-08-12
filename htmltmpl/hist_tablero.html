@@ -47,7 +47,7 @@
 			{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }}&nbsp;tar.</a>{{ end }}
 			<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Posicion }}</span>
 			<!-- <button tipo="carril_edit" type="button" onclick="showEditCarril({{ .HistoriaID }})" class="float-right text-sm"><i class="px-2 py-1 fa fa-pen"></i></button> -->
-			<!-- <input tipo="carril_edit" name="titulo" value="{{ .Titulo }}" hx-target="#titulo{{ .HistoriaID }}" hx-patch="/historias/{{ .HistoriaID }}" type="text" class="hidden form-control"> -->
+			<!-- <input tipo="carril_edit" name="titulo" value="{{ .Titulo }}" hx-target="#titulo{{ .HistoriaID }}" hx-put="/historias/{{ .HistoriaID }}" type="text" class="hidden form-control"> -->
 			<!-- <a tipo="carril_expand" href="/tablero/{{ .HistoriaID }}" class="float-right text-sm"><i class="px-2 py-1 fa fa-eye"></i></a> -->
 		</header>
 		{{ end }}

@@ -2,6 +2,7 @@ package dhistorias
 
 import (
 	"monorepo/ust"
+	"strconv"
 
 	"github.com/pargomx/gecko/gko"
 )
@@ -75,6 +76,39 @@ func ActualizarHistoria(historiaID int, his ust.Historia, repo Repo) error {
 	oldHis.Completada = his.Completada
 
 	err = repo.UpdateHistoria(*oldHis)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) error {
+	op := gko.Op("ParcharHistoria").Ctx("historiaID", historiaID)
+	if historiaID == 0 {
+		return op.Msg("el ID de la historia debe estar definido")
+	}
+	Hist, err := repo.GetHistoria(historiaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	switch param {
+	case "titulo":
+		Hist.Titulo = newVal
+	case "objetivo":
+		Hist.Objetivo = newVal
+	case "prioridad":
+		Hist.Prioridad, _ = strconv.Atoi(newVal)
+		if !prioridadValida(Hist.Prioridad) {
+			return op.Msg(prioridadInvalidaMsg)
+		}
+	case "completada":
+		num, _ := strconv.Atoi(newVal)
+		Hist.Completada = num > 0
+	default:
+		gko.LogWarnf("Nada cambió para historia %v", Hist.HistoriaID)
+		return nil
+	}
+	err = repo.UpdateHistoria(*Hist)
 	if err != nil {
 		return op.Err(err)
 	}
