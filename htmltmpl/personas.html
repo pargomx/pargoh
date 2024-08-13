@@ -27,8 +27,8 @@
 	{{ range .Personas -}}
 	<article tipo="persona_item" id="{{ .PersonaID }}" class="relative flex flex-col items-center justify-center p-4 bg-cyan-950 rounded-md shadow-lg min-w-64 max-w-96 min-h-32">
 	
-		<a href="/lista/{{ .PersonaID }}" class="text-4xl" tabindex="-1"><i class="fa-solid fa-person"></i></a>
-		<a href="/lista/{{ .PersonaID }}" class="text-lg font-medium">{{ .Nombre }}</a>
+		<a href="/personas/{{ .PersonaID }}" class="text-4xl" tabindex="-1"><i class="fa-solid fa-person"></i></a>
+		<a href="/personas/{{ .PersonaID }}" class="text-lg font-medium">{{ .Nombre }}</a>
 
 		<p class="pt-2 text-sm opacity-75">{{ .Descripcion }}</p>
 

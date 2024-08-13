@@ -1,3 +1,7 @@
+<h2 class="p-3 text-3xl text-center">
+	Pargo Stories 🐟
+</h2>
+
 <main class="flex flex-col items-center justify-center flex-grow w-full max-w-5xl gap-4 pb-2 mx-auto">
 
 	{{ range .Proyectos -}}
@@ -27,6 +31,11 @@
 	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')"><i class="fa-solid fa-plus"></i></button>
 	{{ end }}
 </main>
+
+<footer class="flex flex-col items-center gap-4 p-4">
+	<!-- <img src="/assets/img/pargo_64.png" alt="Pargo"> -->
+	<p>Hecho con ♡ por PargoMx</p>
+</footer>
 
 <dialog id="frmPerNueva" class="p-3 rounded-lg">
 	<header class="flex flex-wrap items-center gap-3 pb-2">

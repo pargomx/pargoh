@@ -95,13 +95,16 @@ func main() {
 	}
 
 	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
-	s.GET("/", s.listaProyectos)
-	s.POS("/proyectos", s.postProyecto)
-	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
-	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
-	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
 
-	s.GET("/personas", s.getPersonas) // obsoleto
+	s.GET("/", s.listaProyectos)
+	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
+	s.GET("/personas/{persona_id}", s.getPersona)
+	s.GET("/historias/{historia_id}", s.getHistoria)
+
+	s.POS("/proyectos", s.postProyecto)
+	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
+	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
+
 	s.POS("/personas", s.postPersona)
 	s.PCH("/personas/{persona_id}", s.patchPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
@@ -110,7 +113,6 @@ func main() {
 	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
 	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
 	s.GET("/prioritarias", s.getHistoriasPrioritarias)
-	s.GET("/historias/{historia_id}", s.getHistoria)
 
 	s.PUT("/historias/{historia_id}", s.putHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)

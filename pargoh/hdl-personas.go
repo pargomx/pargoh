@@ -7,21 +7,26 @@ import (
 	"github.com/pargomx/gecko"
 )
 
-func (s *servidor) getPersonas(c *gecko.Context) error {
-	Personas, err := s.repo.ListNodosPersonas()
+func (s *servidor) getPersona(c *gecko.Context) error {
+	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
-	Proyectos, err := s.repo.ListProyectos()
+	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	if err != nil {
+		return err
+	}
+	Historias, err := s.repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
 	if err != nil {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":    "Pargo - Personas",
-		"Personas":  Personas,
-		"Proyectos": Proyectos,
+		"Titulo":    Persona.Nombre + " - " + Proyecto.Titulo,
+		"Persona":   Persona,
+		"Proyecto":  Proyecto,
+		"Historias": Historias,
 	}
-	return c.RenderOk("personas", data)
+	return c.RenderOk("persona", data)
 }
 
 func (s *servidor) postPersona(c *gecko.Context) error {
