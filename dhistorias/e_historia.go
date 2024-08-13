@@ -4,6 +4,7 @@ import "monorepo/ust"
 
 type HistoriaConNietos struct {
 	Persona   ust.Persona        // Siempre hay persona
+	Proyecto  ust.Proyecto       // Siempre hay proyecto
 	Ancestros []ust.NodoHistoria // Lista de ancestros desde el más grande al más pequeño
 	Abuelo    *ust.NodoHistoria  // No siempre hay padre
 	Padres    []HistoriaConHijos // Puede haber o no hijos
@@ -14,6 +15,7 @@ type HistoriaConNietos struct {
 type Historia struct {
 	Historia ust.NodoHistoria
 	Persona  ust.Persona
+	Proyecto ust.Proyecto
 	Tareas   []ust.Tarea
 	Tramos   []ust.Tramo
 

@@ -11,7 +11,11 @@ func InsertarPersona(per ust.Persona, repo Repo) error {
 	if per.Nombre == "" {
 		return op.Msg("Persona sin nombre")
 	}
-	err := repo.InsertPersona(per)
+	err := repo.ExisteProyecto(per.ProyectoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	err = repo.InsertPersona(per)
 	if err != nil {
 		return op.Err(err)
 	}
@@ -27,7 +31,11 @@ func ActualizarPersona(per ust.Persona, repo Repo) error {
 	if per.Nombre == "" {
 		return op.Msg("Persona sin nombre")
 	}
-	err := repo.UpdatePersona(per)
+	err := repo.ExisteProyecto(per.ProyectoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	err = repo.UpdatePersona(per)
 	if err != nil {
 		return op.Err(err)
 	}

@@ -1,6 +1,25 @@
-{{ template "app/nav" . }}
-
 {{ with .Agregado -}}
+<header class="relative flex w-full mb-4 bg-cyan-950 shadow-lg">
+	<div class="p-2">
+		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24 h-24">
+	</div>
+	<div class="w-full p-2">
+		<h2 class="text-2xl font-medium">
+			<a href="/proyectos/{{ .Proyecto.ProyectoID }}">
+				{{ .Proyecto.Titulo }}
+			</a>
+		</h2>
+		<div class="flex items-end gap-1 py-1">
+			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
+			<a href="/lista/{{ .Persona.PersonaID }}" class="text-xl">{{ .Persona.Nombre }}</a>
+			<span class="opacity-50">{{ .Persona.Descripcion }}</span>
+		</div>
+	</div>
+
+	<span class="absolute right-2 top-2">
+		<a href="/" class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+	</span>
+</header>
 
 <header class="mb-4 space-y-1">
 	{{ with .Persona -}}
@@ -33,13 +52,13 @@
 <main class="flex-grow overflow-y-auto">
 	<div tipo="carriles_container" hx-get="/lista/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex flex-col items-stretch max-w-5xl gap-4 pb-2 mx-auto">
 		{{ range .Padres }}{{ with .Padre }}
-		<div tipo="carril" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-900 rounded-md shadow-lg">
+		<div tipo="carril" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
 			
 			<span tipo="carril_handle" class="mr-1 cursor-pointer">⣿</span>
 			
 			{{ .PrioridadEmoji }}
 			
-			<span class="px-2 py-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50">{{ .Nivel }}.{{ .Posicion }}</span>
+			<span class="px-2 py-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50">{{ .Posicion }}</span>
 
 			{{ if .NumTareas -}}
 			<!-- <a href="/historias/{{ .HistoriaID }}/tarea" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
@@ -50,16 +69,16 @@
 
 			
 			{{ if .NumHistorias -}}
-			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-800 rounded" title="Historias">{{ .NumHistorias }}&nbsp;🧔🏻</a>
+			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Historias">{{ .NumHistorias }}&nbsp;🧔🏻</a>
 			{{ end }}
 
 			{{ if .NumTareas -}}
-			<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-800 rounded" title="Tareas">{{ .NumTareas }}&nbsp;📋</a>
+			<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Tareas">{{ .NumTareas }}&nbsp;📋</a>
 			{{ end }}
 
 			{{ if and (not .NumTareas) (not .NumHistorias) -}}
-			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-800 rounded" title="Historias">✂️&nbsp;Dividir</a>
-			<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-800 rounded" title="Tareas">📋&nbsp;Tareas</a>
+			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Historias">✂️&nbsp;Dividir</a>
+			<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Tareas">📋&nbsp;Tareas</a>
 			{{- end }}
 
 		</div>

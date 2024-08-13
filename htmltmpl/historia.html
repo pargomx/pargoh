@@ -1,6 +1,27 @@
-{{ template "app/nav" . }}
-
 {{ with .Agregado -}}
+<header class="relative flex w-full mb-4 bg-cyan-950 shadow-lg">
+	<div class="p-2">
+		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24 h-24">
+	</div>
+	<div class="w-full p-2">
+		<h2 class="text-2xl font-medium">
+			<a href="/proyectos/{{ .Proyecto.ProyectoID }}">
+				{{ .Proyecto.Titulo }}
+			</a>
+		</h2>
+		<h3>
+			<span class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
+			<a href="/lista/{{ .Persona.PersonaID }}" class="text-xl">{{ .Persona.Nombre }}</a>
+		</h3>
+		<p class="pt-1 opacity-50">
+			{{ .Persona.Descripcion }}
+		</p>
+	</div>
+
+	<span class="absolute right-2 top-2">
+		<a href="/" class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+	</span>
+</header>
 
 <main class="flex-grow w-full max-w-5xl mx-auto">
 	{{ with .Persona -}}
@@ -8,13 +29,6 @@
 		<span class="opacity-50">Como</span>
 		<a href="/lista/{{ .PersonaID }}" class="text-xl lowercase">{{ .Nombre }}</a>
 		<span class="opacity-50">quiero...</span>
-	</h3>
-	{{ end -}}
-	
-	{{ range .Ancestros -}}
-	<h3 class="mb-2">
-		<a href="/lista/{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
-		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
 	</h3>
 	{{ end -}}
 
@@ -77,6 +91,21 @@
 		{{ end }}{{ end }}
 	</div>
 
+	<!--* ANCESTROS *-->
+	{{ if .Ancestros }}
+	<h3 class="mb-2 text-xl text-cyan-600">Ancestros</h3>
+	{{ range .Ancestros }}
+	<ul class="pl-6 list-[revert]">
+		<li class="p-1">
+			{{ .Titulo }}
+			<a href="/historias/{{ .HistoriaID }}" class="float-right opacity-10 hover:opacity-100">👁️</a>
+			{{ end }}
+			{{ range .Ancestros -}}
+		</li>
+	</ul>
+	{{ end }}
+	{{ end }}
+
 	<!--* DESCENDIENTES *-->
 	<h3 class="mb-2 text-xl text-cyan-600">Descendientes</h3>
 	<ul class="mb-6 pl-6 list-[revert]">
@@ -100,7 +129,7 @@
 	</ul>
 
 
-	<h3 class="mb-2 text-xl text-cyan-600">Tareas</h3>
+	<h3 class="mb-2 text-xl text-cyan-600">Tareas de desarrollo</h3>
 	<ol class="mb-6">
 		{{ range .Tareas }}
 		<li class="p-1">

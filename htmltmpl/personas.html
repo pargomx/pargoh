@@ -1,27 +1,52 @@
-{{ template "app/nav" . }}
+{{ with .Proyecto }}
+<header class="relative flex w-full mb-4 bg-cyan-950 shadow-lg">
+
+	<div class="p-2">
+		<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24 h-24">
+	</div>
+
+	<div class="w-full p-2">
+		<h2 class="text-2xl font-medium">
+			{{ .Titulo }}
+		</h2>
+		<p class="text-sm opacity-75">{{ .Descripcion }}</p>
+	</div>
+
+	<span class="absolute right-2 top-2">
+		<a href="/" class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+	</span>
+</header>
+{{ else }}
+	<!-- Obsoleto nav -->
+	{{ template "app/nav" . }}
+{{ end }}
+
 
 <main tipo="personas_container" class="flex flex-wrap items-center justify-center flex-grow gap-4 pb-2 overflow-x-auto">
 
 	{{ range .Personas -}}
-	<article tipo="persona_item" id="{{ .PersonaID }}" class="relative flex flex-col items-center justify-center p-4 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96 min-h-32">
+	<article tipo="persona_item" id="{{ .PersonaID }}" class="relative flex flex-col items-center justify-center p-4 bg-cyan-950 rounded-md shadow-lg min-w-64 max-w-96 min-h-32">
 	
 		<a href="/lista/{{ .PersonaID }}" class="text-4xl" tabindex="-1"><i class="fa-solid fa-person"></i></a>
 		<a href="/lista/{{ .PersonaID }}" class="text-lg font-medium">{{ .Nombre }}</a>
 
 		<p class="pt-2 text-sm opacity-75">{{ .Descripcion }}</p>
 
-		<span class="absolute top-0 left-0 px-1 bg-cyan-900 opacity-75 cursor-pointer rounded-br-md rounded-tl-md" tipo="handle">
+		<span class="absolute top-0 left-0 px-1 opacity-75 cursor-pointer rounded-br-md rounded-tl-md" tipo="handle">
 			<i class="px-2 py-2 fa-solid fa-grip"></i>
 		</span>
-		<span class="absolute top-0 right-0 px-1 bg-cyan-900 opacity-75 rounded-tr-md rounded-bl-md">
+		<span class="absolute top-0 right-0 px-1 opacity-75 rounded-tr-md rounded-bl-md">
 			<button type="button" onclick="showPersonaForm(this.parentNode.parentNode.id)"><i class="px-2 py-2 fa fa-pen"></i></button>
 		</span>
 	</article>
 	{{ end }}
 
 	<!-- Agregar persona -->
+	{{ if .Personas }}
 	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')"><i class="fa-solid fa-plus"></i></button>
-
+	{{ else }}
+	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')">Agregar personaje <i class="fa-solid fa-plus"></i></button>
+	{{ end }}
 </main>
 
 <dialog id="frmPerNueva" class="p-3 rounded-lg">
@@ -30,6 +55,14 @@
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
 	</header>
 	<form class="flex flex-col gap-4" hx-post="/personas">
+		<div>
+			<label for="newPers_00">Proyecto</label>
+			<select id="newPers_00" name="proyecto_id" class="form-control">
+				{{ range $.Proyectos -}}
+				<option value="{{ .ProyectoID }}" {{ if eq $.Proyecto.ProyectoID .ProyectoID }}selected{{ end }}>{{ .Titulo }}</option>
+				{{ end }}
+			</select>
+		</div>
 		<div>
 			<label for="newPers_01">Nombre</label>
 			<input id="newPers_01" name="nombre" value="" type="text" class="form-control">
@@ -42,13 +75,21 @@
 	</form>
 </dialog>
 
-{{ range .Personas }}
+{{ range .Personas }}{{ $persona := . }}
 <dialog id="frmPer{{ .PersonaID }}" class="p-3 rounded-lg">
 	<header class="flex flex-wrap items-center gap-3 pb-2">
 		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
 	</header>
 	<form class="flex flex-col gap-4" hx-patch="/personas/{{ .PersonaID }}">
+		<div>
+			<label for="newPers_00">Proyecto</label>
+			<select id="newPers_00" name="proyecto_id" class="form-control">
+				{{ range $.Proyectos -}}
+				<option value="{{ .ProyectoID }}" {{ if eq $persona.ProyectoID .ProyectoID }}selected{{ end }}>{{ .Titulo }}</option>
+				{{ end }}
+			</select>
+		</div>
 		<div>
 			<label for="{{ .PersonaID }}_01">Nombre</label>
 			<input id="{{ .PersonaID }}_01" name="nombre" value="{{ .Nombre }}" type="text" class="form-control">

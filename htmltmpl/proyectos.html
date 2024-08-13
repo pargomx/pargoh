@@ -3,7 +3,9 @@
 	{{ range .Proyectos -}}
 	<article tipo="proyecto_item" id="{{ .ProyectoID }}" class="relative flex w-full bg-cyan-900 rounded-md shadow-lg">
 
-		<img src="/assets/img/pargo_96.png" alt="Portada del proyecto" class="w-32 h-32">
+		<div class="p-2">
+			<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-32 h-32">
+		</div>
 
 		<div class="w-full">
 			<h4 class="p-2 text-2xl font-medium">
@@ -19,8 +21,11 @@
 	{{ end }}
 
 	<!-- Agregar proyecto -->
+	{{ if not .Proyectos -}}
 	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')">Nuevo proyecto <i class="fa-solid fa-plus"></i></button>
-
+	{{ else }}
+	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')"><i class="fa-solid fa-plus"></i></button>
+	{{ end }}
 </main>
 
 <dialog id="frmPerNueva" class="p-3 rounded-lg">

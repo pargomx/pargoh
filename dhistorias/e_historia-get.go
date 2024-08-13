@@ -64,6 +64,13 @@ func GetHistoria(historiaID int, repo Repo) (*Historia, error) {
 		return nil, op.Msgf("no se encontró la persona de la historia %v en sus ancestros", historiaID)
 	}
 
+	// Obtener proyecto
+	proy, err := repo.GetProyecto(item.Persona.ProyectoID)
+	if err != nil {
+		return nil, op.Err(err)
+	}
+	item.Proyecto = *proy
+
 	// Obtener historias descendientes 2 niveles.
 	historias1, err := repo.ListNodoHistoriasByPadreID(historiaID)
 	if err != nil {

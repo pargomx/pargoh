@@ -50,10 +50,15 @@ func (s *servidor) getProyecto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	Proyectos, err := s.repo.ListProyectos()
+	if err != nil {
+		return err
+	}
 	data := map[string]any{
-		"Titulo":   Proyecto.Titulo,
-		"Proyecto": Proyecto,
-		"Personas": Personas,
+		"Titulo":    Proyecto.Titulo,
+		"Proyecto":  Proyecto,
+		"Personas":  Personas,
+		"Proyectos": Proyectos,
 	}
 	return c.RenderOk("personas", data)
 }

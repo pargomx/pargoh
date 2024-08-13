@@ -86,6 +86,12 @@ func GetHistoriasDePadre(padreID int, repo Repo) (*HistoriaConNietos, error) {
 	if item.Persona.PersonaID == 0 {
 		return nil, op.Msgf("no se encontró la persona del nodo %v en los ancestros", padreID)
 	}
+	// Obtener proyecto
+	proy, err := repo.GetProyecto(item.Persona.ProyectoID)
+	if err != nil {
+		return nil, op.Err(err)
+	}
+	item.Proyecto = *proy
 
 	// Obtener todos los hijos y nietos de la historia.
 	historias, err := repo.ListNodoHistoriasByPadreID(padre.NodoID)
