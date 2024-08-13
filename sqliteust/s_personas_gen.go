@@ -21,9 +21,9 @@ func (s *Repositorio) InsertPersona(per ust.Persona) error {
 		return gko.ErrDatoIndef().Op(op).Msg("Nombre sin especificar").Str("required_sin_valor")
 	}
 	_, err := s.db.Exec("INSERT INTO personas "+
-		"(persona_id, nombre, descripcion) "+
-		"VALUES (?, ?, ?) ",
-		per.PersonaID, per.Nombre, per.Descripcion,
+		"(persona_id, proyecto_id, nombre, descripcion) "+
+		"VALUES (?, ?, ?, ?) ",
+		per.PersonaID, per.ProyectoID, per.Nombre, per.Descripcion,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
@@ -45,9 +45,9 @@ func (s *Repositorio) UpdatePersona(per ust.Persona) error {
 	}
 	_, err := s.db.Exec(
 		"UPDATE personas SET "+
-			"persona_id=?, nombre=?, descripcion=? "+
+			"persona_id=?, proyecto_id=?, nombre=?, descripcion=? "+
 			"WHERE persona_id = ?",
-		per.PersonaID, per.Nombre, per.Descripcion,
+		per.PersonaID, per.ProyectoID, per.Nombre, per.Descripcion,
 		per.PersonaID,
 	)
 	if err != nil {
@@ -110,9 +110,10 @@ func (s *Repositorio) DeletePersona(PersonaID int) error {
 // con los campos escaneados.
 //
 //	persona_id,
+//	proyecto_id,
 //	nombre,
 //	descripcion
-const columnasPersona string = "persona_id, nombre, descripcion"
+const columnasPersona string = "persona_id, proyecto_id, nombre, descripcion"
 
 // Origen de los datos de ust.Persona
 //
@@ -125,7 +126,7 @@ const fromPersona string = "FROM personas "
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona) error {
 	err := row.Scan(
-		&per.PersonaID, &per.Nombre, &per.Descripcion,
+		&per.PersonaID, &per.ProyectoID, &per.Nombre, &per.Descripcion,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -171,7 +172,7 @@ func (s *Repositorio) scanRowsPersona(rows *sql.Rows, op string) ([]ust.Persona,
 	for rows.Next() {
 		per := ust.Persona{}
 		err := rows.Scan(
-			&per.PersonaID, &per.Nombre, &per.Descripcion,
+			&per.PersonaID, &per.ProyectoID, &per.Nombre, &per.Descripcion,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)

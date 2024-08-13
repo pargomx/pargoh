@@ -5,6 +5,7 @@ import "errors"
 // Persona corresponde a un elemento de la tabla 'personas'.
 type Persona struct {
 	PersonaID   int    // `personas.persona_id`
+	ProyectoID  string // `personas.proyecto_id`
 	Nombre      string // `personas.nombre`
 	Descripcion string // `personas.descripcion`
 }
