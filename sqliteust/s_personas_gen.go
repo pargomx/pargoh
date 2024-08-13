@@ -159,39 +159,3 @@ func (s *Repositorio) GetPersona(PersonaID int) (*ust.Persona, error) {
 	}
 	return per, nil
 }
-
-//  ================================================================  //
-//  ========== SCAN ================================================  //
-
-// scanRowsPersona escanea cada row en la struct Persona
-// y devuelve un slice con todos los items.
-// Siempre se encarga de llamar rows.Close()
-func (s *Repositorio) scanRowsPersona(rows *sql.Rows, op string) ([]ust.Persona, error) {
-	defer rows.Close()
-	items := []ust.Persona{}
-	for rows.Next() {
-		per := ust.Persona{}
-		err := rows.Scan(
-			&per.PersonaID, &per.ProyectoID, &per.Nombre, &per.Descripcion,
-		)
-		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
-		}
-		items = append(items, per)
-	}
-	return items, nil
-}
-
-//  ================================================================  //
-//  ========== LIST ================================================  //
-
-func (s *Repositorio) ListPersonas() ([]ust.Persona, error) {
-	const op string = "ListPersonas"
-	rows, err := s.db.Query(
-		"SELECT " + columnasPersona + " " + fromPersona,
-	)
-	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
-	}
-	return s.scanRowsPersona(rows, op)
-}

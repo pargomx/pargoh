@@ -4,6 +4,8 @@ package ust
 type NodoPersona struct {
 	//  `per.persona_id`
 	PersonaID int
+	//  `per.proyecto_id`
+	ProyectoID string
 	//  `per.nombre`
 	Nombre string
 	//  `per.descripcion`

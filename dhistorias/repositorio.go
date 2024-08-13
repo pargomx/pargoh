@@ -6,6 +6,14 @@ import (
 
 type Repo interface {
 
+	// Proyectos
+	InsertProyecto(pro ust.Proyecto) error
+	GetProyecto(ProyectoID string) (*ust.Proyecto, error)
+	UpdateProyecto(pro ust.Proyecto) error
+	ExisteProyecto(ProyectoID string) error
+	DeleteProyecto(ProyectoID string) error
+	ListProyectos() ([]ust.Proyecto, error)
+
 	// Nodos
 	InsertNodo(nod ust.Nodo) error
 	EliminarNodo(nodoID int) error
@@ -20,6 +28,7 @@ type Repo interface {
 	UpdatePersona(per ust.Persona) error
 	DeletePersona(personaID int) error
 	ListNodosPersonas() ([]ust.NodoPersona, error)
+	ListNodosPersonasByProyecto(ProyectoID string) ([]ust.NodoPersona, error)
 
 	// Historias
 	ExisteHistoria(HistoriaID int) error

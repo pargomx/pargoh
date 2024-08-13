@@ -16,13 +16,14 @@ import (
 // con los campos escaneados.
 //
 //	per.persona_id,
+//	per.proyecto_id,
 //	per.nombre,
 //	per.descripcion,
 //	coalesce(nod.padre_id, 0),
 //	coalesce(nod.padre_tbl, ''),
 //	coalesce(nod.nivel, 0),
 //	coalesce(nod.posicion, 0)
-const columnasNodoPersona string = "per.persona_id, per.nombre, per.descripcion, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0)"
+const columnasNodoPersona string = "per.persona_id, per.proyecto_id, per.nombre, per.descripcion, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0)"
 
 // Origen de los datos de ust.NodoPersona
 //
@@ -42,7 +43,7 @@ func (s *Repositorio) scanRowsNodoPersona(rows *sql.Rows, op string) ([]ust.Nodo
 	for rows.Next() {
 		nper := ust.NodoPersona{}
 		err := rows.Scan(
-			&nper.PersonaID, &nper.Nombre, &nper.Descripcion, &nper.PadreID, &nper.PadreTbl, &nper.Nivel, &nper.Posicion,
+			&nper.PersonaID, &nper.ProyectoID, &nper.Nombre, &nper.Descripcion, &nper.PadreID, &nper.PadreTbl, &nper.Nivel, &nper.Posicion,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
@@ -60,6 +61,22 @@ func (s *Repositorio) ListNodosPersonas() ([]ust.NodoPersona, error) {
 	rows, err := s.db.Query(
 		"SELECT " + columnasNodoPersona + " " + fromNodoPersona +
 			"ORDER BY nod.posicion",
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsNodoPersona(rows, op)
+}
+
+//  ================================================================  //
+//  ========== LIST BYPROYECTO =====================================  //
+
+func (s *Repositorio) ListNodosPersonasByProyecto(ProyectoID string) ([]ust.NodoPersona, error) {
+	const op string = "ListNodosPersonasByProyecto"
+	rows, err := s.db.Query(
+		"SELECT "+columnasNodoPersona+" "+fromNodoPersona+
+			"WHERE per.proyecto_id = ? ORDER BY nod.posicion",
+		ProyectoID,
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)

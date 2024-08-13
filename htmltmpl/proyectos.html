@@ -1,0 +1,86 @@
+<main class="flex flex-col items-center justify-center flex-grow w-full max-w-5xl gap-4 pb-2 mx-auto">
+
+	{{ range .Proyectos -}}
+	<article tipo="proyecto_item" id="{{ .ProyectoID }}" class="relative flex w-full bg-cyan-900 rounded-md shadow-lg">
+
+		<img src="/assets/img/pargo_96.png" alt="Portada del proyecto" class="w-32 h-32">
+
+		<div class="w-full">
+			<h4 class="p-2 text-2xl font-medium">
+				<a href="/proyectos/{{ .ProyectoID }}">{{ .Titulo }}</a>
+			</h4>
+			<p class="p-2 text-sm opacity-75">{{ .Descripcion }}</p>
+		</div>
+
+		<span class="absolute top-0 right-0 px-1 bg-cyan-900 opacity-75 rounded-tr-md rounded-bl-md">
+			<button type="button" onclick="showPersonaForm(this.parentNode.parentNode.id)"><i class="px-2 py-2 fa fa-pen"></i></button>
+		</span>
+	</article>
+	{{ end }}
+
+	<!-- Agregar proyecto -->
+	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')">Nuevo proyecto <i class="fa-solid fa-plus"></i></button>
+
+</main>
+
+<dialog id="frmPerNueva" class="p-3 rounded-lg">
+	<header class="flex flex-wrap items-center gap-3 pb-2">
+		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Nuevo proyecto</h2>
+		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+	</header>
+	<form class="flex flex-col gap-4" hx-post="/proyectos">
+		<div>
+			<label for="newprj_01">Título</label>
+			<input id="newprj_01" name="titulo" value="" type="text" class="form-control" required onchange="newprj_02.value=normalizar(this.value.replaceAll(' ',''))">
+		</div>
+		<div>
+			<label for="newprj_02">Clave</label>
+			<input id="newprj_02" name="clave" value="" type="text" class="form-control" required>
+		</div>
+		<div>
+			<label for="newprj_03">Descripción</label>
+			<input id="newprj_03" name="descripcion" value="" type="text" class="form-control">
+		</div>
+		<button type="submit" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
+	</form>
+</dialog>
+
+{{ range .Proyectos }}
+<dialog id="frmPer{{ .ProyectoID }}" class="p-3 rounded-lg">
+	<header class="flex flex-wrap items-center gap-3 pb-2">
+		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
+		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+	</header>
+	<form class="flex flex-col gap-4" hx-put="/proyectos/{{ .ProyectoID }}">
+		<div>
+			<label for="{{ .ProyectoID }}_01">Título</label>
+			<input id="{{ .ProyectoID }}_01" name="titulo" value="{{ .Titulo }}" type="text" class="form-control" required>
+		</div>
+		<div>
+			<label for="{{ .ProyectoID }}_02">Clave</label>
+			<input id="{{ .ProyectoID }}_02" name="clave" value="{{ .ProyectoID }}" type="text" class="form-control" required>
+		</div>
+		<div>
+			<label for="{{ .ProyectoID }}_03">Descripción</label>
+			<input id="{{ .ProyectoID }}_03" name="descripcion" value="{{ .Descripcion }}" type="text" class="form-control">
+			<!-- <textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="2" class="form-control">{{ .Descripcion }}</textarea> -->
+		</div>
+		
+		<button type="button" hx-delete="/proyectos/{{ .ProyectoID}}" hx-confirm="¿Eliminar proyecto {{ .Titulo }}?" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">Eliminar</button>
+
+		<button type="submit" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
+	</form>
+</dialog>
+{{ end 	}}
+
+<!-- ======================================================== -->
+
+<script>
+	function showPersonaForm(proyectoID) {
+		let form = document.getElementById(`frmPer${proyectoID}`);
+		form.showModal();
+		let input = form.querySelector("input");
+		input.focus();
+		input.selectionEnd = input.value.length;
+	}
+</script>

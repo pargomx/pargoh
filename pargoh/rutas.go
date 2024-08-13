@@ -95,8 +95,13 @@ func main() {
 	}
 
 	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
-	s.GET("/", s.getPersonas)
-	s.GET("/personas", s.getPersonas)
+	s.GET("/", s.listaProyectos)
+	s.POS("/proyectos", s.postProyecto)
+	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
+	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
+	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
+
+	s.GET("/personas", s.getPersonas) // obsoleto
 	s.POS("/personas", s.postPersona)
 	s.PCH("/personas/{persona_id}", s.patchPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
