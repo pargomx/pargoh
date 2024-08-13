@@ -44,9 +44,7 @@ type servidor struct {
 func main() {
 	gko.LogInfof("Versión:%s:%s", BUILD_INFO, AMBIENTE)
 
-	s := servidor{
-		gecko: gecko.New(),
-	}
+	s := servidor{}
 
 	// Parámetros de ejecución
 	flag.StringVar(&s.cfg.directorio, "dir", "", "directorio raíz de la aplicación")
@@ -61,6 +59,7 @@ func main() {
 			gko.FatalExit("directorio de proyecto inválido: " + err.Error())
 		}
 	}
+	s.gecko = gecko.New()
 	var err error
 
 	// Repositorio
@@ -123,7 +122,7 @@ func main() {
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
 
-	s.gecko.StaticAbs("/imagenes", "/Users/andrew/Downloads/pargoh/capturas") // TODO: por qué no funciona StaticSub cuando se cambió el directorio con -dir
+	s.gecko.StaticSub("/imagenes", "capturas") // TODO: por qué no funciona StaticSub cuando se cambió el directorio con -dir
 	s.POS("/imagenes", s.putImagen("capturas"))
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagen("capturas"))
 
