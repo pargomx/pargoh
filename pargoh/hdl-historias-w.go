@@ -33,6 +33,31 @@ func (s *servidor) postHistoria(c *gecko.Context) error {
 	return c.StatusOk("Historia creada")
 }
 
+func (s *servidor) postHistoriaQuick(c *gecko.Context) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	repotx := sqliteust.NuevoRepo(tx)
+	nuevaHistoria := ust.Historia{
+		HistoriaID: ust.NewRandomID(),
+		Titulo:     c.FormVal("titulo"),
+		Objetivo:   c.FormVal("objetivo"),
+		Prioridad:  c.FormInt("prioridad"),
+		Completada: c.FormBool("completada"),
+	}
+	err = dhistorias.AgregarHistoria(c.PathInt("historia_id"), nuevaHistoria, repotx)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
 func (s *servidor) putHistoria(c *gecko.Context) error {
 	err := dhistorias.ActualizarHistoria(
 		c.PathInt("historia_id"),
@@ -55,7 +80,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 	err := dhistorias.ParcharHistoria(
 		c.PathInt("historia_id"),
 		c.PathVal("param"),
-		c.FormVal("value"),
+		c.FormValue("value"),
 		s.repo,
 	)
 	if err != nil {

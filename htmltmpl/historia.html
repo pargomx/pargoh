@@ -52,7 +52,7 @@
 
 	<div class="mb-4">
 		<textarea hx-patch="/historias/{{ .HistoriaID }}/objetivo" hx-swap="none" name="value" hx-trigger="keyup changed delay:2s" id="txt_hist_empatia" cols="30" rows="1" placeholder="Descripción del contexto..." 
-			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none resize-none max-h-96 focus:border-blue-400 placeholder:text-slate-600"
+			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600"
 		>{{ .Objetivo }}</textarea>
 	</div>
 	{{ end }}
@@ -121,7 +121,7 @@
 		</li>
 		{{ end }}
 		<li class="">
-			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Historia.HistoriaID }}" placeholder="Agregar historia" class="w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 placeholder:text-slate-600">
+			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" placeholder="Agregar historia" class="w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 placeholder:text-slate-600">
 		</li>
 	</ul>
 

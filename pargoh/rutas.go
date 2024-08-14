@@ -114,6 +114,7 @@ func main() {
 	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
 	s.GET("/prioritarias", s.getHistoriasPrioritarias)
 
+	s.POS("/historias/{historia_id}", s.postHistoriaQuick)
 	s.PUT("/historias/{historia_id}", s.putHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
