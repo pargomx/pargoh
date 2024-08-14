@@ -71,7 +71,7 @@ func ModificarProyecto(proyectoID string, clave string, titulo string, desc stri
 
 func QuitarProyecto(ProyectoID string, repo Repo) error {
 	const op string = "app.QuitarProyecto"
-	pers, err := repo.ListNodosPersonasByProyecto(ProyectoID)
+	pers, err := repo.ListNodosPersonas(ProyectoID)
 	if err != nil {
 		return gko.Err(err).Op(op)
 	}

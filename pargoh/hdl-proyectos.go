@@ -46,7 +46,7 @@ func (s *servidor) getProyecto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Personas, err := s.repo.ListNodosPersonasByProyecto(Proyecto.ProyectoID)
+	Personas, err := s.repo.ListNodosPersonas(Proyecto.ProyectoID)
 	if err != nil {
 		return err
 	}

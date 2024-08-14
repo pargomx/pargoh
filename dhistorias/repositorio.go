@@ -27,8 +27,7 @@ type Repo interface {
 	GetPersona(personaID int) (*ust.Persona, error)
 	UpdatePersona(per ust.Persona) error
 	DeletePersona(personaID int) error
-	ListNodosPersonas() ([]ust.NodoPersona, error)
-	ListNodosPersonasByProyecto(ProyectoID string) ([]ust.NodoPersona, error)
+	ListNodosPersonas(ProyectoID string) ([]ust.NodoPersona, error)
 
 	// Historias
 	ExisteHistoria(HistoriaID int) error

@@ -41,7 +41,7 @@ func GetArbolCompleto(repo Repo) ([]ProyectoExport, error) {
 	}
 	Proyectos := make([]ProyectoExport, len(proyectos))
 	for i, p := range proyectos {
-		personas, err := repo.ListNodosPersonasByProyecto(p.ProyectoID)
+		personas, err := repo.ListNodosPersonas(p.ProyectoID)
 		if err != nil {
 			return nil, op.Err(err)
 		}
@@ -73,7 +73,7 @@ func ExportarProyecto(proyectoID string, repo Repo) (*ProyectoExport, error) {
 	if err != nil {
 		return nil, err
 	}
-	Personas, err := repo.ListNodosPersonasByProyecto(Proyecto.ProyectoID)
+	Personas, err := repo.ListNodosPersonas(Proyecto.ProyectoID)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func ExportarMarkdown(proyectoID string, w io.Writer, repo Repo) error {
 	if err != nil {
 		return err
 	}
-	Personas, err := repo.ListNodosPersonasByProyecto(proyectoID)
+	Personas, err := repo.ListNodosPersonas(proyectoID)
 	if err != nil {
 		return err
 	}
@@ -286,7 +286,7 @@ func ExportarDocx(proyectoID string, repo Repo, filepath string) error {
 	if err != nil {
 		return err
 	}
-	Personas, err := repo.ListNodosPersonasByProyecto(proyectoID)
+	Personas, err := repo.ListNodosPersonas(proyectoID)
 	if err != nil {
 		return err
 	}

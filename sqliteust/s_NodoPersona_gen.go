@@ -56,23 +56,8 @@ func (s *Repositorio) scanRowsNodoPersona(rows *sql.Rows, op string) ([]ust.Nodo
 //  ================================================================  //
 //  ========== LIST  ===============================================  //
 
-func (s *Repositorio) ListNodosPersonas() ([]ust.NodoPersona, error) {
+func (s *Repositorio) ListNodosPersonas(ProyectoID string) ([]ust.NodoPersona, error) {
 	const op string = "ListNodosPersonas"
-	rows, err := s.db.Query(
-		"SELECT " + columnasNodoPersona + " " + fromNodoPersona +
-			"ORDER BY nod.posicion",
-	)
-	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
-	}
-	return s.scanRowsNodoPersona(rows, op)
-}
-
-//  ================================================================  //
-//  ========== LIST BYPROYECTO =====================================  //
-
-func (s *Repositorio) ListNodosPersonasByProyecto(ProyectoID string) ([]ust.NodoPersona, error) {
-	const op string = "ListNodosPersonasByProyecto"
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodoPersona+" "+fromNodoPersona+
 			"WHERE per.proyecto_id = ? ORDER BY nod.posicion",
