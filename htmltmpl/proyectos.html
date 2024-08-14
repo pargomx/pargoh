@@ -99,8 +99,10 @@
 			<!-- <textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="2" class="form-control">{{ .Descripcion }}</textarea> -->
 		</div>
 		
+		<a href="/proyectos/{{ .ProyectoID}}/exportar.json" target="_blank" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Exportar JSON</a>
+		<a href="/proyectos/{{ .ProyectoID}}/exportar.md" target="_blank" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Exportar Markdown</a>
+		
 		<button type="button" hx-delete="/proyectos/{{ .ProyectoID}}" hx-confirm="¿Eliminar proyecto {{ .Titulo }}?" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">Eliminar</button>
-		<a href="/proyectos/{{ .ProyectoID}}/exportar" target="_blank" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Exportar</a>
 		<button type="submit" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
 	</form>
 </dialog>

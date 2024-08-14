@@ -144,9 +144,9 @@ func main() {
 
 	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
 	s.POS("/proyectos/importar", s.importarJSON)
-	s.GET("/proyectos/{proyecto_id}/exportar", s.exportarJSON)
-	s.GET("/export.md", s.exportarMarkdown)
-	s.GET("/export.docx", s.exportarFile)
+	s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
+	s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
+	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarFile)
 
 	// LOG SQLITE
 	s.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })

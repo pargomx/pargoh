@@ -72,14 +72,14 @@ func GetHistoria(historiaID int, repo Repo) (*Historia, error) {
 	item.Proyecto = *proy
 
 	// Obtener historias descendientes 2 niveles.
-	historias1, err := repo.ListNodoHistoriasByPadreID(historiaID)
+	historias1, err := repo.ListNodoHistorias(historiaID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
 	item.Descendientes = make([]HistoriaRecursiva, len(historias1))
 	for i, his1 := range historias1 { // TODO: usar función recursiva.
 		item.Descendientes[i].Historia = his1
-		historias2, err := repo.ListNodoHistoriasByPadreID(his1.HistoriaID)
+		historias2, err := repo.ListNodoHistorias(his1.HistoriaID)
 		if err != nil {
 			return nil, op.Err(err)
 		}

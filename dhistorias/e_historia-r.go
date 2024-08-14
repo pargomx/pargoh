@@ -94,12 +94,12 @@ func GetHistoriasDePadre(padreID int, repo Repo) (*HistoriaConNietos, error) {
 	item.Proyecto = *proy
 
 	// Obtener todos los hijos y nietos de la historia.
-	historias, err := repo.ListNodoHistoriasByPadreID(padre.NodoID)
+	historias, err := repo.ListNodoHistorias(padre.NodoID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
 	for _, hijo := range historias {
-		historiasDeHijo, err := repo.ListNodoHistoriasByPadreID(hijo.HistoriaID)
+		historiasDeHijo, err := repo.ListNodoHistorias(hijo.HistoriaID)
 		if err != nil {
 			return nil, op.Err(err)
 		}

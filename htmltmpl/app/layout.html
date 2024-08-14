@@ -15,7 +15,7 @@
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]">
-		<div id="contenido" hx-target="#contenido" hx-swap="innerHTML show:no-scroll" hx-push-url="false" hx-history="false" class="flex flex-col overflow-y-auto h-dvh scrollbar-stable">
+		<div id="contenido" hx-target="#contenido" hx-swap="innerHTML show:no-scroll" hx-push-url="false" hx-history="false" class="flex flex-col overflow-y-auto h-dvh">
 			{{ with $.Contenido }}{{ . }}{{ else }}No content{{ end }}
 		</div>
 	</body>

@@ -43,7 +43,7 @@ func ExportarProyecto(proyectoID string, repo Repo) (*ProyectoExport, error) {
 		Personas: make([]PersonaExport, len(Personas)),
 	}
 	for i, per := range Personas {
-		historias, err := repo.ListNodoHistoriasByPadreID(per.PersonaID)
+		historias, err := repo.ListNodoHistorias(per.PersonaID)
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +64,7 @@ func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport
 		Historia:  his,
 		Historias: nil,
 	}
-	hijos, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
+	hijos, err := repo.ListNodoHistorias(his.HistoriaID)
 	if err != nil {
 		fmt.Println("getHistoriaExportsRecursiva: %w", err)
 	}
@@ -144,16 +144,20 @@ func insertHistoriaRecursiva(padreID int, his HistoriaExport, repo Repo) error {
 
 // ================================================================ //
 
-func ExportarMarkdown(w io.Writer, repo Repo) error {
-	Personas, err := repo.ListNodosPersonas()
+func ExportarMarkdown(proyectoID string, w io.Writer, repo Repo) error {
+	Proyecto, err := repo.GetProyecto(proyectoID)
 	if err != nil {
 		return err
 	}
-	fmt.Fprint(w, "HISTORIAS DE USUARIO\n")
+	Personas, err := repo.ListNodosPersonasByProyecto(proyectoID)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(w, "# %s\n\n%s\n", Proyecto.Titulo, Proyecto.Descripcion)
 	for _, Persona := range Personas {
 		fmt.Fprintf(w, "\n## %s\n", Persona.Nombre)
 
-		Historias, err := repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
+		Historias, err := repo.ListNodoHistorias(Persona.PersonaID)
 		if err != nil {
 			return err
 		}
@@ -188,24 +192,38 @@ func printHistoriaMarkdown(w io.Writer, his ust.NodoHistoria, repo Repo) error {
 		fmt.Fprintf(w, "%s\n", his.Objetivo)
 	}
 
+	// Imprimir tramos
+	Tramos, err := repo.ListTramosByHistoriaID(his.HistoriaID)
+	if err != nil {
+		return err
+	}
+	if len(Tramos) > 0 {
+		fmt.Fprintln(w, "\nViaje:")
+		for _, tramo := range Tramos {
+			fmt.Fprintf(w, "%d.%v\n", tramo.Posicion, tramo.Texto)
+		}
+	}
+
 	// Imprimir tareas
 	Tareas, err := repo.ListTareasByHistoriaID(his.HistoriaID)
 	if err != nil {
 		return err
 	}
-	for _, tarea := range Tareas {
-		if his.Nivel > 3 {
-			fmt.Fprint(w, strings.Repeat("  ", his.Nivel-2))
-		}
-
-		if tarea.Finalizada() {
-			fmt.Fprintf(w, "- [ ] %s\n", tarea.Descripcion)
-		} else {
-			fmt.Fprintf(w, "- [x] %s\n", tarea.Descripcion)
+	if len(Tareas) > 0 {
+		fmt.Fprintln(w, "\nTareas:")
+		for _, tarea := range Tareas {
+			if his.Nivel > 3 {
+				fmt.Fprint(w, strings.Repeat("  ", his.Nivel-2))
+			}
+			if tarea.Finalizada() {
+				fmt.Fprintf(w, "- [ ] %s\n", tarea.Descripcion)
+			} else {
+				fmt.Fprintf(w, "- [x] %s\n", tarea.Descripcion)
+			}
 		}
 	}
 
-	Historias, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
+	Historias, err := repo.ListNodoHistorias(his.HistoriaID)
 	if err != nil {
 		return err
 	}
@@ -218,25 +236,30 @@ func printHistoriaMarkdown(w io.Writer, his ust.NodoHistoria, repo Repo) error {
 // ================================================================ //
 // ================================================================ //
 
-func ExportarDocx(repo Repo, filepath string) error {
+func ExportarDocx(proyectoID string, repo Repo, filepath string) error {
 	if filepath == "" {
 		return fmt.Errorf("ruta de archivo vacía")
 	}
 	if !strings.HasSuffix(filepath, ".docx") {
 		filepath += ".docx"
 	}
-	Personas, err := repo.ListNodosPersonas()
+	Proyecto, err := repo.GetProyecto(proyectoID)
+	if err != nil {
+		return err
+	}
+	Personas, err := repo.ListNodosPersonasByProyecto(proyectoID)
 	if err != nil {
 		return err
 	}
 	f := docx.NewFile()
-	f.AddParagraph().AddText("HISTORIAS DE USUARIO").Size(24).Color("3a344a") // TITULO
+	f.AddParagraph().AddText(Proyecto.Titulo).Size(24).Color("3a344a") // TITULO
+	f.AddParagraph().AddText(Proyecto.Descripcion).Size(12)
 
 	for _, Persona := range Personas {
 		f.AddParagraph().AddText("").Size(12)
 		f.AddParagraph().AddText(Persona.Nombre).Size(22).Color("0b3d42") // PERSONA
 
-		Historias, err := repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
+		Historias, err := repo.ListNodoHistorias(Persona.PersonaID)
 		if err != nil {
 			return err
 		}
@@ -294,7 +317,7 @@ func printHistoriaDocx(f *docx.File, his ust.NodoHistoria, repo Repo) error {
 		}
 	}
 
-	Historias, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
+	Historias, err := repo.ListNodoHistorias(his.HistoriaID)
 	if err != nil {
 		return err
 	}

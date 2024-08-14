@@ -99,7 +99,7 @@ func GetArbolCompleto(repo Repo) ([]Arbol, error) {
 		arbol := Arbol{
 			Persona: p,
 		}
-		historias, err := repo.ListNodoHistoriasByPadreID(p.PersonaID)
+		historias, err := repo.ListNodoHistorias(p.PersonaID)
 		if err != nil {
 			return nil, op.Err(err)
 		}
@@ -116,7 +116,7 @@ func getHistoriaRecursiva(his ust.NodoHistoria, repo Repo) HistoriaRecursiva {
 		Historia:      his,
 		Descendientes: nil,
 	}
-	hijos, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
+	hijos, err := repo.ListNodoHistorias(his.HistoriaID)
 	if err != nil {
 		fmt.Println("getHistoriaConHijos: %w", err)
 	}

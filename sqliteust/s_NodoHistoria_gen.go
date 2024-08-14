@@ -98,16 +98,13 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 }
 
 //  ================================================================  //
-//  ========== LIST_BY =============================================  //
+//  ========== LIST  ===============================================  //
 
-func (s *Repositorio) ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistoria, error) {
-	const op string = "ListNodoHistoriasByPadreID"
-	if PadreID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("PadreID sin especificar").Str("param_indefinido")
-	}
+func (s *Repositorio) ListNodoHistorias(PadreID int) ([]ust.NodoHistoria, error) {
+	const op string = "ListNodoHistorias"
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
-			"WHERE nod.padre_id = ?",
+			"WHERE nod.padre_id = ? ORDER BY nod.posicion",
 		PadreID,
 	)
 	if err != nil {

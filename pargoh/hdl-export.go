@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"monorepo/dhistorias"
 	"monorepo/sqliteust"
-	"os"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
@@ -43,7 +41,7 @@ func (s *servidor) importarJSON(c *gecko.Context) error {
 func (s *servidor) exportarMarkdown(c *gecko.Context) error {
 	c.Response().WriteHeader(200)
 	c.Response().Header().Set("Content-Type", "text/markdown")
-	err := dhistorias.ExportarMarkdown(c.Response().Writer, s.repo)
+	err := dhistorias.ExportarMarkdown(c.PathVal("proyecto_id"), c.Response().Writer, s.repo)
 	if err != nil {
 		return err
 	}
@@ -51,14 +49,7 @@ func (s *servidor) exportarMarkdown(c *gecko.Context) error {
 }
 
 func (s *servidor) exportarFile(c *gecko.Context) error {
-	buf := new(bytes.Buffer)
-	err := dhistorias.ExportarMarkdown(buf, s.repo)
-	if err != nil {
-		return err
-	}
-	os.WriteFile("export.md", buf.Bytes(), 0644)
-
-	err = dhistorias.ExportarDocx(s.repo, "export.docx")
+	err := dhistorias.ExportarDocx(c.PathVal("proyecto_id"), s.repo, "export.docx")
 	if err != nil {
 		return err
 	}
