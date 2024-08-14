@@ -209,18 +209,36 @@ document.querySelectorAll('table').forEach(tbl => {
 // ========== AUTOSIZE TEXTAREA =================================== //
 
 // Los textarea se ajustan automáticamente a su contenido.
-// Pueden tener cualquier border-width, max-height o rows.
-const tx = document.getElementsByTagName("textarea");
-for (let i = 0; i < tx.length; i++) {
-    let style = window.getComputedStyle(tx[i]); // obtener y considerar border para evitar scrollbars.
+const textareas = document.getElementsByTagName("textarea");
+
+// Puede tener cualquier border-width, max-height o rows.
+function autosizeTextarea(textarea) {
+	let style = window.getComputedStyle(textarea); // obtener y considerar border para evitar scrollbars.
     let bTop = parseFloat(style.getPropertyValue('border-top-width'));
     let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
     let borderPx = Math.ceil(bTop + bBottom);
-    tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight + borderPx) + "px;");
-    tx[i].addEventListener("input", function() {
+    textarea.setAttribute("style", "height:" + (textarea.scrollHeight + borderPx) + "px; resize: none;");
+    textarea.addEventListener("input", function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight + borderPx) + "px";
     }, false);
+}
+
+// Aplicar autosize cuando el textarea se hace visible, no solo al cargar la página.
+const observer = new IntersectionObserver((entries, observer) => {
+	entries.forEach(entry => {
+		if (entry.isIntersecting) {
+			console.log('Textarea is visible');
+			entry.target.style.backgroundColor = 'lightyellow';
+			autosizeTextarea(entry.target);
+			observer.unobserve(entry.target);
+		}
+	});
+}, { threshold: 0 });
+
+// Aplicar a todos los textareas en la página.
+for (let i = 0; i < textareas.length; i++) {
+	observer.observe(textareas[i]);
 }
 
 // ================================================================ //
