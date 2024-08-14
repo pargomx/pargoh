@@ -10,6 +10,10 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
+type ÁrbolCompleto struct {
+	Proyectos []ProyectoExport
+}
+
 type ProyectoExport struct {
 	Proyecto ust.Proyecto
 	Personas []PersonaExport
@@ -25,6 +29,41 @@ type HistoriaExport struct {
 	Tareas    []ust.Tarea
 	Tramos    []ust.Tramo
 	Historias []HistoriaExport
+}
+
+// ================================================================ //
+
+func GetArbolCompleto(repo Repo) ([]ProyectoExport, error) {
+	op := gko.Op("GetArbolCompleto")
+	proyectos, err := repo.ListProyectos()
+	if err != nil {
+		return nil, op.Err(err)
+	}
+	Proyectos := make([]ProyectoExport, len(proyectos))
+	for i, p := range proyectos {
+		personas, err := repo.ListNodosPersonasByProyecto(p.ProyectoID)
+		if err != nil {
+			return nil, op.Err(err)
+		}
+		Proyectos[i] = ProyectoExport{
+			Proyecto: p,
+			Personas: make([]PersonaExport, len(personas)),
+		}
+		for j, p := range personas {
+			historias, err := repo.ListNodoHistorias(p.PersonaID)
+			if err != nil {
+				return nil, op.Err(err)
+			}
+			Proyectos[i].Personas[j] = PersonaExport{
+				Persona:   p,
+				Historias: make([]HistoriaExport, len(historias)),
+			}
+			for k, h := range historias {
+				Proyectos[i].Personas[j].Historias[k] = getHistoriaExportsRecursiva(h, repo)
+			}
+		}
+	}
+	return Proyectos, nil
 }
 
 // ================================================================ //

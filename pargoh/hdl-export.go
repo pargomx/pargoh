@@ -3,6 +3,7 @@ package main
 import (
 	"monorepo/dhistorias"
 	"monorepo/sqliteust"
+	"strings"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
@@ -54,4 +55,31 @@ func (s *servidor) exportarFile(c *gecko.Context) error {
 		return err
 	}
 	return c.StatusOk("Exportación realizada")
+}
+
+// ================================================================ //
+
+func (s *servidor) exportarArbolTXT(c *gecko.Context) error {
+	proyectos, err := dhistorias.GetArbolCompleto(s.repo)
+	if err != nil {
+		return err
+	}
+	res := ""
+	for _, pry := range proyectos {
+		res += "\n" + pry.Proyecto.Titulo + "\n"
+		for _, per := range pry.Personas {
+			res += "\n" + per.Persona.Nombre + "\n"
+			for _, his := range per.Historias {
+				res += printHistRec(his, 1)
+			}
+		}
+	}
+	return c.StatusOk(res)
+}
+func printHistRec(his dhistorias.HistoriaExport, nivel int) string {
+	res := strings.Repeat(" ", nivel) + "-" + his.Historia.Titulo + "\n"
+	for _, hijo := range his.Historias {
+		res += printHistRec(hijo, nivel+1)
+	}
+	return res
 }

@@ -1,9 +1,6 @@
 package dhistorias
 
 import (
-	"fmt"
-	"monorepo/ust"
-
 	"github.com/pargomx/gecko/gko"
 )
 
@@ -86,42 +83,4 @@ func GetNodoConHijos(id int, repo Repo) (*NodoConHijos, error) {
 		Hijos:    hijos,
 	}
 	return &nodo, nil
-}
-
-func GetArbolCompleto(repo Repo) ([]Arbol, error) {
-	op := gko.Op("GetArbolCompleto")
-	personas, err := repo.ListNodosPersonas()
-	if err != nil {
-		return nil, op.Err(err)
-	}
-	arboles := []Arbol{}
-	for _, p := range personas {
-		arbol := Arbol{
-			Persona: p,
-		}
-		historias, err := repo.ListNodoHistorias(p.PersonaID)
-		if err != nil {
-			return nil, op.Err(err)
-		}
-		for _, h := range historias {
-			arbol.Historias = append(arbol.Historias, getHistoriaRecursiva(h, repo))
-		}
-		arboles = append(arboles, arbol)
-	}
-	return arboles, nil
-}
-
-func getHistoriaRecursiva(his ust.NodoHistoria, repo Repo) HistoriaRecursiva {
-	historia := HistoriaRecursiva{
-		Historia:      his,
-		Descendientes: nil,
-	}
-	hijos, err := repo.ListNodoHistorias(his.HistoriaID)
-	if err != nil {
-		fmt.Println("getHistoriaConHijos: %w", err)
-	}
-	for _, hijo := range hijos {
-		historia.Descendientes = append(historia.Descendientes, getHistoriaRecursiva(hijo, repo))
-	}
-	return historia
 }

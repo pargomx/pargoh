@@ -107,7 +107,6 @@ func main() {
 	s.PCH("/personas/{persona_id}", s.patchPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 
-	s.GET("/arbol", s.getArbolCompleto)
 	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
 	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
 	s.GET("/prioritarias", s.getHistoriasPrioritarias)
@@ -142,6 +141,8 @@ func main() {
 
 	s.GET("/intervalos", s.getIntervalos)
 
+	// Exportar e importar
+	s.GET("/arbol", s.exportarArbolTXT)
 	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
 	s.POS("/proyectos/importar", s.importarJSON)
 	s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)

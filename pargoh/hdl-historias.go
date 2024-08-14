@@ -3,7 +3,6 @@ package main
 import (
 	"monorepo/dhistorias"
 	"monorepo/ust"
-	"strings"
 
 	"github.com/pargomx/gecko"
 )
@@ -137,26 +136,4 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 		return err
 	}
 	return c.RefreshHTMX()
-}
-
-func (s *servidor) getArbolCompleto(c *gecko.Context) error {
-	arboles, err := dhistorias.GetArbolCompleto(s.repo)
-	if err != nil {
-		return err
-	}
-	res := "HISTORIAS DE USUARIO\n"
-	for _, arbol := range arboles {
-		res += "\n" + arbol.Persona.Nombre + "\n"
-		for _, his := range arbol.Historias {
-			res += printHistRec(his, 1)
-		}
-	}
-	return c.StatusOk(res)
-}
-func printHistRec(his dhistorias.HistoriaRecursiva, nivel int) string {
-	res := strings.Repeat(" ", nivel) + "-" + his.Historia.Titulo + "\n"
-	for _, hijo := range his.Descendientes {
-		res += printHistRec(hijo, nivel+1)
-	}
-	return res
 }

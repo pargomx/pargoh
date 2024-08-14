@@ -29,10 +29,6 @@ type HistoriaConHijos struct {
 	Tareas []ust.Tarea
 }
 
-type Arbol struct {
-	Persona   ust.NodoPersona
-	Historias []HistoriaRecursiva
-}
 type HistoriaRecursiva struct {
 	Historia      ust.NodoHistoria
 	Descendientes []HistoriaRecursiva
