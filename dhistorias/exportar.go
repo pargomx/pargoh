@@ -7,7 +7,142 @@ import (
 	"strings"
 
 	"github.com/gingfrederik/docx"
+	"github.com/pargomx/gecko/gko"
 )
+
+type ProyectoExport struct {
+	Proyecto ust.Proyecto
+	Personas []PersonaExport
+}
+
+type PersonaExport struct {
+	Persona   ust.NodoPersona
+	Historias []HistoriaExport
+}
+
+type HistoriaExport struct {
+	Historia  ust.NodoHistoria
+	Tareas    []ust.Tarea
+	Tramos    []ust.Tramo
+	Historias []HistoriaExport
+}
+
+// ================================================================ //
+
+func ExportarProyecto(proyectoID string, repo Repo) (*ProyectoExport, error) {
+	Proyecto, err := repo.GetProyecto(proyectoID)
+	if err != nil {
+		return nil, err
+	}
+	Personas, err := repo.ListNodosPersonasByProyecto(Proyecto.ProyectoID)
+	if err != nil {
+		return nil, err
+	}
+	proyectoExport := ProyectoExport{
+		Proyecto: *Proyecto,
+		Personas: make([]PersonaExport, len(Personas)),
+	}
+	for i, per := range Personas {
+		historias, err := repo.ListNodoHistoriasByPadreID(per.PersonaID)
+		if err != nil {
+			return nil, err
+		}
+		Persona := PersonaExport{
+			Persona:   per,
+			Historias: make([]HistoriaExport, len(historias)),
+		}
+		for j, his := range historias {
+			Persona.Historias[j] = getHistoriaExportsRecursiva(his, repo)
+		}
+		proyectoExport.Personas[i] = Persona
+	}
+	return &proyectoExport, nil
+}
+
+func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport {
+	historia := HistoriaExport{
+		Historia:  his,
+		Historias: nil,
+	}
+	hijos, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
+	if err != nil {
+		fmt.Println("getHistoriaExportsRecursiva: %w", err)
+	}
+	historia.Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
+	if err != nil {
+		fmt.Println("getHistoriaExportsRecursiva: %w", err)
+	}
+	historia.Tramos, err = repo.ListTramosByHistoriaID(his.HistoriaID)
+	if err != nil {
+		fmt.Println("getHistoriaExportsRecursiva: %w", err)
+	}
+	for _, hijo := range hijos {
+		historia.Historias = append(historia.Historias, getHistoriaExportsRecursiva(hijo, repo))
+	}
+	return historia
+}
+
+// ================================================================ //
+
+func Importar(p ProyectoExport, repo Repo) error {
+	err := repo.InsertProyecto(p.Proyecto)
+	if err != nil {
+		return err
+	}
+	for _, per := range p.Personas {
+		err = InsertarPersona(ust.Persona{
+			PersonaID:   per.Persona.PersonaID,
+			ProyectoID:  per.Persona.ProyectoID,
+			Nombre:      per.Persona.Nombre,
+			Descripcion: per.Persona.Descripcion,
+		}, repo)
+		if err != nil {
+			return err
+		}
+		for _, his := range per.Historias {
+			err = insertHistoriaRecursiva(per.Persona.PersonaID, his, repo)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	gko.LogOkeyf("Importado proyecto %s", p.Proyecto.ProyectoID)
+	return nil
+}
+
+func insertHistoriaRecursiva(padreID int, his HistoriaExport, repo Repo) error {
+	err := AgregarHistoria(padreID, ust.Historia{
+		HistoriaID: his.Historia.HistoriaID,
+		Titulo:     his.Historia.Titulo,
+		Objetivo:   his.Historia.Objetivo,
+		Prioridad:  his.Historia.Prioridad,
+		Completada: his.Historia.Completada,
+	}, repo)
+	if err != nil {
+		return err
+	}
+	for _, tarea := range his.Tareas {
+		err = repo.InsertTarea(tarea)
+		if err != nil {
+			return err
+		}
+	}
+	for _, tramo := range his.Tramos {
+		err = repo.InsertTramo(tramo)
+		if err != nil {
+			return err
+		}
+	}
+	for _, h := range his.Historias {
+		err = insertHistoriaRecursiva(his.Historia.HistoriaID, h, repo)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ================================================================ //
 
 func ExportarMarkdown(w io.Writer, repo Repo) error {
 	Personas, err := repo.ListNodosPersonas()

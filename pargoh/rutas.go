@@ -88,13 +88,11 @@ func main() {
 
 	if s.cfg.sourceDir != "" {
 		s.gecko.StaticAbs("/assets", s.cfg.sourceDir+"/assets")
-		s.gecko.File("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico")
+		s.gecko.File("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico") // Todo: agregar FileAbs
 	} else {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 	}
-
-	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
 
 	s.GET("/", s.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
@@ -144,6 +142,9 @@ func main() {
 
 	s.GET("/intervalos", s.getIntervalos)
 
+	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
+	s.POS("/proyectos/importar", s.importarJSON)
+	s.GET("/proyectos/{proyecto_id}/exportar", s.exportarJSON)
 	s.GET("/export.md", s.exportarMarkdown)
 	s.GET("/export.docx", s.exportarFile)
 
