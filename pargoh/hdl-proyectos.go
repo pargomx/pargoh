@@ -2,17 +2,30 @@ package main
 
 import (
 	"monorepo/dhistorias"
+	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
 )
 
 func (s *servidor) listaProyectos(c *gecko.Context) error {
+	type Pry struct {
+		ust.Proyecto
+		Personas []ust.NodoPersona
+	}
 	Proyectos, err := s.repo.ListProyectos()
 	if err != nil {
 		return err
 	}
+	res := make([]Pry, len(Proyectos))
+	for i, p := range Proyectos {
+		res[i].Proyecto = p
+		res[i].Personas, err = s.repo.ListNodosPersonas(p.ProyectoID)
+		if err != nil {
+			return err
+		}
+	}
 	data := map[string]any{
-		"Proyectos": Proyectos,
+		"Proyectos": res,
 	}
 	return c.RenderOk("proyectos", data)
 }
