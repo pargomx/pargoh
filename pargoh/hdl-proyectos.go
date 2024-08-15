@@ -5,6 +5,7 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func (s *servidor) listaProyectos(c *gecko.Context) error {
@@ -42,6 +43,19 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 	err := dhistorias.ModificarProyecto(c.PathVal("proyecto_id"), c.FormVal("clave"), c.FormVal("titulo"), c.FormVal("descripcion"), s.repo)
 	if err != nil {
 		return err
+	}
+	hdr, err := c.FormFile("imagen")
+	if err == nil {
+		file, err := hdr.Open()
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		gko.LogDebugf("Imagen recibida: %v\t Tamaño: %v\t MIME:%v", hdr.Filename, hdr.Size, hdr.Header.Get("Content-Type"))
+		err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), file, s.cfg.imagesDir, s.repo)
+		if err != nil {
+			return err
+		}
 	}
 	return c.RefreshHTMX()
 }

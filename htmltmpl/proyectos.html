@@ -31,9 +31,9 @@
 
 	<!-- Agregar proyecto -->
 	{{ if not .Proyectos -}}
-	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')">Nuevo proyecto <i class="fa-solid fa-plus"></i></button>
+	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('New')">Nuevo proyecto <i class="fa-solid fa-plus"></i></button>
 	{{ else }}
-	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')"><i class="fa-solid fa-plus"></i></button>
+	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('New')"><i class="fa-solid fa-plus"></i></button>
 	{{ end }}
 </main>
 
@@ -42,7 +42,7 @@
 	<p>Hecho con ♡ por PargoMx</p>
 </footer>
 
-<dialog id="frmPerNueva" class="p-3 rounded-lg">
+<dialog id="frmPryNew" class="p-3 rounded-lg">
 	<header class="flex flex-wrap items-center gap-3 pb-2">
 		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Nuevo proyecto</h2>
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
@@ -62,7 +62,7 @@
 		</div>
 		<button type="submit" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
 
-		<button type="button" onclick="frmPerNueva.close(); importProyecto.showModal()">Importar</button>
+		<button type="button" onclick="frmPryNew.close(); importProyecto.showModal()">Importar</button>
 	</form>
 </dialog>
 
@@ -84,12 +84,12 @@
 </dialog>
 
 {{ range .Proyectos }}
-<dialog id="frmPer{{ .ProyectoID }}" class="p-3 rounded-lg">
+<dialog id="frmPry{{ .ProyectoID }}" class="p-3 rounded-lg">
 	<header class="flex flex-wrap items-center gap-3 pb-2">
 		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
 	</header>
-	<form class="flex flex-col gap-4" hx-put="/proyectos/{{ .ProyectoID }}">
+	<form class="flex flex-col gap-4" hx-put="/proyectos/{{ .ProyectoID }}" hx-encoding="multipart/form-data">
 		<div>
 			<label for="{{ .ProyectoID }}_01">Título</label>
 			<input id="{{ .ProyectoID }}_01" name="titulo" value="{{ .Titulo }}" type="text" class="form-control" required>
@@ -100,8 +100,13 @@
 		</div>
 		<div>
 			<label for="{{ .ProyectoID }}_03">Descripción</label>
-			<input id="{{ .ProyectoID }}_03" name="descripcion" value="{{ .Descripcion }}" type="text" class="form-control">
-			<!-- <textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="2" class="form-control">{{ .Descripcion }}</textarea> -->
+			<!-- <input id="{{ .ProyectoID }}_03" name="descripcion" value="{{ .Descripcion }}" type="text" class="form-control"> -->
+			<textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="2" class="form-control">{{ .Descripcion }}</textarea>
+		</div>
+		<div class="">
+			<label for="{{ .ProyectoID }}_04">Imagen</label>
+			<input id="{{ .ProyectoID }}_04" type="file" name="imagen" accept="image/png, image/jpeg" capture="user" onchange="showImagen(this)" class="block">
+			<img id="imagePreview" src="" class="hidden object-cover mx-auto my-4 rounded-lg shadow-lg aspect-square w-60">
 		</div>
 		
 		<a href="/proyectos/{{ .ProyectoID}}/exportar.json" target="_blank" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Exportar JSON</a>
@@ -117,10 +122,19 @@
 
 <script>
 	function showPersonaForm(proyectoID) {
-		let form = document.getElementById(`frmPer${proyectoID}`);
+		let form = document.getElementById(`frmPry${proyectoID}`);
 		form.showModal();
 		let input = form.querySelector("input");
 		input.focus();
 		input.selectionEnd = input.value.length;
+	}
+
+	function showImagen(input) {
+		const [file] = input.files
+		if (file) {
+			document.getElementById("imagePreview").classList.remove("hidden")
+			document.getElementById("imagePreview").classList.add("block")
+			document.getElementById("imagePreview").src = URL.createObjectURL(file)
+		}
 	}
 </script>

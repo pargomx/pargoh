@@ -32,6 +32,7 @@ type configs struct {
 	databasePath string // Default: _pargo/pargo.sqlite
 	logDB        bool   // Log de consultas a la base de datos
 	sourceDir    string // Directorio raíz para leer assets y plantillas (shadow embed)
+	imagesDir    string // Directorio para guardar imágenes
 }
 
 type servidor struct {
@@ -52,6 +53,8 @@ func main() {
 	flag.IntVar(&s.cfg.puerto, "p", 5050, "el servidor escuchará en este puerto")
 	flag.BoolVar(&s.cfg.logDB, "logdb", false, "log de consultas a la base de datos")
 	flag.StringVar(&s.cfg.sourceDir, "src", "", "directorio con assets y htmltmpl para no usar embeded")
+	flag.StringVar(&s.cfg.imagesDir, "img", "imagenes", "directorio con las imágenes de historias y proyectos")
+
 	flag.Parse()
 	if s.cfg.directorio != "" {
 		err := os.Chdir(s.cfg.directorio)
@@ -82,6 +85,10 @@ func main() {
 		gko.FatalError(err)
 	}
 
+	if err = s.verificarDirectorioImagenes(); err != nil {
+		gko.FatalError(err)
+	}
+
 	s.gecko.TmplBaseLayout = "app/layout"
 
 	// ================================================================ //
@@ -102,6 +109,7 @@ func main() {
 	s.POS("/proyectos", s.postProyecto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
+	s.POS("/proyectos/{proyecto_id}/imagen", s.setImagenProyecto)
 
 	s.POS("/personas", s.postPersona)
 	s.PCH("/personas/{persona_id}", s.patchPersona)
@@ -127,9 +135,9 @@ func main() {
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
 
-	s.gecko.StaticSub("/imagenes", "capturas") // TODO: por qué no funciona StaticSub cuando se cambió el directorio con -dir
-	s.POS("/imagenes", s.putImagen("capturas"))
-	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagen("capturas"))
+	s.gecko.StaticSub("/imagenes", s.cfg.imagesDir)
+	s.POS("/imagenes", s.setImagenTramo)
+	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
 
 	s.POS("/nodos/{nodo_id}", s.postHistoria)
 	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
