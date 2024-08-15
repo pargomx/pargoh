@@ -16,6 +16,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/pargomx/gecko v0.0.0-20240808202258-599288241cae h1:Gjr2LtDoLvzAFZQ5QmU85RYqXy2C3XRY334QKpUUBdQ=
 github.com/pargomx/gecko v0.0.0-20240808202258-599288241cae/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
+github.com/pargomx/gecko v0.0.0-20240814212828-3b8f342547c5 h1:7n1vlqoza+PMHfLfVq8CU7GUvGEy4JC/teShn0Elm9M=
+github.com/pargomx/gecko v0.0.0-20240814212828-3b8f342547c5/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 golang.org/x/mod v0.19.0 h1:fEdghXQSo20giMthA7cd28ZC+jts4amQ3YMXiP5oMQ8=
