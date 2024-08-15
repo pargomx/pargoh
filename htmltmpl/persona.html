@@ -1,4 +1,4 @@
-<header class="relative flex w-full mb-4 bg-cyan-950 shadow-lg">
+<header class="relative flex w-full bg-cyan-950 shadow-lg">
 	<div class="p-2">
 		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24 h-24">
 	</div>
@@ -21,8 +21,8 @@
 	</span>
 </header>
 
-<main class="flex-grow w-full max-w-5xl mx-auto">
-	<h4 class="mb-4">
+<main class="flex-grow w-full max-w-5xl p-2 mx-auto">
+	<h4 class="mb-2">
 		<span class="opacity-50">Como</span>
 		<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
 		<span class="opacity-50">quiero...</span>
@@ -43,21 +43,6 @@
 			<!-- <a href="/lista/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
 			{{ end }}
 			<a href="/historias/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a>
-
-			
-			{{ if .NumHistorias -}}
-			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Historias">{{ .NumHistorias }}&nbsp;🧔🏻</a>
-			{{ end }}
-
-			{{ if .NumTareas -}}
-			<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Tareas">{{ .NumTareas }}&nbsp;📋</a>
-			{{ end }}
-
-			{{ if and (not .NumTareas) (not .NumHistorias) -}}
-			<a href="/lista/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Historias">✂️&nbsp;Dividir</a>
-			<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 bg-cyan-900 rounded" title="Tareas">📋&nbsp;Tareas</a>
-			{{- end }}
-
 		</div>
 		{{ end }}
 		<div class="pt-2">

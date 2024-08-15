@@ -2,13 +2,13 @@
 	Pargo Stories 🐟
 </h2>
 
-<main class="flex flex-col items-center justify-center flex-grow w-full max-w-5xl gap-4 pb-2 mx-auto">
+<main class="flex flex-col items-center justify-center flex-grow w-full max-w-5xl gap-4 p-2 mx-auto">
 
 	{{ range .Proyectos -}}
-	<article tipo="proyecto_item" id="{{ .ProyectoID }}" class="relative flex w-full bg-cyan-900 rounded-md shadow-lg">
+	<article tipo="proyecto_item" id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
 
 		<div class="p-2">
-			<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-32 h-32">
+			<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-32">
 		</div>
 
 		<div class="w-full p-2">
