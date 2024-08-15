@@ -109,7 +109,6 @@ func main() {
 	s.POS("/proyectos", s.postProyecto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
-	s.POS("/proyectos/{proyecto_id}/imagen", s.setImagenProyecto)
 
 	s.POS("/personas", s.postPersona)
 	s.PCH("/personas/{persona_id}", s.patchPersona)

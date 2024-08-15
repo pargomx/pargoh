@@ -64,24 +64,6 @@ func (s *servidor) setImagenTramo(c *gecko.Context) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) setImagenProyecto(c *gecko.Context) error {
-	hdr, err := c.FormFile("imagen")
-	if err != nil {
-		return err
-	}
-	file, err := hdr.Open()
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	gko.LogDebugf("Imagen recibida: %v\t Tamaño: %v\t MIME:%v", hdr.Filename, hdr.Size, hdr.Header.Get("Content-Type"))
-	err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), file, s.cfg.imagesDir, s.repo)
-	if err != nil {
-		return err
-	}
-	return c.RefreshHTMX()
-}
-
 func (s *servidor) deleteImagenTramo(c *gecko.Context) error {
 	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.imagesDir, s.repo)
 	if err != nil {

@@ -3,6 +3,7 @@ package main
 import (
 	"monorepo/dhistorias"
 	"monorepo/ust"
+	"strings"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
@@ -52,7 +53,7 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 		}
 		defer file.Close()
 		gko.LogDebugf("Imagen recibida: %v\t Tamaño: %v\t MIME:%v", hdr.Filename, hdr.Size, hdr.Header.Get("Content-Type"))
-		err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), file, s.cfg.imagesDir, s.repo)
+		err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), strings.TrimPrefix(hdr.Header.Get("Content-Type"), "image/"), file, s.cfg.imagesDir, s.repo)
 		if err != nil {
 			return err
 		}
