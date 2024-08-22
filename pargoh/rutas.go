@@ -40,6 +40,8 @@ type servidor struct {
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
 	repo  *sqliteust.Repositorio
+
+	reloader reloader // websocket.go
 }
 
 func main() {
@@ -100,6 +102,9 @@ func main() {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 	}
+
+	s.GET("/reload", s.reloader.brodcastReload)
+	s.GET("/ws", s.reloader.nuevoWS)
 
 	s.GET("/", s.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)

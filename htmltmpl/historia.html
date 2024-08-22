@@ -205,4 +205,27 @@
 		document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
 		dialogHistoria.close()
 	})
+
+
+	// ================================================================ //
+	// ========== WEBSOCKET =========================================== //
+
+	var uri = 'ws:'; if (window.location.protocol === 'https:') { uri = 'wss:'; }; uri += '//' + window.location.host + '/ws';
+	const ws = new WebSocket(uri)
+	ws.onopen = function() {
+		console.log('Connected to ' + uri);
+	}
+	ws.onclose = function(event) {
+		console.log("WebSocket closed:", event);
+	};
+	ws.onerror = function(error) {
+		console.log("WebSocket error:", error);
+	};
+	ws.onmessage = function(event) {
+		console.log(event.data)
+		if (event.data === "reload") {
+			location.reload();
+		}
+	};
+
 </script>
