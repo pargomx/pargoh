@@ -103,8 +103,8 @@ func main() {
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 	}
 
-	s.GET("/reload", s.reloader.brodcastReload)
-	s.GET("/ws", s.reloader.nuevoWS)
+	s.GET("/reload", s.brodcastReload)
+	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
 
 	s.GET("/", s.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)

@@ -127,6 +127,7 @@ func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	defer s.reloader.brodcastReload(c.PathInt("historia_id"))
 	return c.RefreshHTMX()
 }
 
@@ -135,5 +136,6 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	defer s.reloader.brodcastReload(c.PathInt("historia_id"))
 	return c.RefreshHTMX()
 }

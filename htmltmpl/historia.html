@@ -210,7 +210,7 @@
 	// ================================================================ //
 	// ========== WEBSOCKET =========================================== //
 
-	var uri = 'ws:'; if (window.location.protocol === 'https:') { uri = 'wss:'; }; uri += '//' + window.location.host + '/ws';
+	var uri = 'ws:'; if (window.location.protocol === 'https:') { uri = 'wss:'; }; uri += '//' + window.location.host + '/historias/{{ .Agregado.Historia.HistoriaID }}/ws';
 	const ws = new WebSocket(uri)
 	ws.onopen = function() {
 		console.log('Connected to ' + uri);

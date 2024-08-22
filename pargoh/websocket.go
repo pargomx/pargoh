@@ -11,13 +11,14 @@ import (
 type reloader struct {
 	counter int
 	sockets []socket
-	idcount int
+	idcount int // TODO: quitar porque solo es para debug
 	mu      sync.Mutex
 }
 
 type socket struct {
-	id int
-	ws *websocket.Conn
+	id         int
+	ws         *websocket.Conn
+	historiaID int
 }
 
 func (s *reloader) nuevoWS(c *gecko.Context) error {
@@ -26,8 +27,8 @@ func (s *reloader) nuevoWS(c *gecko.Context) error {
 		s.mu.Lock()
 		s.idcount++
 		id := s.idcount
-		s.sockets = append(s.sockets, socket{id: id, ws: ws})
-		gko.LogDebugf("socket(%d) nuevo", id)
+		s.sockets = append(s.sockets, socket{id: id, ws: ws, historiaID: c.PathInt("historia_id")})
+		// gko.LogDebugf("socket(%d) nuevo", id)
 		s.mu.Unlock()
 		for {
 			var msg string
@@ -38,9 +39,8 @@ func (s *reloader) nuevoWS(c *gecko.Context) error {
 				}
 				break
 			}
-			gko.LogDebugf("socket(%d) recived: %s", id, msg)
+			// gko.LogDebugf("socket(%d) recived: %s", id, msg)
 		}
-		// gko.LogDebugf("socket(%d) terminado", id)
 		for i, socket := range s.sockets { // remove closed connection
 			if socket.ws == ws {
 				// gko.LogDebugf("socket(%d) eliminado", id)
@@ -52,23 +52,32 @@ func (s *reloader) nuevoWS(c *gecko.Context) error {
 	return nil
 }
 
-func (s *reloader) brodcastReload(c *gecko.Context) error {
+func (s *servidor) brodcastReload(c *gecko.Context) error {
+	s.reloader.brodcastReload(0)
+	return c.StatusOkf("Reload #%d sent to %d connections", s.reloader.counter, len(s.reloader.sockets))
+}
+
+func (s *reloader) brodcastReload(historiaID int) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.counter++
-	gko.LogDebugf("Broadcasting reload #%d to %d connections", s.counter, len(s.sockets))
+	brodcasted := 0
 	for _, ws := range s.sockets {
+		if ws.historiaID != historiaID {
+			continue
+		}
 		err := websocket.Message.Send(ws.ws, "reload")
 		if err != nil {
 			gko.Err(err).Msgf("socket(%d) send", ws.id).Log()
 			for i, socket := range s.sockets { // remove closed connection
 				if socket == ws {
 					s.sockets = append(s.sockets[:i], s.sockets[i+1:]...)
-					gko.LogDebugf("socket(%d) eliminado2", socket.id)
+					// gko.LogDebugf("socket(%d) eliminado2", socket.id)
 					break
 				}
 			}
 		}
+		brodcasted++
 	}
-	return c.StatusOkf("Reload #%d sent to %d connections", s.counter, len(s.sockets))
+	// gko.LogDebugf("Broadcasting reload #%d to %d/%d connections", s.counter, brodcasted, len(s.sockets))
 }
