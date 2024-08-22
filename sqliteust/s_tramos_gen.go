@@ -108,6 +108,13 @@ func (s *Repositorio) DeleteTramo(HistoriaID int, Posicion int) error {
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
+	_, err = s.db.Exec(
+		"UPDATE tramos SET posicion = posicion - 1 WHERE historia_id = ? AND posicion > ?",
+		HistoriaID, Posicion,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op)
+	}
 	return nil
 }
 
