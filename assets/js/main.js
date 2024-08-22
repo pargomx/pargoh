@@ -228,7 +228,7 @@ function autosizeTextarea(textarea) {
 const observer = new IntersectionObserver((entries, observer) => {
 	entries.forEach(entry => {
 		if (entry.isIntersecting) {
-			console.log('Textarea is visible');
+			// console.log('Textarea is visible');
 			entry.target.style.backgroundColor = 'lightyellow';
 			autosizeTextarea(entry.target);
 			observer.unobserve(entry.target);

@@ -70,7 +70,13 @@
 		{{ end }}
 		<li class="flex items-center p-1">
 			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿ {{ suma (len .Tramos) 1 }}</span>
-			<input type="text" name="texto" hx-post="/historias/{{ .Historia.HistoriaID }}/viaje" placeholder="Agregar un tramo al viaje" class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none placeholder:text-slate-600 focus:border-blue-400">
+			<input type="text" name="texto" placeholder="Agregar un tramo al viaje"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
+				hx-validate="true"
+				hx-on:htmx:validation:validate="if(this.value != 'foo') { this.setCustomValidity('Please enter the value foo'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
+				hx-trigger="keyup[key=='Enter']"
+				class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
+			>
 		</li>
 	</ol>
 	<div class="flex flex-wrap items-start gap-4 mb-6">
@@ -121,12 +127,11 @@
 		</li>
 		{{ end }}
 		<li class="">
-			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" placeholder="Agregar historia" class="w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 placeholder:text-slate-600">
+			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" hx-validate="true" hx-on:htmx:validation:validate="console.log('validate'); this.reportValidity();" onchange="console.log('change'); if(this.value != 'foo') { this.setCustomValidity('Please enter the value foo'); } else { this.setCustomValidity(''); }" placeholder="Agregar historia" class="w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 placeholder:text-slate-600">
 		</li>
 	</ul>
 
-
-	<h3 class="mb-2 text-xl text-cyan-600">Tareas de desarrollo</h3>
+	<h3 class="mb-2 text-xl text-cyan-600">Tareas</h3>
 	<ol class="mb-6">
 		{{ range .Tareas }}
 		<li class="p-1">
@@ -145,35 +150,6 @@
 
 </main>
 {{ end }}
-
-<div id="ctxMenu" tipo="ctxMenu" gk-historia="" class="absolute hidden p-2 text-black bg-cyan-50 rounded shadow-md">
-	<div class="grid grid-cols-2 gap-1 text-sm">
-		<div class="col-span-2 text-xs opacity-50">Acciones</div>
-		<button type="button" onclick="expandirHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✂️ Abrir</button>
-		<button type="button" onclick="editarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✏️ Editar</button>
-		<button type="button" onclick="moverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
-		<button type="button" onclick="tareasHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tareas</button>
-		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
-		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤩 Must</button>
-		<button type="button" onclick="priorizarHistoria(2)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤔 Should</button>
-		<button type="button" onclick="priorizarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">😶‍🌫️ Would</button>
-		<button type="button" onclick="priorizarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚫 Won't</button>
-		<div class="col-span-2 text-xs opacity-50">Estatus</div>
-		<button type="button" onclick="marcarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✅ Okey</button>
-		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🔻 Falta</button>
-		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">❌ Eliminar</button>
-	</div>
-</div>
-
-<dialog id="dialogHistoria" class="p-3 rounded-lg" hx-swap="innerHTML" hx-get="" hx-trigger="loadHistoriaForm" hx-target="this">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.parentNode.parentNode.close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
-	</header>
-	<div>
-		Cargando...
-	</div>
-</dialog>
 
 <dialog id="subirImagen" class="p-3 rounded-lg">
 	<header class="flex flex-wrap items-center gap-3 pb-2">
@@ -223,160 +199,10 @@
 <!-- ======================================================== -->
 <script src="/assets/js/Sortable.min.js"></script>
 
-<script>
-
-	function expandirHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/tablero/${historiaID}`
-	}
-
-	function tareasHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}`
-	}
-
-	function moverHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}/mover`
-	}
-
-	function editarHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let dialog = document.getElementById("dialogHistoria")
-		dialog.showModal()
-		dialog.setAttribute("hx-get", `/historias/${historiaID}/form`)
-		htmx.process(dialog)
-		dialog.dispatchEvent(new Event("loadHistoriaForm"))
-	}
-
-	function priorizarHistoria(prioridad) {
-		if (isNaN(prioridad)) {
-			alert("La prioridad debe ser un número")
-			return console.error("La prioridad debe ser un número")
-		}
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let formData = new FormData();
-		formData.append("prioridad", prioridad);
-		fetch(`/historias/${historiaID}/priorizar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-	
-	function marcarHistoria(completada) {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let formData = new FormData();
-		formData.append("completada", completada);
-		fetch(`/historias/${historiaID}/marcar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-
-	function eliminarHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let formData = new FormData();
-		fetch(`/historias/${historiaID}`, { method: 'DELETE' }).then(response => handleResponse(response));
-	}
-
-	// ================================================================ //
-	// ========== Context menu ======================================== //
-
-	function setupMenuContextual(element, historiaID) {
-		element.addEventListener("contextmenu", function(event) {
-			event.preventDefault()
-			let menu = document.querySelector("[tipo='ctxMenu']")
-			menu.classList.remove("hidden")
-			let menuW = menu.offsetWidth // Dimensiones del menú
-			let menuH = menu.offsetHeight
-			let winW = window.innerWidth // Dimensiones de la ventana
-			let winH = window.innerHeight
-			let x = event.clientX // Coordenadas dentro de la ventana
-			let y = event.clientY
-			if (x + menuW > winW) { x = winW - menuW } // Que no salga de la ventana
-			if (y + menuH > winH) { y = winH - menuH }
-			menu.style.left = `${x}px`
-			menu.style.top = `${y}px`
-
-			menu.setAttribute("gk-historia", historiaID)
-		})
-	}
-
-	function inicializarCarriles() {
-		document.querySelectorAll("[tipo='carril']").forEach(element => {
-			setupMenuContextual(element, element.id)
-		});
-	}
-
-	document.addEventListener("click", function(event) {
-		let menu = document.querySelector("[tipo='ctxMenu']")
-		if (menu.classList.contains("hidden")) { return }
-		menu.classList.add("hidden")
-	})
-
-	// ================================================================ //
-	// ========== Inicializar ========================================= //
-	
-	inicializarCarriles()
-
-	// Cada vez que cambie el contenido hay que volver a inicializar los carriles.
-	document.querySelector("[tipo='carriles_container']").addEventListener("htmx:afterSwap", (event) => {
-		inicializarCarriles()
-	})
+<script>	
 
 	document.getElementById("msgStack").addEventListener("htmx:afterSwap", (event) => {
 		document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
 		dialogHistoria.close()
 	})
-
-
-
-	// ================================================================ //
-	// ========== Reordenar =========================================== //
-
-	function reordenarHistoria(historiaID, newPosicion) {
-		console.debug(`reordenarHistoria(id:${historiaID}, pos:${newPosicion})`)
-		if (historiaID == null) {
-			return console.error("No se puede reordenar persona sin ID")
-		}
-		let formData = new FormData();
-		formData.append("newPosicion", newPosicion);
-		fetch(`/nodos/${historiaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-
-	function handleResponse(response) {
-		response.text().then((msg) => {
-			if (response.status >= 200 && response.status < 300) {
-				console.log(msg)
-			} else {
-				alert(msg)
-			}
-			// Recargar carriles con HTMX
-			document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
-		})
-	}
-	
-	var zonaCarriles = new Sortable(document.querySelector("[tipo='carriles_container']"), {
-		group: "carriles", animation: 150, swapThreshold: 0.50,
-		draggable: "[tipo='carril']",
-		handle: "[tipo='carril_handle']",
-		onStart: function(event) {
-			event.item.classList.add("opacity-50")
-		},
-		onEnd: function(event) {
-			event.item.classList.remove("opacity-50")
-			let historiaID = event.item.id
-			if (historiaID == null) { 
-				return console.error("historiaID null") 
-			}
-			if (event.oldIndex != event.newIndex){
-				return reordenarHistoria(historiaID, event.newIndex + 1)
-			}
-		},
-	});
-
-	// Ubicar una historia seleccionada mediante el URL fragment.
-	if (window.location.hash) {
-		let historia = document.getElementById(window.location.hash.substr(1));
-		if (historia != null) {
-			historia.classList.add("border-indigo-600");
-			historia.classList.add("border-2");
-			historia.scrollIntoView();
-		}
-	}
-
 </script>
