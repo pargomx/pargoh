@@ -127,8 +127,8 @@ func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	defer s.reloader.brodcastReload(c.PathInt("historia_id"))
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
@@ -136,6 +136,6 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	defer s.reloader.brodcastReload(c.PathInt("historia_id"))
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }

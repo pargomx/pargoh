@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"sync"
 
 	"github.com/pargomx/gecko"
@@ -9,14 +10,13 @@ import (
 )
 
 type reloader struct {
-	counter int
 	sockets []socket
-	idcount int // TODO: quitar porque solo es para debug
+	lastID  int
 	mu      sync.Mutex
 }
 
 type socket struct {
-	id         int
+	id         string
 	ws         *websocket.Conn
 	historiaID int
 }
@@ -25,59 +25,78 @@ func (s *reloader) nuevoWS(c *gecko.Context) error {
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		s.mu.Lock()
-		s.idcount++
-		id := s.idcount
-		s.sockets = append(s.sockets, socket{id: id, ws: ws, historiaID: c.PathInt("historia_id")})
-		// gko.LogDebugf("socket(%d) nuevo", id)
+		s.lastID++
+		socket := socket{
+			id:         strconv.Itoa(s.lastID),
+			ws:         ws,
+			historiaID: c.PathInt("historia_id"),
+		}
+		s.sockets = append(s.sockets, socket)
+		// gko.LogDebugf("socket(%v) creado", socket.id)
 		s.mu.Unlock()
+
+		// Enviar ID del socket como json
+		err := websocket.Message.Send(socket.ws, `{"id":`+socket.id+`}`)
+		if err != nil {
+			gko.Err(err).Msgf("socket(%v) send", socket.id).Log()
+			s.quitar(socket)
+		}
+		// Recibir mensajes para conservar el socket
 		for {
 			var msg string
 			err := websocket.Message.Receive(ws, &msg)
 			if err != nil {
 				if err.Error() != "EOF" {
-					gko.Err(err).Msgf("socket(%d) receive", id).Log()
+					gko.Err(err).Msgf("socket(%v) receive", socket.id).Log()
 				}
 				break
 			}
-			// gko.LogDebugf("socket(%d) recived: %s", id, msg)
+			gko.LogDebugf("socket(%v) recived: %s", socket.id, msg)
 		}
-		for i, socket := range s.sockets { // remove closed connection
-			if socket.ws == ws {
-				// gko.LogDebugf("socket(%d) eliminado", id)
-				s.sockets = append(s.sockets[:i], s.sockets[i+1:]...)
-				break
-			}
-		}
+		// Una vez que se cierra la conexión...
+		s.quitar(socket)
 	}).ServeHTTP(c.Response(), c.Request())
 	return nil
 }
 
-func (s *servidor) brodcastReload(c *gecko.Context) error {
-	s.reloader.brodcastReload(0)
-	return c.StatusOkf("Reload #%d sent to %d connections", s.reloader.counter, len(s.reloader.sockets))
+func (s *reloader) quitar(ws socket) {
+	for i, socket := range s.sockets { // remove closed connection
+		if socket.id == ws.id {
+			s.sockets = append(s.sockets[:i], s.sockets[i+1:]...)
+			// gko.LogDebugf("socket(%v) eliminado2", socket.id)
+			break
+		}
+	}
 }
 
-func (s *reloader) brodcastReload(historiaID int) {
+func (s *servidor) brodcastReload(c *gecko.Context) error {
+	s.reloader.brodcastReload(c)
+	return c.StatusOkf("Reload sent to %d connections", len(s.reloader.sockets))
+}
+
+func (s *reloader) brodcastReload(c *gecko.Context) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.counter++
 	brodcasted := 0
-	for _, ws := range s.sockets {
-		if ws.historiaID != historiaID {
+	for _, socket := range s.sockets {
+		if socket.historiaID != c.PathInt("historia_id") {
 			continue
 		}
-		err := websocket.Message.Send(ws.ws, "reload")
-		if err != nil {
-			gko.Err(err).Msgf("socket(%d) send", ws.id).Log()
-			for i, socket := range s.sockets { // remove closed connection
-				if socket == ws {
-					s.sockets = append(s.sockets[:i], s.sockets[i+1:]...)
-					// gko.LogDebugf("socket(%d) eliminado2", socket.id)
-					break
-				}
-			}
+		id := c.Request().Header.Get("X-SocketID")
+		if id == "" {
+			gko.LogWarn("X-SocketID empty")
+			continue
 		}
+		if socket.id == id {
+			continue
+		}
+		err := websocket.Message.Send(socket.ws, `{"id":`+socket.id+`,"reload":true}`)
+		if err != nil {
+			gko.Err(err).Msgf("socket(%v) send", socket.id).Log()
+			s.quitar(socket)
+		}
+		// gko.LogDebugf("socket(%v) reload", socket.id)
 		brodcasted++
 	}
-	// gko.LogDebugf("Broadcasting reload #%d to %d/%d connections", s.counter, brodcasted, len(s.sockets))
+	// gko.LogDebugf("Broadcasting reload to %d/%d connections", brodcasted, len(s.sockets))
 }

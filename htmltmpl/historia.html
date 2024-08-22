@@ -22,7 +22,11 @@
 	</span>
 </header>
 
-<main class="flex-grow w-full max-w-5xl p-2 mx-auto">
+<main class="flex-grow w-full max-w-5xl p-2 mx-auto"
+	hx-get="/historias/{{ .Historia.HistoriaID }}"
+	hx-target="this" hx-select="main > *" hx-swap="innerHTML"
+	hx-trigger="reloadHistoria"
+>
 	<h4 class="mb-2">
 		<span class="opacity-50">Como</span>
 		<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
@@ -32,7 +36,16 @@
 	{{ with .Historia }}
 	<div class="flex items-end gap-4 mb-4">
 		<div class="grow">
-			<input hx-patch="/historias/{{ .HistoriaID }}/titulo" hx-swap="none" name="value" hx-trigger="keyup changed delay:2s" id="txt_hist_nombre" type="text" value="{{ .Titulo }}" class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
+			<input 
+				hx-patch="/historias/{{ .HistoriaID }}/titulo"
+				hx-swap="none" 
+				hx-trigger="keyup changed delay:2s"
+				name="value"
+				id="txt_hist_nombre" 
+				type="text" 
+				value="{{ .Titulo }}"
+				class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400"
+			>
 		</div>
 		<div>
 			<select hx-patch="/historias/{{ .HistoriaID }}/prioridad" hx-swap="none" name="value" id="txt_hist_prioridad" class="form-control">
@@ -64,7 +77,13 @@
 		<li class="p-1">
 			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿ {{ .Posicion }}</span>
 			{{ .Texto }}
-			<button type="button" hx-confirm="¿Eliminar tramo de viaje? {{ .Texto }}" hx-delete="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}" title="Quitar este tramo" class="float-right opacity-10 hover:opacity-100">❌</button>
+			<button type="button" 
+				hx-delete="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}" 
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-confirm="¿Eliminar tramo de viaje? {{ .Texto }}" 
+				title="Quitar este tramo" 
+				class="float-right opacity-10 hover:opacity-100">❌
+			</button>
 			<button type="button" onclick="showSubirImagen({{ .HistoriaID }}, {{ .Posicion }})" title="Definir imagen" class="float-right mr-3 opacity-10 hover:opacity-100">🏞</button>
 		</li>
 		{{ end }}
@@ -72,9 +91,10 @@
 			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿ {{ suma (len .Tramos) 1 }}</span>
 			<input type="text" name="texto" placeholder="Agregar un tramo al viaje"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
-				hx-trigger="keyup[key=='Enter']"
 				class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 			>
 		</li>
@@ -212,8 +232,9 @@
 
 	var uri = 'ws:'; if (window.location.protocol === 'https:') { uri = 'wss:'; }; uri += '//' + window.location.host + '/historias/{{ .Agregado.Historia.HistoriaID }}/ws';
 	const ws = new WebSocket(uri)
+	let wsID = 0
 	ws.onopen = function() {
-		console.log('Connected to ' + uri);
+		// console.log('Connected to ' + uri);
 	}
 	ws.onclose = function(event) {
 		console.log("WebSocket closed:", event);
@@ -222,10 +243,24 @@
 		console.log("WebSocket error:", error);
 	};
 	ws.onmessage = function(event) {
-		console.log(event.data)
-		if (event.data === "reload") {
-			location.reload();
+		let data = JSON.parse(event.data)
+		if (data.id > 0 && wsID == 0) {
+			wsID = data.id
+			// console.log("WebsocketID: " + wsID)
+
+		} else if (data.reload) {
+			document.querySelector("main").dispatchEvent(new Event("reloadHistoria"))
+			// console.log("Recargar historia")
+			
+		} else {
+			// console.log("Mensaje recibido: ", data)
 		}
 	};
-
+	// Send wsID with non GET requests
+	document.body.addEventListener('htmx:configRequest', function(event) {
+		if (event.detail.verb != 'get'){
+			event.detail.headers['X-SocketID'] = wsID;
+			// console.log("Send wsID: " + wsID + " " + event.detail.verb)
+		}
+	});
 </script>
