@@ -73,7 +73,7 @@
 			<input type="text" name="texto" placeholder="Agregar un tramo al viaje"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
 				hx-validate="true"
-				hx-on:htmx:validation:validate="if(this.value != 'foo') { this.setCustomValidity('Please enter the value foo'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
+				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
 				hx-trigger="keyup[key=='Enter']"
 				class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 			>

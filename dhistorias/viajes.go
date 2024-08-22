@@ -51,7 +51,7 @@ func EliminarTramoDeViaje(repo Repo, historiaID int, posicion int) error {
 		return op.Err(err)
 	}
 	if posicion < 1 || posicion > len(tramos) {
-		return op.Msg("posición de tramo inválida")
+		op.Msg("posición de tramo inválida").Ctx("historia", historiaID).Ctx("pos", posicion).Ctx("hermanos", len(tramos)).Alert() // Solo alertar
 	}
 	err = repo.DeleteTramo(historiaID, posicion)
 	if err != nil {

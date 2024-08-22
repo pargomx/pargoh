@@ -1091,6 +1091,10 @@ video {
   padding-left: 0.5rem;
 }
 
+.pl-4 {
+  padding-left: 1rem;
+}
+
 .pl-5 {
   padding-left: 1.25rem;
 }
@@ -1109,10 +1113,6 @@ video {
 
 .pt-4 {
   padding-top: 1rem;
-}
-
-.pl-4 {
-  padding-left: 1rem;
 }
 
 .text-left {
@@ -1226,10 +1226,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.decoration-dotted {
-  text-decoration-style: dotted;
 }
 
 .opacity-10 {
@@ -1365,6 +1361,11 @@ select optgroup {
   color: rgb(71 85 105 / var(--tw-text-opacity));
 }
 
+.invalid\:border-red-500:invalid {
+  --tw-border-opacity: 1;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity));
+}
+
 .hover\:-translate-y-2:hover {
   --tw-translate-y: -0.5rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1416,6 +1417,11 @@ select optgroup {
 
 .focus\:opacity-100:focus {
   opacity: 1;
+}
+
+.invalid\:focus\:border-red-500:focus:invalid {
+  --tw-border-opacity: 1;
+  border-color: rgb(239 68 68 / var(--tw-border-opacity));
 }
 
 @media (min-width: 640px) {
