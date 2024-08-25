@@ -86,6 +86,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	s.reloader.brodcastReload(c)
 	return c.StatusAccepted("Historia parchada")
 }
 

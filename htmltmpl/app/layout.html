@@ -15,8 +15,25 @@
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]">
-		<div id="contenido" hx-target="#contenido" hx-swap="innerHTML show:no-scroll" hx-push-url="false" hx-history="false" class="flex flex-col overflow-y-auto h-dvh">
+		<div class="flex flex-col overflow-y-auto h-dvh"
+		id="contenido" 
+		hx-target="#contenido"
+		hx-swap="innerHTML show:no-scroll"
+		hx-push-url="false"
+		hx-history="false"
+		hx-indicator="#cargando"
+		>
 			{{ with $.Contenido }}{{ . }}{{ else }}No content{{ end }}
+		</div>
+
+		<!-- htmx-indicator -->
+		<style>
+			.my-indicator{ display: none; }
+			.htmx-request .my-indicator{ display: flex; }
+			.htmx-request.my-indicator{ display: flex; }
+		</style>
+		<div id="cargando" class="absolute top-0 flex items-center justify-center w-full h-screen py-8 rounded-md bg-black/40 my-indicator">
+			<img src="/assets/img/spinner.svg" alt="Cargando..." class="w-16">
 		</div>
 	</body>
 </html>

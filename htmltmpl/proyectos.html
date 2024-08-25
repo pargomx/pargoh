@@ -8,7 +8,9 @@
 	<article tipo="proyecto_item" id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
 
 		<div class="p-2">
-			<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-32">
+			<a href="/proyectos/{{ .ProyectoID }}">
+				<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-32">
+			</a>
 		</div>
 
 		<div class="w-full p-2">

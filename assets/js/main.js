@@ -75,6 +75,8 @@ window.onload = () => {
 };
 
 
+
+
 /**
  * 
  * @param {string} str string para quitar acentos, espacios, trim, diacríticos.
@@ -208,9 +210,6 @@ document.querySelectorAll('table').forEach(tbl => {
 // ================================================================ //
 // ========== AUTOSIZE TEXTAREA =================================== //
 
-// Los textarea se ajustan automáticamente a su contenido.
-const textareas = document.getElementsByTagName("textarea");
-
 // Puede tener cualquier border-width, max-height o rows.
 function autosizeTextarea(textarea) {
 	let style = window.getComputedStyle(textarea); // obtener y considerar border para evitar scrollbars.
@@ -236,17 +235,28 @@ const observer = new IntersectionObserver((entries, observer) => {
 	});
 }, { threshold: 0 });
 
-// Aplicar a todos los textareas en la página.
-for (let i = 0; i < textareas.length; i++) {
-	observer.observe(textareas[i]);
-}
+
 
 // ================================================================ //
-// ================================================================ //
+// ========== INICIALIZAR CONTENIDO =============================== //
 
-// Por default todos los input tienen autocomplete="off", a menos que se especifique lo contrario.
-document.querySelectorAll('input').forEach(input => {
-	if (input.getAttribute("autocomplete") == null) {
-		input.setAttribute("autocomplete", "off")
+// Evento htmx:load para inicializar cosas después de cargar contenido.
+// https://htmx.org/api/#onLoad
+htmx.onLoad(function(content) {
+
+	// console.log("htmx:onLoad", content);
+
+	// Los input tienen autocomplete="off" a menos que se especifique lo contrario.
+	content.querySelectorAll('input').forEach(input => {
+		if (input.getAttribute("autocomplete") == null) {
+			input.setAttribute("autocomplete", "off")
+		}
+	});
+
+	// Los textarea se ajustan automáticamente a su contenido.
+	const textareas = content.getElementsByTagName("textarea");
+	for (let i = 0; i < textareas.length; i++) {
+		autosizeTextarea(textareas[i])
+		observer.observe(textareas[i]);
 	}
-});
+})

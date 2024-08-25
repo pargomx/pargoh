@@ -1,7 +1,7 @@
 {{ with .Agregado -}}
-<header class="relative flex w-full bg-cyan-950 shadow-lg">
-	<div class="p-2">
-		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24 h-24">
+<header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
+	<div class="">
+		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24">
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
@@ -22,50 +22,67 @@
 	</span>
 </header>
 
+
+
 <main class="flex-grow w-full max-w-5xl p-2 mx-auto"
 	hx-get="/historias/{{ .Historia.HistoriaID }}"
-	hx-target="this" hx-select="main > *" hx-swap="innerHTML"
+	hx-target="this" hx-select="main" hx-swap="outerHTML"
 	hx-trigger="reloadHistoria"
->
-	<h4 class="mb-2">
-		<span class="opacity-50">Como</span>
-		<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
-		<span class="opacity-50">quiero...</span>
-	</h4>
+	>
 
-	{{ with .Historia }}
-	<div class="flex items-end gap-4 mb-4">
-		<div class="grow">
-			<input 
-				hx-patch="/historias/{{ .HistoriaID }}/titulo"
-				hx-swap="none" 
-				hx-trigger="keyup changed delay:2s"
-				name="value"
-				id="txt_hist_nombre" 
-				type="text" 
-				value="{{ .Titulo }}"
-				class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400"
-			>
-		</div>
+	<div class="flex flex-wrap justify-end mb-2 gap-x-4 gap-y-2">
+		<h4 class="flex-grow">
+			<span class="opacity-50">Como</span>
+			<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
+			<span class="opacity-50">quiero...</span>
+		</h4>
 		<div>
-			<select hx-patch="/historias/{{ .HistoriaID }}/prioridad" hx-swap="none" name="value" id="txt_hist_prioridad" class="form-control">
-				<option value="0" {{ if eq .Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
-				<option value="1" {{ if eq .Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
-				<option value="2" {{ if eq .Prioridad 2 }}selected{{ end }}>🤔 Should</option>
-				<option value="3" {{ if eq .Prioridad 3 }}selected{{ end }}>🤩 Must</option>
+			<select class="form-control"
+			hx-patch="/historias/{{ .Historia.HistoriaID }}/prioridad" 
+			hx-swap="none" 
+			name="value" 
+			id="txt_hist_prioridad"
+			>
+				<option value="0" {{ if eq .Historia.Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
+				<option value="1" {{ if eq .Historia.Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
+				<option value="2" {{ if eq .Historia.Prioridad 2 }}selected{{ end }}>🤔 Should</option>
+				<option value="3" {{ if eq .Historia.Prioridad 3 }}selected{{ end }}>🤩 Must</option>
 			</select>
 		</div>
 		<div>
-			<select hx-patch="/historias/{{ .HistoriaID }}/completada" hx-swap="none" name="value" class="form-control" id="txt_hist_estatus">
+			<select hx-patch="/historias/{{ .Historia.HistoriaID }}/completada" hx-swap="none" name="value" class="form-control" id="txt_hist_estatus">
 				<option value="0">Pendiente</option>
-				<option value="1" {{ if .Completada }}selected{{ end }}>✅ Completada</option>
+				<option value="1" {{ if .Historia.Completada }}selected{{ end }}>✅ Completada</option>
 			</select>
 		</div>
 	</div>
 
+	{{ with .Historia }}
+	<div class="flex flex-wrap items-end gap-4 mb-4">
+		<div class="grow">
+			<textarea 
+				hx-patch="/historias/{{ .HistoriaID }}/titulo"
+				hx-swap="none" 
+				hx-trigger="change, keyup changed delay:2s"
+				name="value"
+				id="txt_hist_nombre" 
+				type="text"
+				rows="1"
+				class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400"
+			>{{ .Titulo }}</textarea>
+		</div>
+		
+	</div>
+
 	<div class="mb-4">
-		<textarea hx-patch="/historias/{{ .HistoriaID }}/objetivo" hx-swap="none" name="value" hx-trigger="keyup changed delay:2s" id="txt_hist_empatia" cols="30" rows="1" placeholder="Descripción del contexto..." 
-			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600"
+		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600"
+			hx-patch="/historias/{{ .HistoriaID }}/objetivo"
+			hx-swap="none" 
+			hx-trigger="change, keyup changed delay:2s"
+			cols="30" rows="1"
+			id="txt_hist_empatia"
+			name="value" 
+			placeholder="Descripción del contexto..." 
 		>{{ .Objetivo }}</textarea>
 	</div>
 	{{ end }}
@@ -89,12 +106,14 @@
 		{{ end }}
 		<li class="flex items-center p-1">
 			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿ {{ suma (len .Tramos) 1 }}</span>
-			<input type="text" name="texto" placeholder="Agregar un tramo al viaje"
+			<input type="text" 
+				name="texto" 
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
+				placeholder="Agregar un tramo al viaje"
 				class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 			>
 		</li>
