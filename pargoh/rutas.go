@@ -138,6 +138,7 @@ func main() {
 
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
+	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.patchTramoDeViaje)
 
 	s.POS("/historias/{historia_id}/reglas", s.postRegla)
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)

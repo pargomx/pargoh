@@ -101,9 +101,12 @@
 			</div>
 			<!-- <p class="grow">{{ .Texto }}</p> -->
 			<input
-				ondblclick="console.log('click'); this.removeAttribute('readonly');"
-				onblur="console.log('blured'); this.setAttribute('readonly', true);"
-				onchange="console.log('changed'); this.blur();"
+				ondblclick="if (!this.hasAttribute('readonly')){ return }; console.log('editable_activar'); this.removeAttribute('readonly');"
+				oncontextmenu="if (!this.hasAttribute('readonly')){ return }; console.log('editable_activar'); this.removeAttribute('readonly');"
+				onblur="if (this.hasAttribute('readonly')){ return }; console.log('editable_exit'); this.setAttribute('readonly', true);"
+				onchange="console.log('editable_changed'); this.blur();"
+				hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}" 
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				readonly
 				type="text"
 				name="texto" 
@@ -137,7 +140,7 @@
 				hx-validate="true"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
 				placeholder="Agregar un tramo al viaje"
-				class="inline-block w-full py-1 text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
+				class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 			>
 		</li>
 	</ol>
