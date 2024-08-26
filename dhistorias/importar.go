@@ -75,7 +75,7 @@ func ImportarFake(repo Repo) error {
 		{HistoriaID: 101, Texto: "Hacer una chiquita"},
 	}
 	for _, tra := range tramos {
-		err := NuevoTramoDeViaje(repo, tra.HistoriaID, tra.Texto)
+		err := AgregarTramoDeViaje(repo, tra.HistoriaID, tra.Texto)
 		if err != nil {
 			return op.Err(err)
 		}

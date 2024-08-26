@@ -139,6 +139,9 @@ func main() {
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
 
+	s.POS("/historias/{historia_id}/reglas", s.postRegla)
+	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
+
 	s.gecko.StaticSub("/imagenes", s.cfg.imagesDir)
 	s.POS("/imagenes", s.setImagenTramo)
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)

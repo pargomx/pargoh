@@ -170,6 +170,30 @@
 		</li>
 	</ul>
 
+	<!--* REGLAS DE NEGOCIO -->
+	<h3 class="mb-2 text-xl text-cyan-600">Reglas</h3>
+	<ol class="mb-6">
+		{{ range .Reglas -}}
+		<li class="p-1">
+			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿ {{ .Posicion }}</span>
+			{{ if .Implementada }}✅{{ end }}
+			{{ if .Probada }}✅{{ end }}
+			{{ .Texto }}
+			<button type="button" 
+				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-confirm="¿Eliminar regla? {{ .Texto }}" 
+				title="Quitar regla" 
+				class="float-right opacity-10 hover:opacity-100">❌
+			</button>
+		</li>
+		{{ end }}
+		<li class="flex items-center p-1">
+			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿</span>
+			<input type="text" name="texto" hx-post="/historias/{{ .Historia.HistoriaID }}/reglas" placeholder="Agregar regla" class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none placeholder:text-slate-600 focus:border-blue-400">
+		</li>
+	</ol>
+
 	<h3 class="mb-2 text-xl text-cyan-600">Tareas</h3>
 	<ol class="mb-6">
 		{{ range .Tareas }}

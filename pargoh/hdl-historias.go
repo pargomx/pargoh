@@ -123,7 +123,7 @@ func (s *servidor) getHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
-	err := dhistorias.NuevoTramoDeViaje(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
+	err := dhistorias.AgregarTramoDeViaje(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
 	if err != nil {
 		return err
 	}
@@ -133,6 +133,24 @@ func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
 
 func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 	err := dhistorias.EliminarTramoDeViaje(s.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+}
+
+func (s *servidor) postRegla(c *gecko.Context) error {
+	err := dhistorias.AgregarRegla(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+}
+
+func (s *servidor) deleteRegla(c *gecko.Context) error {
+	err := dhistorias.EliminarRegla(s.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		return err
 	}

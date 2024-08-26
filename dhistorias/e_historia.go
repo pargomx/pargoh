@@ -18,6 +18,7 @@ type Historia struct {
 	Proyecto ust.Proyecto
 	Tareas   []ust.Tarea
 	Tramos   []ust.Tramo
+	Reglas   []ust.Regla
 
 	Ancestros     []ust.NodoHistoria
 	Descendientes []HistoriaRecursiva

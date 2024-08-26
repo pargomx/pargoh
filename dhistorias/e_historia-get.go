@@ -27,6 +27,11 @@ func GetHistoria(historiaID int, repo Repo) (*Historia, error) {
 		return nil, op.Err(err)
 	}
 
+	item.Reglas, err = repo.ListReglasByHistoriaID(historiaID)
+	if err != nil {
+		return nil, op.Err(err)
+	}
+
 	// Obtener historias ascendientes hasta llegar a la persona.
 	esteNivel := item.Historia.Nivel
 	sigAncestroID := item.Historia.PadreID

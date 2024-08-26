@@ -6,7 +6,7 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-func NuevoTramoDeViaje(repo Repo, historiaID int, texto string) error {
+func AgregarTramoDeViaje(repo Repo, historiaID int, texto string) error {
 	op := gko.Op("NuevoTramoDeViaje")
 	if historiaID == 0 {
 		return op.Msg("Debe asignarse un ID de historia al tramo de viaje")

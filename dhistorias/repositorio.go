@@ -56,4 +56,12 @@ type Repo interface {
 	DeleteTramo(HistoriaID int, Posicion int) error
 	GetTramo(HistoriaID int, Posicion int) (*ust.Tramo, error)
 	ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error)
+
+	// Reglas
+	InsertRegla(reg ust.Regla) error
+	UpdateRegla(reg ust.Regla) error
+	ExisteRegla(HistoriaID int, Posicion int) error
+	DeleteRegla(HistoriaID int, Posicion int) error
+	GetRegla(HistoriaID int, Posicion int) (*ust.Regla, error)
+	ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error)
 }
