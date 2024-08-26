@@ -59,3 +59,22 @@ func EliminarRegla(repo Repo, historiaID int, posicion int) error {
 	}
 	return nil
 }
+
+// Si el texto está vacío, elimina el tramo.
+func EditarRegla(repo Repo, historiaID int, posicion int, texto string) error {
+	op := gko.Op("EditarRegla")
+	regla, err := repo.GetRegla(historiaID, posicion)
+	if err != nil {
+		return op.Err(err)
+	}
+	if texto == "" {
+		// return op.Msg("El texto no puede estar vacío")
+		return EliminarRegla(repo, historiaID, posicion)
+	}
+	regla.Texto = texto
+	err = repo.UpdateRegla(*regla)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}

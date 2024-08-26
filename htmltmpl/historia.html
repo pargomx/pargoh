@@ -209,23 +209,51 @@
 	<h3 class="mb-2 text-xl text-cyan-600">Reglas</h3>
 	<ol class="mb-6">
 		{{ range .Reglas -}}
-		<li class="p-1">
-			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿ {{ .Posicion }}</span>
-			{{ if .Implementada }}✅{{ end }}
-			{{ if .Probada }}✅{{ end }}
-			{{ .Texto }}
-			<button type="button" 
+		<li class="flex gap-1 p-1 group">
+			<div tipo="carril_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+				⣿
+			</div>
+			<div>
+				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
+					{{ .Posicion }}
+				</span>
+			</div>
+			<p class="whitespace-pre-line grow"
+				onclick="let inp = this.nextElementSibling; inp.classList.remove('hidden'); inp.classList.add('inline-block'); inp.focus(); inp.addEventListener('keydown',hdlTextAreaEnter); this.classList.add('hidden');"
+				>{{ .Texto }}</p>
+			<textarea
+				onblur="this.classList.remove('inline-block'); this.classList.add('hidden'); this.previousElementSibling.textContent = this.value; this.previousElementSibling.classList.remove('hidden');"
+				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				rows="1"
+				name="texto"
+				class="hidden w-full text-white outline-none bg-black/50 placeholder:text-slate-600"
+				>{{ .Texto }}</textarea>
+			<button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
 				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				hx-confirm="¿Eliminar regla? {{ .Texto }}" 
-				title="Quitar regla" 
-				class="float-right opacity-10 hover:opacity-100">❌
-			</button>
+				title="Quitar regla"
+				>❌</button>
 		</li>
 		{{ end }}
-		<li class="flex items-center p-1">
-			<span tipo="carril_handle" class="px-2 py-1 mr-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50 cursor-pointer whitespace-nowrap">⣿</span>
-			<input type="text" name="texto" hx-post="/historias/{{ .Historia.HistoriaID }}/reglas" placeholder="Agregar regla" class="inline-block w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none placeholder:text-slate-600 focus:border-blue-400">
+		<li class="flex items-center gap-1 p-1">
+			<div class="hidden opacity-0 md:block">⣿</div>
+			<div>
+				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
+					{{ suma (len .Reglas) 1 }}
+				</span>
+			</div>
+			<input type="text" 
+				name="texto" 
+				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-trigger="keyup[key=='Enter']"
+				hx-validate="true"
+				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
+				placeholder="Agregar regla"
+				class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
+			>
 		</li>
 	</ol>
 
@@ -304,6 +332,23 @@
 		document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
 		dialogHistoria.close()
 	})
+
+	// Guardar con Enter; new line con Ctrl+Enter; cancelar con Esc;
+	function hdlTextAreaEnter(event) {
+		if (event.key === 'Enter') {
+			if (event.ctrlKey) {
+				event.target.value += '\n';
+				autosizeTextarea(event.target);
+				event.preventDefault();
+			} else {
+				event.preventDefault();
+				event.target.blur();
+			}
+		} else if (event.key === 'Escape') {
+			event.target.value = event.target.defaultValue;
+			event.target.blur();
+		}
+	}
 
 
 	// ================================================================ //

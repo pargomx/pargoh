@@ -149,6 +149,9 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
 
+// ================================================================ //
+// ================================================================ //
+
 func (s *servidor) postRegla(c *gecko.Context) error {
 	err := dhistorias.AgregarRegla(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
 	if err != nil {
@@ -160,6 +163,15 @@ func (s *servidor) postRegla(c *gecko.Context) error {
 
 func (s *servidor) deleteRegla(c *gecko.Context) error {
 	err := dhistorias.EliminarRegla(s.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+}
+
+func (s *servidor) patchRegla(c *gecko.Context) error {
+	err := dhistorias.EditarRegla(s.repo, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		return err
 	}
