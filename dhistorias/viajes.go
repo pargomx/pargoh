@@ -78,3 +78,17 @@ func EditarTramoDeViaje(repo Repo, historiaID int, posicion int, texto string) e
 	}
 	return nil
 }
+
+func ReordenarTramo(repo Repo, historiaID, oldPos, newPos int) error {
+	if historiaID == 0 {
+		return gko.Op("ReordenarTramo").Msg("falta historiaID")
+	}
+	if oldPos == newPos {
+		return nil
+	}
+	err := repo.ReordenarTramo(historiaID, oldPos, newPos)
+	if err != nil {
+		return gko.Op("ReordenarTramo").Err(err)
+	}
+	return nil
+}

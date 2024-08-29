@@ -149,6 +149,14 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
 
+func (s *servidor) reordenarTramo(c *gecko.Context) error {
+	err := dhistorias.ReordenarTramo(s.repo, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	if err != nil {
+		return err
+	}
+	return c.StatusOkf("Tramo reordenado")
+}
+
 // ================================================================ //
 // ================================================================ //
 

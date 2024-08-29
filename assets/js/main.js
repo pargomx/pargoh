@@ -259,4 +259,9 @@ htmx.onLoad(function(content) {
 		autosizeTextarea(textareas[i])
 		observer.observe(textareas[i]);
 	}
+
+	// Si se declara una función "onLoad" en el contenido, se ejecuta.
+	if (typeof onLoad === 'function') { 
+		onLoad(content);
+	}
 })

@@ -88,10 +88,10 @@
 
 	<!--* VIAJE DE USUARIO *-->
 	<h3 class="mb-2 text-xl text-cyan-600">Viaje de usuario</h3>
-	<ol class="mb-6">
+	<ol tipo="sort_tramos" class="mb-6">
 		{{ range .Tramos -}}
-		<li class="flex gap-1 p-1 group">
-			<div tipo="carril_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+		<li tipo="sort_tramo" class="flex gap-1 p-1 group">
+			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
 			</div>
 			<div>
@@ -350,6 +350,55 @@
 		}
 	}
 
+	// ================================================================ //
+	// ========== SORTABLE ============================================ //
+
+	function handleResponse(response) {
+		response.text().then((msg) => {
+			if (response.status >= 200 && response.status < 300) {
+				console.log(msg)
+			} else {
+				alert(msg)
+			}
+			document.querySelector("main").dispatchEvent(new Event("reloadHistoria"))
+		})
+	}
+
+	let historiaID = {{ .Agregado.Historia.HistoriaID }};
+
+	function reordenarTramo(historiaID, oldPos, newPos) {
+		console.debug(`reordenarTramo(id:${historiaID}, old:${oldPos}, new:${newPos})`)
+		if (historiaID == null) {
+			return console.error("No se puede reordenar sin historiaID")
+		}
+		let formData = new FormData();
+		formData.append("historia_id", historiaID);
+		formData.append("old_pos", oldPos);
+		formData.append("new_pos", newPos);
+		fetch('/reordenar-tramo', { method: 'POST', body: formData }).then(response => handleResponse(response));
+	}
+
+	function prepSortableTramos(){
+		console.log("Preparando sortable tramos")
+		var sortableTramos = new Sortable(document.querySelector("[tipo='sort_tramos']"), {
+			group: "sort_tramos", animation: 150, swapThreshold: 0.50,
+			draggable: "[tipo='sort_tramo']",
+			handle: "[tipo='sort_handle']",
+			onStart: function(event) {
+				event.item.classList.add("opacity-50")
+			},
+			onEnd: function(event) {
+				event.item.classList.remove("opacity-50")
+				if (event.oldIndex != event.newIndex){
+					return reordenarTramo(historiaID, event.oldIndex+1, event.newIndex+1)
+				}
+			},
+		});
+	}
+
+	
+
+
 
 	// ================================================================ //
 	// ========== WEBSOCKET =========================================== //
@@ -387,4 +436,11 @@
 			// console.log("Send wsID: " + wsID + " " + event.detail.verb)
 		}
 	});
+
+	// ================================================================ //
+	// ================================================================ //
+	function onLoad(content) {
+		prepSortableTramos()
+	}
+
 </script>
