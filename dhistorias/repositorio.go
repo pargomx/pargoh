@@ -65,4 +65,5 @@ type Repo interface {
 	DeleteRegla(HistoriaID int, Posicion int) error
 	GetRegla(HistoriaID int, Posicion int) (*ust.Regla, error)
 	ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error)
+	ReordenarRegla(HistoriaID, oldPos, newPos int) error
 }

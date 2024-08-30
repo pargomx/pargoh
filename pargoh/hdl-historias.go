@@ -186,3 +186,11 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 	defer s.reloader.brodcastReload(c)
 	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
+
+func (s *servidor) reordenarRegla(c *gecko.Context) error {
+	err := dhistorias.ReordenarRegla(s.repo, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	if err != nil {
+		return err
+	}
+	return c.Redir("/historias/%v", c.FormInt("historia_id"))
+}

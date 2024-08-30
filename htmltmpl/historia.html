@@ -207,11 +207,16 @@
 
 	<!--* REGLAS DE NEGOCIO -->
 	<h3 class="mb-2 text-xl text-cyan-600">Reglas</h3>
-	<ol class="mb-6">
+	<ol tipo="sort_reglas" class="mb-6">
 		{{ range .Reglas -}}
-		<li class="flex gap-1 p-1 group">
-			<div tipo="carril_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+		<li tipo="sort_regla" class="flex gap-1 p-1 group">
+			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
+				<form tipo="sort_form" hx-post="/reordenar-regla" hx-trigger="reordenarEnd">
+					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
+					<input type="hidden" name="new_pos">
+				</form>
 			</div>
 			<div>
 				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
@@ -379,20 +384,19 @@
 	}
 
 	function prepSortableTramos(){
-		console.log("Preparando sortable tramos")
 		var sortableTramos = new Sortable(document.querySelector("[tipo='sort_tramos']"), {
 			group: "sort_tramos", animation: 150, swapThreshold: 0.50,
 			draggable: "[tipo='sort_tramo']",
 			handle: "[tipo='sort_handle']",
-			onStart: function(event) {
-				event.item.classList.add("opacity-50")
-			},
+			ghostClass: "opacity-50",
+			onStart: function(event) { },
 			onEnd: function(event) {
-				event.item.classList.remove("opacity-50")
-				if (event.oldIndex != event.newIndex){
-					return reordenarTramo(historiaID, event.oldIndex+1, event.newIndex+1)
+				if (event.oldIndex == event.newIndex){
+					return
 				}
+				return reordenarTramo(historiaID, event.oldIndex+1, event.newIndex+1)
 			},
+			
 		});
 	}
 
@@ -441,6 +445,17 @@
 	// ================================================================ //
 	function onLoad(content) {
 		prepSortableTramos()
-	}
 
+		// Reordenar reglas
+		var sortableReglas = new Sortable(document.querySelector("[tipo='sort_reglas']"), {
+			group: "sort_reglas", animation: 150, swapThreshold: 0.50,
+			draggable: "[tipo='sort_regla']",
+			handle: "[tipo='sort_handle']",
+			ghostClass: "opacity-50",
+			onEnd: function (event) {
+				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
+          	},
+		});
+	}
 </script>

@@ -78,3 +78,17 @@ func EditarRegla(repo Repo, historiaID int, posicion int, texto string) error {
 	}
 	return nil
 }
+
+func ReordenarRegla(repo Repo, historiaID, oldPos, newPos int) error {
+	if historiaID == 0 {
+		return gko.Op("ReordenarRegla").Msg("falta historiaID")
+	}
+	if oldPos == newPos {
+		return nil
+	}
+	err := repo.ReordenarRegla(historiaID, oldPos, newPos)
+	if err != nil {
+		return gko.Op("ReordenarRegla").Err(err)
+	}
+	return nil
+}
