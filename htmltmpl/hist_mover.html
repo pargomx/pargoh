@@ -1,12 +1,12 @@
 {{ define "select_hist_recursiva" -}}
 	<ul class="px-4">
 		<li>
-			<input id="{{ .Padre.HistoriaID }}" type="radio" name="nuevo_padre_id" value="{{ .Padre.HistoriaID }}">
-			<label for="{{ .Padre.HistoriaID }}">{{ .Padre.Titulo }}</label>
+			<input id="{{ .Historia.HistoriaID }}" type="radio" name="nuevo_padre_id" value="{{ .Historia.HistoriaID }}">
+			<label for="{{ .Historia.HistoriaID }}">{{ .Historia.Titulo }}</label>
 		</li>
-		{{ if .Hijos -}}
+		{{ if .Historias -}}
 		<li>
-			{{ range .Hijos }}{{ template "select_hist_recursiva" . }}{{ end }}
+			{{ range .Historias }}{{ template "select_hist_recursiva" . }}{{ end }}
 		</li>
 		{{- end }}
 	</ul>
@@ -21,7 +21,7 @@
 </header>
 <form id="formMoverHistoria" action="/historias/{{ .Historia.HistoriaID }}/mover" method="POST" class="flex flex-col items-start flex-grow p-4 overflow-y-auto">
 	<ul class="px-4 grow">
-		{{ range .Arboles -}}
+		{{ range .Arboles -}}{{ range .Personas }}
 		<li class="pt-4">
 			<input id="{{ .Persona.PersonaID }}" type="radio" name="nuevo_padre_id" value="{{ .Persona.PersonaID }}">
 			<label for="{{ .Persona.PersonaID }}" class="text-lg"><i class="fa-solid fa-person"></i> {{ .Persona.Nombre }}</label>
@@ -30,7 +30,7 @@
 		<li>
 			{{ range .Historias }}{{ template "select_hist_recursiva" . }}{{ end }}
 		</li>
-		{{- end }}
+		{{- end }}{{- end }}
 		{{- end }}
 	</ul>
 </form>
