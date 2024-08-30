@@ -50,6 +50,15 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 	return c.RefreshHTMX()
 }
 
+func (s *servidor) eliminarTarea(c *gecko.Context) error {
+	err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repo)
+	if err != nil {
+		return err
+	}
+	gko.LogInfof("Tarea %d eliminada", c.PathInt("tarea_id"))
+	return c.RefreshHTMX()
+}
+
 func (s *servidor) iniciarTarea(c *gecko.Context) error {
 	err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repo)
 	if err != nil {

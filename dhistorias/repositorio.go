@@ -41,6 +41,7 @@ type Repo interface {
 	// Tareas
 	InsertTarea(tar ust.Tarea) error
 	UpdateTarea(tar ust.Tarea) error
+	DeleteTarea(tareaID int) error
 	GetTarea(tareaID int) (*ust.Tarea, error)
 	ListTareasByHistoriaID(historiaID int) ([]ust.Tarea, error)
 

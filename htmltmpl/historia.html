@@ -443,7 +443,12 @@
 				<input id="upd{{ .TareaID }}_06" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}" class="form-control">
 			</div>
 			<div class="pt-4">
-				<button type="submit" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+				<button type="button" hx-delete="/tareas/{{ .TareaID }}" onclick="this.parentNode.parentNode.parentNode.close()" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">
+					Eliminar
+				</button>
+			</div>
+			<div class="pt-2">
+				<button type="submit" onclick="this.parentNode.parentNode.parentNode.close()" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
 					Guardar cambios
 				</button>
 			</div>

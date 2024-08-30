@@ -87,6 +87,13 @@ func (s *Repositorio) DeleteTarea(TareaID int) error {
 		return gko.Err(err).Op(op)
 	}
 	_, err = s.db.Exec(
+		"DELETE FROM intervalos WHERE tarea_id = ?",
+		TareaID,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op).Op("delete_intervalos")
+	}
+	_, err = s.db.Exec(
 		"DELETE FROM tareas WHERE tarea_id = ?",
 		TareaID,
 	)

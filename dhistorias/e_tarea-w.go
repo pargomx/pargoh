@@ -21,6 +21,15 @@ func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 	return nil
 }
 
+func EliminarTarea(tareaID int, repo Repo) error {
+	op := gko.Op("EliminarTarea").Ctx("tareaID", tareaID)
+	err := repo.DeleteTarea(tareaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
 func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	op := gko.Op("ActualizarTarea")
 	tar, err := repo.GetTarea(tareaID)

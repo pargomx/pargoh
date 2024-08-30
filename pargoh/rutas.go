@@ -154,6 +154,7 @@ func main() {
 	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
 
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
+	s.DEL("/tareas/{tarea_id}", s.eliminarTarea)
 	s.POS("/tareas/{tarea_id}/iniciar", s.iniciarTarea)
 	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
