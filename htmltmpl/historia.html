@@ -263,7 +263,21 @@
 	</ol>
 
 	<!--* TAREAS -->
-	<h3 class="mb-2 text-xl text-cyan-600">Tareas</h3>
+	<h3 class="mb-2 text-xl text-cyan-600">
+		Tareas
+		{{- if .TiempoReal -}}
+		<span class="float-right pl-4 text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
+			<i class="fa-solid fa-stopwatch"></i> Transcurrido
+			{{ .TiempoRealString }}
+		</span>
+		{{- end -}}
+		{{- if .TiempoEstimado -}}
+		<span class="float-right pl-4 text-sm opacity-75" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+			<i class="fa-solid fa-hourglass-start"></i> Estimado
+			{{ .TiempoEstimadoString }}
+		</span>
+		{{- end -}}
+	</h3>
 	<ol class="mb-6">
 		{{ range .Tareas }}
 		<li tipo="sort_regla" class="flex gap-1 p-1 group">
@@ -340,14 +354,14 @@
 			</div>
 			<div class="text-right grow">
 				{{- if .TiempoEstimado -}}
-				<span class="pl-4 text-sm opacity-75" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ .TiempoEstimadoString }}">
 					<i class="fa-solid fa-hourglass-start"></i>
 					{{ .TiempoEstimadoString }}
 				</span>
 				{{- end -}}
 
 				{{- if .TiempoReal -}}
-				<span class="pl-4 text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
+				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo transcurrido {{ .TiempoRealString }}">
 					<i class="fa-solid fa-stopwatch"></i>
 					{{ .TiempoRealString }}
 				</span>

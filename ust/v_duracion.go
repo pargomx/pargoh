@@ -64,7 +64,7 @@ func NuevaDuración(txt string) (int, error) {
 	return 0, fmt.Errorf("duración inválida: %s", txt)
 }
 
-func minutosToString(mins int) string {
+func MinutosToString(mins int) string {
 	if mins == 0 {
 		return ""
 	}
@@ -79,7 +79,7 @@ func minutosToString(mins int) string {
 	return fmt.Sprintf("%d:%02dm", h, m)
 }
 
-func segundosToString(segs int) string {
+func SegundosToString(segs int) string {
 	if segs == 0 {
 		return "-"
 	}
@@ -102,15 +102,15 @@ func segundosToString(segs int) string {
 }
 
 func (tar Tarea) TiempoEstimadoString() string {
-	return minutosToString(tar.TiempoEstimado)
+	return MinutosToString(tar.TiempoEstimado)
 }
 func (tar Tarea) TiempoRealString() string {
-	return segundosToString(tar.TiempoReal)
+	return SegundosToString(tar.TiempoReal)
 }
 
 func (tar IntervaloReciente) TiempoEstimadoString() string {
-	return minutosToString(tar.TiempoEstimado)
+	return MinutosToString(tar.TiempoEstimado)
 }
 func (tar IntervaloReciente) TiempoRealString() string {
-	return segundosToString(tar.TiempoReal)
+	return SegundosToString(tar.TiempoReal)
 }
