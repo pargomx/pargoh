@@ -132,6 +132,7 @@ func main() {
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
 	s.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
+	s.POS("/reordenar-historia", s.reordenarHistoria)
 
 	s.GET("/historias/{historia_id}/tareas", s.getTareasDeHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)

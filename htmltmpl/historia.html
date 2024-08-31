@@ -176,19 +176,60 @@
 
 	<!--* DESCENDIENTES *-->
 	<h3 class="mb-2 text-xl text-cyan-600">Descendientes</h3>
-	<ul class="mb-6 pl-6 list-[revert]">
+	<ul tipo="sort_descendientes" class="mb-6">
 		{{ range .Descendientes }}
-		<li class="p-1">
-			{{ .Historia.Titulo }}
-			<a href="/historias/{{ .Historia.HistoriaID }}" class="float-right opacity-10 hover:opacity-100">👁️</a>
+		<li tipo="sort_descendiente" class="">
+			<div class="flex gap-1 p-1 group">
+				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+					⣿
+					<form tipo="sort_form" hx-post="/reordenar-historia" hx-trigger="reordenarEnd">
+						<input type="hidden" name="historia_id" value="{{ .Historia.HistoriaID }}">
+						<input type="hidden" name="old_pos" value="{{ .Historia.Posicion }}">
+						<input type="hidden" name="new_pos">
+					</form>
+				</div>
+				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
+				<p class="whitespace-pre-line grow">
+					{{- .Historia.Titulo -}}
+				</p>
+				<a href="/historias/{{ .Historia.HistoriaID }}/mover"
+					title="Mover historia"
+					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
+					<i class="fa-solid fa-person-walking"></i>
+				</a>
+				<a href="/historias/{{ .Historia.HistoriaID }}"
+					title="Ver historia"
+					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
+					<!-- <i class="fa-solid fa-up-right-and-down-left-from-center"></i> -->
+					<i class="fa-regular fa-eye"></i>
+				</a>
+			</div>
 
-			<ul class="pl-5 list-[revert]">
+			{{ if .Descendientes -}}
+			<ul class="">
 				{{ range .Descendientes }}
-				<li class="p-1">
-					{{ .Historia.Titulo }}
+				<li tipo="" class="flex gap-1 p-1 group">
+					<div class="pl-6">
+						<i class="px-1 opacity-50 fa-regular fa-circle" style="font-size: 0.5rem;"></i>
+					</div>
+					<p class="whitespace-pre-line grow">
+						{{- .Historia.Titulo -}}
+					</p>
+					<a href="/historias/{{ .Historia.HistoriaID }}/mover"
+						title="Mover historia"
+						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
+						<i class="fa-solid fa-person-walking"></i>
+					</a>
+					<a href="/historias/{{ .Historia.HistoriaID }}"
+						title="Ver historia"
+						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
+						<!-- <i class="fa-solid fa-up-right-and-down-left-from-center"></i> -->
+						<i class="fa-regular fa-eye"></i>
+					</a>
 				</li>
 				{{ end }}
 			</ul>
+		{{ end }}
 		</li>
 		{{ end }}
 		<li class="">
@@ -225,7 +266,8 @@
 			</div>
 			<p class="whitespace-pre-line grow"
 				onclick="let inp = this.nextElementSibling; inp.classList.remove('hidden'); inp.classList.add('inline-block'); inp.focus(); inp.addEventListener('keydown',hdlTextAreaEnter); this.classList.add('hidden');"
-				>{{ .Texto }}</p>
+				>{{ .Texto }}
+			</p>
 			<textarea
 				onblur="this.classList.remove('inline-block'); this.classList.add('hidden'); this.previousElementSibling.textContent = this.value; this.previousElementSibling.classList.remove('hidden');"
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
@@ -627,6 +669,18 @@
 		var sortableReglas = new Sortable(document.querySelector("[tipo='sort_reglas']"), {
 			group: "sort_reglas", animation: 150, swapThreshold: 0.50,
 			draggable: "[tipo='sort_regla']",
+			handle: "[tipo='sort_handle']",
+			ghostClass: "opacity-50",
+			onEnd: function (event) {
+				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
+          	},
+		});
+
+		// Reordenar descendientes
+		var sortableReglas = new Sortable(document.querySelector("[tipo='sort_descendientes']"), {
+			group: "sort_descendientes", animation: 150, swapThreshold: 0.50,
+			draggable: "[tipo='sort_descendiente']",
 			handle: "[tipo='sort_handle']",
 			ghostClass: "opacity-50",
 			onEnd: function (event) {

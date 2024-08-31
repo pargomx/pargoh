@@ -122,3 +122,15 @@ func (s *servidor) moverHistoria(c *gecko.Context) error {
 	return c.Redir("/historias/%v/mover", c.PathInt("historia_id"))
 	// return c.StatusAccepted("Historia movida")
 }
+
+func (s *servidor) reordenarHistoria(c *gecko.Context) error {
+	err := dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), s.repo)
+	if err != nil {
+		return err
+	}
+	hist, err := s.repo.GetNodoHistoria(c.FormInt("historia_id"))
+	if err != nil {
+		return err
+	}
+	return c.Redir("/historias/%v", hist.PadreID)
+}
