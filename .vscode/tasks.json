@@ -13,20 +13,17 @@
 			"isBackground": true,
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
-
 		{
 			"label": "pargocode", "detail": "Pargo Code Generation Server",
 			"command": "pargo",
 			"isBackground": true,
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
-		
 		{
 			"label": "install", "detail": "Instalar aplicación",
 			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=DEV\" ./pargoh && echo 'Instalado ºuº)/'",
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
-		
 		{
 			"label": "deploy", "detail": "Enviar binario al servidor",
 			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && rsync -avh --progress /tmp/pargoh ${input:remoteHost}:~/bin/ && echo 'Enviado :D'",
@@ -37,15 +34,8 @@
 		// ========== EJECUTAR ============================================ //
 
 		{
-			"label": "Start here", "detail": "Ejecutar en directorio de proyecto",
-			"command": "pargoh -p 5050",
-			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
-			"isBackground": true,
-			"dependsOrder": "sequence", "dependsOn": ["install"]
-		},
-		{
 			"label": "Start dev", "detail": "Ejecutar en directorio de prueba",
-			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/descargas",
+			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/pargodata",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
@@ -53,13 +43,6 @@
 		{
 			"label": "Start mac", "detail": "Ejecutar en directorio de prueba mac",
 			"command": "pargoh -src=/Users/andrew/proyectos/pargoh -dir=/Users/andrew/Downloads/pargoh",
-			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
-			"isBackground": true,
-			"dependsOrder": "sequence", "dependsOn": ["install"]
-		},
-		{
-			"label": "Start feciar", "detail": "Ejecutar en proyecto feciar",
-			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/proyectos/feciar",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
