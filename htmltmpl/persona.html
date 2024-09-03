@@ -27,7 +27,7 @@
 		<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
 		<span class="opacity-50">quiero...</span>
 	</h4>
-	<div tipo="carriles_container" hx-get="/lista/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex flex-col items-stretch gap-4 pb-2">
+	<div tipo="carriles_container" hx-get="/personas/{{ .Persona.PersonaID }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex flex-col items-stretch gap-4 pb-2">
 		{{ range .Historias }}
 		<div tipo="carril" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
 			
@@ -35,7 +35,7 @@
 			
 			{{ .PrioridadEmoji }}
 			
-			<span class="px-2 py-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50">{{ .Posicion }}</span>
+			<!-- <span class="px-2 py-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50">{{ .Posicion }}</span> -->
 
 			{{ if .NumTareas -}}
 			<!-- <a href="/historias/{{ .HistoriaID }}/tarea" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
