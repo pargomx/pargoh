@@ -1,7 +1,7 @@
 {{ with .Proyecto }}
 <header class="relative flex items-center w-full mb-4 bg-cyan-950 shadow-lg">
-	<div class="">
-		<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24">
+	<div class="p-1">
+		<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/pargo_96.png{{ end }}" alt="Portada del proyecto" class="w-24 rounded-md">
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
