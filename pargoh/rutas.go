@@ -103,9 +103,6 @@ func main() {
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 	}
 
-	s.GET("/reload", s.brodcastReload)
-	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
-
 	s.GET("/", s.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
 	s.GET("/personas/{persona_id}", s.getPersona)
@@ -161,6 +158,9 @@ func main() {
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
 
 	s.GET("/intervalos", s.getIntervalos)
+
+	s.GET("/reload", s.brodcastReload)
+	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
 
 	// Exportar e importar
 	s.GET("/arbol", s.exportarArbolTXT)

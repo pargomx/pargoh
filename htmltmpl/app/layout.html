@@ -10,7 +10,8 @@
 		<link rel="stylesheet" type="text/css" href="/assets/css/estilo.css">
 		<link rel="stylesheet" type="text/css" href="/assets/css/fontawesome.min.css">
 
-		<script defer src="/assets/js/htmx.min.js"></script>
+		<script src="/assets/js/htmx.min.js"></script>
+		<script src="/assets/js/Sortable.min.js"></script>
 		<script defer src="/assets/js/main.js"></script>
 	</head>
 	
@@ -29,8 +30,8 @@
 		<!-- htmx-indicator -->
 		<style>
 			.my-indicator{ display: none; }
-			.htmx-request .my-indicator{ display: flex; }
 			.htmx-request.my-indicator{ display: flex; }
+			.htmx-request .my-indicator{ display: flex; }
 		</style>
 		<div id="cargando" class="absolute top-0 flex items-center justify-center w-full h-screen py-8 rounded-md bg-black/40 my-indicator">
 			<img src="/assets/img/spinner.svg" alt="Cargando..." class="w-16">

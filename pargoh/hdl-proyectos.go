@@ -37,7 +37,7 @@ func (s *servidor) postProyecto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	return c.Redir("/")
 }
 
 func (s *servidor) updateProyecto(c *gecko.Context) error {
@@ -58,7 +58,7 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 			return err
 		}
 	}
-	return c.RefreshHTMX()
+	return c.Redir("/")
 }
 
 func (s *servidor) deleteProyecto(c *gecko.Context) error {
@@ -66,7 +66,7 @@ func (s *servidor) deleteProyecto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	return c.Redir("/")
 }
 
 func (s *servidor) getProyecto(c *gecko.Context) error {
@@ -86,7 +86,7 @@ func (s *servidor) getProyecto(c *gecko.Context) error {
 		"Titulo":    Proyecto.Titulo,
 		"Proyecto":  Proyecto,
 		"Personas":  Personas,
-		"Proyectos": Proyectos,
+		"Proyectos": Proyectos, // Para cambiar de proyecto a una persona.
 	}
-	return c.RenderOk("personas", data)
+	return c.RenderOk("proyecto", data)
 }
