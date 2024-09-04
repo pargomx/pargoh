@@ -42,6 +42,30 @@ func ActualizarPersona(per ust.Persona, repo Repo) error {
 	return nil
 }
 
+func ParcharPersona(personaID int, param string, newVal string, repo Repo) error {
+	op := gko.Op("ParcharPersona").Ctx("personaID", personaID)
+	if personaID == 0 {
+		return op.Msg("personaID debe estar definido")
+	}
+	Persona, err := repo.GetPersona(personaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	switch param {
+	case "nombre":
+		Persona.Nombre = newVal
+	case "descripcion":
+		Persona.Descripcion = newVal
+	default:
+		return op.Msgf("Parámetro no soportado: %v", param)
+	}
+	err = repo.UpdatePersona(*Persona)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
 func EliminarPersona(personaID int, repo Repo) error {
 	op := gko.Op("EliminarPersona")
 	per, err := repo.GetPersona(personaID)

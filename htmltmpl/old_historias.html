@@ -141,14 +141,11 @@
 			group: "carriles", animation: 150, swapThreshold: 0.50,
 			draggable: "[tipo='carril']",
 			handle: "[tipo='carril_handle']",
-
+			ghostClass: "opacity-50",
 			onStart: function(event) {
-				event.item.classList.add("opacity-50")
 				showByID("delete_zone")
 			},
-			
 			onEnd: function(event) {
-				event.item.classList.remove("opacity-50")
 				hideByID("delete_zone")
 
 				// Parámetros
@@ -174,9 +171,9 @@
 			group: "carril_items", animation: 150,
 			draggable: "[tipo='carril_item']",
 			handle: "[tipo='carril_item_handle']",
-
+			ghostClass: "opacity-50",
+			
 			onStart: function(event) {
-				event.item.classList.add("opacity-50")
 				showByID("delete_zone")
 			},
 

@@ -43,7 +43,7 @@ func (s *servidor) postPersona(c *gecko.Context) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) patchPersona(c *gecko.Context) error {
+func (s *servidor) updatePersona(c *gecko.Context) error {
 	persona := ust.Persona{
 		PersonaID:   c.PathInt("persona_id"),
 		ProyectoID:  c.FormVal("proyecto_id"),
@@ -51,6 +51,19 @@ func (s *servidor) patchPersona(c *gecko.Context) error {
 		Descripcion: c.FormVal("descripcion"),
 	}
 	err := dhistorias.ActualizarPersona(persona, s.repo)
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
+func (s *servidor) patchPersona(c *gecko.Context) error {
+	err := dhistorias.ParcharPersona(
+		c.PathInt("persona_id"),
+		c.PathVal("param"),
+		c.FormValue("value"),
+		s.repo,
+	)
 	if err != nil {
 		return err
 	}

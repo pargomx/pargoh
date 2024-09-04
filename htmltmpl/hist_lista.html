@@ -17,7 +17,7 @@
 	</div>
 
 	<span class="absolute right-2 top-2">
-		<a href="/" class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
 	</span>
 </header>
 
@@ -255,11 +255,8 @@
 		group: "carriles", animation: 150, swapThreshold: 0.50,
 		draggable: "[tipo='carril']",
 		handle: "[tipo='carril_handle']",
-		onStart: function(event) {
-			event.item.classList.add("opacity-50")
-		},
+		ghostClass: "opacity-50",
 		onEnd: function(event) {
-			event.item.classList.remove("opacity-50")
 			let historiaID = event.item.id
 			if (historiaID == null) { 
 				return console.error("historiaID null") 

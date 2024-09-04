@@ -58,7 +58,7 @@ func (s *servidor) postHistoriaQuick(c *gecko.Context) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) putHistoria(c *gecko.Context) error {
+func (s *servidor) updateHistoria(c *gecko.Context) error {
 	err := dhistorias.ActualizarHistoria(
 		c.PathInt("historia_id"),
 		ust.Historia{

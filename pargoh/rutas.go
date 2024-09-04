@@ -109,22 +109,24 @@ func main() {
 	s.GET("/historias/{historia_id}", s.getHistoria)
 
 	s.POS("/proyectos", s.postProyecto)
-	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
+	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.patchProyecto)
 
 	s.POS("/personas", s.postPersona)
-	s.PCH("/personas/{persona_id}", s.patchPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
+	s.PUT("/personas/{persona_id}", s.updatePersona)
+	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
+
+	s.POS("/historias/{historia_id}", s.postHistoriaQuick)
+	s.DEL("/historias/{historia_id}", s.deleteHistoria)
+	s.PUT("/historias/{historia_id}", s.updateHistoria)
+	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
 
 	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
 	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
 	s.GET("/prioritarias", s.getHistoriasPrioritarias)
 
-	s.POS("/historias/{historia_id}", s.postHistoriaQuick)
-	s.PUT("/historias/{historia_id}", s.putHistoria)
-	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
-	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.GET("/historias/{historia_id}/form", s.formHistoria)
 	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)

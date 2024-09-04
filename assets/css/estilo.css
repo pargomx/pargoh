@@ -688,6 +688,13 @@ video {
   -webkit-line-clamp: 3;
 }
 
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .block {
   display: block;
 }
@@ -1195,6 +1202,18 @@ video {
   padding-top: 1rem;
 }
 
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -1379,6 +1398,10 @@ video {
 
 .opacity-85 {
   opacity: 0.85;
+}
+
+.opacity-25 {
+  opacity: 0.25;
 }
 
 .shadow-lg {

@@ -12,12 +12,9 @@
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
 			<span class="text-xl">{{ .Persona.Nombre }}</span>
 		</h3>
-		<p class="opacity-50">
-			{{ .Persona.Descripcion }}
-		</p>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/proyectos/{{ .Proyecto.ProyectoID }}" class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
 	</span>
 </header>
 
@@ -27,37 +24,76 @@
 		<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
 		<span class="opacity-50">quiero...</span>
 	</h4>
-	<div tipo="carriles_container" hx-get="/personas/{{ .Persona.PersonaID }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex flex-col items-stretch gap-4 pb-2">
-		{{ range .Historias }}
-		<div tipo="carril" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
-			
-			<span tipo="carril_handle" class="mr-1 cursor-pointer">⣿</span>
-			
-			{{ .PrioridadEmoji }}
-			
-			<!-- <span class="px-2 py-1 font-mono text-xs bg-black bg-opacity-40 rounded-md opacity-50">{{ .Posicion }}</span> -->
+	<div
+		tipo="sort_historias" 
+		hx-get="/personas/{{ .Persona.PersonaID }}" 
+		hx-trigger="historiasActualizadas" 
+		hx-target="this" hx-swap="innerHTML" 
+		hx-select="[tipo='sort_historias'] > *" 
+		class="flex flex-col items-stretch gap-4 pb-2"
+	>
+		{{ range .Historias -}}
+		<article tipo="sort_historia" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
+			<span tipo="sort_handle" class="mr-1 cursor-pointer">
+				⣿
+			</span>
+			<a href="/historias/{{ .HistoriaID }}" class="grow">
+				{{ .Titulo }}{{ if .Completada }} ✅{{ end }}
+			</a>
+			<span>
+				{{ .PrioridadEmoji }}
+			</span>
+		</article>
+		{{ end -}}
 
-			{{ if .NumTareas -}}
-			<!-- <a href="/historias/{{ .HistoriaID }}/tarea" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
-			{{ else -}}
-			<!-- <a href="/lista/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a> -->
-			{{ end }}
-			<a href="/historias/{{ .HistoriaID }}" class="grow">{{ .Titulo }}{{ if .Completada }} ✅{{ end }}</a>
-		</div>
-		{{ end }}
-		<div class="pt-2">
-			<input id="nuevaHistoria" name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" placeholder="Agregar historia..." class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+		<!-- Agregar historia -->
+		<div>
+			<input 
+				id="nuevaHistoria"
+				name="titulo"
+				type="text"
+				hx-target="#msgStack"
+				hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}"
+				placeholder="Agregar historia..."
+				class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
 		</div>
 	</div>
+
+	<!-- DESCRIPCIÓN DE LA PERSONA -->
+
+	{{ if .Persona.Descripcion -}}
+	<!-- <details class="py-4">
+		<summary class="opacity-75">Mapa de empatía</summary>
+		<p class="opacity-50">
+			{{ .Persona.Descripcion }}
+		</p>
+	</details> -->
+	{{ end }}
+
+	<div class="py-4">
+		<label for="personaDesc" class="text-lg opacity-75">Descripción del personaje</label>
+		<textarea
+			id="personaDesc"
+			hx-patch="/personas/{{ .Persona.PersonaID }}/descripcion"
+			hx-swap="none" 
+			hx-trigger="change, keyup changed delay:2s"
+			name="value"
+			rows="1"
+			placeholder="En primera persona para hacer empatía con el usuario..." 
+			class="w-full px-2 py-1 text-base font-medium transition-opacity bg-transparent border-b border-cyan-800 outline-none opacity-75 max-h-96 focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600">
+			{{- .Persona.Descripcion -}}
+		</textarea>
+	</div>
+
 </main>
 
 <div id="ctxMenu" tipo="ctxMenu" gk-historia="" class="absolute hidden p-2 text-black bg-cyan-50 rounded shadow-md">
 	<div class="grid grid-cols-2 gap-1 text-sm">
 		<div class="col-span-2 text-xs opacity-50">Acciones</div>
-		<button type="button" onclick="expandirHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✂️ Abrir</button>
+		<button type="button" onclick="tableroHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tablero</button>
 		<button type="button" onclick="editarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✏️ Editar</button>
 		<button type="button" onclick="moverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
-		<button type="button" onclick="tareasHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tareas</button>
+		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">❌ Eliminar</button>
 		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
 		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤩 Must</button>
 		<button type="button" onclick="priorizarHistoria(2)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤔 Should</button>
@@ -66,49 +102,28 @@
 		<div class="col-span-2 text-xs opacity-50">Estatus</div>
 		<button type="button" onclick="marcarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✅ Okey</button>
 		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🔻 Falta</button>
-		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">❌ Eliminar</button>
 	</div>
 </div>
 
-<dialog id="dialogHistoria" class="p-3 rounded-lg" hx-swap="innerHTML" hx-get="" hx-trigger="loadHistoriaForm" hx-target="this">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
-	</header>
-	<div>
-		Cargando...
-	</div>
+<dialog id="dialogHistoria" hx-get="" hx-swap="innerHTML" hx-trigger="loadHistoriaForm" hx-target="this" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<!-- Loaded from editarHistoria() -->
+	Cargando...
 </dialog>
 
 <div id="msgStack" class="hidden">
-	<!-- Mensajes respuesta del servidor -->
+	<!-- Mensajes respuesta del servidor, utilizado para hacer trigger a reload -->
 </div>
 
 <!-- ======================================================== -->
 <script>
-
-	function expandirHistoria() {
+	function tableroHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		window.location.href = `/tablero/${historiaID}`
-	}
-
-	function tareasHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}`
 	}
 
 	function moverHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		window.location.href = `/historias/${historiaID}/mover`
-	}
-
-	function editarHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let dialog = document.getElementById("dialogHistoria")
-		dialog.showModal()
-		dialog.setAttribute("hx-get", `/historias/${historiaID}/form`)
-		htmx.process(dialog)
-		dialog.dispatchEvent(new Event("loadHistoriaForm"))
 	}
 
 	function priorizarHistoria(prioridad) {
@@ -121,7 +136,7 @@
 		formData.append("prioridad", prioridad);
 		fetch(`/historias/${historiaID}/priorizar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
 	}
-	
+
 	function marcarHistoria(completada) {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let formData = new FormData();
@@ -133,6 +148,15 @@
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let formData = new FormData();
 		fetch(`/historias/${historiaID}`, { method: 'DELETE' }).then(response => handleResponse(response));
+	}
+
+	function editarHistoria() {
+		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
+		let dialog = document.getElementById("dialogHistoria")
+		dialog.showModal()
+		dialog.setAttribute("hx-get", `/historias/${historiaID}/form`)
+		htmx.process(dialog)
+		dialog.dispatchEvent(new Event("loadHistoriaForm"))
 	}
 
 	// ================================================================ //
@@ -157,13 +181,7 @@
 			menu.setAttribute("gk-historia", historiaID)
 		})
 	}
-
-	function inicializarCarriles() {
-		document.querySelectorAll("[tipo='carril']").forEach(element => {
-			setupMenuContextual(element, element.id)
-		});
-	}
-
+	// Cerrar el menú contextual al hacer click en donde sea.
 	document.addEventListener("click", function(event) {
 		let menu = document.querySelector("[tipo='ctxMenu']")
 		if (menu.classList.contains("hidden")) { return }
@@ -171,35 +189,9 @@
 	})
 
 	// ================================================================ //
-	// ========== Inicializar ========================================= //
-	
-	inicializarCarriles()
+	// ========== Recargar contenido ================================== //
 
-	// Cada vez que cambie el contenido hay que volver a inicializar los carriles.
-	document.querySelector("[tipo='carriles_container']").addEventListener("htmx:afterSwap", (event) => {
-		inicializarCarriles()
-	})
-
-	document.getElementById("msgStack").addEventListener("htmx:afterSwap", (event) => {
-		document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
-		dialogHistoria.close()
-	})
-
-
-
-	// ================================================================ //
-	// ========== Reordenar =========================================== //
-
-	function reordenarHistoria(historiaID, newPosicion) {
-		console.debug(`reordenarHistoria(id:${historiaID}, pos:${newPosicion})`)
-		if (historiaID == null) {
-			return console.error("No se puede reordenar persona sin ID")
-		}
-		let formData = new FormData();
-		formData.append("newPosicion", newPosicion);
-		fetch(`/nodos/${historiaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-
+	// Para respuestas a solicitudes hechas con JS.
 	function handleResponse(response) {
 		response.text().then((msg) => {
 			if (response.status >= 200 && response.status < 300) {
@@ -207,29 +199,15 @@
 			} else {
 				alert(msg)
 			}
-			// Recargar carriles con HTMX
-			document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
+			document.querySelector("[tipo='sort_historias']").dispatchEvent(new Event("historiasActualizadas"))
 		})
 	}
-	
-	var zonaCarriles = new Sortable(document.querySelector("[tipo='carriles_container']"), {
-		group: "carriles", animation: 150, swapThreshold: 0.50,
-		draggable: "[tipo='carril']",
-		handle: "[tipo='carril_handle']",
-		onStart: function(event) {
-			event.item.classList.add("opacity-50")
-		},
-		onEnd: function(event) {
-			event.item.classList.remove("opacity-50")
-			let historiaID = event.item.id
-			if (historiaID == null) { 
-				return console.error("historiaID null") 
-			}
-			if (event.oldIndex != event.newIndex){
-				return reordenarHistoria(historiaID, event.newIndex + 1)
-			}
-		},
-	});
+
+	// Para respuestas a solicitudes hechas con HTMX.
+	document.getElementById("msgStack").addEventListener("htmx:afterSwap", (event) => {
+		document.querySelector("[tipo='sort_historias']").dispatchEvent(new Event("historiasActualizadas"))
+		dialogHistoria.close()
+	})
 
 	// Ubicar una historia seleccionada mediante el URL fragment.
 	if (window.location.hash) {
@@ -240,5 +218,46 @@
 			historia.scrollIntoView();
 		}
 	}
+
+	// ================================================================ //
+	// ========== Inicializar ========================================= //
+	
+	htmx.onLoad(function(content) {
+		content.querySelectorAll("[tipo='sort_historia']").forEach(element => {
+			setupMenuContextual(element, element.id) // al cargar toda la página
+		});
+		if (content.getAttribute("tipo") == "sort_historia") {
+			setupMenuContextual(content, content.id) // al cargar individualmente cada historia
+		}
+	});
+
+	// ================================================================ //
+	// ========== Reordenar =========================================== //
+
+	function reordenarHistoria(historiaID, newPosicion) {
+		console.debug(`reordenarHistoria(id:${historiaID}, pos:${newPosicion})`)
+		if (historiaID == null) {
+			return console.error("No se puede reordenar sin ID")
+		}
+		let formData = new FormData();
+		formData.append("newPosicion", newPosicion);
+		fetch(`/nodos/${historiaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
+	}
+
+	var zonaCarriles = new Sortable(document.querySelector("[tipo='sort_historias']"), {
+		group: "historias", animation: 150, swapThreshold: 0.50,
+		draggable: "[tipo='sort_historia']",
+		handle: "[tipo='sort_handle']",
+		ghostClass: "opacity-50",
+		onEnd: function(event) {
+			let historiaID = event.item.id
+			if (historiaID == null) { 
+				return console.error("historiaID null") 
+			}
+			if (event.oldIndex != event.newIndex){
+				return reordenarHistoria(historiaID, event.newIndex + 1)
+			}
+		},
+	});
 
 </script>
