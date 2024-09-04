@@ -2,41 +2,58 @@
 	Pargo 🐟
 </h2>
 
-<main class="flex flex-col items-center justify-center flex-grow w-full max-w-5xl gap-4 p-2 mx-auto">
+<main class="flex flex-col items-center justify-center grow w-full max-w-5xl gap-4 p-2 mx-auto">
 	{{ range .Proyectos -}}
 	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
 
 		<div class="p-2 rounded-md">
 			<a href="/proyectos/{{ .ProyectoID }}" hx-boost="true" hx-push-url="true">
-				<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}" alt="Portada del proyecto" class="w-32 rounded-md">
+				<img src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}" alt="Portada del proyecto" class="w-32 transition-opacity rounded-md hover:opacity-75">
 			</a>
 		</div>
 
 		<div class="w-full p-2">
 			<h4 class="mb-2 text-2xl font-medium">
-				<a href="/proyectos/{{ .ProyectoID }}">{{ .Titulo }}</a>
+				<a href="/proyectos/{{ .ProyectoID }}" class="transition-opacity hover:opacity-75">{{ .Titulo }}</a>
 			</h4>
-			<p class="mb-2 text-sm opacity-75">
+			<p class="mb-2 text-sm opacity-75 line-clamp-3">
 				{{- .Descripcion -}}
 			</p>
-			<ul class="pl-4 mb-2 list-disc">
+			<ul class="flex flex-wrap pl-4 mb-2 list-disc gap-x-6 gap-y-1">
 				{{ range .Personas -}}
-				<li class="text-sm opacity-75"><a href="/personas/{{ .PersonaID}}">{{ .Nombre }}</a></li>
+				<li class="text-sm">
+					<a href="/personas/{{ .PersonaID}}" class="transition-opacity opacity-75 hover:opacity-100">
+						{{ .Nombre }}
+					</a>
+				</li>
 				{{ end }}
 			</ul>
 		</div>
 
-		<span class="absolute top-0 right-0 px-1 bg-cyan-900 opacity-75 rounded-tr-md rounded-bl-md">
-			<button type="button" onclick="showPersonaForm(this.parentNode.parentNode.id)"><i class="px-2 py-2 fa fa-pen"></i></button>
-		</span>
+		<button 
+			type="button"
+			onclick="showPersonaForm(this.closest('article').id)"
+			title="Editar proyecto"
+			class="absolute top-0 right-0 px-1 transition-opacity bg-cyan-900 opacity-75 hover:opacity-100 rounded-tr-md rounded-bl-md">
+			<i class="px-2 py-2 fa fa-pen"></i>
+		</button>
 	</article>
 	{{ end }}
 
-	<!-- Agregar proyecto -->
 	{{ if not .Proyectos -}}
-	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('New')">Nuevo proyecto <i class="fa-solid fa-plus"></i></button>
+	<button
+		type="button"
+		onclick="showPersonaForm('New')"
+		class="px-2 py-1 bg-cyan-700 rounded-full">
+		Nuevo proyecto <i class="fa-solid fa-plus"></i>
+	</button>
 	{{ else }}
-	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('New')"><i class="fa-solid fa-plus"></i></button>
+	<button
+		type="button"
+		onclick="showPersonaForm('New')"
+		class="px-1 bg-cyan-700 rounded-full">
+		<i class="fa-solid fa-plus"></i>
+	</button>
 	{{ end }}
 </main>
 
@@ -45,15 +62,28 @@
 </footer>
 
 <!--* NUEVO PROYECTO -->
-<dialog id="frmPryNew" class="p-3 rounded-lg">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Nuevo proyecto</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+<dialog id="frmPryNew" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Nuevo proyecto
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
 	</header>
-	<div class="text-right">
-		<button type="button" onclick="frmPryNew.close(); importProyecto.showModal()" class="italic opacity-75 hover:opacity-100">Importar JSON...</button>
+	<div class="p-2 pb-0 text-right">
+		<button
+			type="button"
+			onclick="frmPryNew.close(); importProyecto.showModal()"
+			class="italic font-semibold text-cyan-500 underline transition-colors rounded hover:text-cyan-400 whitespace-nowrap">
+			Importar JSON...
+		</button>
 	</div>
-	<form class="flex flex-col gap-4" hx-post="/proyectos">
+	<form class="flex flex-col gap-2 p-2" hx-post="/proyectos">
 		<div>
 			<label for="newprj_01">Título</label>
 			<input id="newprj_01" name="titulo" value="" type="text" class="form-control" required onchange="newprj_02.value=normalizar(this.value.replaceAll(' ',''))">
@@ -66,37 +96,74 @@
 			<label for="newprj_03">Descripción</label>
 			<textarea id="newprj_03" name="descripcion" rows="2" class="form-control"></textarea>
 		</div>
-		<button type="submit" onclick="this.closest('dialog').close()" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">
+		<button 
+			type="submit"
+			onclick="this.closest('dialog').close()"
+			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
 			Guardar
 		</button>
 	</form>
 </dialog>
 
 <!--* IMPORTAR -->
-<dialog id="importProyecto" class="p-3 rounded-lg">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Importar proyecto</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+<dialog id="importProyecto" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Importar proyecto
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
 	</header>
-	<form>
-		<p>Importar JSON de proyecto</p>
-		<div class="py-4 text-center">
-			<input type="file" name="proyecto" accept="application/json" required>
+	<form class="flex flex-col gap-2 p-2">
+		<div class="py-2">
+			<label for="importProyectoFile">JSON del proyecto</label>
+			<input id="importProyectoFile" type="file" name="proyecto" accept="application/json" required class="form-control">
 		</div>
-		<div class="flex-wrap justify-center gap-4 pt-4">
-			<button onclick="importProyecto.close()" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-gray-600 rounded shadow-md hover:bg-gray-500">Cancelar</button>
-			<button type="button" hx-post="/proyectos/importar" hx-encoding="multipart/form-data" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">Importar</button>
-		</div>
+		<button 
+			type="button"
+			hx-post="/proyectos/importar"
+			hx-encoding="multipart/form-data"
+			onclick="this.closest('dialog').close()"
+			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+			Importar
+		</button>
 	</form>
 </dialog>
 
 {{ range .Proyectos }}
-<dialog id="frmPry{{ .ProyectoID }}" class="p-3 rounded-lg">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar proyecto</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+<dialog id="frmPry{{ .ProyectoID }}" class="{{ if gt (len .Descripcion) 500 }}w-full {{ end }}text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Modificar proyecto
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
 	</header>
-	<form class="flex flex-col gap-2" hx-put="/proyectos/{{ .ProyectoID }}" hx-encoding="multipart/form-data">
+	<div class="flex flex-wrap justify-end p-2 pb-0 gap-x-4 gap-y-2">
+		<a 
+			href="/proyectos/{{ .ProyectoID}}/exportar.json"
+			target="_blank"
+			class="italic font-semibold text-cyan-500 underline transition-colors rounded hover:text-cyan-400 whitespace-nowrap">
+			Exportar JSON
+		</a>
+		<a 
+			href="/proyectos/{{ .ProyectoID}}/exportar.md"
+			target="_blank"
+			class="italic font-semibold text-cyan-500 underline transition-colors rounded hover:text-cyan-400 whitespace-nowrap">
+			Exportar Markdown
+		</a>
+	</div>
+	<form class="flex flex-col gap-2 p-2" hx-put="/proyectos/{{ .ProyectoID }}" hx-encoding="multipart/form-data">
 		<div>
 			<label for="{{ .ProyectoID }}_01">Título</label>
 			<input id="{{ .ProyectoID }}_01" name="titulo" value="{{ .Titulo }}" type="text" class="form-control" required>
@@ -107,30 +174,31 @@
 		</div>
 		<div>
 			<label for="{{ .ProyectoID }}_03">Descripción</label>
-			<textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="2" class="form-control">{{ .Descripcion }}</textarea>
+			<textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="1" class="form-control">{{ .Descripcion }}</textarea>
 		</div>
-		<div class="">
+		<div>
 			<label for="{{ .ProyectoID }}_04">Imagen</label>
-			<input id="{{ .ProyectoID }}_04" type="file" name="imagen" accept="image/png, image/jpeg, image/gif" onchange="showImagen(this)" class="block">
-			<img id="imagePreview" src="" class="hidden object-cover mx-auto my-4 rounded-lg shadow-lg aspect-square w-60">
+			<img tipo="img_preview" src="" class="hidden object-cover mx-auto mb-2 rounded-md shadow-lg aspect-square w-60">
+			<input id="{{ .ProyectoID }}_04" type="file" name="imagen" accept="image/png, image/jpeg, image/gif" onchange="showImagen(this)" class="form-control">
 		</div>
-		
-		<button type="submit" onclick="this.closest('dialog').close()" class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">Guardar</button>
-		
-		<div class="pt-4">
+
+		<div class="flex flex-wrap pt-4 gap-x-4 gap-y-2">
 			<button 
-				type="button" 
-				hx-delete="/proyectos/{{ .ProyectoID}}" 
-				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?" 
+				type="button"
+				hx-delete="/proyectos/{{ .ProyectoID}}"
+				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?"
 				onclick="this.closest('dialog').close()"
-				class="p-2 font-medium text-white transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">
+				class="p-2 transition-colors bg-red-800 rounded shadow-md hover:bg-red-600">
+				<!-- <i class="fa-solid fa-trash" title="Eliminar"></i> -->
 				Eliminar
 			</button>
-
-			<a href="/proyectos/{{ .ProyectoID}}/exportar.json" target="_blank" class="p-2 font-medium text-white transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-800">Exportar JSON</a>
-			<a href="/proyectos/{{ .ProyectoID}}/exportar.md" target="_blank" class="p-2 font-medium text-white transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-800">Exportar Markdown</a>
+			<button 
+				type="submit"
+				onclick="this.closest('dialog').close()"
+				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+				Guardar
+			</button>
 		</div>
-		
 	</form>
 </dialog>
 {{ end 	}}
@@ -141,15 +209,16 @@
 		form.showModal();
 		let input = form.querySelector("input");
 		input.focus();
-		input.selectionEnd = input.value.length;
+		input.setSelectionRange(input.value.length, input.value.length);
 	}
 
 	function showImagen(input) {
 		const [file] = input.files
 		if (file) {
-			document.getElementById("imagePreview").classList.remove("hidden")
-			document.getElementById("imagePreview").classList.add("block")
-			document.getElementById("imagePreview").src = URL.createObjectURL(file)
+			let img = input.closest("form").querySelector("img[tipo=img_preview]")
+			img.classList.remove("hidden")
+			img.classList.add("block")
+			img.src = URL.createObjectURL(file)
 		}
 	}
 </script>

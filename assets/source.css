@@ -28,10 +28,6 @@ table > thead > tr > th {
 	@apply px-2 py-1
 }
 
-dialog {
-	@apply bg-cyan-600
-}
-
 select option {
 	@apply text-black bg-cyan-100/50
 }
