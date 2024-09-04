@@ -69,6 +69,30 @@ func ModificarProyecto(proyectoID string, clave string, titulo string, desc stri
 	return nil
 }
 
+func ParcharProyecto(proyectoID string, param string, newVal string, repo Repo) error {
+	op := gko.Op("ParcharProyecto").Ctx("proyectoID", proyectoID)
+	if proyectoID == "" {
+		return op.Msg("el ID del proyecto debe estar definido")
+	}
+	Proyecto, err := repo.GetProyecto(proyectoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	switch param {
+	case "titulo":
+		Proyecto.Titulo = newVal
+	case "descripcion":
+		Proyecto.Descripcion = newVal
+	default:
+		return op.Msgf("Parámetro no soportado: %v", param)
+	}
+	err = repo.UpdateProyecto(*Proyecto)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
 func QuitarProyecto(ProyectoID string, repo Repo) error {
 	const op string = "app.QuitarProyecto"
 	pers, err := repo.ListNodosPersonas(ProyectoID)

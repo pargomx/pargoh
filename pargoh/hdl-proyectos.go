@@ -58,7 +58,26 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 			return err
 		}
 	}
-	return c.Redir("/")
+	// TODO: integrar getHxCurrentURL a gecko
+	referer := strings.Split(c.Request().Header.Get("Hx-Current-Url"), c.Request().Host)
+	if len(referer) < 2 || referer[1] == "/" {
+		return c.Redir("/")
+	} else {
+		return c.Redir("/proyectos/%v", c.PathVal("proyecto_id"))
+	}
+}
+
+func (s *servidor) patchProyecto(c *gecko.Context) error {
+	err := dhistorias.ParcharProyecto(
+		c.PathVal("proyecto_id"),
+		c.PathVal("param"),
+		c.FormValue("value"),
+		s.repo,
+	)
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
 }
 
 func (s *servidor) deleteProyecto(c *gecko.Context) error {

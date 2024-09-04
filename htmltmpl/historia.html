@@ -189,7 +189,7 @@
 					</form>
 				</div>
 				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
-				<p class="whitespace-pre-line grow">
+				<p class="grow whitespace-pre-line">
 					{{- .Historia.Titulo -}}
 				</p>
 				<a href="/historias/{{ .Historia.HistoriaID }}/mover"
@@ -212,7 +212,7 @@
 					<div class="pl-6">
 						<i class="px-1 opacity-50 fa-regular fa-circle" style="font-size: 0.5rem;"></i>
 					</div>
-					<p class="whitespace-pre-line grow">
+					<p class="grow whitespace-pre-line">
 						{{- .Historia.Titulo -}}
 					</p>
 					<a href="/historias/{{ .Historia.HistoriaID }}/mover"
@@ -264,7 +264,7 @@
 					{{ .Posicion }}
 				</span>
 			</div>
-			<p class="whitespace-pre-line grow"
+			<p class="grow whitespace-pre-line"
 				onclick="let inp = this.nextElementSibling; inp.classList.remove('hidden'); inp.classList.add('inline-block'); inp.focus(); inp.addEventListener('keydown',hdlTextAreaEnter); this.classList.add('hidden');"
 				>{{ .Texto }}
 			</p>
@@ -394,7 +394,7 @@
 				</button>
 				{{ end }}
 			</div>
-			<div class="text-right grow">
+			<div class="grow text-right">
 				{{- if .TiempoEstimado -}}
 				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ .TiempoEstimadoString }}">
 					<i class="fa-solid fa-hourglass-start"></i>

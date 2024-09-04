@@ -32,7 +32,7 @@
 
 		<button 
 			type="button"
-			onclick="showPersonaForm(this.closest('article').id)"
+			onclick="showProyectoForm(this.closest('article').id)"
 			title="Editar proyecto"
 			class="absolute top-0 right-0 px-1 transition-opacity bg-cyan-900 opacity-75 hover:opacity-100 rounded-tr-md rounded-bl-md">
 			<i class="px-2 py-2 fa fa-pen"></i>
@@ -43,14 +43,14 @@
 	{{ if not .Proyectos -}}
 	<button
 		type="button"
-		onclick="showPersonaForm('New')"
+		onclick="showProyectoForm('New')"
 		class="px-2 py-1 bg-cyan-700 rounded-full">
 		Nuevo proyecto <i class="fa-solid fa-plus"></i>
 	</button>
 	{{ else }}
 	<button
 		type="button"
-		onclick="showPersonaForm('New')"
+		onclick="showProyectoForm('New')"
 		class="px-1 bg-cyan-700 rounded-full">
 		<i class="fa-solid fa-plus"></i>
 	</button>
@@ -135,7 +135,7 @@
 	</form>
 </dialog>
 
-{{ range .Proyectos }}
+{{ define "proyecto_form" }}
 <dialog id="frmPry{{ .ProyectoID }}" class="{{ if gt (len .Descripcion) 500 }}w-full {{ end }}text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
@@ -181,30 +181,32 @@
 			<img tipo="img_preview" src="" class="hidden object-cover mx-auto mb-2 rounded-md shadow-lg aspect-square w-60">
 			<input id="{{ .ProyectoID }}_04" type="file" name="imagen" accept="image/png, image/jpeg, image/gif" onchange="showImagen(this)" class="form-control">
 		</div>
-
-		<div class="flex flex-wrap pt-4 gap-x-4 gap-y-2">
-			<button 
-				type="button"
-				hx-delete="/proyectos/{{ .ProyectoID}}"
-				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?"
-				onclick="this.closest('dialog').close()"
-				class="p-2 transition-colors bg-red-800 rounded shadow-md hover:bg-red-600">
-				<!-- <i class="fa-solid fa-trash" title="Eliminar"></i> -->
-				Eliminar
-			</button>
-			<button 
+		<div class="flex flex-row-reverse pt-4 gap-x-4 gap-y-2">
+			<button
 				type="submit"
 				onclick="this.closest('dialog').close()"
 				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
 				Guardar
+			</button>
+			<button
+				type="button"
+				hx-delete="/proyectos/{{ .ProyectoID}}"
+				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?"
+				onclick="this.closest('dialog').close()"
+				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
+				Eliminar
 			</button>
 		</div>
 	</form>
 </dialog>
 {{ end 	}}
 
+{{ range .Proyectos }}
+{{ template "proyecto_form" . }}
+{{ end }}
+
 <script>
-	function showPersonaForm(proyectoID) {
+	function showProyectoForm(proyectoID) {
 		let form = document.getElementById(`frmPry${proyectoID}`);
 		form.showModal();
 		let input = form.querySelector("input");

@@ -1,4 +1,4 @@
-<header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
+<header class="relative flex items-center w-full mb-2 bg-cyan-950 shadow-lg">
 	<div class="p-1">
 		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}" alt="Portada del proyecto" class="w-24 rounded-md">
 	</div>
@@ -6,58 +6,116 @@
 		<h2 class="text-2xl font-medium">
 			{{ .Proyecto.Titulo }}
 		</h2>
-		<p class="text-sm opacity-75">
+		<p class="text-sm opacity-75 line-clamp-3">
 			{{ .Proyecto.Descripcion }}
 		</p>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/" class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100">
+		<button
+			type="button"
+			onclick="document.getElementById('frmPry{{ .Proyecto.ProyectoID}}').showModal()"
+			class="px-2 py-1 mr-2 rounded-md opacity-75 hover:opacity-100">
+			<i class="fa fa-pen"></i>
+		</button>
+		<a 
+			href="/"
+			class="px-2 py-1 bg-red-800 rounded-md opacity-75 hover:opacity-100">
 			<i class="fa-solid fa-xmark"></i>
 		</a>
 	</span>
 </header>
 
-<main tipo="sort_personas" class="flex flex-wrap items-center justify-center flex-grow gap-4 pt-4 pb-2 overflow-x-auto">
+{{ with .Proyecto }}
+{{ template "proyecto_form" . }}
+{{ end }}
+
+<!--* QUICK EDIT -->
+<!-- <div class="p-2">
+	<div>
+		<textarea
+			hx-patch="/proyectos/{{ .Proyecto.ProyectoID }}/titulo"
+			hx-swap="none" 
+			hx-trigger="change, keyup changed delay:2s"
+			name="value"
+			rows="1"
+			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
+			{{- .Proyecto.Titulo -}}
+		</textarea>
+	</div>
+	<div>
+		<textarea
+			hx-patch="/proyectos/{{ .Proyecto.ProyectoID }}/descripcion"
+			hx-swap="none" 
+			hx-trigger="change, keyup changed delay:2s"
+			name="value"
+			rows="1"
+			placeholder="Descripción del proyecto..." 
+			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600">
+			{{- .Proyecto.Descripcion -}}
+		</textarea>
+	</div>
+</div> -->
+
+<main tipo="sort_personas" class="flex flex-col items-center justify-center grow gap-4 p-2">
 	{{ range .Personas -}}
-	<article tipo="sort_persona" id="{{ .PersonaID }}" class="relative flex flex-col items-center justify-center p-4 bg-cyan-950 rounded-md shadow-lg min-w-64 max-w-96 min-h-32">
-		<a href="/personas/{{ .PersonaID }}" class="text-4xl" tabindex="-1">
-			<i class="fa-solid fa-person"></i>
-		</a>
-		<a href="/personas/{{ .PersonaID }}" class="text-lg font-medium">
-			{{- .Nombre -}}
-		</a>
-		<p class="pt-2 text-sm opacity-75">
-			{{- .Descripcion -}}
-		</p>
-		<span class="absolute top-0 left-0 px-1 opacity-75 cursor-pointer rounded-br-md rounded-tl-md" tipo="sort_handle">
-			<i class="px-2 py-2 fa-solid fa-grip"></i>
-		</span>
-		<span class="absolute top-0 right-0 px-1 opacity-75 rounded-tr-md rounded-bl-md">
-			<button type="button" onclick="showPersonaForm(this.parentNode.parentNode.id)">
-				<i class="px-2 py-2 fa fa-pen"></i>
-			</button>
-		</span>
+	<article tipo="sort_persona" id="{{ .PersonaID }}" class="relative flex items-center justify-center w-full max-w-2xl gap-4 px-4 py-2 bg-cyan-950 rounded-md shadow-lg">
+		<div>
+			<span tipo="sort_handle" class="text-4xl cursor-pointer" title="Mover persona">
+				<i class="fa-solid fa-person"></i>
+			</span>
+		</div>
+		<div class="w-full">
+			<a href="/personas/{{ .PersonaID }}" class="text-lg font-medium">
+				{{- .Nombre -}}
+			</a>
+			<p class="pt-2 text-sm opacity-75">
+				{{- .Descripcion -}}
+			</p>
+		</div>
+		<button 
+			type="button"
+			onclick="showPersonaForm(this.closest('article').id)"
+			title="Editar personaje"
+			class="absolute top-0 right-0 px-1 transition-opacity bg-cyan-900 opacity-75 hover:opacity-100 rounded-tr-md rounded-bl-md">
+			<i class="px-2 py-2 fa fa-pen"></i>
+		</button>
 	</article>
 	{{ end }}
 
 	<!-- Agregar persona -->
-	{{ if .Personas }}
-	<button class="px-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')">
+	{{ if .Personas -}}
+	<button 
+		type="button"
+		onclick="showPersonaForm('Nueva')"
+		title="Agregar personaje"
+		class="px-1 bg-cyan-700 rounded-full">
 		<i class="fa-solid fa-plus"></i>
 	</button>
-	{{ else }}
-	<button class="px-2 py-1 bg-cyan-700 rounded-full" type="button" onclick="showPersonaForm('Nueva')">
+	{{ else -}}
+	<button
+		type="button"
+		onclick="showPersonaForm('Nueva')"
+		class="px-2 py-1 bg-cyan-700 rounded-full">
 		Agregar personaje <i class="fa-solid fa-plus"></i>
 	</button>
 	{{ end }}
 </main>
 
-<dialog id="frmPerNueva" class="p-3 rounded-lg">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Agregar persona</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+<!--* NUEVA PERSONA -->
+<dialog id="frmPerNueva" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Agregar personaje
+		</h2>
+		<button 
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
 	</header>
-	<form class="flex flex-col gap-4" hx-post="/personas">
+	<form class="flex flex-col gap-2 p-2" hx-post="/personas">
 		<div>
 			<label for="newPers_00">Proyecto</label>
 			<select id="newPers_00" name="proyecto_id" class="form-control">
@@ -74,22 +132,31 @@
 			<label for="newPers_02">Descripción</label>
 			<textarea id="newPers_02" name="descripcion" rows="1" class="form-control"></textarea>
 		</div>
-		<button 
+		<button
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="w-full p-2 mt-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">
+			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
 			Guardar
 		</button>
 	</form>
 </dialog>
 
+<!--* EDITAR PERSONA -->
 {{ range .Personas }}{{ $persona := . }}
-<dialog id="frmPer{{ .PersonaID }}" class="p-3 rounded-lg">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+<dialog id="frmPer{{ .PersonaID }}" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Modificar persona
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()" 
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
 	</header>
-	<form class="flex flex-col gap-4" hx-patch="/personas/{{ .PersonaID }}">
+	<form class="flex flex-col gap-2 p-2" hx-patch="/personas/{{ .PersonaID }}">
 		<div>
 			<label for="newPers_00">Proyecto</label>
 			<select id="newPers_00" name="proyecto_id" class="form-control">
@@ -108,20 +175,22 @@
 				{{- .Descripcion -}}
 			</textarea>
 		</div>
-		<button
-			type="button"
-			hx-delete="/personas/{{ .PersonaID}}"
-			hx-confirm="¿Eliminar persona {{ .Nombre }}?"
-			onclick="this.closest('dialog').close()"
-			class="w-full p-2 text-lg font-medium text-white transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">
-			Eliminar
-		</button>
-		<button
-			type="submit"
-			onclick="this.closest('dialog').close()"
-			class="w-full p-2 text-lg font-medium text-white transition-colors bg-cyan-900 rounded shadow-md hover:bg-cyan-800">
-			Guardar
-		</button>
+		<div class="flex flex-row-reverse pt-4 gap-x-4 gap-y-2">
+			<button
+				type="submit"
+				onclick="this.closest('dialog').close()"
+				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+				Guardar
+			</button>
+			<button
+				type="button"
+				hx-delete="/personas/{{ .PersonaID}}"
+				hx-confirm="¿Eliminar persona {{ .Nombre }}?"
+				onclick="this.closest('dialog').close()"
+				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
+				Eliminar
+			</button>
+		</div>
 	</form>
 </dialog>
 {{ end 	}}
