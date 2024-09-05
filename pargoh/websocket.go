@@ -79,24 +79,25 @@ func (s *reloader) brodcastReload(c *gecko.Context) {
 	defer s.mu.Unlock()
 	brodcasted := 0
 	for _, socket := range s.sockets {
-		if socket.historiaID != c.PathInt("historia_id") {
-			continue
+		if socket.historiaID == c.PathInt("historia_id") ||
+			socket.historiaID == c.FormInt("historia_id") {
+
+			id := c.Request().Header.Get("X-SocketID")
+			if id == "" {
+				gko.LogWarn("X-SocketID empty")
+				continue
+			}
+			if socket.id == id {
+				continue
+			}
+			err := websocket.Message.Send(socket.ws, `{"id":`+socket.id+`,"reload":true}`)
+			if err != nil {
+				gko.Err(err).Msgf("socket(%v) send", socket.id).Log()
+				s.quitar(socket)
+			}
+			// gko.LogDebugf("socket(%v) reload", socket.id)
+			brodcasted++
 		}
-		id := c.Request().Header.Get("X-SocketID")
-		if id == "" {
-			gko.LogWarn("X-SocketID empty")
-			continue
-		}
-		if socket.id == id {
-			continue
-		}
-		err := websocket.Message.Send(socket.ws, `{"id":`+socket.id+`,"reload":true}`)
-		if err != nil {
-			gko.Err(err).Msgf("socket(%v) send", socket.id).Log()
-			s.quitar(socket)
-		}
-		// gko.LogDebugf("socket(%v) reload", socket.id)
-		brodcasted++
 	}
 	// gko.LogDebugf("Broadcasting reload to %d/%d connections", brodcasted, len(s.sockets))
 }

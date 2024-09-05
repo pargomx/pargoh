@@ -42,16 +42,12 @@ func EliminarTramoDeViaje(repo Repo, historiaID int, posicion int) error {
 	if posicion == 0 {
 		return op.Msg("falta posición del tramo")
 	}
-	err := repo.ExisteHistoria(historiaID)
+	Tramo, err := repo.GetTramo(historiaID, posicion)
 	if err != nil {
 		return op.Err(err)
 	}
-	tramos, err := repo.ListTramosByHistoriaID(historiaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	if posicion < 1 || posicion > len(tramos) {
-		op.Msg("posición de tramo inválida").Ctx("historia", historiaID).Ctx("pos", posicion).Ctx("hermanos", len(tramos)).Alert() // Solo alertar
+	if Tramo.Imagen != "" {
+		return op.Msg("Antes de eliminar el tramo quite la imagen")
 	}
 	err = repo.DeleteTramo(historiaID, posicion)
 	if err != nil {

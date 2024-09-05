@@ -13,9 +13,6 @@
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
 			<a href="/personas/{{ .Persona.PersonaID }}" class="text-xl">{{ .Persona.Nombre }}</a>
 		</h3>
-		<p class="opacity-50">
-			{{ .Persona.Descripcion }}
-		</p>
 	</div>
 	<span class="absolute right-2 top-2">
 		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
@@ -23,7 +20,7 @@
 </header>
 
 
-<main class="flex-grow w-full max-w-5xl p-2 mx-auto"
+<main class="grow w-full max-w-5xl p-2 mx-auto"
 	hx-get="/historias/{{ .Historia.HistoriaID }}"
 	hx-target="this" hx-select="main" hx-swap="outerHTML"
 	hx-trigger="reloadHistoria"
@@ -31,7 +28,7 @@
 
 	<div class="flex flex-wrap justify-end mb-2 gap-x-4 gap-y-2">
 		<!--* PERSONA  -->
-		<h4 class="flex-grow">
+		<h4 class="grow">
 			<span class="opacity-50">Como</span>
 			<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
 			<span class="opacity-50">quiero...</span>
@@ -90,41 +87,63 @@
 	<h3 class="mb-2 text-xl text-cyan-600">Viaje de usuario</h3>
 	<ol tipo="sort_tramos" class="mb-6">
 		{{ range .Tramos -}}
-		<li tipo="sort_tramo" class="flex gap-1 p-1 group">
-			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
-				⣿
+		<li tipo="sort_tramo" class="flex flex-col items-start">
+			<div class="flex w-full gap-1 p-1 group">
+				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+					⣿
+				</div>
+				<div>
+					<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
+						{{ .Posicion }}
+					</span>
+				</div>
+				<textarea
+					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
+					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
+					onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
+					onblur="if (this.hasAttribute('readonly')){ return }; this.setAttribute('readonly', true);"
+					onchange="this.blur();"
+					oncontextmenu="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
+					readonly
+					rows="1"
+					name="texto"
+					
+					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
+					{{- .Texto -}}
+				</textarea>
+				<div>
+					<button
+						type="button"
+						onclick="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
+						title="Definir imagen"
+						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80">
+						<i class="fa-solid fa-image"></i>
+					</button>
+				</div>
+				<!-- <button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
+					hx-delete="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
+					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					hx-confirm="¿Eliminar tramo de viaje? {{ .Texto }}"
+					title="Quitar este tramo">❌
+				</button> -->
 			</div>
-			<div>
-				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
-					{{ .Posicion }}
-				</span>
+			{{ if .Imagen -}}
+			<div class="relative mb-2 ml-12 border border-cyan-800 rounded-md shadow-lg">
+				<!-- <div class="absolute flex items-center justify-center w-full h-full gap-3 rounded-md opacity-5 hover:opacity-100 bg-black/60">
+					<a href="/imagenes/{{ .Imagen }}" class="">🏞</a>
+					<button type="button" hx-delete="/imagenes/{{ .HistoriaID }}/{{ .Posicion }}" title="Eliminar imagen" hx-confirm="¿Eliminar esta imagen?" class="">❌</button>
+				</div> -->
+				<img 
+					src="/imagenes/{{ .Imagen }}"
+					onclick="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
+					class="rounded-md cursor-pointer max-w-40 max-h-40">
 			</div>
-			<!-- <p class="grow">{{ .Texto }}</p> -->
-			<input
-				ondblclick="if (!this.hasAttribute('readonly')){ return }; console.log('editable_activar'); this.removeAttribute('readonly');"
-				oncontextmenu="if (!this.hasAttribute('readonly')){ return }; console.log('editable_activar'); this.removeAttribute('readonly');"
-				onblur="if (this.hasAttribute('readonly')){ return }; console.log('editable_exit'); this.setAttribute('readonly', true);"
-				onchange="console.log('editable_changed'); this.blur();"
-				hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}" 
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				readonly
-				type="text"
-				name="texto" 
-				value="{{ .Texto }}"
-				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-			>
-			<button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
-				onclick="showSubirImagen({{ .HistoriaID }}, {{ .Posicion }})"
-				title="Definir imagen">🏞
-			</button>
-			<button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
-				hx-delete="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}" 
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-confirm="¿Eliminar tramo de viaje? {{ .Texto }}" 
-				title="Quitar este tramo">❌
-			</button>
+			{{ end }}
 		</li>
 		{{ end }}
+		
+		<!-- Agregar tramo... -->
 		<li class="flex items-center gap-1 p-1">
 			<div class="hidden opacity-0 md:block">⣿</div>
 			<div>
@@ -144,20 +163,113 @@
 			>
 		</li>
 	</ol>
-	<div class="flex flex-wrap items-start gap-4 mb-6">
-		{{ range .Tramos }}{{ if .Imagen -}}
-		<div>
-			<div class="relative">
-				<div class="absolute flex items-center justify-center w-full h-full gap-3 rounded-md opacity-5 hover:opacity-100 bg-black/60">
-					<a href="/imagenes/{{ .Imagen }}" class="">🏞</a>
-					<button type="button" hx-delete="/imagenes/{{ .HistoriaID }}/{{ .Posicion }}" title="Eliminar imagen" hx-confirm="¿Eliminar esta imagen?" class="">❌</button>
+
+	<!--* IMAGEN DEL TRAMO -->
+	<dialog id="TramoImgModal" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+		<div class="flex flex-col max-w-3xl max-h-[90vh]"><!-- Para hacer scrollable manteniendo header -->
+			<header class="flex items-center gap-2 p-2 bg-cyan-800">
+				<h2 class="grow text-xl">
+					Imagen para tramo del viaje
+				</h2>
+				<button
+					type="button"
+					onclick="this.closest('dialog').close()" 
+					title="Cerrar"
+					class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+					<i class="fa-solid fa-xmark"></i>
+				</button>
+			</header>
+			<div class="flex flex-col grow gap-2 p-2 overflow-y-auto">
+				<p>
+					<!-- Descripcion puesta con showTramoImgModal() -->
+				</p>
+				<img src="" class="mx-auto border border-cyan-800 rounded-md shadow-lg">
+				<!-- <img tipo="preview" src="" class="hidden object-cover mx-auto my-4 rounded-lg shadow-lg aspect-square w-60"> -->
+				<form 
+					id="formSubirImagen"
+					hx-post="/imagenes"
+					hx-encoding="multipart/form-data"
+					class="py-2 text-center">
+					<input type="hidden" name="historia_id">
+					<input type="hidden" name="posicion">
+					<input 
+						type="file"
+						name="imagen"
+						accept="image/png, image/jpeg"
+						capture="user"
+						required
+						onchange="showTramoImagePreview(this)" 
+						class="form-control">
+				</form>
+				<div class="flex flex-row-reverse flex-wrap justify-center gap-x-4 gap-y-2">
+					<button
+						type="submit"
+						form="formSubirImagen"
+						tipo="btn_subir_imagen"
+						class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+						Guardar
+					</button>
+					<button
+						tipo="cancelar"
+						onclick="this.closest('dialog').close()" 
+						class="inline-block px-6 py-2 text-slate-100 transition-colors bg-gray-600 rounded shadow-md hover:bg-gray-500">
+						Cancelar
+					</button>
+					<button 
+						tipo="eliminar_img"
+						type="button"
+						onclick="this.closest('dialog').close()" 
+						hx-confirm="¿Eliminar esta imagen?"
+						hx-trigger="click"
+						title="Quitar imagen"
+						class="px-6 py-2 font-semibold text-red-400 transition-colors rounded shadow-md hover:bg-red-500 hover:text-white">
+						Quitar imagen
+					</button>
 				</div>
-				<img src="/imagenes/{{ .Imagen }}" class="max-w-xs rounded-md max-h-96">
 			</div>
-			<p class="text-sm italic text-center opacity-50">{{ .Posicion }}. {{ .Texto }}</p>
 		</div>
-		{{ end }}{{ end }}
-	</div>
+	</dialog>
+	<script>
+		function showTramoImgModal(historiaID, posicion, texto, imagen) {
+			let dialog = document.getElementById("TramoImgModal")
+			let btnEliminarImg = dialog.querySelector("button[tipo='eliminar_img']")
+			dialog.querySelector("p").textContent = posicion + ". " + texto
+			dialog.querySelector("input[name='historia_id']").value = historiaID
+			dialog.querySelector("input[name='posicion']").value = posicion
+			dialog.querySelector("input[type='file']").value = ""
+			dialog.querySelector("button[type='submit']").textContent = imagen ? "Remplazar" : "Subir imagen"
+			
+			if (imagen != "") {
+				dialog.querySelector("img").src = "/imagenes/" + imagen
+				dialog.querySelector("img").classList.remove("hidden")
+				btnEliminarImg.setAttribute("hx-delete", "/imagenes/" + historiaID + "/" + posicion)
+				btnEliminarImg.classList.remove("hidden")
+				dialog.querySelector("button[tipo='cancelar']").classList.add('hidden')
+			} else {
+				dialog.querySelector("img").src = ""
+				dialog.querySelector("img").classList.add("hidden")
+				btnEliminarImg.removeAttribute("hx-delete")
+				btnEliminarImg.classList.add("hidden")
+				dialog.querySelector("button[tipo='cancelar']").classList.remove('hidden')
+			}
+			htmx.process(btnEliminarImg)
+			dialog.showModal()
+			// console.log(`showTramoImgModal(${historiaID}, ${posicion}, ${texto}, ${imagen}`)
+		}
+		function showTramoImagePreview() {
+			let dialog = document.getElementById("TramoImgModal")
+			const [file] = dialog.querySelector("input[type='file']").files
+			if (file) {
+				// console.log('Archivo: ' + file.name);
+				dialog.querySelector("img").src = URL.createObjectURL(file)
+				dialog.querySelector("img").classList.remove("hidden")
+				dialog.querySelector("button[tipo='eliminar_img']").classList.add('hidden')
+				dialog.querySelector("button[tipo='cancelar']").classList.remove("hidden")
+				dialog.querySelector("button[type='submit']").focus()
+			}
+		}
+	</script>
+
 
 	<!--* ANCESTROS *-->
 	{{ if .Ancestros }}
@@ -264,9 +376,10 @@
 					{{ .Posicion }}
 				</span>
 			</div>
-			<p class="grow whitespace-pre-line"
-				onclick="let inp = this.nextElementSibling; inp.classList.remove('hidden'); inp.classList.add('inline-block'); inp.focus(); inp.addEventListener('keydown',hdlTextAreaEnter); this.classList.add('hidden');"
-				>{{ .Texto }}
+			<p
+				ondblclick="let inp = this.nextElementSibling; inp.classList.remove('hidden'); inp.classList.add('inline-block'); inp.focus(); inp.addEventListener('keydown',hdlTextAreaEnter); this.classList.add('hidden');"
+				class="grow whitespace-pre-line">
+				{{- .Texto -}}
 			</p>
 			<textarea
 				onblur="this.classList.remove('inline-block'); this.classList.add('hidden'); this.previousElementSibling.textContent = this.value; this.previousElementSibling.classList.remove('hidden');"
@@ -274,8 +387,9 @@
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				rows="1"
 				name="texto"
-				class="hidden w-full text-white outline-none bg-black/50 placeholder:text-slate-600"
-				>{{ .Texto }}</textarea>
+				class="hidden w-full text-white outline-none bg-black/50 placeholder:text-slate-600">
+				{{- .Texto -}}
+			</textarea>
 			<button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
 				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
@@ -443,12 +557,20 @@
 	</ol>
 	<!-- Editar tareas -->
 	{{ range .Tareas -}}
-	<dialog id="edit{{ .TareaID }}" class="p-3 rounded-lg">
-		<header class="flex flex-wrap items-center gap-3 pb-2">
-			<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar tarea</h2>
-			<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+	<dialog id="edit{{ .TareaID }}" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+		<header class="flex items-center gap-2 p-2 bg-cyan-800">
+			<h2 class="grow text-xl">
+				Modificar tarea
+			</h2>
+			<button
+				type="button"
+				onclick="this.closest('dialog').close()" 
+				title="Cerrar"
+				class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+				<i class="fa-solid fa-xmark"></i>
+			</button>
 		</header>
-		<form hx-patch="/tareas/{{ .TareaID }}" class="flex flex-col max-w-sm gap-2">
+		<form hx-patch="/tareas/{{ .TareaID }}" class="flex flex-col gap-2 p-2">
 			<div class="flex gap-2">
 				<div>
 					<label for="upd{{ .TareaID }}_01">TareaID</label>
@@ -468,10 +590,6 @@
 					{{ end }}
 				</select>
 			</div>
-			<!-- <div>
-				<label for="upd{{ .TareaID }}_04">Descripción</label>
-				<input id="upd{{ .TareaID }}_04" name="descripcion" type="text" placeholder="" value="{{ .Descripcion }}" class="form-control">
-			</div> -->
 			<div>
 				<label for="upd{{ .TareaID }}_04">Descripción</label>
 				<textarea id="upd{{ .TareaID }}_04" class="form-control" name="descripcion" rows="2">{{ .Descripcion }}</textarea>
@@ -501,47 +619,6 @@
 
 </main>
 {{ end }}
-
-<dialog id="subirImagen" class="p-3 rounded-lg">
-	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Subir imagen</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
-	</header>
-	<form class="mb-4">
-		<p class="text-center">
-			Subir captura de pantalla para este tramo del viaje de usuario.
-		</p>
-		<img id="imagePreview" src="" class="hidden object-cover mx-auto my-4 rounded-lg shadow-lg aspect-square w-60">
-		<div class="py-4 text-center">
-			<input id="imgInputFile" type="file" name="imagen" accept="image/png, image/jpeg" capture="user" required onchange="showImagen(this)">
-		</div>
-		<input type="hidden" name="historia_id">
-		<input type="hidden" name="posicion">
-		<div id="botonesGuardarFoto" class="flex-wrap justify-center hidden gap-4 pt-4">
-			<button onclick="subirImagen.close()" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-gray-600 rounded shadow-md hover:bg-gray-500">Cancelar</button>
-			<button id="btnSubirImagen" type="button" hx-post="/imagenes" hx-encoding="multipart/form-data" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">Guardar</button>
-		</div>
-	</form>
-	<script>
-		function showSubirImagen(historiaID, posicion){
-			let setImagen = document.getElementById("subirImagen")
-			setImagen.querySelector("input[name='historia_id']").value = historiaID
-			setImagen.querySelector("input[name='posicion']").value = posicion
-			setImagen.showModal()
-		}
-		function showImagen() {
-			const [file] = document.getElementById("imgInputFile").files
-			if (file) {
-				console.log('Archivo: ' + file.name);
-				document.getElementById("botonesGuardarFoto").classList.remove("hidden")
-				document.getElementById("botonesGuardarFoto").classList.add("flex")
-				document.getElementById("imagePreview").classList.remove("hidden")
-				document.getElementById("imagePreview").classList.add("block")
-				document.getElementById("imagePreview").src = URL.createObjectURL(file)
-			}
-		}
-	</script>
-</dialog>
 
 <div id="msgStack" class="hidden">
 	<!-- Mensajes respuesta del servidor -->
