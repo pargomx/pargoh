@@ -28,7 +28,7 @@
 
 </header>
 
-<main tipo="carriles_container" hx-get="/tablero/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start flex-grow gap-4 pb-2 overflow-x-auto">
+<main tipo="carriles_container" hx-get="/tablero/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start grow gap-4 pb-2 overflow-x-auto">
 	{{ range .Padres }}
 	<article tipo="carril" id="{{ .Padre.HistoriaID }}" class="relative flex flex-col max-h-full p-1 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96">
 		{{ with .Padre }}
@@ -50,7 +50,7 @@
 		</header>
 		{{ end }}
 		
-		<div tipo="carril_items_container" class="flex flex-col flex-grow gap-3 p-1 overflow-x-hidden overflow-y-auto">
+		<div tipo="carril_items_container" class="flex flex-col grow gap-3 p-1 overflow-x-hidden overflow-y-auto">
 			{{ range .Hijos -}}
 			<div tipo="carril_item" id="{{ .HistoriaID }}" gk-padre="{{ .PadreID }}" class="relative p-3 bg-slate-800 rounded-md shadow-lg">
 				<!-- <span tipo="carril_item_handle" class="mr-1 cursor-pointer">⣿</span> -->
@@ -100,7 +100,7 @@
 
 <dialog id="dialogHistoria" class="p-3 rounded-lg" hx-swap="innerHTML" hx-get="" hx-trigger="loadHistoriaForm" hx-target="this">
 	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="flex-grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
+		<h2 class="grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
 		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
 	</header>
 	<div>

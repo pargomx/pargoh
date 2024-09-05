@@ -20,7 +20,7 @@
 	{{ end }}
 </header>
 
-<main tipo="carriles_container" id="{{ .Historia.HistoriaID }}" {{ with .Historia }}hx-get="/historias/{{ .HistoriaID }}"{{ else }}hx-get="/personas/{{ .Persona.PersonaID }}"{{ end }} hx-trigger="reloadHistorias" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start flex-grow gap-4 pb-2 overflow-x-auto">
+<main tipo="carriles_container" id="{{ .Historia.HistoriaID }}" {{ with .Historia }}hx-get="/historias/{{ .HistoriaID }}"{{ else }}hx-get="/personas/{{ .Persona.PersonaID }}"{{ end }} hx-trigger="reloadHistorias" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start grow gap-4 pb-2 overflow-x-auto">
 
 	{{ define "historia_carril" }}
 	<article tipo="carril" id="{{ .Historia.HistoriaID }}" gk-persona="{{ .Historia.PersonaID }}" gk-padre="{{ .Historia.HistoriaID }}" class="relative flex flex-col max-h-full p-1 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96">
@@ -35,7 +35,7 @@
 		</header>
 		{{ end }}
 
-		<div tipo="carril_items_container" class="flex flex-col flex-grow gap-3 p-1 overflow-x-hidden overflow-y-auto">
+		<div tipo="carril_items_container" class="flex flex-col grow gap-3 p-1 overflow-x-hidden overflow-y-auto">
 			{{ range .Historias -}}
 			<div tipo="carril_item" id="{{ .HistoriaID }}" gk-padre="{{ .PadreID }}" class="relative p-3 bg-slate-800 rounded-md shadow-lg">
 				<span tipo="carril_item_handle" class="mr-1 cursor-pointer">⣿</span>

@@ -19,7 +19,7 @@
 		<span class="ml-4 text-red-500">Historia(s) a mover</span>
 	</p>
 </header>
-<form id="formMoverHistoria" action="/historias/{{ .Historia.HistoriaID }}/mover" method="POST" class="flex flex-col items-start flex-grow p-4 overflow-y-auto">
+<form id="formMoverHistoria" action="/historias/{{ .Historia.HistoriaID }}/mover" method="POST" class="flex flex-col items-start grow p-4 overflow-y-auto">
 	<ul class="px-4 grow">
 		{{ range .Arboles -}}{{ range .Personas }}
 		<li class="pt-4">
