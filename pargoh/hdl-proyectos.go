@@ -27,6 +27,7 @@ func (s *servidor) listaProyectos(c *gecko.Context) error {
 		}
 	}
 	data := map[string]any{
+		"Titulo":    "🐟 Pargo",
 		"Proyectos": res,
 	}
 	return c.RenderOk("proyectos", data)
@@ -102,7 +103,7 @@ func (s *servidor) getProyecto(c *gecko.Context) error {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":    Proyecto.Titulo,
+		"Titulo":    "💼 " + Proyecto.Titulo,
 		"Proyecto":  Proyecto,
 		"Personas":  Personas,
 		"Proyectos": Proyectos, // Para cambiar de proyecto a una persona.

@@ -6,7 +6,7 @@
 		<h2 class="text-2xl font-medium">
 			{{ .Proyecto.Titulo }}
 		</h2>
-		<p class="text-sm opacity-75 line-clamp-3">
+		<p class="text-sm opacity-75 line-clamp-2">
 			{{ .Proyecto.Descripcion }}
 		</p>
 	</div>
@@ -156,7 +156,7 @@
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
-	<form class="flex flex-col gap-2 p-2" hx-patch="/personas/{{ .PersonaID }}">
+	<form hx-put="/personas/{{ .PersonaID }}" class="flex flex-col gap-2 p-2">
 		<div>
 			<label for="newPers_00">Proyecto</label>
 			<select id="newPers_00" name="proyecto_id" class="form-control">
