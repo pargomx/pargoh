@@ -97,7 +97,7 @@ func main() {
 
 	if s.cfg.sourceDir != "" {
 		s.gecko.StaticAbs("/assets", s.cfg.sourceDir+"/assets")
-		s.gecko.File("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico") // Todo: agregar FileAbs
+		s.gecko.FileAbs("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico") // Todo: agregar FileAbs
 	} else {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
