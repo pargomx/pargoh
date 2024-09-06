@@ -26,9 +26,15 @@ type PersonaExport struct {
 
 type HistoriaExport struct {
 	Historia  ust.NodoHistoria
-	Tareas    []ust.Tarea
 	Tramos    []ust.Tramo
+	Reglas    []ust.Regla
+	Tareas    []TareaExport
 	Historias []HistoriaExport
+}
+
+type TareaExport struct {
+	Tarea      ust.Tarea
+	Intervalos []ust.Intervalo
 }
 
 // ================================================================ //
@@ -107,14 +113,31 @@ func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport
 	if err != nil {
 		fmt.Println("getHistoriaExportsRecursiva: %w", err)
 	}
-	historia.Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
-	if err != nil {
-		fmt.Println("getHistoriaExportsRecursiva: %w", err)
-	}
 	historia.Tramos, err = repo.ListTramosByHistoriaID(his.HistoriaID)
 	if err != nil {
 		fmt.Println("getHistoriaExportsRecursiva: %w", err)
 	}
+	historia.Reglas, err = repo.ListReglasByHistoriaID(his.HistoriaID)
+	if err != nil {
+		fmt.Println("getHistoriaExportsRecursiva: %w", err)
+	}
+
+	tareas, err := repo.ListTareasByHistoriaID(his.HistoriaID)
+	if err != nil {
+		fmt.Println("getHistoriaExportsRecursiva: %w", err)
+	}
+	historia.Tareas = make([]TareaExport, len(tareas))
+	for i, tarea := range tareas {
+		intervalos, err := repo.ListIntervalosByTareaID(tarea.TareaID)
+		if err != nil {
+			fmt.Println("getHistoriaExportsRecursiva: %w", err)
+		}
+		historia.Tareas[i] = TareaExport{
+			Tarea:      tarea,
+			Intervalos: intervalos,
+		}
+	}
+
 	for _, hijo := range hijos {
 		historia.Historias = append(historia.Historias, getHistoriaExportsRecursiva(hijo, repo))
 	}
@@ -161,13 +184,25 @@ func insertHistoriaRecursiva(padreID int, his HistoriaExport, repo Repo) error {
 		return err
 	}
 	for _, tarea := range his.Tareas {
-		err = repo.InsertTarea(tarea)
+		err = repo.InsertTarea(tarea.Tarea)
 		if err != nil {
 			return err
+		}
+		for _, intervalo := range tarea.Intervalos {
+			err = repo.InsertIntervalo(intervalo)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	for _, tramo := range his.Tramos {
 		err = repo.InsertTramo(tramo)
+		if err != nil {
+			return err
+		}
+	}
+	for _, regla := range his.Reglas {
+		err = repo.InsertRegla(regla)
 		if err != nil {
 			return err
 		}
@@ -259,6 +294,21 @@ func printHistoriaMarkdown(w io.Writer, his ust.NodoHistoria, repo Repo) error {
 			} else {
 				fmt.Fprintf(w, "- [x] %s\n", tarea.Descripcion)
 			}
+		}
+	}
+
+	// Imprimir reglas
+	Reglas, err := repo.ListReglasByHistoriaID(his.HistoriaID)
+	if err != nil {
+		return err
+	}
+	if len(Reglas) > 0 {
+		fmt.Fprintln(w, "\nReglas:")
+		for _, regla := range Reglas {
+			if his.Nivel > 3 {
+				fmt.Fprint(w, strings.Repeat("  ", his.Nivel-2))
+			}
+			fmt.Fprintf(w, "> %s\n", regla.Texto)
 		}
 	}
 
