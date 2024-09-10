@@ -20,11 +20,11 @@
 </header>
 
 
-<main class="grow w-full max-w-5xl p-2 mx-auto"
+<main
 	hx-get="/historias/{{ .Historia.HistoriaID }}"
 	hx-target="this" hx-select="main" hx-swap="outerHTML"
 	hx-trigger="reloadHistoria"
-	>
+	class="grow w-full max-w-5xl p-2 mx-auto">
 
 	<div class="flex flex-wrap justify-end mb-2 gap-x-4 gap-y-2">
 		<!--* PERSONA  -->
@@ -35,12 +35,11 @@
 		</h4>
 		<!--* PRIORIDAD -->
 		<div>
-			<select class="form-control"
-			hx-patch="/historias/{{ .Historia.HistoriaID }}/prioridad" 
-			hx-swap="none" 
-			name="value" 
-			id="txt_hist_prioridad"
-			>
+			<select
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/prioridad"
+				hx-swap="none"
+				name="value"
+				class="form-control">
 				<option value="0" {{ if eq .Historia.Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
 				<option value="1" {{ if eq .Historia.Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
 				<option value="2" {{ if eq .Historia.Prioridad 2 }}selected{{ end }}>🤔 Should</option>
@@ -49,38 +48,45 @@
 		</div>
 		<!--* COMPLETADA -->
 		<div>
-			<select hx-patch="/historias/{{ .Historia.HistoriaID }}/completada" hx-swap="none" name="value" class="form-control" id="txt_hist_estatus">
+			<select
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/completada"
+				hx-swap="none"
+				name="value"
+				class="form-control">
 				<option value="0">Pendiente</option>
-				<option value="1" {{ if .Historia.Completada }}selected{{ end }}>✅ Completada</option>
+				<option value="1" {{- if .Historia.Completada }} selected{{ end }}>✅ Completada</option>
 			</select>
 		</div>
 	</div>
 
 	<!--* TÍTULO -->
 	<div class="mb-4">
-		<textarea 
+		<textarea
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/titulo"
-			hx-swap="none" 
-			hx-trigger="change, keyup changed delay:2s"
+			hx-swap="none"
+			hx-trigger="change, keyup changed delay:3s"
 			name="value"
-			id="txt_hist_nombre" 
-			type="text"
+			placeholder="Hacer algo de valor..."
 			rows="1"
-			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400"
-		>{{ .Historia.Titulo }}</textarea>
+			enterkeyhint="done"
+			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
+			{{- .Historia.Titulo -}}
+		</textarea>
 	</div>
 
 	<!--* CONTEXTO -->
 	<div class="mb-4">
-		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600"
+		<textarea
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/objetivo"
 			hx-swap="none" 
-			hx-trigger="change, keyup changed delay:2s"
-			cols="30" rows="1"
-			id="txt_hist_empatia"
-			name="value" 
-			placeholder="Descripción del contexto..." 
-		>{{ .Historia.Objetivo }}</textarea>
+			hx-trigger="change, keyup changed delay:3s"
+			name="value"
+			placeholder="Descripción del contexto..."
+			rows="1"
+			enterkeyhint="done"
+			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600">
+			{{- .Historia.Objetivo -}}
+		</textarea>
 	</div>
 
 	<!--* VIAJE DE USUARIO *-->
@@ -100,41 +106,32 @@
 				<textarea
 					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
 					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					name="texto"
 					onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
 					onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
 					onblur="if (this.hasAttribute('readonly')){ return }; this.setAttribute('readonly', true);"
 					onchange="this.blur();"
-					oncontextmenu="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
 					readonly
 					rows="1"
-					name="texto"
-					
+					enterkeyhint="done"
 					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
 					{{- .Texto -}}
 				</textarea>
 				<div>
+					{{ if not .Imagen -}}
 					<button
 						type="button"
 						onclick="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
 						title="Definir imagen"
-						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80">
+						class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80">
 						<i class="fa-solid fa-image"></i>
 					</button>
+					{{ end }}
 				</div>
-				<!-- <button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
-					hx-delete="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
-					hx-target="main" hx-select="main" hx-swap="outerHTML"
-					hx-confirm="¿Eliminar tramo de viaje? {{ .Texto }}"
-					title="Quitar este tramo">❌
-				</button> -->
 			</div>
 			{{ if .Imagen -}}
 			<div class="relative mb-2 ml-12 border border-cyan-800 rounded-md shadow-lg">
-				<!-- <div class="absolute flex items-center justify-center w-full h-full gap-3 rounded-md opacity-5 hover:opacity-100 bg-black/60">
-					<a href="/imagenes/{{ .Imagen }}" class="">🏞</a>
-					<button type="button" hx-delete="/imagenes/{{ .HistoriaID }}/{{ .Posicion }}" title="Eliminar imagen" hx-confirm="¿Eliminar esta imagen?" class="">❌</button>
-				</div> -->
-				<img 
+				<img
 					src="/imagenes/{{ .Imagen }}"
 					onclick="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
 					class="rounded-md cursor-pointer max-w-40 max-h-40">
@@ -151,16 +148,14 @@
 					{{ suma (len .Tramos) 1 }}
 				</span>
 			</div>
-			<input type="text" 
-				name="texto" 
+			<textarea
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-trigger="keyup[key=='Enter']"
-				hx-validate="true"
-				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
+				name="texto" 
+				rows="1"
+				enterkeyhint="done"
 				placeholder="Agregar un tramo al viaje"
-				class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
-			>
+				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</li>
 	</ol>
 
@@ -180,11 +175,8 @@
 				</button>
 			</header>
 			<div class="flex flex-col grow gap-2 p-2 overflow-y-auto">
-				<p>
-					<!-- Descripcion puesta con showTramoImgModal() -->
-				</p>
+				<p><!-- Datos puestos con JS --></p>
 				<img src="" class="mx-auto border border-cyan-800 rounded-md shadow-lg">
-				<!-- <img tipo="preview" src="" class="hidden object-cover mx-auto my-4 rounded-lg shadow-lg aspect-square w-60"> -->
 				<form 
 					id="formSubirImagen"
 					hx-post="/imagenes"
@@ -277,8 +269,9 @@
 	{{ range .Ancestros }}
 	<ul class="pl-6 list-[revert]">
 		<li class="p-1">
-			{{ .Titulo }}
-			<a href="/historias/{{ .HistoriaID }}" class="float-right opacity-10 hover:opacity-100">👁️</a>
+			<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 underline whitespace-pre-line hover:text-cyan-200">
+				{{- .Titulo -}}
+			</a>
 			{{ end }}
 			{{ range .Ancestros -}}
 		</li>
@@ -301,19 +294,15 @@
 					</form>
 				</div>
 				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
-				<p class="grow whitespace-pre-line">
-					{{- .Historia.Titulo -}}
-				</p>
+				<div class="grow">
+					<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 underline whitespace-pre-line hover:text-cyan-300">
+						{{- .Historia.Titulo -}}
+					</a>
+				</div>
 				<a href="/historias/{{ .Historia.HistoriaID }}/mover"
 					title="Mover historia"
 					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
 					<i class="fa-solid fa-person-walking"></i>
-				</a>
-				<a href="/historias/{{ .Historia.HistoriaID }}"
-					title="Ver historia"
-					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
-					<!-- <i class="fa-solid fa-up-right-and-down-left-from-center"></i> -->
-					<i class="fa-regular fa-eye"></i>
 				</a>
 			</div>
 
@@ -324,19 +313,15 @@
 					<div class="pl-6">
 						<i class="px-1 opacity-50 fa-regular fa-circle" style="font-size: 0.5rem;"></i>
 					</div>
-					<p class="grow whitespace-pre-line">
-						{{- .Historia.Titulo -}}
-					</p>
+					<div class="grow">
+						<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 underline whitespace-pre-line hover:text-cyan-300">
+							{{- .Historia.Titulo -}}
+						</a>
+					</div>
 					<a href="/historias/{{ .Historia.HistoriaID }}/mover"
 						title="Mover historia"
-						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
+						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80">
 						<i class="fa-solid fa-person-walking"></i>
-					</a>
-					<a href="/historias/{{ .Historia.HistoriaID }}"
-						title="Ver historia"
-						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
-						<!-- <i class="fa-solid fa-up-right-and-down-left-from-center"></i> -->
-						<i class="fa-regular fa-eye"></i>
 					</a>
 				</li>
 				{{ end }}
@@ -345,16 +330,20 @@
 		</li>
 		{{ end }}
 		<li class="">
-			<input class="w-full px-2 py-1 text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 placeholder:text-slate-600"
-				type="text"
-				name="titulo"
-				hx-post="/historias/{{ .Historia.HistoriaID }}"
-				hx-target="#msgStack"
-				hx-validate="true"
-				hx-on:htmx:validation:validate="console.log('validate'); this.reportValidity();"
-				onchange="console.log('change'); if(this.value == '') { this.setCustomValidity('Introduzca un valor'); } else { this.setCustomValidity(''); }"
-				placeholder="Agregar historia"
-			>
+			<div class="flex gap-1 p-1 group">
+				<div class="hidden opacity-0 md:block">
+					⣿
+				</div>
+				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
+				<textarea
+					hx-post="/historias/{{ .Historia.HistoriaID }}"
+					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					name="titulo" 
+					rows="1"
+					enterkeyhint="done"
+					placeholder="Agregar historia"
+					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+			</div>
 		</li>
 	</ul>
 
@@ -376,18 +365,18 @@
 					{{ .Posicion }}
 				</span>
 			</div>
-			<p
-				ondblclick="let inp = this.nextElementSibling; inp.classList.remove('hidden'); inp.classList.add('inline-block'); inp.focus(); inp.addEventListener('keydown',hdlTextAreaEnter); this.classList.add('hidden');"
-				class="grow whitespace-pre-line">
-				{{- .Texto -}}
-			</p>
 			<textarea
-				onblur="this.classList.remove('inline-block'); this.classList.add('hidden'); this.previousElementSibling.textContent = this.value; this.previousElementSibling.classList.remove('hidden');"
-				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
+				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				rows="1"
 				name="texto"
-				class="hidden w-full text-white outline-none bg-black/50 placeholder:text-slate-600">
+				onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
+				onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
+				onblur="if (this.hasAttribute('readonly')){ return }; this.setAttribute('readonly', true);"
+				onchange="this.blur();"
+				readonly
+				rows="1"
+				enterkeyhint="done"
+				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
 				{{- .Texto -}}
 			</textarea>
 			<button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
@@ -405,16 +394,14 @@
 					{{ suma (len .Reglas) 1 }}
 				</span>
 			</div>
-			<input type="text" 
-				name="texto" 
+			<textarea
 				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-trigger="keyup[key=='Enter']"
-				hx-validate="true"
-				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
+				name="texto" 
+				rows="1"
+				enterkeyhint="done"
 				placeholder="Agregar regla"
-				class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
-			>
+				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</li>
 	</ol>
 
@@ -632,22 +619,7 @@
 		dialogHistoria.close()
 	})
 
-	// Guardar con Enter; new line con Ctrl+Enter; cancelar con Esc;
-	function hdlTextAreaEnter(event) {
-		if (event.key === 'Enter') {
-			if (event.ctrlKey) {
-				event.target.value += '\n';
-				autosizeTextarea(event.target);
-				event.preventDefault();
-			} else {
-				event.preventDefault();
-				event.target.blur();
-			}
-		} else if (event.key === 'Escape') {
-			event.target.value = event.target.defaultValue;
-			event.target.blur();
-		}
-	}
+	
 
 	// ================================================================ //
 	// ========== SORTABLE ============================================ //

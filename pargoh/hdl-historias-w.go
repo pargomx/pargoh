@@ -55,7 +55,8 @@ func (s *servidor) postHistoriaQuick(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) updateHistoria(c *gecko.Context) error {

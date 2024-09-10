@@ -208,9 +208,9 @@ document.querySelectorAll('table').forEach(tbl => {
 });
 
 // ================================================================ //
-// ========== AUTOSIZE TEXTAREA =================================== //
+// ========== TEXTAREAS =========================================== //
 
-// Puede tener cualquier border-width, max-height o rows.
+// Autosize: puede tener cualquier border-width, max-height o rows.
 function autosizeTextarea(textarea) {
 	let style = window.getComputedStyle(textarea); // obtener y considerar border para evitar scrollbars.
     let bTop = parseFloat(style.getPropertyValue('border-top-width'));
@@ -224,6 +224,7 @@ function autosizeTextarea(textarea) {
 }
 
 // Aplicar autosize cuando el textarea se hace visible, no solo al cargar la página.
+// Nesesario para textareas ocultos dentro de modales <dialog>.
 const observer = new IntersectionObserver((entries, observer) => {
 	entries.forEach(entry => {
 		if (entry.isIntersecting) {
@@ -235,7 +236,22 @@ const observer = new IntersectionObserver((entries, observer) => {
 	});
 }, { threshold: 0 });
 
-
+// Guardar con Enter; new line con Ctrl+Enter; cancelar con Esc;
+function hdlTextAreaEnter(event) {
+	if (event.key === 'Enter') {
+		if (event.ctrlKey) {
+			event.target.value += '\n';
+			autosizeTextarea(event.target);
+			event.preventDefault();
+		} else {
+			event.preventDefault();
+			event.target.blur();
+		}
+	} else if (event.key === 'Escape') {
+		event.target.value = event.target.defaultValue;
+		event.target.blur();
+	}
+}
 
 // ================================================================ //
 // ========== INICIALIZAR CONTENIDO =============================== //
@@ -258,8 +274,14 @@ htmx.onLoad(function(content) {
 	for (let i = 0; i < textareas.length; i++) {
 		autosizeTextarea(textareas[i])
 		observer.observe(textareas[i]);
+		textareas[i].addEventListener('keydown', hdlTextAreaEnter);
+		// textareas[i].setAttribute("autocomplete", "off")
+		// textareas[i].setAttribute("spellcheck", "true")
+		// textareas[i].setAttribute("autocorrect", "on")
+		// textareas[i].setAttribute("autocapitalize", "on")
 	}
 
+	
 	// Si se declara una función "onLoad" en el contenido, se ejecuta.
 	if (typeof onLoad === 'function') { 
 		onLoad(content);

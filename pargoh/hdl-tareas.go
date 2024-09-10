@@ -25,8 +25,8 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	gko.LogInfof("Tarea %d insertada", tarea.TareaID)
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context) error {
