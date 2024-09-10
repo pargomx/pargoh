@@ -32,6 +32,7 @@ func logDevReq(c *gecko.Context) bool {
 func (s *servidor) GET(path string, authHandler gecko.HandlerFunc) {
 	s.gecko.GET(path, func(c *gecko.Context) error {
 		logDevReq(c)
+		c.Response().Header().Set("Cache-Control", "no-store")
 		return authHandler(c)
 	})
 }
