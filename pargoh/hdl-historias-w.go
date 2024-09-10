@@ -74,7 +74,7 @@ func (s *servidor) updateHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusAccepted("Historia actualizada")
+	return c.StatusOk("Historia actualizada")
 }
 
 func (s *servidor) patchHistoria(c *gecko.Context) error {
@@ -88,7 +88,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 		return err
 	}
 	s.reloader.brodcastReload(c)
-	return c.StatusAccepted("Historia parchada")
+	return c.StatusOk("Historia parchada")
 }
 
 func (s *servidor) priorizarHistoria(c *gecko.Context) error {
@@ -96,7 +96,7 @@ func (s *servidor) priorizarHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusAccepted("Historia priorizada")
+	return c.StatusOk("Historia priorizada")
 }
 
 func (s *servidor) marcarHistoria(c *gecko.Context) error {
@@ -104,7 +104,7 @@ func (s *servidor) marcarHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusAccepted("Historia marcada")
+	return c.StatusOk("Historia marcada")
 }
 
 func (s *servidor) deleteHistoria(c *gecko.Context) error {
@@ -112,7 +112,7 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusAccepted("Historia eliminada")
+	return c.StatusOk("Historia eliminada")
 }
 
 func (s *servidor) moverHistoria(c *gecko.Context) error {
@@ -121,7 +121,7 @@ func (s *servidor) moverHistoria(c *gecko.Context) error {
 		return err
 	}
 	return c.Redir("/historias/%v/mover", c.PathInt("historia_id"))
-	// return c.StatusAccepted("Historia movida")
+	// return c.StatusOk("Historia movida")
 }
 
 func (s *servidor) reordenarHistoria(c *gecko.Context) error {

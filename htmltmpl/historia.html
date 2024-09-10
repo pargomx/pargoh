@@ -295,34 +295,52 @@
 				</div>
 				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
 				<div class="grow">
-					<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 underline whitespace-pre-line hover:text-cyan-300">
+					<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 						{{- .Historia.Titulo -}}
 					</a>
 				</div>
 				<a href="/historias/{{ .Historia.HistoriaID }}/mover"
 					title="Mover historia"
-					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80">
+					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-cyan-600">
 					<i class="fa-solid fa-person-walking"></i>
 				</a>
+				<button
+					type="button"
+					hx-delete="/historias/{{ .Historia.HistoriaID }}"
+					hx-target="#msgStack" hx-swap="innerHTML"
+					hx-confirm="¿Eliminar historia? {{ .Historia.Titulo }}"
+					title="Eliminar historia"
+					class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
+					<i class="fa-solid fa-trash"></i>
+				</button>
 			</div>
 
 			{{ if .Descendientes -}}
 			<ul class="">
 				{{ range .Descendientes }}
 				<li tipo="" class="flex gap-1 p-1 group">
-					<div class="pl-6">
+					<div class="pl-8">
 						<i class="px-1 opacity-50 fa-regular fa-circle" style="font-size: 0.5rem;"></i>
 					</div>
 					<div class="grow">
-						<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 underline whitespace-pre-line hover:text-cyan-300">
+						<a href="/historias/{{ .Historia.HistoriaID }}" class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 							{{- .Historia.Titulo -}}
 						</a>
 					</div>
 					<a href="/historias/{{ .Historia.HistoriaID }}/mover"
 						title="Mover historia"
-						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80">
+						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-cyan-600">
 						<i class="fa-solid fa-person-walking"></i>
 					</a>
+					<button
+						type="button"
+						hx-delete="/historias/{{ .Historia.HistoriaID }}"
+						hx-target="#msgStack" hx-swap="innerHTML"
+						hx-confirm="¿Eliminar historia? {{ .Historia.Titulo }}"
+						title="Eliminar historia"
+						class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
+						<i class="fa-solid fa-trash"></i>
+					</button>
 				</li>
 				{{ end }}
 			</ul>
@@ -379,12 +397,15 @@
 				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
 				{{- .Texto -}}
 			</textarea>
-			<button type="button" class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80"
+			<button
+				type="button"
 				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				hx-confirm="¿Eliminar regla? {{ .Texto }}" 
 				title="Quitar regla"
-				>❌</button>
+				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
+				<i class="fa-solid fa-trash"></i>
+			</button>
 		</li>
 		{{ end }}
 		<li class="flex items-center gap-1 p-1">
@@ -613,12 +634,10 @@
 
 <!-- ======================================================== -->
 <script>	
-
+	// Recargar historia cuando se recibe la respuesta del servidor en msgStack.
 	document.getElementById("msgStack").addEventListener("htmx:afterSwap", (event) => {
-		document.querySelector("[tipo='carriles_container']").dispatchEvent(new Event("historiasActualizadas"))
-		dialogHistoria.close()
+		document.querySelector("main").dispatchEvent(new Event("reloadHistoria"));
 	})
-
 	
 
 	// ================================================================ //
@@ -665,9 +684,6 @@
 			
 		});
 	}
-
-	
-
 
 
 	// ================================================================ //

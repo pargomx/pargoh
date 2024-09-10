@@ -166,7 +166,14 @@ func EliminarHistoria(historiaID int, repo Repo) error {
 		return op.Err(err)
 	}
 	if len(hijos) > 0 {
-		return op.Msg("la historia tiene hijos y no puede ser eliminada")
+		return op.Msg("la historia tiene descendientes y no puede ser eliminada")
+	}
+	tramos, err := repo.ListTramosByHistoriaID(his.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if len(tramos) > 0 {
+		return op.Msg("la historia tiene tramos y no puede ser eliminada")
 	}
 	tareas, err := repo.ListTareasByHistoriaID(his.HistoriaID)
 	if err != nil {
@@ -174,6 +181,13 @@ func EliminarHistoria(historiaID int, repo Repo) error {
 	}
 	if len(tareas) > 0 {
 		return op.Msg("la historia tiene tareas y no puede ser eliminada")
+	}
+	reglas, err := repo.ListReglasByHistoriaID(his.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if len(reglas) > 0 {
+		return op.Msg("la historia tiene reglas y no puede ser eliminada")
 	}
 	err = repo.EliminarNodo(his.HistoriaID)
 	if err != nil {
