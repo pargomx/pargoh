@@ -1,6 +1,9 @@
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}" alt="Portada del proyecto" class="w-24 rounded-md">
+		<img 
+			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+			alt="Portada del proyecto"
+			class="w-24 rounded-md">
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
@@ -30,15 +33,19 @@
 		hx-trigger="historiasActualizadas" 
 		hx-target="this" hx-swap="innerHTML" 
 		hx-select="[tipo='sort_historias'] > *" 
-		class="flex flex-col items-stretch gap-4 pb-2"
-	>
+		class="flex flex-col items-stretch gap-4 pb-2">
+
 		{{ range .Historias -}}
-		<article tipo="sort_historia" id="{{ .HistoriaID }}" class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
+		<article
+			tipo="sort_historia"
+			id="{{ .HistoriaID }}"
+			class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
 			<span tipo="sort_handle" class="mr-1 cursor-pointer">
 				⣿
 			</span>
 			<a href="/historias/{{ .HistoriaID }}" class="grow">
-				{{ .Titulo }}{{ if .Completada }} ✅{{ end }}
+				{{ .Titulo }}
+				{{- if .Completada }} ✅{{ end }}
 			</a>
 			<span>
 				{{ .PrioridadEmoji }}
@@ -48,12 +55,12 @@
 
 		<!-- Agregar historia -->
 		<div>
-			<input 
-				id="nuevaHistoria"
-				name="titulo"
-				type="text"
+			<input
 				hx-target="#msgStack"
 				hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}"
+				hx-trigger="keyup[key=='Enter']"
+				name="titulo"
+				type="text"
 				placeholder="Agregar historia..."
 				class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
 		</div>

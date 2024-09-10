@@ -1,7 +1,10 @@
 {{ with .Agregado -}}
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}" alt="Portada del proyecto" class="w-24 rounded-md">
+		<img 
+			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+			alt="Portada del proyecto"
+			class="w-24 rounded-md">
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
@@ -572,7 +575,7 @@
 			</h2>
 			<button
 				type="button"
-				onclick="this.closest('dialog').close()" 
+				onclick="this.closest('dialog').close()"
 				title="Cerrar"
 				class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
 				<i class="fa-solid fa-xmark"></i>
