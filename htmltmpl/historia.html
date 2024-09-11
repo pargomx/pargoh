@@ -106,8 +106,9 @@
 					</span>
 				</div>
 				<textarea
+					id="input_Tramo{{ .Posicion }}"
 					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
-					hx-swap="none"
+					hx-target="main" hx-select="main" hx-swap="outerHTML"
 					name="texto"
 					onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
 					onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
@@ -388,8 +389,9 @@
 				</span>
 			</div>
 			<textarea
+				id="input_Regla{{ .Posicion }}"
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-swap="none"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				name="texto"
 				onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
 				onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"

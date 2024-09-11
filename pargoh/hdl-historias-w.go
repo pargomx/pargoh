@@ -125,7 +125,16 @@ func (s *servidor) moverHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) reordenarHistoria(c *gecko.Context) error {
-	err := dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), s.repo)
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	err = dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), sqliteust.NuevoRepo(tx))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
 	if err != nil {
 		return err
 	}
