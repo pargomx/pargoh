@@ -52,3 +52,24 @@ func (s *Repositorio) ReordenarTramo(historiaID int, oldPos int, newPos int) err
 	}
 	return nil
 }
+
+// ================================================================ //
+
+func (s *Repositorio) DeleteAllTramos(HistoriaID int) error {
+	const op string = "DeleteAllTramos"
+	if HistoriaID == 0 {
+		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+	}
+	err := s.ExisteHistoria(HistoriaID)
+	if err != nil {
+		return gko.Err(err).Op(op)
+	}
+	_, err = s.db.Exec(
+		"DELETE FROM tramos WHERE historia_id = ?",
+		HistoriaID,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op).Ctx("historia_id", HistoriaID)
+	}
+	return nil
+}

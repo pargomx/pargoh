@@ -78,7 +78,7 @@ func EliminarPersona(personaID int, repo Repo) error {
 		return op.Err(err)
 	}
 	if len(hijos) > 0 {
-		return op.Msg("Para eliminar una persona, primero elimine sus historias y tareas")
+		return op.Msg("Para eliminar una persona, primero elimine sus historias")
 	}
 	err = repo.EliminarNodo(per.PersonaID)
 	if err != nil {

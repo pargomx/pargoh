@@ -42,12 +42,14 @@ type Repo interface {
 	InsertTarea(tar ust.Tarea) error
 	UpdateTarea(tar ust.Tarea) error
 	DeleteTarea(tareaID int) error
+	DeleteAllTareas(HistoriaID int) error
 	GetTarea(tareaID int) (*ust.Tarea, error)
 	ListTareasByHistoriaID(historiaID int) ([]ust.Tarea, error)
 
 	// Intervalos
 	InsertIntervalo(interv ust.Intervalo) error
 	UpdateIntervalo(interv ust.Intervalo) error
+	DeleteIntervalo(TareaID int, Inicio string) error
 	ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, error)
 
 	// Viajes
@@ -55,6 +57,7 @@ type Repo interface {
 	UpdateTramo(tra ust.Tramo) error
 	ExisteTramo(HistoriaID int, Posicion int) error
 	DeleteTramo(HistoriaID int, Posicion int) error
+	DeleteAllTramos(HistoriaID int) error
 	GetTramo(HistoriaID int, Posicion int) (*ust.Tramo, error)
 	ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error)
 	ReordenarTramo(HistoriaID, oldPos, newPos int) error
@@ -64,6 +67,7 @@ type Repo interface {
 	UpdateRegla(reg ust.Regla) error
 	ExisteRegla(HistoriaID int, Posicion int) error
 	DeleteRegla(HistoriaID int, Posicion int) error
+	DeleteAllReglas(HistoriaID int) error
 	GetRegla(HistoriaID int, Posicion int) (*ust.Regla, error)
 	ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error)
 	ReordenarRegla(HistoriaID, oldPos, newPos int) error

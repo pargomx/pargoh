@@ -188,10 +188,19 @@
 				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
 				Guardar
 			</button>
-			<button
+			<!-- <button
 				type="button"
 				hx-delete="/proyectos/{{ .ProyectoID}}"
 				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?"
+				onclick="this.closest('dialog').close()"
+				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
+				Eliminar
+			</button> -->
+			<button
+				type="button"
+				hx-delete="/proyectos/{{ .ProyectoID}}/definitivo"
+				hx-confirm="Se sugiere exportar JSON antes de continuar. ¿Eliminar proyecto {{ .Titulo }} junto con todo lo que contiene?"
+				hx-prompt="Escribe 'eliminar_{{ .ProyectoID}}' para confirmar"
 				onclick="this.closest('dialog').close()"
 				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
 				Eliminar

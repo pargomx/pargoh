@@ -93,7 +93,7 @@ func ParcharProyecto(proyectoID string, param string, newVal string, repo Repo) 
 	return nil
 }
 
-func QuitarProyecto(ProyectoID string, repo Repo) error {
+func EliminarProyecto(ProyectoID string, repo Repo) error {
 	const op string = "app.QuitarProyecto"
 	pers, err := repo.ListNodosPersonas(ProyectoID)
 	if err != nil {

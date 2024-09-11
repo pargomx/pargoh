@@ -57,6 +57,55 @@ func (s *Repositorio) UpdateIntervalo(interv ust.Intervalo) error {
 }
 
 //  ================================================================  //
+//  ========== EXISTE ==============================================  //
+
+// Retorna error nil si existe solo un registro con esta clave primaria.
+func (s *Repositorio) ExisteIntervalo(TareaID int, Inicio string) error {
+	const op string = "ExisteIntervalo"
+	var num int
+	err := s.db.QueryRow("SELECT COUNT(tarea_id) FROM intervalos WHERE tarea_id = ? AND inicio = ?",
+		TareaID, Inicio,
+	).Scan(&num)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return gko.ErrNoEncontrado().Err(ust.ErrIntervaloNotFound).Op(op)
+		}
+		return gko.ErrInesperado().Err(err).Op(op)
+	}
+	if num > 1 {
+		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+	} else if num == 0 {
+		return gko.ErrNoEncontrado().Err(ust.ErrIntervaloNotFound).Op(op)
+	}
+	return nil
+}
+
+//  ================================================================  //
+//  ========== DELETE ==============================================  //
+
+func (s *Repositorio) DeleteIntervalo(TareaID int, Inicio string) error {
+	const op string = "DeleteIntervalo"
+	if TareaID == 0 {
+		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+	}
+	if Inicio == "" {
+		return gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
+	}
+	err := s.ExisteIntervalo(TareaID, Inicio)
+	if err != nil {
+		return gko.Err(err).Op(op)
+	}
+	_, err = s.db.Exec(
+		"DELETE FROM intervalos WHERE tarea_id = ? AND inicio = ?",
+		TareaID, Inicio,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op)
+	}
+	return nil
+}
+
+//  ================================================================  //
 //  ========== CONSTANTES ==========================================  //
 
 // Lista de columnas separadas por coma para usar en consulta SELECT
@@ -139,7 +188,7 @@ func (s *Repositorio) scanRowsIntervalo(rows *sql.Rows, op string) ([]ust.Interv
 }
 
 //  ================================================================  //
-//  ========== LIST_BY =============================================  //
+//  ========== LIST_BY TAREA_ID ====================================  //
 
 func (s *Repositorio) ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, error) {
 	const op string = "ListIntervalosByTareaID"

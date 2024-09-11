@@ -110,6 +110,7 @@ func main() {
 
 	s.POS("/proyectos", s.postProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
+	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.patchProyecto)
 
