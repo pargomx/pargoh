@@ -102,7 +102,7 @@ func main() {
 	} else {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
-		s.gecko.FileFS("/htmx.js", "assets/js/htmx.min.js", assets.AssetsFS)
+		s.gecko.FileFS("/htmx.js", "js/htmx.min.js", assets.AssetsFS)
 	}
 
 	s.GET("/", s.listaProyectos)
