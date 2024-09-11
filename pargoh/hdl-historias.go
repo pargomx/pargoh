@@ -193,5 +193,6 @@ func (s *servidor) reordenarRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	defer s.reloader.brodcastReload(c)
 	return c.Redir("/historias/%v", c.FormInt("historia_id"))
 }

@@ -67,7 +67,6 @@
 		<textarea
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/titulo"
 			hx-swap="none"
-			hx-trigger="change, keyup changed delay:3s"
 			name="value"
 			placeholder="Hacer algo de valor..."
 			rows="1"
@@ -108,7 +107,7 @@
 				</div>
 				<textarea
 					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
-					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					hx-swap="none"
 					name="texto"
 					onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
 					onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
@@ -152,13 +151,15 @@
 				</span>
 			</div>
 			<textarea
+				id="input_AddTramo"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-trigger="keyup[key=='Enter']"
 				name="texto" 
 				rows="1"
 				enterkeyhint="done"
 				placeholder="Agregar un tramo al viaje"
-				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+				class="inline-block w-full bg-transparent border-b border-transparent outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</li>
 	</ol>
 
@@ -187,13 +188,12 @@
 					class="py-2 text-center">
 					<input type="hidden" name="historia_id">
 					<input type="hidden" name="posicion">
-					<input 
+					<input
 						type="file"
 						name="imagen"
 						accept="image/png, image/jpeg"
-						capture="user"
 						required
-						onchange="showTramoImagePreview(this)" 
+						onchange="showTramoImagePreview(this)"
 						class="form-control">
 				</form>
 				<div class="flex flex-row-reverse flex-wrap justify-center gap-x-4 gap-y-2">
@@ -359,11 +359,12 @@
 				<textarea
 					hx-post="/historias/{{ .Historia.HistoriaID }}"
 					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					hx-trigger="keyup[key=='Enter']"
 					name="titulo" 
 					rows="1"
 					enterkeyhint="done"
 					placeholder="Agregar historia"
-					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+					class="inline-block w-full bg-transparent border-b border-transparent outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 			</div>
 		</li>
 	</ul>
@@ -388,7 +389,7 @@
 			</div>
 			<textarea
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-swap="none"
 				name="texto"
 				onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
 				onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
@@ -402,9 +403,9 @@
 			</textarea>
 			<button
 				type="button"
-				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}" 
+				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-confirm="¿Eliminar regla? {{ .Texto }}" 
+				hx-confirm="¿Eliminar regla? {{ .Texto }}"
 				title="Quitar regla"
 				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
 				<i class="fa-solid fa-trash"></i>
@@ -419,13 +420,15 @@
 				</span>
 			</div>
 			<textarea
+				id="input_AddRegla"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				name="texto" 
+				hx-trigger="keyup[key=='Enter']"
+				name="texto"
 				rows="1"
 				enterkeyhint="done"
 				placeholder="Agregar regla"
-				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+				class="inline-block w-full bg-transparent border-b border-transparent outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</li>
 	</ol>
 
@@ -543,7 +546,8 @@
 					<i class="text-slate-400 fa-regular fa-square"></i>
 				</span>
 			</div>
-			<input type="text" 
+			<input type="text"
+				id="input_AddTarea"
 				name="descripcion" 
 				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
@@ -642,10 +646,6 @@
 		document.querySelector("main").dispatchEvent(new Event("reloadHistoria"));
 	})
 	
-
-	// ================================================================ //
-	// ========== SORTABLE ============================================ //
-
 	function handleResponse(response) {
 		response.text().then((msg) => {
 			if (response.status >= 200 && response.status < 300) {
@@ -658,36 +658,6 @@
 	}
 
 	let historiaID = {{ .Agregado.Historia.HistoriaID }};
-
-	function reordenarTramo(historiaID, oldPos, newPos) {
-		console.debug(`reordenarTramo(id:${historiaID}, old:${oldPos}, new:${newPos})`)
-		if (historiaID == null) {
-			return console.error("No se puede reordenar sin historiaID")
-		}
-		let formData = new FormData();
-		formData.append("historia_id", historiaID);
-		formData.append("old_pos", oldPos);
-		formData.append("new_pos", newPos);
-		fetch('/reordenar-tramo', { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-
-	function prepSortableTramos(){
-		var sortableTramos = new Sortable(document.querySelector("[tipo='sort_tramos']"), {
-			group: "sort_tramos", animation: 150, swapThreshold: 0.50,
-			draggable: "[tipo='sort_tramo']",
-			handle: "[tipo='sort_handle']",
-			ghostClass: "opacity-50",
-			onStart: function(event) { },
-			onEnd: function(event) {
-				if (event.oldIndex == event.newIndex){
-					return
-				}
-				return reordenarTramo(historiaID, event.oldIndex+1, event.newIndex+1)
-			},
-			
-		});
-	}
-
 
 	// ================================================================ //
 	// ========== WEBSOCKET =========================================== //
@@ -729,7 +699,24 @@
 	// ================================================================ //
 	// ================================================================ //
 	function onLoad(content) {
-		prepSortableTramos()
+		
+		// Reordenar tramos
+		var sortableTramos = new Sortable(document.querySelector("[tipo='sort_tramos']"), {
+			group: "sort_tramos", animation: 150, swapThreshold: 0.50,
+			draggable: "[tipo='sort_tramo']",
+			handle: "[tipo='sort_handle']",
+			ghostClass: "opacity-50",
+			onEnd: function(event) {
+				// if (event.oldIndex == event.newIndex){ return }
+				let formData = new FormData();
+				formData.append("historia_id", historiaID);
+				formData.append("old_pos", event.oldIndex + 1);
+				formData.append("new_pos", event.newIndex + 1);
+				let headers = new Headers();
+				headers.append('X-SocketID', wsID);
+				fetch('/reordenar-tramo', { method: 'POST', body: formData, headers: headers }).then(response => handleResponse(response));
+			},
+		});
 
 		// Reordenar reglas
 		var sortableReglas = new Sortable(document.querySelector("[tipo='sort_reglas']"), {
@@ -738,18 +725,20 @@
 			handle: "[tipo='sort_handle']",
 			ghostClass: "opacity-50",
 			onEnd: function (event) {
+				if (event.oldIndex == event.newIndex){ return }
 				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
 				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
           	},
 		});
 
 		// Reordenar descendientes
-		var sortableReglas = new Sortable(document.querySelector("[tipo='sort_descendientes']"), {
+		var sortableDescend = new Sortable(document.querySelector("[tipo='sort_descendientes']"), {
 			group: "sort_descendientes", animation: 150, swapThreshold: 0.50,
 			draggable: "[tipo='sort_descendiente']",
 			handle: "[tipo='sort_handle']",
 			ghostClass: "opacity-50",
 			onEnd: function (event) {
+				if (event.oldIndex == event.newIndex){ return }
 				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
 				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
           	},

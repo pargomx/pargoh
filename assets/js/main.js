@@ -246,9 +246,10 @@ function hdlTextAreaEnter(event) {
 		} else {
 			event.preventDefault();
 			event.target.blur();
+			event.target.focus(); // para que htmx sepa qué elemento enfocar after swap.
 		}
 	} else if (event.key === 'Escape') {
-		event.target.value = event.target.defaultValue;
+		event.target.value = event.target.defaultValue; // restaurar valor original
 		event.target.blur();
 	}
 }

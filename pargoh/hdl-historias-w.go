@@ -87,7 +87,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	s.reloader.brodcastReload(c)
+	defer s.reloader.brodcastReload(c)
 	return c.StatusOk("Historia parchada")
 }
 
@@ -133,5 +133,6 @@ func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	defer s.reloader.brodcastReload(c)
 	return c.Redir("/historias/%v", hist.PadreID)
 }
