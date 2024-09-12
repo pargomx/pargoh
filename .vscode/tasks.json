@@ -25,6 +25,11 @@
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
 		{
+			"label": "install_prod", "detail": "Instalar aplicación",
+			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=PROD\" ./pargoh && echo 'Instalado ºuº)/'",
+			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
+		{
 			"label": "deploy", "detail": "Enviar binario al servidor",
 			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && rsync -avh --progress /tmp/pargoh ${input:remoteHost}:~/bin/ && echo 'Enviado :D'",
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
@@ -39,6 +44,13 @@
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
+		},
+		{
+			"label": "Start prod", "detail": "Ejecutar en directorio de prueba",
+			"command": "pargoh -dir=/home/andrew/pargodata",
+			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["install_prod"]
 		},
 		{
 			"label": "Start mac", "detail": "Ejecutar en directorio de prueba mac",
