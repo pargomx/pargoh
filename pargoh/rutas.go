@@ -42,6 +42,8 @@ type servidor struct {
 	repo  *sqliteust.Repositorio
 
 	reloader reloader // websocket.go
+
+	timeTracker *dhistorias.GestionTimeTracker
 }
 
 func main() {
@@ -76,6 +78,7 @@ func main() {
 		s.db.ToggleLog()
 	}
 	s.repo = sqliteust.NuevoRepo(s.db)
+	s.timeTracker = dhistorias.NewGestionTimeTracker(s.repo, 0)
 
 	if s.cfg.sourceDir != "" {
 		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
@@ -115,6 +118,8 @@ func main() {
 	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.patchProyecto)
+
+	s.POS("/proyectos/{proyecto_id}/time/{seg}", s.postTimeGestion)
 
 	s.POS("/personas", s.postPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)

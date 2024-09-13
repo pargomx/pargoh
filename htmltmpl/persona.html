@@ -1,6 +1,7 @@
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img 
+		<img
+			data-proyecto-id="{{ .Proyecto.ProyectoID }}"
 			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
 			alt="Portada del proyecto"
 			class="w-24 rounded-md">

@@ -114,3 +114,7 @@ func (tar IntervaloReciente) TiempoEstimadoString() string {
 func (tar IntervaloReciente) TiempoRealString() string {
 	return SegundosToString(tar.TiempoReal)
 }
+
+func (pry Proyecto) TiempoGestionString() string {
+	return SegundosToString(pry.TiempoGestion)
+}

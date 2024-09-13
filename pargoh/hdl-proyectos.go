@@ -104,6 +104,14 @@ func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
 	return c.Redir("/")
 }
 
+func (s *servidor) postTimeGestion(c *gecko.Context) error {
+	err := s.timeTracker.AddTimeSpent(c.PathVal("proyecto_id"), c.PathInt("seg"))
+	if err != nil {
+		return err
+	}
+	return c.StringOk("ok")
+}
+
 func (s *servidor) getProyecto(c *gecko.Context) error {
 	Proyecto, err := s.repo.GetProyecto(c.PathVal("proyecto_id"))
 	if err != nil {

@@ -1,6 +1,7 @@
 <header class="relative flex items-center w-full mb-2 bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img 
+		<img
+			data-proyecto-id="{{ .Proyecto.ProyectoID }}"
 			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
 			alt="Portada del proyecto"
 			class="w-24 rounded-md">
@@ -103,6 +104,13 @@
 	</button>
 	{{ end }}
 </main>
+
+<footer class="p-4 opacity-75">
+	<p class="text-sm">
+		Actividades de gestión: {{ .Proyecto.TiempoGestionString }}
+	</p>
+	<small></small>
+</footer>
 
 <!--* NUEVA PERSONA -->
 <dialog id="frmPerNueva" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">

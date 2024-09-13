@@ -288,3 +288,98 @@ htmx.onLoad(function(content) {
 		onLoad(content);
 	}
 })
+
+// ================================================================ //
+// ========== TimeTracker para gestión de proyecto ================ //
+
+const segundosParaInactividad = 20;
+const segundosParaEnviarHeartbeat = 5;
+let segundosContados = 0;
+let proyectoID = "_none";
+let timeCounterIntvl = null;
+let interactionTimeout;
+
+// Mostrar cuántos segundos se han contado.
+function setCounterDisplay(text) {
+	// window.document.title = text;
+	document.querySelector("footer small").innerText = text;
+}
+
+// Enviar un pulso al servidor cada x segundos.
+function sendHeartbeat() {
+	// Enviar segundos al servidor
+	fetch(`/proyectos/${proyectoID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
+	    if (!response.ok) {
+			// TODO: no dar error al usuario, pero guardar en localStorage y enviar cuando se pueda.
+	        throw new Error('Network response was not ok');
+	    }
+	})
+	// Cuenta local para mostrar al usuario.
+	segundosContados += segundosParaEnviarHeartbeat;
+    // localStorage.setItem('timeActive', segundosContados);
+	setCounterDisplay(`🌿 ${segundosContados}s ${proyectoID}`);
+}
+
+// Contar el tiempo que se trabaja en un proyecto. Idempotente.
+function startHeartbeat(razon) {
+	if (!document.querySelector("[data-proyecto-id]")) {
+		proyectoID = 0;
+		return // Solo contar cuando se trabaja en un proyecto.
+	}
+	if (timeCounterIntvl) {
+		console.log(razon + " [already started]");
+		return // Idempotente si ya está contando.
+	}
+	console.log(razon);
+	proyectoID = document.querySelector("[data-proyecto-id]").getAttribute("data-proyecto-id");
+	// segundosContados = parseInt(localStorage.getItem('timeActive')) || segundosContados
+	timeCounterIntvl = setInterval(sendHeartbeat, segundosParaEnviarHeartbeat * 1000);
+	setCounterDisplay(`🌿 Start: ${segundosContados}s ${proyectoID}`);
+}
+
+// Pausar el contador de tiempo.
+function stopHeartbeat(razon) {
+	if (!timeCounterIntvl) {
+		console.log(razon + " [already stopped]");
+		return // Idempotente si ya está detenido.
+    }
+	console.log(razon);
+	clearInterval(timeCounterIntvl);
+	timeCounterIntvl = null;
+	// localStorage.setItem('timeActive', segundosContados); // inecesario?
+	setCounterDisplay(`⏸️ Cuenta detenida ${segundosContados}s ${proyectoID}`);
+}
+
+// Detectar cuando la pestaña está enfocada o si deja de estarlo.
+function handleVisibilityChange() {
+    if (document.visibilityState === 'visible' && document.hasFocus()) {
+        startHeartbeat("🌳 Pestaña enfocada"); // Cubierto por UserInteraction.
+    } else {
+        stopHeartbeat("⚠️ Pestaña desenfocada");
+		clearTimeout(interactionTimeout); // Detener el contador de inactividad.
+    }
+}
+window.addEventListener('focus', handleVisibilityChange);
+window.addEventListener('blur', handleVisibilityChange);
+document.addEventListener('visibilitychange', handleVisibilityChange);
+
+if (document.visibilityState === 'visible' && document.hasFocus()) {
+    startHeartbeat("🌳 Already focused and visible when script loaded");
+}
+
+// Detectar cuando el usuario interactúa con la página.
+function handleUserInteraction() {
+	clearTimeout(interactionTimeout);
+	interactionTimeout = setTimeout(() => {
+		stopHeartbeat("⚠️ Inactividad detectada por " + segundosParaInactividad + " segundos");
+    }, segundosParaInactividad * 1000);
+	startHeartbeat("🌳 Actividad detectada");
+}
+document.onkeyup = handleUserInteraction;
+document.onclick = handleUserInteraction;
+document.ontouchstart = handleUserInteraction;
+// window.onload = handleUserInteraction; // cubierto por VisibilityChange.
+// document.onscroll = resetInteractionTimer; // meh...
+// document.onmousemove = resetInteractionTimer; // demasiado sensible
+
+// ================================================================ //
