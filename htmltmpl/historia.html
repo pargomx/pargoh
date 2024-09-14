@@ -82,7 +82,7 @@
 		<textarea
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/objetivo"
 			hx-swap="none" 
-			hx-trigger="change, keyup changed delay:3s"
+			hx-trigger="change, keyup changed delay:60s"
 			name="value"
 			placeholder="Descripción del contexto..."
 			rows="1"
@@ -590,11 +590,23 @@
 			<div class="flex gap-2">
 				<div>
 					<label for="upd{{ .TareaID }}_01">TareaID</label>
-					<input id="upd{{ .TareaID }}_01" name="tarea_id" type="text" placeholder="" value="{{ .TareaID }}" class="form-control" readonly>
+					<input
+						id="upd{{ .TareaID }}_01"
+						type="text"
+						name="tarea_id"
+						value="{{ .TareaID }}"
+						readonly
+						class="form-control">
 				</div>
 				<div>
 					<label for="upd{{ .TareaID }}_02">HistoriaID</label>
-					<input id="upd{{ .TareaID }}_02" name="historia_id" type="text" placeholder="" value="{{ .HistoriaID }}" class="form-control" readonly>
+					<input
+						id="upd{{ .TareaID }}_02"
+						type="text"
+						name="historia_id"
+						value="{{ .HistoriaID }}"
+						readonly
+						class="form-control">
 				</div>
 			</div>
 			<div>
@@ -608,15 +620,36 @@
 			</div>
 			<div>
 				<label for="upd{{ .TareaID }}_04">Descripción</label>
-				<textarea id="upd{{ .TareaID }}_04" class="form-control" name="descripcion" rows="2">{{ .Descripcion }}</textarea>
+				<textarea
+					id="upd{{ .TareaID }}_04"
+					name="descripcion"
+					rows="2"
+					onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { this.form.submit() }"
+					placeholder="La tarea consiste en..."
+					class="form-control">
+					{{- .Descripcion -}}
+				</textarea>
 			</div>
 			<div>
 				<label for="upd{{ .TareaID }}_05">Impedimentos</label>
-				<input id="upd{{ .TareaID }}_05" name="impedimentos" type="text" placeholder="" value="{{ .Impedimentos }}" class="form-control">
+				<textarea
+					id="upd{{ .TareaID }}_05"
+					name="impedimentos"
+					onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { this.form.submit() }"
+					placeholder="Consideraciones o detalles por resolver"
+					class="form-control">
+					{{- .Impedimentos -}}
+				</textarea>
 			</div>
 			<div>
 				<label for="upd{{ .TareaID }}_06">Tiempo estimado</label>
-				<input id="upd{{ .TareaID }}_06" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}" class="form-control">
+				<input
+					id="upd{{ .TareaID }}_06"
+					type="text"
+					name="tiempo_estimado"
+					value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}"
+					placeholder="mm ó hh:mm"
+					class="form-control">
 			</div>
 			<div class="grid grid-cols-1 gap-3 pt-2 md:grid-cols-2">
 				{{ if .NoIniciada -}}
