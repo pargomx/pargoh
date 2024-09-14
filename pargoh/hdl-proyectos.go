@@ -26,9 +26,14 @@ func (s *servidor) listaProyectos(c *gecko.Context) error {
 			return err
 		}
 	}
+	Bugs, err := s.repo.ListTareasBugs()
+	if err != nil {
+		return err
+	}
 	data := map[string]any{
 		"Titulo":    "🐟 Pargo",
 		"Proyectos": res,
+		"Bugs":      Bugs,
 	}
 	return c.RenderOk("proyectos", data)
 }

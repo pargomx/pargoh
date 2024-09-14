@@ -453,7 +453,9 @@
 	</h3>
 	<ol class="mb-6">
 		{{ range .Tareas }}
-		<li tipo="sort_regla" class="flex gap-1 p-1 group">
+		<li id="{{ .TareaID }}"
+			tipo="sort_regla"
+			class="flex gap-1 p-1 group">
 			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
 				<form tipo="sort_form" hx-post="/reordenar-tarea" hx-trigger="reordenarEnd">
@@ -495,10 +497,6 @@
 				{{- end }}
 			</p>
 			<div class="items-start hidden gap-2 transition-opacity opacity-0 md:flex group-hover:opacity-80">
-				<!-- <button type="button" onclick="document.getElementById('edit{{ .TareaID }}').showModal()"
-					class="inline-block text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
-					<i class="fa-solid fa-pen-to-square"></i>
-				</button> -->
 				{{ if .NoIniciada -}}
 				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
 					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
@@ -620,13 +618,48 @@
 				<label for="upd{{ .TareaID }}_06">Tiempo estimado</label>
 				<input id="upd{{ .TareaID }}_06" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}" class="form-control">
 			</div>
-			<div class="pt-4">
-				<button type="button" hx-delete="/tareas/{{ .TareaID }}" onclick="this.closest('dialog').close()" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">
+			<div class="grid grid-cols-1 gap-3 pt-2 md:grid-cols-2">
+				{{ if .NoIniciada -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
+					<i class="fa-solid fa-play"></i>
+					Iniciar
+				</button>
+				{{ else if .EnCurso -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
+					<i class="fa-solid fa-pause"></i>
+					Pausar
+				</button>
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
+					<i class="fa-solid fa-square-check"></i>
+					Finalizar
+				</button>
+				{{ else if .EnPausa -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
+					<i class="fa-solid fa-play"></i>
+					Continuar
+				</button>
+				{{ else if .Finalizada -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
+					<i class="fa-solid fa-play"></i>
+					Volver a iniciar
+				</button>
+				{{ end }}
+				<button
+					type="button"
+					hx-delete="/tareas/{{ .TareaID }}"
+					onclick="this.closest('dialog').close()"
+					class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">
 					Eliminar
 				</button>
-			</div>
-			<div class="pt-2">
-				<button type="submit" onclick="this.closest('dialog').close()" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+				<button
+					type="submit"
+					onclick="this.closest('dialog').close()"
+					class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
 					Guardar cambios
 				</button>
 			</div>

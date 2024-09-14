@@ -134,6 +134,14 @@ var (
 		Etiqueta:    "Interfaz web",
 		Descripcion: "Codificar interfaz web (HTML, CSS, JS)",
 	}
+	// Bug: Arreglar defecto en el programa
+	TipoTareaBug = TipoTarea{
+		ID:          10,
+		String:      "BUG",
+		Filtro:      "bug",
+		Etiqueta:    "Bug",
+		Descripcion: "Arreglar defecto en el programa",
+	}
 )
 
 // Enumeración excluyendo TipoTareaTodos
@@ -149,6 +157,7 @@ var ListaTipoTarea = []TipoTarea{
 	TipoTareaAdapt,
 	TipoTareaHandlr,
 	TipoTareaWebUi,
+	TipoTareaBug,
 }
 
 // Enumeración incluyendo TipoTareaTodos
@@ -165,6 +174,7 @@ var ListaFiltroTipoTarea = []TipoTarea{
 	TipoTareaAdapt,
 	TipoTareaHandlr,
 	TipoTareaWebUi,
+	TipoTareaBug,
 }
 
 // Comparar un Tipo de tarea con otro.
@@ -204,6 +214,9 @@ func (e TipoTarea) EsHandlr() bool {
 }
 func (e TipoTarea) EsWebUi() bool {
 	return e.ID == TipoTareaWebUi.ID
+}
+func (e TipoTarea) EsBug() bool {
+	return e.ID == TipoTareaBug.ID
 }
 
 // Recibe la forma .String

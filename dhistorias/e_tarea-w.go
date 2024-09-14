@@ -2,6 +2,7 @@ package dhistorias
 
 import (
 	"monorepo/ust"
+	"strings"
 	"time"
 
 	"github.com/pargomx/gecko/gko"
@@ -9,7 +10,7 @@ import (
 
 func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 	op := gko.Op("AgregarTarea")
-	err := validarTarea(tarea, op, repo)
+	err := validarTarea(&tarea, op, repo)
 	if err != nil {
 		return err
 	}
@@ -51,7 +52,7 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 		return err
 	}
 
-	err = validarTarea(*tar, op, repo)
+	err = validarTarea(tar, op, repo)
 	if err != nil {
 		return err
 	}
@@ -62,7 +63,7 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	return nil
 }
 
-func validarTarea(tarea ust.Tarea, op *gko.Error, repo Repo) error {
+func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 	if tarea.TareaID == 0 {
 		return op.Msg("Debe asignarse un ID nuevo a la tarea")
 	}
@@ -76,9 +77,13 @@ func validarTarea(tarea ust.Tarea, op *gko.Error, repo Repo) error {
 	if err != nil {
 		return op.Err(err).Ctx("historiaID", tarea.HistoriaID)
 	}
-	// if tarea.EsTipoIndefinido() {
-	// 	// return op.Msg("La tarea debe tener un tipo")
-	// }
+	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "bug:") {
+		gko.LogInfo("Tarea de tipo bug")
+		tarea.Tipo = ust.TipoTareaBug
+		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[4:])
+	} else {
+		gko.LogInfof("Hmm: '%v'", strings.ToLower(tarea.Descripcion))
+	}
 	return nil
 }
 

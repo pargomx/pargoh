@@ -2,7 +2,31 @@
 	Pargo 🐟
 </h2>
 
-<main class="flex flex-col items-center justify-center grow w-full max-w-5xl gap-4 p-2 mx-auto">
+{{ if .Bugs -}}
+<div class="p-4">
+	<details>
+		<summary class="cursor-pointer">Bugs pendientes ({{ len .Bugs }})</summary>
+		<ul class="">
+			{{ range .Bugs }}
+			<li>
+				<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}">
+					<span class="inline-block w-6 text-center">
+						{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
+						{{ else if .EnCurso }}<i class="text-cyan-600 fa-solid fa-bug"></i>
+						{{ else if .EnPausa }}<i class="text-orange-600 fa-solid fa-bug"></i>
+						{{ else }}<i class="text-slate-400 fa-solid fa-bug"></i>
+						{{ end -}}
+					</span>
+					{{ .Descripcion }}
+				</a>
+			</li>
+			{{ end }}
+		</ul>
+	</details>
+</div>
+{{ end }}
+
+<main class="flex flex-col items-center justify-start grow w-full max-w-5xl gap-4 p-2 mx-auto">
 	{{ range .Proyectos -}}
 	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
 

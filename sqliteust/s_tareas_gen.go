@@ -192,7 +192,7 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 }
 
 //  ================================================================  //
-//  ========== LIST_BY =============================================  //
+//  ========== LIST_BY HISTORIA_ID =================================  //
 
 func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error) {
 	const op string = "ListTareasByHistoriaID"
@@ -203,6 +203,21 @@ func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error
 		"SELECT "+columnasTarea+" "+fromTarea+
 			"WHERE historia_id = ?",
 		HistoriaID,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsTarea(rows, op)
+}
+
+//  ================================================================  //
+//  ========== LIST BUGS ===========================================  //
+
+func (s *Repositorio) ListTareasBugs() ([]ust.Tarea, error) {
+	const op string = "ListTareasBugs"
+	rows, err := s.db.Query(
+		"SELECT " + columnasTarea + " " + fromTarea +
+			"WHERE tipo = 'BUG' AND estatus < 3",
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)
