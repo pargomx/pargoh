@@ -75,35 +75,6 @@ func (s *Repositorio) ExisteTarea(TareaID int) error {
 }
 
 //  ================================================================  //
-//  ========== DELETE ==============================================  //
-
-func (s *Repositorio) DeleteTarea(TareaID int) error {
-	const op string = "DeleteTarea"
-	if TareaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
-	}
-	err := s.ExisteTarea(TareaID)
-	if err != nil {
-		return gko.Err(err).Op(op)
-	}
-	_, err = s.db.Exec(
-		"DELETE FROM intervalos WHERE tarea_id = ?",
-		TareaID,
-	)
-	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op).Op("delete_intervalos")
-	}
-	_, err = s.db.Exec(
-		"DELETE FROM tareas WHERE tarea_id = ?",
-		TareaID,
-	)
-	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
-	}
-	return nil
-}
-
-//  ================================================================  //
 //  ========== CONSTANTES ==========================================  //
 
 // Lista de columnas separadas por coma para usar en consulta SELECT
@@ -218,6 +189,21 @@ func (s *Repositorio) ListTareasBugs() ([]ust.Tarea, error) {
 	rows, err := s.db.Query(
 		"SELECT " + columnasTarea + " " + fromTarea +
 			"WHERE tipo = 'BUG' AND estatus < 3",
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsTarea(rows, op)
+}
+
+//  ================================================================  //
+//  ========== LIST ENCURSO ========================================  //
+
+func (s *Repositorio) ListTareasEnCurso() ([]ust.Tarea, error) {
+	const op string = "ListTareasEnCurso"
+	rows, err := s.db.Query(
+		"SELECT " + columnasTarea + " " + fromTarea +
+			"WHERE estatus = 1",
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)
