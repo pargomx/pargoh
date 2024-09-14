@@ -317,7 +317,7 @@ function sendHeartbeat() {
 	// Cuenta local para mostrar al usuario.
 	segundosContados += segundosParaEnviarHeartbeat;
     // localStorage.setItem('timeActive', segundosContados);
-	setCounterDisplay(`🌿 ${segundosContados}s ${proyectoID}`);
+	// setCounterDisplay(`🌿 ${segundosContados}s ${proyectoID}`);
 }
 
 // Contar el tiempo que se trabaja en un proyecto. Idempotente.
@@ -327,27 +327,27 @@ function startHeartbeat(razon) {
 		return // Solo contar cuando se trabaja en un proyecto.
 	}
 	if (timeCounterIntvl) {
-		console.log(razon + " [already started]");
+		// console.log(razon + " [already started]");
 		return // Idempotente si ya está contando.
 	}
-	console.log(razon);
+	// console.log(razon);
 	proyectoID = document.querySelector("[data-proyecto-id]").getAttribute("data-proyecto-id");
 	// segundosContados = parseInt(localStorage.getItem('timeActive')) || segundosContados
 	timeCounterIntvl = setInterval(sendHeartbeat, segundosParaEnviarHeartbeat * 1000);
-	setCounterDisplay(`🌿 Start: ${segundosContados}s ${proyectoID}`);
+	// setCounterDisplay(`🌿 Start: ${segundosContados}s ${proyectoID}`);
 }
 
 // Pausar el contador de tiempo.
 function stopHeartbeat(razon) {
 	if (!timeCounterIntvl) {
-		console.log(razon + " [already stopped]");
+		// console.log(razon + " [already stopped]");
 		return // Idempotente si ya está detenido.
     }
-	console.log(razon);
+	// console.log(razon);
 	clearInterval(timeCounterIntvl);
 	timeCounterIntvl = null;
 	// localStorage.setItem('timeActive', segundosContados); // inecesario?
-	setCounterDisplay(`⏸️ Cuenta detenida ${segundosContados}s ${proyectoID}`);
+	// setCounterDisplay(`⏸️ Cuenta detenida ${segundosContados}s ${proyectoID}`);
 }
 
 // Detectar cuando la pestaña está enfocada o si deja de estarlo.
