@@ -78,11 +78,8 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 		return op.Err(err).Ctx("historiaID", tarea.HistoriaID)
 	}
 	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "bug:") {
-		gko.LogInfo("Tarea de tipo bug")
 		tarea.Tipo = ust.TipoTareaBug
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[4:])
-	} else {
-		gko.LogInfof("Hmm: '%v'", strings.ToLower(tarea.Descripcion))
 	}
 	return nil
 }
