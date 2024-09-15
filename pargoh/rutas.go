@@ -179,7 +179,11 @@ func main() {
 	s.POS("/proyectos/importar", s.importarJSON)
 	s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
 	s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
-	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarFile)
+	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarDocx)
+	s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
+	s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
+
+	s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
 
 	// LOG SQLITE
 	s.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })

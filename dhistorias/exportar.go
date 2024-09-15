@@ -22,6 +22,7 @@ type ProyectoExport struct {
 type PersonaExport struct {
 	Persona   ust.NodoPersona
 	Historias []HistoriaExport
+	Proyecto  *ust.Proyecto
 }
 
 type HistoriaExport struct {
@@ -74,7 +75,7 @@ func GetArbolCompleto(repo Repo) ([]ProyectoExport, error) {
 
 // ================================================================ //
 
-func ExportarProyecto(proyectoID string, repo Repo) (*ProyectoExport, error) {
+func GetProyectoExport(proyectoID string, repo Repo) (*ProyectoExport, error) {
 	Proyecto, err := repo.GetProyecto(proyectoID)
 	if err != nil {
 		return nil, err
@@ -95,6 +96,7 @@ func ExportarProyecto(proyectoID string, repo Repo) (*ProyectoExport, error) {
 		Persona := PersonaExport{
 			Persona:   per,
 			Historias: make([]HistoriaExport, len(historias)),
+			Proyecto:  Proyecto,
 		}
 		for j, his := range historias {
 			Persona.Historias[j] = getHistoriaExportsRecursiva(his, repo)
@@ -103,6 +105,43 @@ func ExportarProyecto(proyectoID string, repo Repo) (*ProyectoExport, error) {
 	}
 	return &proyectoExport, nil
 }
+
+// ================================================================ //
+
+func GetPersonaExport(personaID int, repo Repo) (*PersonaExport, error) {
+	per, err := repo.GetPersona(personaID)
+	if err != nil {
+		return nil, err
+	}
+	pry, err := repo.GetProyecto(per.ProyectoID)
+	if err != nil {
+		return nil, err
+	}
+	historias, err := repo.ListNodoHistorias(per.PersonaID)
+	if err != nil {
+		return nil, err
+	}
+	Persona := PersonaExport{
+		Historias: make([]HistoriaExport, len(historias)),
+		Proyecto:  pry,
+	}
+	personas, err := repo.ListNodosPersonas(pry.ProyectoID) // TODO: directamente GetNodoPersona()
+	if err != nil {
+		return nil, err
+	}
+	for _, p := range personas {
+		if p.PersonaID == personaID {
+			Persona.Persona = p
+			break
+		}
+	}
+	for j, his := range historias {
+		Persona.Historias[j] = getHistoriaExportsRecursiva(his, repo)
+	}
+	return &Persona, nil
+}
+
+// ================================================================ //
 
 func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport {
 	historia := HistoriaExport{

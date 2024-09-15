@@ -10,7 +10,7 @@ import (
 )
 
 func (s *servidor) exportarJSON(c *gecko.Context) error {
-	out, err := dhistorias.ExportarProyecto(c.PathVal("proyecto_id"), s.repo)
+	out, err := dhistorias.GetProyectoExport(c.PathVal("proyecto_id"), s.repo)
 	if err != nil {
 		return err
 	}
@@ -49,12 +49,50 @@ func (s *servidor) exportarMarkdown(c *gecko.Context) error {
 	return nil
 }
 
-func (s *servidor) exportarFile(c *gecko.Context) error {
+func (s *servidor) exportarDocx(c *gecko.Context) error {
 	err := dhistorias.ExportarDocx(c.PathVal("proyecto_id"), s.repo, "export.docx")
 	if err != nil {
 		return err
 	}
 	return c.StatusOk("Exportación realizada")
+}
+
+func (s *servidor) exportarPDF(c *gecko.Context) error {
+	tex, err := dhistorias.GetProyectoLaTeX(s.repo, c.PathVal("proyecto_id"))
+	if err != nil {
+		return err
+	}
+	pdf, err := tex.ToPDF()
+	if err != nil {
+		gko.LogError(err)
+		return c.String(500, tex.String())
+	}
+	c.Response().Header().Set("Content-Type", "application/pdf")
+	c.Response().Header().Set("Content-Disposition", "inline; filename=\"document.pdf\"")
+	return c.Blob(200, "application/pdf", pdf)
+}
+
+func (s *servidor) exportarProyectoTeX(c *gecko.Context) error {
+	tex, err := dhistorias.GetProyectoLaTeX(s.repo, c.PathVal("proyecto_id"))
+	if err != nil {
+		return err
+	}
+	return c.StringOk(tex.String())
+}
+
+func (s *servidor) exportarPersonaPDF(c *gecko.Context) error {
+	tex, err := dhistorias.GetPersonaLaTeX(s.repo, c.PathInt("persona_id"))
+	if err != nil {
+		return err
+	}
+	pdf, err := tex.ToPDF()
+	if err != nil {
+		gko.LogError(err)
+		return c.String(500, tex.String())
+	}
+	c.Response().Header().Set("Content-Type", "application/pdf")
+	c.Response().Header().Set("Content-Disposition", "inline; filename=\"document.pdf\"")
+	return c.Blob(200, "application/pdf", pdf)
 }
 
 // ================================================================ //

@@ -100,7 +100,7 @@ func (s *servidor) deleteProyecto(c *gecko.Context) error {
 }
 
 func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
-	pry, err := dhistorias.ExportarProyecto(c.PathVal("proyecto_id"), s.repo)
+	pry, err := dhistorias.GetProyectoExport(c.PathVal("proyecto_id"), s.repo)
 	if err != nil {
 		return err
 	}
