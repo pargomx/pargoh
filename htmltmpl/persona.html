@@ -23,11 +23,34 @@
 </header>
 
 <main class="grow w-full max-w-5xl p-2 mx-auto">
-	<h4 class="mb-2">
-		<span class="opacity-50">Como</span>
-		<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
-		<span class="opacity-50">quiero...</span>
+	<h3 class="mb-2 text-xl text-cyan-600">Personaje</h3>
+	<div class="mt-4 mb-2 text-center text-7xl">
+		<i class="fa-solid fa-user"></i>
+	</div>
+	<h4 class="mb-1 text-xl font-semibold text-center">
+		{{ .Persona.Nombre }}
 	</h4>
+	<div class="mb-4">
+		<textarea
+			id="personaDesc"
+			hx-patch="/personas/{{ .Persona.PersonaID }}/descripcion"
+			hx-swap="none"
+			hx-trigger="change, keyup changed delay:2s"
+			name="value"
+			rows="1"
+			placeholder="Descripción del personaje..." 
+			class="w-full px-2 py-1 text-sm font-medium text-center transition-opacity bg-transparent border-b border-cyan-800 outline-none opacity-75 max-h-96 focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600">
+			{{- .Persona.Descripcion -}}
+		</textarea>
+	</div>
+
+	<h3 class="mb-4 text-xl text-cyan-600">Historias de usuario
+		<button
+			onclick="document.getElementById('input_AddHistoria').focus()"
+			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
+			<i class="fa-solid fa-square-plus"></i>
+		</button>
+	</h3>
 	<div
 		tipo="sort_historias" 
 		hx-get="/personas/{{ .Persona.PersonaID }}" 
@@ -40,31 +63,35 @@
 		<article
 			tipo="sort_historia"
 			id="{{ .HistoriaID }}"
-			class="flex items-center gap-2 p-3 bg-cyan-950 rounded-md shadow-lg">
-			<span tipo="sort_handle" class="mr-1 cursor-pointer">
-				⣿
+			class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if eq .Prioridad 3 }} border-cyan-800 {{ else if eq .Prioridad 2 }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if eq .Prioridad 1 }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
+			<span tipo="sort_handle" class="p-3 cursor-pointer">
+				<i class="fa-solid fa-grip-vertical"></i>
 			</span>
-			<a href="/historias/{{ .HistoriaID }}" class="grow">
+			<a href="/historias/{{ .HistoriaID }}" class="grow py-2">
 				{{ .Titulo }}
-				{{- if .Completada }} ✅{{ end }}
 			</a>
-			<span>
-				{{ .PrioridadEmoji }}
+			<span class="p-3">
+				{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
+				{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+				{{- else if eq .Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+				{{- else if eq .Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+				{{- end }}
 			</span>
 		</article>
 		{{ end -}}
 
 		<!-- Agregar historia -->
 		<div>
-			<input
+			<textarea
 				id="input_AddHistoria"
-				hx-target="#msgStack"
 				hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}"
+				hx-target="#msgStack"
 				hx-trigger="keyup[key=='Enter']"
-				name="titulo"
-				type="text"
+				name="titulo" 
+				rows="1"
+				enterkeyhint="done"
 				placeholder="Agregar historia..."
-				class="inline-block w-full p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+				class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</div>
 	</div>
 
@@ -79,20 +106,6 @@
 	</details> -->
 	{{ end }}
 
-	<div class="py-4">
-		<label for="personaDesc" class="text-lg opacity-75">Descripción del personaje</label>
-		<textarea
-			id="personaDesc"
-			hx-patch="/personas/{{ .Persona.PersonaID }}/descripcion"
-			hx-swap="none" 
-			hx-trigger="change, keyup changed delay:2s"
-			name="value"
-			rows="1"
-			placeholder="En primera persona para hacer empatía con el usuario..." 
-			class="w-full px-2 py-1 text-base font-medium transition-opacity bg-transparent border-b border-cyan-800 outline-none opacity-75 max-h-96 focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600">
-			{{- .Persona.Descripcion -}}
-		</textarea>
-	</div>
 
 </main>
 
