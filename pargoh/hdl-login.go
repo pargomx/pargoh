@@ -41,6 +41,16 @@ func NewAuthService() *authService {
 	if s.pathLoginPage == "" {
 		gko.LogWarn("No se ha definido la ruta para la página de inicio de sesión")
 	}
+	if AMBIENTE == "DEV" { // Sesión de prueba para no tener que loguearse en desarrollo.
+		s.vigencia = 30 * 24 * time.Hour
+		s.sesiones["DEV_MJv7kqY44Vnt2D8DbGBRBVqiaxN8bz70"] = Sesion{
+			SesionID:  "DEV_MJv7kqY44Vnt2D8DbGBRBVqiaxN8bz70",
+			Usuario:   "developer",
+			IP:        "::1",
+			UserAgent: "any",
+			ValidFrom: time.Now(),
+		}
+	}
 	return s
 }
 
@@ -100,6 +110,9 @@ func (s *authService) registrarNuevaSesion(usuario, ip, userAgent string) (*Sesi
 		IP:        ip,
 		UserAgent: userAgent,
 		ValidFrom: time.Now(),
+	}
+	if AMBIENTE == "DEV" {
+		ses.SesionID = "DEV_MJv7kqY44Vnt2D8DbGBRBVqiaxN8bz70"
 	}
 	s.sesiones[ses.SesionID] = ses
 	return &ses, nil
