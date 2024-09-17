@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es_MX">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Login</title>
+		<link rel="shortcut icon" href="/assets/img/pargo_32.png" type="image/png">
+		<link rel="stylesheet" type="text/css" href="/assets/css/estilo.css">
+		<link rel="stylesheet" type="text/css" href="/assets/css/fontawesome.min.css">
+
+		<script defer src="/assets/js/htmx.min.js"></script>
+		<script defer src="/assets/js/main.js"></script>
+	</head>
+	
+	<body class="h-full text-white bg-[#091a20]">
+		<div id="contenido" hx-target="#contenido" hx-swap="innerHTML show:no-scroll" hx-push-url="false" hx-history="false" class="flex flex-col overflow-y-auto h-dvh scrollbar-stable">
+			<main class="flex flex-col items-center justify-center grow gap-4">
+				<form method="post" action="/login" class="flex flex-col gap-4 p-4 border-2 border-cyan-600 rounded-md shadow-md">
+
+					<h3 class="text-2xl font-bold text-center">Iniciar sesión</h3>
+					<div>
+						<label for="input_usuario" class="text-lg">
+							Usuario
+						</label>
+						<input
+							id="input_usuario"
+							name="usuario"
+							type="text"
+							maxlength="25"
+							autofocus
+							required
+							class="form-control">
+					</div>
+					<div>
+						<label for="input_passwd" class="text-lg">Contraseña</label>
+						<input 
+							id="input_passwd"
+							name="passwd"
+							type="password"
+							maxlength="25"
+							required
+							class="form-control">
+					</div>
+					<div class="text-right">
+						<input id="input_recordar" type="checkbox" name="recordar">
+						<label for="input_recordar" class="text-lg">Recuérdame</label>
+					</div>
+					<div class="">
+						<button
+							type="submit"
+							class="w-full px-4 py-2 bg-cyan-700 rounded-md">
+							Entrar
+						</button>
+					</div>
+				</form>
+			</main>
+		</div>
+	</body>
+</html>

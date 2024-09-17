@@ -30,49 +30,49 @@ func logDevReq(c *gecko.Context) bool {
 }
 
 func (s *servidor) GET(path string, authHandler gecko.HandlerFunc) {
-	s.gecko.GET(path, func(c *gecko.Context) error {
+	s.gecko.GET(path, s.auth.Auth(func(c *gecko.Context) error {
 		logDevReq(c)
 		c.Response().Header().Set("Cache-Control", "no-store")
 		return authHandler(c)
-	})
+	}))
 }
 
 func (s *servidor) POS(path string, authHandler gecko.HandlerFunc) {
-	s.gecko.POST(path, func(c *gecko.Context) error {
+	s.gecko.POST(path, s.auth.Auth(func(c *gecko.Context) error {
 		logDevReq(c)
 		if AMBIENTE == "DEV" {
 			time.Sleep(time.Millisecond * 400)
 		}
 		return authHandler(c)
-	})
+	}))
 }
 
 func (s *servidor) PCH(path string, authHandler gecko.HandlerFunc) {
-	s.gecko.PATCH(path, func(c *gecko.Context) error {
+	s.gecko.PATCH(path, s.auth.Auth(func(c *gecko.Context) error {
 		logDevReq(c)
 		if AMBIENTE == "DEV" {
 			time.Sleep(time.Millisecond * 400)
 		}
 		return authHandler(c)
-	})
+	}))
 }
 
 func (s *servidor) PUT(path string, authHandler gecko.HandlerFunc) {
-	s.gecko.PUT(path, func(c *gecko.Context) error {
+	s.gecko.PUT(path, s.auth.Auth(func(c *gecko.Context) error {
 		logDevReq(c)
 		if AMBIENTE == "DEV" {
 			time.Sleep(time.Millisecond * 400)
 		}
 		return authHandler(c)
-	})
+	}))
 }
 
 func (s *servidor) DEL(path string, authHandler gecko.HandlerFunc) {
-	s.gecko.DELETE(path, func(c *gecko.Context) error {
+	s.gecko.DELETE(path, s.auth.Auth(func(c *gecko.Context) error {
 		logDevReq(c)
 		if AMBIENTE == "DEV" {
 			time.Sleep(time.Millisecond * 400)
 		}
 		return authHandler(c)
-	})
+	}))
 }

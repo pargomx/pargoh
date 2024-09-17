@@ -40,6 +40,7 @@ type servidor struct {
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
 	repo  *sqliteust.Repositorio
+	auth  *authService
 
 	reloader reloader // websocket.go
 
@@ -96,6 +97,8 @@ func main() {
 
 	s.gecko.TmplBaseLayout = "app/layout"
 
+	s.auth = NewAuthService()
+
 	// ================================================================ //
 
 	if s.cfg.sourceDir != "" {
@@ -108,7 +111,12 @@ func main() {
 		s.gecko.FileFS("/htmx.js", "js/htmx.min.js", assets.AssetsFS)
 	}
 
-	s.GET("/", s.listaProyectos)
+	s.GET("/", s.auth.getLogin)
+	s.POS("/login", s.auth.postLogin)
+	s.GET("/logout", s.auth.logout)
+	s.GET("/sesiones", s.auth.printSesiones)
+
+	s.GET("/proyectos", s.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
 	s.GET("/personas/{persona_id}", s.getPersona)
 	s.GET("/historias/{historia_id}", s.getHistoria)
