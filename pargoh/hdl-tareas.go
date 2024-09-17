@@ -26,7 +26,7 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redir("/historias/%v", tarea.HistoriaID)
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context) error {
@@ -46,39 +46,43 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	gko.LogInfof("Tarea %d actualizada", tarea.TareaID)
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", tarea.HistoriaID)
 }
 
 func (s *servidor) eliminarTarea(c *gecko.Context) error {
-	err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repo)
 	if err != nil {
 		return err
 	}
 	gko.LogInfof("Tarea %d eliminada", c.PathInt("tarea_id"))
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
 }
 
 func (s *servidor) iniciarTarea(c *gecko.Context) error {
-	err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repo)
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
 }
 func (s *servidor) pausarTarea(c *gecko.Context) error {
-	err := dhistorias.PausarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.PausarTarea(c.PathInt("tarea_id"), s.repo)
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
 }
 func (s *servidor) terminarTarea(c *gecko.Context) error {
-	err := dhistorias.FinalizarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.FinalizarTarea(c.PathInt("tarea_id"), s.repo)
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
 }
 
 func (s *servidor) getIntervalos(c *gecko.Context) error {

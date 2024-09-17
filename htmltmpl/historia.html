@@ -19,7 +19,7 @@
 		</h3>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/personas/{{ .Persona.PersonaID }}" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
 	</span>
 </header>
 
@@ -30,11 +30,11 @@
 	hx-trigger="reloadHistoria"
 	class="grow w-full max-w-5xl p-2 mx-auto">
 
-	<div class="flex flex-wrap justify-end mb-2 gap-x-4 gap-y-2">
+	<div class="flex flex-wrap justify-end gap-x-4 gap-y-2">
 		<!--* PERSONA  -->
 		<h4 class="grow">
 			<span class="opacity-50">Como</span>
-			<span class="text-lg lowercase">{{ .Persona.Nombre }}</span>
+			<a href="/personas/{{ .Persona.PersonaID }}" class="text-lg lowercase transition-colors hover:text-cyan-600">{{ .Persona.Nombre }}</a>
 			<span class="opacity-50">quiero...</span>
 		</h4>
 		<!--* PRIORIDAD -->
@@ -63,8 +63,26 @@
 		</div>
 	</div>
 
+	<!--* ANCESTROS *-->
+	{{ if .Ancestros }}
+	<div class="pl-4">
+		{{ range $i, $v := .Ancestros }}
+		<ul class="pl-2 list-disc">
+			<li class="pt-1">
+				<a href="/historias/{{ .HistoriaID }}" title="Ir al ancestro"
+					class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400">
+					{{- .Titulo -}}...
+				</a>
+		{{ end }}
+		{{ range .Ancestros -}}
+			</li>
+		</ul>
+		{{ end }}
+	</div>
+	{{ end }}
+
 	<!--* TÍTULO -->
-	<div class="mb-4">
+	<div class="mt-2 mb-1">
 		<textarea
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/titulo"
 			hx-swap="none"
@@ -87,7 +105,7 @@
 			placeholder="Descripción del contexto..."
 			rows="1"
 			enterkeyhint="done"
-			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 placeholder:text-slate-600">
+			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none max-h-96 focus:border-blue-400 text-white/75 focus:text-white placeholder:text-slate-600">
 			{{- .Historia.Objetivo -}}
 		</textarea>
 	</div>
@@ -267,23 +285,6 @@
 		}
 	</script>
 
-
-	<!--* ANCESTROS *-->
-	{{ if .Ancestros }}
-	<h3 class="mb-2 text-xl text-cyan-600">Ancestros</h3>
-	{{ range .Ancestros }}
-	<ul class="pl-6 list-[revert]">
-		<li class="p-1">
-			<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 underline whitespace-pre-line hover:text-cyan-200">
-				{{- .Titulo -}}
-			</a>
-			{{ end }}
-			{{ range .Ancestros -}}
-		</li>
-	</ul>
-	{{ end }}
-	{{ end }}
-
 	<!--* DESCENDIENTES *-->
 	<h3 class="mb-2 text-xl text-cyan-600">Descendientes</h3>
 	<ul tipo="sort_descendientes" class="mb-6">
@@ -376,7 +377,7 @@
 	<ol tipo="sort_reglas" class="mb-6">
 		{{ range .Reglas -}}
 		<li tipo="sort_regla" class="flex gap-1 p-1 group">
-			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+			<div tipo="sort_handle" title="Posición {{ .Posicion }}" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
 				<form tipo="sort_form" hx-post="/reordenar-regla" hx-trigger="reordenarEnd">
 					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
@@ -384,10 +385,8 @@
 					<input type="hidden" name="new_pos">
 				</form>
 			</div>
-			<div>
-				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
-					{{ .Posicion }}
-				</span>
+			<div class="pr-2">
+				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 			</div>
 			<textarea
 				id="input_Regla{{ .Posicion }}"
@@ -417,10 +416,8 @@
 		{{ end }}
 		<li class="flex items-center gap-1 p-1">
 			<div class="hidden opacity-0 md:block">⣿</div>
-			<div>
-				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
-					{{ suma (len .Reglas) 1 }}
-				</span>
+			<div class="pr-2">
+				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 			</div>
 			<textarea
 				id="input_AddRegla"
@@ -436,21 +433,23 @@
 	</ol>
 
 	<!--* TAREAS -->
-	<h3 class="mb-2 text-xl text-cyan-600">
-		Tareas
+	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
+		<h3 id="tareas" class="grow text-xl">
+			<a href="#tareas">Tareas</a>
+		</h3>
 		{{- if .TiempoReal -}}
-		<span class="float-right pl-4 text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
+		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
 			<i class="fa-solid fa-stopwatch"></i> Transcurrido
 			{{ .TiempoRealString }}
 		</span>
 		{{- end -}}
 		{{- if .TiempoEstimado -}}
-		<span class="float-right pl-4 text-sm opacity-75" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ .TiempoEstimadoString }}">
 			<i class="fa-solid fa-hourglass-start"></i> Estimado
 			{{ .TiempoEstimadoString }}
 		</span>
 		{{- end -}}
-	</h3>
+	</div>
 	<ol class="mb-6">
 		{{ range .Tareas }}
 		<li id="{{ .TareaID }}"
@@ -473,15 +472,15 @@
 				</span>
 			</div>
 			<p class="">
-				<span onclick="document.getElementById('edit{{ .TareaID }}').showModal()" class="cursor-pointer">
-					{{ .Descripcion }}
-				</span>
-				
 				{{ if not .Tipo.EsIndefinido -}}
-				<span class="p-1 mx-1 text-xs bg-black bg-opacity-75 rounded-md">
+				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 					{{- .Tipo.Etiqueta -}}
 				</span>
 				{{ end }}
+
+				<span onclick="document.getElementById('edit{{ .TareaID }}').showModal()" class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}">
+					{{ .Descripcion }}
+				</span>
 
 				{{- if .EnCurso -}}
 				<span class="mx-2 opacity-50">
@@ -489,7 +488,22 @@
 				</span>
 				{{- end -}}
 
-				{{ if .Impedimentos -}}
+				<span class="float-right sm:hidden">
+					{{- if .TiempoEstimado -}}
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+						<i class="fa-solid fa-hourglass-start"></i>
+						{{ .TiempoEstimadoString }}
+					</span>
+					{{- end -}}
+					{{- if .TiempoReal -}}
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo transcurrido {{ .TiempoRealString }}">
+						<i class="fa-solid fa-stopwatch"></i>
+						{{ .TiempoRealString }}
+					</span>
+					{{- end -}}
+				</span>
+
+				{{ if and .Impedimentos (not .Finalizada) -}}
 				<br>
 				<i class="text-sm text-orange-300">
 					{{ .Impedimentos }}	
@@ -523,14 +537,13 @@
 				</button>
 				{{ end }}
 			</div>
-			<div class="grow text-right">
+			<div class="grow hidden text-right sm:block">
 				{{- if .TiempoEstimado -}}
 				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ .TiempoEstimadoString }}">
 					<i class="fa-solid fa-hourglass-start"></i>
 					{{ .TiempoEstimadoString }}
 				</span>
 				{{- end -}}
-
 				{{- if .TiempoReal -}}
 				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo transcurrido {{ .TiempoRealString }}">
 					<i class="fa-solid fa-stopwatch"></i>
@@ -576,7 +589,7 @@
 	<dialog id="edit{{ .TareaID }}" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 		<header class="flex items-center gap-2 p-2 bg-cyan-800">
 			<h2 class="grow text-xl">
-				Modificar tarea
+				Tarea
 			</h2>
 			<button
 				type="button"
@@ -587,7 +600,83 @@
 			</button>
 		</header>
 		<form hx-patch="/tareas/{{ .TareaID }}" class="flex flex-col gap-2 p-2">
-			<div class="flex gap-2">
+			<div class="pt-2">
+				{{ if .NoIniciada -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+					<i class="mr-1 fa-solid fa-play"></i>
+					Iniciar
+				</button>
+				{{ else if .EnCurso -}}
+				<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+					<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
+						class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+						<i class="mr-1 fa-solid fa-pause"></i>
+						Pausar
+					</button>
+					<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
+						class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+						<i class="mr-1 fa-solid fa-square-check"></i>
+						Finalizar
+					</button>
+				</div>
+				{{ else if .EnPausa -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+					<i class="mr-1 fa-solid fa-play"></i>
+					Continuar
+				</button>
+				{{ else if .Finalizada -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
+					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+					<i class="mr-1 fa-solid fa-play"></i>
+					Volver a iniciar
+				</button>
+				{{ end }}
+			</div>
+			<div>
+				<label for="upd{{ .TareaID }}_04">Descripción</label>
+				<textarea
+					id="upd{{ .TareaID }}_04"
+					name="descripcion"
+					rows="2"
+					onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { clickSubmit(this.form) }"
+					placeholder="La tarea consiste en..."
+					class="form-control">
+					{{- .Descripcion -}}
+				</textarea>
+			</div>
+			<div>
+				<label for="upd{{ .TareaID }}_03">Tipo de tarea</label>
+				<select id="upd{{ .TareaID }}_03" name="tipo" class="form-control">
+					{{ $tipo := .Tipo }}
+					{{ range $.ListaTipoTarea -}}
+					<option value="{{ .String }}" {{ if eq $tipo.String .String }}selected{{ end }}>{{ .Etiqueta }}</option>
+					{{ end }}
+				</select>
+			</div>
+			<div>
+				<label for="upd{{ .TareaID }}_05">Impedimentos</label>
+				<textarea
+					id="upd{{ .TareaID }}_05"
+					name="impedimentos"
+					onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { clickSubmit(this.form) }"
+					placeholder="Consideraciones o detalles por resolver"
+					class="form-control">
+					{{- .Impedimentos -}}
+				</textarea>
+			</div>
+			<div>
+				<label for="upd{{ .TareaID }}_06">Tiempo estimado (min)</label>
+				<input
+					id="upd{{ .TareaID }}_06"
+					type="text"
+					name="tiempo_estimado"
+					value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}"
+					placeholder="mm ó hh:mm"
+					class="form-control">
+			</div>
+			<div class="grid grid-cols-2 gap-2">
 				<div>
 					<label for="upd{{ .TareaID }}_01">TareaID</label>
 					<input
@@ -609,84 +698,12 @@
 						class="form-control">
 				</div>
 			</div>
-			<div>
-				<label for="upd{{ .TareaID }}_03">Tipo de tarea</label>
-				<select id="upd{{ .TareaID }}_03" name="tipo" class="form-control">
-					{{ $tipo := .Tipo }}
-					{{ range $.ListaTipoTarea -}}
-					<option value="{{ .String }}" {{ if eq $tipo.String .String }}selected{{ end }}>{{ .Etiqueta }}</option>
-					{{ end }}
-				</select>
-			</div>
-			<div>
-				<label for="upd{{ .TareaID }}_04">Descripción</label>
-				<textarea
-					id="upd{{ .TareaID }}_04"
-					name="descripcion"
-					rows="2"
-					onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { this.form.submit() }"
-					placeholder="La tarea consiste en..."
-					class="form-control">
-					{{- .Descripcion -}}
-				</textarea>
-			</div>
-			<div>
-				<label for="upd{{ .TareaID }}_05">Impedimentos</label>
-				<textarea
-					id="upd{{ .TareaID }}_05"
-					name="impedimentos"
-					onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { this.form.submit() }"
-					placeholder="Consideraciones o detalles por resolver"
-					class="form-control">
-					{{- .Impedimentos -}}
-				</textarea>
-			</div>
-			<div>
-				<label for="upd{{ .TareaID }}_06">Tiempo estimado</label>
-				<input
-					id="upd{{ .TareaID }}_06"
-					type="text"
-					name="tiempo_estimado"
-					value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}"
-					placeholder="mm ó hh:mm"
-					class="form-control">
-			</div>
 			<div class="grid grid-cols-1 gap-3 pt-2 md:grid-cols-2">
-				{{ if .NoIniciada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
-					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
-					<i class="fa-solid fa-play"></i>
-					Iniciar
-				</button>
-				{{ else if .EnCurso -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
-					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
-					<i class="fa-solid fa-pause"></i>
-					Pausar
-				</button>
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
-					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
-					<i class="fa-solid fa-square-check"></i>
-					Finalizar
-				</button>
-				{{ else if .EnPausa -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
-					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
-					<i class="fa-solid fa-play"></i>
-					Continuar
-				</button>
-				{{ else if .Finalizada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
-					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-opacity bg-cyan-700 rounded shadow-md opacity-70 hover:opacity-100">
-					<i class="fa-solid fa-play"></i>
-					Volver a iniciar
-				</button>
-				{{ end }}
 				<button
 					type="button"
 					hx-delete="/tareas/{{ .TareaID }}"
 					onclick="this.closest('dialog').close()"
-					class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-red-900 rounded shadow-md hover:bg-red-800">
+					class="inline-block w-full px-6 py-2 font-medium text-red-500 transition-colors border-2 border-red-500 rounded shadow-md hover:text-slate-100 hover:bg-red-800 hover:border-transparent">
 					Eliminar
 				</button>
 				<button

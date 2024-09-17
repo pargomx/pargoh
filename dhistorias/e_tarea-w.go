@@ -22,13 +22,18 @@ func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 	return nil
 }
 
-func EliminarTarea(tareaID int, repo Repo) error {
+// Devuelve su HistoriaID.
+func EliminarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("EliminarTarea").Ctx("tareaID", tareaID)
-	err := repo.DeleteTarea(tareaID)
+	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
-	return nil
+	err = repo.DeleteTarea(tareaID)
+	if err != nil {
+		return 0, op.Err(err)
+	}
+	return tar.HistoriaID, nil
 }
 
 func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
@@ -110,21 +115,21 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 	return nil
 }
 
-func IniciarTarea(tareaID int, repo Repo) error {
+func IniciarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("IniciarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 
 	// No debe haber otro intervalo en curso.
 	intervalos, err := repo.ListIntervalosByTareaID(tar.TareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 	for _, itv := range intervalos {
 		if itv.Fin == "" {
-			return op.Msgf("Esta tarea ya se había iniciado en %v", itv.Inicio)
+			return 0, op.Msgf("Esta tarea ya se había iniciado en %v", itv.Inicio)
 		}
 	}
 
@@ -135,29 +140,29 @@ func IniciarTarea(tareaID int, repo Repo) error {
 	}
 	err = repo.InsertIntervalo(interv)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 
 	// Declarar tarea en curso.
 	tar.Estatus = ust.EstatusTareaEnCurso
 	err = repo.UpdateTarea(*tar)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
-	return nil
+	return tar.HistoriaID, nil
 }
 
-func PausarTarea(tareaID int, repo Repo) error {
+func PausarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("PausarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 
 	// Debe haber un intervalo en curso.
 	intervalos, err := repo.ListIntervalosByTareaID(tar.TareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 	var interv *ust.Intervalo
 	for _, itv := range intervalos {
@@ -167,40 +172,40 @@ func PausarTarea(tareaID int, repo Repo) error {
 		}
 	}
 	if interv == nil {
-		return op.Msg("No hay ningún intervalo en curso para esta tarea")
+		return 0, op.Msg("No hay ningún intervalo en curso para esta tarea")
 	}
 
 	// Finalizar intervalo.
 	interv.Fin = time.Now().UTC().Format("2006-01-02 15:04:05")
 	err = repo.UpdateIntervalo(*interv)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 
 	// Actualizar tiempo real de tarea y declarar como finalizada.
 	err = actualizarTiempoReal(tar, op, repo)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	tar.Estatus = ust.EstatusTareaEnPausa
 	err = repo.UpdateTarea(*tar)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
-	return nil
+	return tar.HistoriaID, nil
 }
 
-func FinalizarTarea(tareaID int, repo Repo) error {
+func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("FinalizarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 
 	// Debe haber un intervalo en curso.
 	intervalos, err := repo.ListIntervalosByTareaID(tar.TareaID)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 	var interv *ust.Intervalo
 	for _, itv := range intervalos {
@@ -210,25 +215,25 @@ func FinalizarTarea(tareaID int, repo Repo) error {
 		}
 	}
 	if interv == nil {
-		return op.Msg("No hay ningún intervalo en curso para esta tarea")
+		return 0, op.Msg("No hay ningún intervalo en curso para esta tarea")
 	}
 
 	// Finalizar intervalo.
 	interv.Fin = time.Now().UTC().Format("2006-01-02 15:04:05")
 	err = repo.UpdateIntervalo(*interv)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
 
 	// Actualizar tiempo real de tarea y declarar como finalizada.
 	err = actualizarTiempoReal(tar, op, repo)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	tar.Estatus = ust.EstatusTareaFinalizada
 	err = repo.UpdateTarea(*tar)
 	if err != nil {
-		return op.Err(err)
+		return 0, op.Err(err)
 	}
-	return nil
+	return tar.HistoriaID, nil
 }

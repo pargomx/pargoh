@@ -383,3 +383,10 @@ document.ontouchstart = handleUserInteraction;
 // document.onmousemove = resetInteractionTimer; // demasiado sensible
 
 // ================================================================ //
+
+function clickSubmit(form) {
+	if (form.tagName !== "FORM") {
+		form = form.closest("form");
+	}
+	form.querySelector('button[type="submit"]').click();
+}
