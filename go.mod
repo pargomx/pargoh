@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/gingfrederik/docx v0.0.1
 	github.com/glebarez/go-sqlite v1.22.0
+	github.com/matoous/go-nanoid/v2 v2.1.0
 	github.com/pargomx/gecko v0.0.0-20240906011421-570a18c35dde
 	github.com/rwestlund/gotex v0.0.0-20170412080108-3c68d9bfff3b
 	golang.org/x/net v0.28.0

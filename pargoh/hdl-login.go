@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
 )
@@ -88,9 +89,13 @@ func (s *authService) validarCredenciales(usuario, passwrd string) (string, erro
 	return "", gko.ErrDatoInvalido().Strf("creds_not_found: usuario[%s] passwd(%d)", usuario, lenPasswrd)
 }
 
-func (s *authService) nuevaSesion(usuario, ip, userAgent string) (*Sesion, error) {
+func (s *authService) registrarNuevaSesion(usuario, ip, userAgent string) (*Sesion, error) {
+	sesionID, err := gonanoid.Generate("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 36)
+	if err != nil {
+		return nil, gko.ErrInesperado().Op("generarSesion").Err(err)
+	}
 	ses := Sesion{
-		SesionID:  "faketoken_" + time.Now().Format("01-02T15:04:05"),
+		SesionID:  sesionID,
 		Usuario:   usuario,
 		IP:        ip,
 		UserAgent: userAgent,
@@ -183,7 +188,7 @@ func (s *authService) postLogin(c *gecko.Context) error {
 		gko.Err(err).Op("postLogin").Log()
 		return c.Redir(s.pathLoginPage)
 	}
-	ses, err = s.nuevaSesion(usuario, c.RealIP(), c.Request().UserAgent())
+	ses, err = s.registrarNuevaSesion(usuario, c.RealIP(), c.Request().UserAgent())
 	if err != nil {
 		gko.Err(err).Op("postLogin").Log()
 		return c.Redir(s.pathLoginPage)
