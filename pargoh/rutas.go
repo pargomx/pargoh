@@ -150,6 +150,11 @@ func main() {
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/reordenar-historia", s.reordenarHistoria)
 
+	s.GET("/nav", s.navDesdeRoot)
+	s.GET("/nav/pry/{proyecto_id}", s.navDesdeProyecto)
+	s.GET("/nav/per/{persona_id}", s.navDesdePersona)
+	s.GET("/nav/his/{historia_id}", s.navDesdeHistoria)
+
 	s.GET("/historias/{historia_id}/tareas", s.getTareasDeHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
 
