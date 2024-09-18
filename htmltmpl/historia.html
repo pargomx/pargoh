@@ -299,7 +299,14 @@
 						<input type="hidden" name="new_pos">
 					</form>
 				</div>
-				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
+				<span class="pr-2 text-center">
+					{{- if .Historia.Completada }}<i class="w-5 text-green-600 fa-solid fa-circle-check"></i>
+					{{- else if eq .Historia.Prioridad 3 }}<i class="w-5 text-orange-600 fa-solid fa-angles-up"></i>
+					{{- else if eq .Historia.Prioridad 2 }}<i class="w-5 text-orange-400 fa-solid fa-chevron-up"></i>
+					{{- else if eq .Historia.Prioridad 1 }}<i class="w-5 text-orange-200 fa-solid fa-minus"></i>
+					{{- else }}<i class="w-5 text-xs opacity-50 fa-solid fa-ban"></i>
+					{{- end }}
+				</span>
 				<div class="grow">
 					<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 						{{- .Historia.Titulo -}}
@@ -326,7 +333,14 @@
 				{{ range .Descendientes }}
 				<li tipo="" class="flex gap-1 p-1 group">
 					<div class="pl-8">
-						<i class="px-1 opacity-50 fa-regular fa-circle" style="font-size: 0.5rem;"></i>
+						<span class="pr-2 text-center">
+							{{- if .Historia.Completada }}<i class="w-5 text-green-600 fa-solid fa-circle-check"></i>
+							{{- else if eq .Historia.Prioridad 3 }}<i class="w-5 text-orange-600 fa-solid fa-angles-up"></i>
+							{{- else if eq .Historia.Prioridad 2 }}<i class="w-5 text-orange-400 fa-solid fa-chevron-up"></i>
+							{{- else if eq .Historia.Prioridad 1 }}<i class="w-5 text-orange-200 fa-solid fa-minus"></i>
+							{{- else }}<i class="w-5 text-xs opacity-50 fa-solid fa-ban"></i>
+							{{- end }}
+						</span>
 					</div>
 					<div class="grow">
 						<a href="/historias/{{ .Historia.HistoriaID }}" class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300">
@@ -358,7 +372,9 @@
 				<div class="hidden opacity-0 md:block">
 					⣿
 				</div>
-				<i class="pt-2 pl-1 pr-2 opacity-50 fa-solid fa-circle" style="font-size: 0.5rem;"></i>
+				<span class="pr-2 text-center">
+					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+				</span>
 				<textarea
 					hx-post="/historias/{{ .Historia.HistoriaID }}"
 					hx-target="main" hx-select="main" hx-swap="outerHTML"
@@ -437,16 +453,16 @@
 		<h3 id="tareas" class="grow text-xl">
 			<a href="#tareas">Tareas</a>
 		</h3>
-		{{- if .TiempoReal -}}
-		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
-			<i class="fa-solid fa-stopwatch"></i> Transcurrido
-			{{ .TiempoRealString }}
-		</span>
-		{{- end -}}
 		{{- if .TiempoEstimado -}}
 		<span class="text-sm opacity-75" title="Tiempo estimado {{ .TiempoEstimadoString }}">
 			<i class="fa-solid fa-hourglass-start"></i> Estimado
 			{{ .TiempoEstimadoString }}
+		</span>
+		{{- end -}}
+		{{- if .TiempoReal -}}
+		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
+			<i class="fa-solid fa-stopwatch"></i> Transcurrido
+			{{ .TiempoRealString }}
 		</span>
 		{{- end -}}
 	</div>
