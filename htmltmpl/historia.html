@@ -676,7 +676,10 @@
 					placeholder="mm ó hh:mm"
 					class="form-control">
 			</div>
-			<div class="grid grid-cols-2 gap-2">
+
+			<input type="hidden" name="tarea_id" value="{{ .TareaID }}">
+			<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+			<!-- <div class="grid grid-cols-2 gap-2">
 				<div>
 					<label for="upd{{ .TareaID }}_01">TareaID</label>
 					<input
@@ -697,6 +700,14 @@
 						readonly
 						class="form-control">
 				</div>
+			</div> -->
+			<div class="pt-2">
+				<button
+					type="submit"
+					onclick="this.closest('dialog').close()"
+					class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+					Guardar cambios
+				</button>
 			</div>
 			<div class="grid grid-cols-1 gap-3 pt-2 md:grid-cols-2">
 				<button
@@ -707,12 +718,13 @@
 					Eliminar
 				</button>
 				<button
-					type="submit"
-					onclick="this.closest('dialog').close()"
-					class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
-					Guardar cambios
+					type="button"
+					onclick="this.closest('dialog').close(); showMoverTarea('{{ .TareaID }}', '{{ .Descripcion }}')"
+					class="inline-block w-full px-6 py-2 font-medium text-cyan-400 transition-colors border-2 border-cyan-600 rounded shadow-md hover:text-slate-100 hover:bg-cyan-700 hover:border-transparent">
+					Mover
 				</button>
 			</div>
+
 		</form>
 	</dialog>
 	{{ end }}
@@ -720,6 +732,54 @@
 
 </main>
 {{ end }}
+
+<!-- ======================================================== -->
+<script>
+	function showMoverTarea(tareaID, descripcion) {
+		let mov = document.getElementById('moverTarea');
+		mov.showModal();
+		mov.querySelector('input[name=tarea_id]').value = tareaID;
+		mov.querySelector('p').innerText = descripcion;
+		document.getElementById('navTreeTarea').dispatchEvent(new Event('navTreeTareaShown'));
+		console.log('showMoverTarea(' + tareaID + ')');
+	}
+</script>
+
+<dialog id="moverTarea" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Mover tarea
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</header>
+	<form class="flex flex-col gap-2 p-2">
+		<p class="mb-2 italic">Nombre de la tarea</p>
+		<input type="hidden" name="tarea_id" required>
+		<div
+			id="navTreeTarea"
+			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-target="#navTreeTarea" hx-swap="innerHTML"
+			hx-trigger="navTreeTareaShown"
+			class="flex flex-col gap-1 sm:w-96">
+			<!-- nav_tree -->
+		</div>
+		<button
+			hx-post="/mover/tarea"
+			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			type="submit"
+			onclick="this.closest('dialog').close()"
+			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+			Mover
+		</button>
+	</form>
+</dialog>
+
 
 <div id="msgStack" class="hidden">
 	<!-- Mensajes respuesta del servidor -->
@@ -786,6 +846,11 @@
 	// ================================================================ //
 	function onLoad(content) {
 		
+		// // DEBUG
+		// if (!document.getElementById("moverTarea").hasAttribute("open")) { 
+		// 	showMoverTarea("123","hola")
+		// }
+
 		// Reordenar tramos
 		var sortableTramos = new Sortable(document.querySelector("[tipo='sort_tramos']"), {
 			group: "sort_tramos", animation: 150, swapThreshold: 0.50,

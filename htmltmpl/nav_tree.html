@@ -1,149 +1,170 @@
 <!--* NAVEGAR DESDE ROOT -->
 {{ define "nav_root" }}
-<div class="flex flex-col gap-4 p-4">
-	{{ range .Proyectos -}}
-	<div>
+{{ range .Proyectos -}}
+<div>
+	<a
+		hx-get="/nav/proy/{{ .ProyectoID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Proyecto
 		</span>
-		<a
-			href="/nav/pry/{{ .ProyectoID }}"
-			class="">
-			{{ .Titulo }}
-		</a>
-	</div>
-	{{ end }}
+		{{ .Titulo }}
+	</a>
 </div>
+{{ end }}
 {{ end }}
 
 <!--* NAVEGAR DESDE PROYECTO -->
 {{ define "nav_proy" }}
-<div class="flex flex-col gap-4 p-4">
-	<div>
-		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
-			<!-- Selected --> Proyecto
+<input type="hidden" class="form-control" name="proyecto_id" value="{{ .Proyecto.ProyectoID }}">
+<div>
+	<a
+		hx-get="/nav"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+			Root
 		</span>
-		<a
-			href="/nav"
-			class="">
-			{{ .Proyecto.Titulo }}
-		</a>
-	</div>
-	{{ range .Personas -}}
-	<div class="pl-4">
+		Todos los proyectos
+	</a>
+</div>
+<div>
+	<a
+		hx-get="/nav/proy/{{ .Proyecto.ProyectoID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
+			Proyecto <!-- Selected -->
+		</span>
+		{{ .Proyecto.Titulo }}
+	</a>
+</div>
+{{ range .Personas -}}
+<div class="pl-4">
+	<a
+		hx-get="/nav/pers/{{ .PersonaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Persona
 		</span>
-		<a
-			href="/nav/per/{{ .PersonaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Nombre }}
-		</a>
-	</div>
-	{{ end }}
+		{{ .Nombre }}
+	</a>
 </div>
+{{ end }}
 {{ end }}
 
 <!--* NAVEGAR DESDE PERSONA -->
 {{ define "nav_pers" }}
-<div class="flex flex-col gap-4 p-4">
-	<div>
+<input type="hidden" class="form-control" name="persona_id" value="{{ .Persona.PersonaID }}">
+<div>
+	<a
+		hx-get="/nav"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+			Root
+		</span>
+		Todos los proyectos
+	</a>
+</div>
+<div>
+	<a
+		hx-get="/nav/proy/{{ .Proyecto.ProyectoID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Proyecto
 		</span>
-		<a
-			href="/nav/pry/{{ .Proyecto.ProyectoID }}"
-			class="">
-			{{ .Proyecto.Titulo }}
-		</a>
-	</div>
-	<div>
+		{{ .Proyecto.Titulo }}
+	</a>
+</div>
+<div>
+	<a
+		hx-get="/nav/pers/{{ .Persona.PersonaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
-			<!-- Selected --> Persona
+			Persona <!-- Selected -->
 		</span>
-		<a
-			href="/nav/per/{{ .Persona.PersonaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Persona.Nombre }}
-		</a>
-	</div>
-	{{ range .Historias -}}
-	<div class="pl-4">
+		{{ .Persona.Nombre }}
+	</a>
+</div>
+{{ range .Historias -}}
+<div class="pl-4">
+	<a
+		hx-get="/nav/hist/{{ .HistoriaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Historia
 		</span>
-		<a
-			href="/nav/his/{{ .HistoriaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Titulo }}
-		</a>
-	</div>
-	{{ end }}
+		{{ .Titulo }}
+	</a>
 </div>
+{{ end }}
 {{ end }}
 
 <!--* NAVEGAR DESDE HISTORIA -->
 {{ define "nav_hist" }}
 {{ with .Agregado -}}
-<div class="flex flex-col gap-4 p-4">
-	<div>
+<input type="hidden" class="form-control" name="historia_id" value="{{ .Historia.HistoriaID }}">
+<div>
+	<a
+		hx-get="/nav"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+			Root
+		</span>
+		Todos los proyectos
+	</a>
+</div>
+<div>
+	<a
+		hx-get="/nav/proy/{{ .Proyecto.ProyectoID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Proyecto
 		</span>
-		<a
-			href="/nav/pry/{{ .Proyecto.ProyectoID }}"
-			class="">
-			{{ .Proyecto.Titulo }}
-		</a>
-	</div>
-	<div>
+		{{ .Proyecto.Titulo }}
+	</a>
+</div>
+<div>
+	<a
+		hx-get="/nav/pers/{{ .Persona.PersonaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Persona
 		</span>
-		<a
-			href="/nav/per/{{ .Persona.PersonaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Persona.Nombre }}
-		</a>
-	</div>
-
-	{{ range $i, $v := .Ancestros -}}
-	<div>
+		{{ .Persona.Nombre }}
+	</a>
+</div>
+{{ range $i, $v := .Ancestros -}}
+<div>
+	<a
+		hx-get="/nav/hist/{{ .HistoriaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Ancestro
 		</span>
-		<a
-			href="/nav/his/{{ .HistoriaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Titulo }}
-		</a>
-	</div>
-	{{ end }}
-
-	<div class="">
+		{{ .Titulo }}
+	</a>
+</div>
+{{ end }}
+<div>
+	<a
+		hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
-			<!-- Selected --> Historia
+			Historia <!-- Selected -->
 		</span>
-		<a
-			href="/nav/his/{{ .Historia.HistoriaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Historia.Titulo }}
-		</a>
-	</div>
-	
-	{{ range .Descendientes -}}
-	<div class="pl-4">
+		{{ .Historia.Titulo }}
+	</a>
+</div>
+{{ range .Descendientes -}}
+<div class="pl-4">
+	<a
+		hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
+		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Descendiente
 		</span>
-		<a
-			href="/nav/his/{{ .Historia.HistoriaID }}"
-			class="transition-colors hover:text-cyan-600">
-			{{ .Historia.Titulo }}
-		</a>
-	</div>
-	{{ end }}
-
+		{{ .Historia.Titulo }}
+	</a>
 </div>
+{{ end }}
 {{ end }}
 {{ end }}

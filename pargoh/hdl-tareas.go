@@ -50,6 +50,15 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 	return c.Redir("/historias/%v", tarea.HistoriaID)
 }
 
+func (s *servidor) moverTarea(c *gecko.Context) error {
+	historiaID, err := dhistorias.MoverTarea(c.FormInt("tarea_id"), c.FormInt("historia_id"), s.repo)
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
+}
+
 func (s *servidor) eliminarTarea(c *gecko.Context) error {
 	historiaID, err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repo)
 	if err != nil {

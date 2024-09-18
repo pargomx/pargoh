@@ -151,9 +151,11 @@ func main() {
 	s.POS("/reordenar-historia", s.reordenarHistoria)
 
 	s.GET("/nav", s.navDesdeRoot)
-	s.GET("/nav/pry/{proyecto_id}", s.navDesdeProyecto)
-	s.GET("/nav/per/{persona_id}", s.navDesdePersona)
-	s.GET("/nav/his/{historia_id}", s.navDesdeHistoria)
+	s.GET("/nav/proy/{proyecto_id}", s.navDesdeProyecto)
+	s.GET("/nav/pers/{persona_id}", s.navDesdePersona)
+	s.GET("/nav/hist/{historia_id}", s.navDesdeHistoria)
+
+	s.POS("/mover/tarea", s.moverTarea)
 
 	s.GET("/historias/{historia_id}/tareas", s.getTareasDeHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
