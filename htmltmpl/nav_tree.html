@@ -16,7 +16,7 @@
 
 <!--* NAVEGAR DESDE PROYECTO -->
 {{ define "nav_proy" }}
-<input type="hidden" class="form-control" name="proyecto_id" value="{{ .Proyecto.ProyectoID }}">
+<input type="hidden" class="form-control" name="target_proyecto_id" value="{{ .Proyecto.ProyectoID }}">
 <div>
 	<a
 		hx-get="/nav"
@@ -53,7 +53,7 @@
 
 <!--* NAVEGAR DESDE PERSONA -->
 {{ define "nav_pers" }}
-<input type="hidden" class="form-control" name="persona_id" value="{{ .Persona.PersonaID }}">
+<input type="hidden" class="form-control" name="target_persona_id" value="{{ .Persona.PersonaID }}">
 <div>
 	<a
 		hx-get="/nav"
@@ -101,7 +101,7 @@
 <!--* NAVEGAR DESDE HISTORIA -->
 {{ define "nav_hist" }}
 {{ with .Agregado -}}
-<input type="hidden" class="form-control" name="historia_id" value="{{ .Historia.HistoriaID }}">
+<input type="hidden" class="form-control" name="target_historia_id" value="{{ .Historia.HistoriaID }}">
 <div>
 	<a
 		hx-get="/nav"

@@ -116,12 +116,23 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) moverHistoria(c *gecko.Context) error {
-	err := dhistorias.MoverHistoria(c.PathInt("historia_id"), c.FormInt("nuevo_padre_id"), s.repo)
+	nuevoPadreID := c.FormInt("target_historia_id")
+	if nuevoPadreID == 0 {
+		nuevoPadreID = c.FormInt("target_persona_id")
+		if nuevoPadreID == 0 {
+			nuevoPadreID = c.FormInt("nuevo_padre_id")
+		}
+	}
+	historiaID := c.FormInt("historia_id")
+	if historiaID == 0 {
+		historiaID = c.PathInt("historia_id")
+	}
+	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repo)
 	if err != nil {
 		return err
 	}
-	return c.Redir("/historias/%v/mover", c.PathInt("historia_id"))
-	// return c.StatusOk("Historia movida")
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
 }
 
 func (s *servidor) reordenarHistoria(c *gecko.Context) error {

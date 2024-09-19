@@ -51,7 +51,7 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 }
 
 func (s *servidor) moverTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.MoverTarea(c.FormInt("tarea_id"), c.FormInt("historia_id"), s.repo)
+	historiaID, err := dhistorias.MoverTarea(c.FormInt("tarea_id"), c.FormInt("target_historia_id"), s.repo)
 	if err != nil {
 		return err
 	}
