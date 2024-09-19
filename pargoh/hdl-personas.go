@@ -20,11 +20,16 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	TareasEnCurso, err := s.repo.ListTareasEnCurso()
+	if err != nil {
+		return err
+	}
 	data := map[string]any{
-		"Titulo":    "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
-		"Persona":   Persona,
-		"Proyecto":  Proyecto,
-		"Historias": Historias,
+		"Titulo":        "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
+		"Persona":       Persona,
+		"Proyecto":      Proyecto,
+		"Historias":     Historias,
+		"TareasEnCurso": TareasEnCurso,
 	}
 	return c.RenderOk("persona", data)
 }

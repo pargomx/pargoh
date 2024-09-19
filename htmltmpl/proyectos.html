@@ -3,21 +3,23 @@
 </h2>
 
 {{ if .TareasEnCurso -}}
-<div class="flex flex-col items-start gap-1 px-4 mb-4">
+<div class="flex flex-col gap-1 px-4 mb-4">
 	<h3 class="text-lg text-cyan-600">Tareas en curso</h3>
 	{{ range .TareasEnCurso -}}
-	<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}">
+	<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}" class="flex gap-2 transition-colors hover:text-cyan-200">
 		<span class="inline-block w-6 text-center">
 			<i class="text-slate-400 fa-solid fa-list-check"></i>
 		</span>
-		{{ .Descripcion }}
-		<span class="mx-2 opacity-50">
+		<span class="truncate">
+			{{ .Descripcion }}
+		</span>
+		<span class="px-2 opacity-50">
 			<img src="/assets/img/spinner.svg" alt="En progreso" class="inline-block w-8">
 		</span>
 	</a>
 	{{ end }}
 </div>
-{{ end }}
+{{ end -}}
 
 {{ if .Bugs -}}
 <div class="px-4 mb-4">
@@ -25,22 +27,22 @@
 		<summary class="text-cyan-600 cursor-pointer">
 			Bugs pendientes ({{ len .Bugs }})
 		</summary>
-		<ul class="space-y-1">
-			{{ range .Bugs }}
-			<li>
-				<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}">
-					<span class="inline-block w-6 text-center">
-						{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
-						{{ else if .EnCurso }}<i class="text-cyan-600 fa-solid fa-bug"></i>
-						{{ else if .EnPausa }}<i class="text-orange-600 fa-solid fa-bug"></i>
-						{{ else }}<i class="text-slate-400 fa-solid fa-bug"></i>
-						{{ end -}}
-					</span>
+		<div class="flex flex-col gap-1">
+			{{ range .Bugs -}}
+			<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}" class="flex w-full gap-2 transition-opacity opacity-75 hover:opacity-100">
+				<span class="px-1">
+					{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
+					{{ else if .EnCurso }}<i class="text-cyan-600 fa-solid fa-bug"></i>
+					{{ else if .EnPausa }}<i class="text-orange-600 fa-solid fa-bug"></i>
+					{{ else }}<i class="text-slate-400 fa-solid fa-bug"></i>
+					{{ end -}}
+				</span>
+				<span class="grow truncate">
 					{{ .Descripcion }}
-				</a>
-			</li>
+				</span>
+			</a>
 			{{ end }}
-		</ul>
+		</div>
 	</details>
 </div>
 {{ end }}

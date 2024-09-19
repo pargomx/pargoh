@@ -15,11 +15,11 @@
 		</h2>
 		<h3 class="flex items-center gap-1 py-1">
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
-			<a href="/personas/{{ .Persona.PersonaID }}" class="text-xl">{{ .Persona.Nombre }}</a>
+			<span class="text-xl">{{ .Persona.Nombre }}</span>
 		</h3>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a href="/personas/{{ .Persona.PersonaID }}" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
 	</span>
 </header>
 
