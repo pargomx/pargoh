@@ -90,6 +90,7 @@
 			placeholder="Hacer algo de valor..."
 			rows="1"
 			enterkeyhint="done"
+			autofocus
 			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
 			{{- .Historia.Titulo -}}
 		</textarea>
@@ -230,7 +231,7 @@
 						class="inline-block px-6 py-2 text-slate-100 transition-colors bg-gray-600 rounded shadow-md hover:bg-gray-500">
 						Cancelar
 					</button>
-					<button 
+					<button
 						tipo="eliminar_img"
 						type="button"
 						onclick="this.closest('dialog').close()" 
@@ -288,7 +289,7 @@
 	<!--* DESCENDIENTES *-->
 	<h3 class="mb-2 text-xl text-cyan-600">Descendientes</h3>
 	<ul tipo="sort_descendientes" class="mb-6">
-		{{ range .Descendientes }}
+		{{ range .Descendientes }} {{ template "ctxMenuHistoria" . }}
 		<li tipo="sort_descendiente" class="">
 			<div class="flex gap-1 p-1 group">
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
@@ -299,96 +300,60 @@
 						<input type="hidden" name="new_pos">
 					</form>
 				</div>
-				<span class="pr-2 text-center">
-					{{- if .Historia.Completada }}<i class="w-5 text-green-600 fa-solid fa-circle-check"></i>
-					{{- else if eq .Historia.Prioridad 3 }}<i class="w-5 text-orange-600 fa-solid fa-angles-up"></i>
-					{{- else if eq .Historia.Prioridad 2 }}<i class="w-5 text-orange-400 fa-solid fa-chevron-up"></i>
-					{{- else if eq .Historia.Prioridad 1 }}<i class="w-5 text-orange-200 fa-solid fa-minus"></i>
-					{{- else }}<i class="w-5 text-xs opacity-50 fa-solid fa-ban"></i>
+				<button
+					tipo="descendiente_bullet"
+					type="button"
+					onclick="showMenuHistoria({{ .Historia.HistoriaID }})"
+					class="inline-block w-5 text-center">
+					{{- if .Historia.Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
+					{{- else if eq .Historia.Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+					{{- else if eq .Historia.Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+					{{- else if eq .Historia.Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+					{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
 					{{- end }}
-				</span>
-				<!-- Descendientes nivel 1 -->
+				</button>
 				<div class="grow">
 					<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 						{{- enfatizar .Historia.Titulo -}}
 					</a>
 				</div>
-				<a href="/historias/{{ .Historia.HistoriaID }}/mover"
-					title="Mover historia"
-					class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-cyan-600">
-					<i class="fa-solid fa-person-walking"></i>
-				</a>
-				<button
-					type="button"
-					onclick="showMoverHistoria('{{ .Historia.HistoriaID }}', '{{ .Historia.Titulo }}')"
-					title="Mover historia"
-					class="hidden ml-2 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-cyan-600">
-					<i class="fa-solid fa-square-arrow-up-right"></i>
-				</button>
-				<button
-					type="button"
-					hx-delete="/historias/{{ .Historia.HistoriaID }}"
-					hx-target="#msgStack" hx-swap="innerHTML"
-					hx-confirm="¿Eliminar historia? {{ .Historia.Titulo }}"
-					title="Eliminar historia"
-					class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
-					<i class="fa-solid fa-trash"></i>
-				</button>
 			</div>
 
+			<!--* DESC NIVEL DOS  -->
 			{{ if .Descendientes -}}
 			<ul class="">
-				{{ range .Descendientes }}
-				<li tipo="" class="flex gap-1 p-1 group">
+				{{ range .Descendientes }} {{ template "ctxMenuHistoria" . }}
+				<li class="flex gap-1 p-1 group">
 					<div class="pl-8">
-						<span class="pr-2 text-center">
-							{{- if .Historia.Completada }}<i class="w-5 text-green-600 fa-solid fa-circle-check"></i>
-							{{- else if eq .Historia.Prioridad 3 }}<i class="w-5 text-orange-600 fa-solid fa-angles-up"></i>
-							{{- else if eq .Historia.Prioridad 2 }}<i class="w-5 text-orange-400 fa-solid fa-chevron-up"></i>
-							{{- else if eq .Historia.Prioridad 1 }}<i class="w-5 text-orange-200 fa-solid fa-minus"></i>
-							{{- else }}<i class="w-5 text-xs opacity-50 fa-solid fa-ban"></i>
+						<button
+							tipo="descendiente_bullet"
+							type="button"
+							onclick="showMenuHistoria({{ .Historia.HistoriaID }})"
+							class="inline-block w-5 text-center">
+							{{- if .Historia.Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
+							{{- else if eq .Historia.Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+							{{- else if eq .Historia.Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+							{{- else if eq .Historia.Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+							{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
 							{{- end }}
-						</span>
+						</button>
 					</div>
-					<!-- Descendientes nivel 2 -->
 					<div class="grow">
 						<a href="/historias/{{ .Historia.HistoriaID }}" class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 							{{- enfatizar .Historia.Titulo -}}
 						</a>
 					</div>
-					<a href="/historias/{{ .Historia.HistoriaID }}/mover"
-						title="Mover historia"
-						class="hidden ml-1 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-cyan-600">
-						<i class="fa-solid fa-person-walking"></i>
-					</a>
-					<button
-						type="button"
-						onclick="showMoverHistoria('{{ .Historia.HistoriaID }}', '{{ .Historia.Titulo }}')"
-						title="Mover historia"
-						class="hidden ml-2 transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-cyan-600">
-						<i class="fa-solid fa-square-arrow-up-right"></i>
-					</button>
-					<button
-						type="button"
-						hx-delete="/historias/{{ .Historia.HistoriaID }}"
-						hx-target="#msgStack" hx-swap="innerHTML"
-						hx-confirm="¿Eliminar historia? {{ .Historia.Titulo }}"
-						title="Eliminar historia"
-						class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
-						<i class="fa-solid fa-trash"></i>
-					</button>
 				</li>
 				{{ end }}
 			</ul>
 		{{ end }}
 		</li>
 		{{ end }}
+		
 		<li class="">
 			<div class="flex gap-1 p-1 group">
-				<div class="hidden opacity-0 md:block">
-					⣿
-				</div>
-				<span class="pr-2 text-center">
+				<div class="hidden opacity-0 md:block">⣿</div>
+				<span class="inline-block w-5 text-center">
 					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 				</span>
 				<textarea
@@ -766,6 +731,133 @@
 {{ end }}
 
 <!-- ======================================================== -->
+{{ define "ctxMenuHistoria" -}}
+	<dialog id="ctxMenuHistoria{{ .Historia.HistoriaID }}" tipo="ctxMenuHistoria"
+		class="absolute p-0 m-0 text-slate-300 bg-cyan-900 border border-slate-300 rounded shadow-md">
+		<form class="grid grid-cols-2 gap-1 p-2 text-sm">
+
+			<div class="col-span-2 px-1 text-xs opacity-50">Prioridad</div>
+			<button
+				type="button"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/3" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 3 }}font-bold{{ end }}">
+				<span class="inline-block w-5 text-center">
+					<i class="text-orange-600 fa-solid fa-angles-up"></i>
+				</span>
+				Must
+			</button>
+			<button
+				type="button"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/2" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 2 }}font-bold{{ end }}">
+				<span class="inline-block w-5 text-center">
+					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+				</span>
+				Should
+			</button>
+			<button
+				type="button"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/1" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 1 }}font-bold{{ end }}">
+				<span class="inline-block w-5 text-center">
+					<i class="text-orange-200 fa-solid fa-minus"></i>
+				</span>
+				Would
+			</button>
+			<button
+				type="button"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/0" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 0 }}font-bold{{ end }}">
+				<span class="inline-block w-5 text-center">
+					<i class="text-slate-400 fa-solid fa-ban"></i>
+				</span>
+				Won't
+			</button>
+
+			<div class="col-span-2 px-1 text-xs opacity-50">Estatus</div>
+			<button
+				type="button"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/marcar/0"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if not .Historia.Completada }}font-bold{{ end }}">
+				<span class="inline-block w-5 text-center">
+					<i class="text-orange-600 fa-regular fa-circle"></i>
+				</span>
+				Falta
+			</button>
+			<button
+				type="button"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/marcar/1"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .Historia.Completada }}font-bold{{ end }}">
+				<span class="inline-block w-5 text-center">
+					<i class="text-green-600 fa-solid fa-circle-check"></i>
+				</span>
+				Lista
+			</button>
+
+			<div class="col-span-2 px-1 text-xs opacity-50">Acciones</div>
+			<!-- <button
+				type="button"
+				hx-get="/tablero/{{ .Historia.HistoriaID }}"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700">
+				<span class="inline-block w-5 text-center">
+					<i class="fa-regular fa-clipboard"></i>
+				</span>
+				Tablero
+			</button>
+			<button
+				type="button"
+				hx-get="/historias/{{ .Historia.HistoriaID }}"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700">
+				<span class="inline-block w-5 text-center">
+					<i class="fa-solid fa-pen"></i>
+				</span>
+				Abrir
+			</button> -->
+			<button
+				type="button"
+				hx-delete="/historias/{{ .Historia.HistoriaID }}"
+				hx-confirm="¿Eliminar historia? {{ .Historia.Titulo }}"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700">
+				<span class="inline-block w-5 text-center">
+					<i class="text-red-500 fa-solid fa-trash"></i>
+				</span>
+				Eliminar
+			</button>
+			<button
+				type="button"
+				onclick="showMoverHistoria('{{ .Historia.HistoriaID }}', '{{ .Historia.Titulo }}')"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700">
+				<span class="inline-block w-5 text-center">
+					<i class="text-cyan-500 fa-solid fa-person-walking"></i>
+				</span>
+				Mover
+			</button>
+		</form>
+	</dialog>
+{{ end -}}
+<script>
+	document.querySelectorAll("dialog[tipo='ctxMenuHistoria']").forEach((menu) => {
+		menu.addEventListener('click', (event) => menu.close());
+		// menu.querySelector("div").addEventListener('click', (event) => event.stopPropagation());
+	});
+	
+	function showMenuHistoria(historiaID) {
+		menu = document.getElementById('ctxMenuHistoria' + historiaID);
+		let menuW = menu.offsetWidth // Dimensiones del menú
+		let menuH = menu.offsetHeight
+		let winW = window.innerWidth // Dimensiones de la ventana
+		let winH = window.innerHeight
+		let x = event.clientX // Coordenadas dentro de la ventana
+		let y = event.clientY
+		if (x + menuW > winW) { x = winW - menuW } // Que no salga de la ventana
+		if (y + menuH > winH) { y = winH - menuH }
+		menu.style.left = `${x}px`
+		menu.style.top = `${y}px`
+		menu.showModal();
+	}
+</script>
+
+<!-- ======================================================== -->
 <script>
 	function showMoverHistoria(historiaID, descripcion) {
 		let mov = document.getElementById('moverHistoria');
@@ -920,12 +1012,9 @@
 
 	// ================================================================ //
 	// ================================================================ //
-	function onLoad(content) {
-		
-		// // DEBUG
-		// if (!document.getElementById("moverTarea").hasAttribute("open")) { 
-		// 	showMoverTarea("123","hola")
-		// }
+	htmx.onLoad(function(content) {
+
+		// initContextMenu(content);
 
 		// Reordenar tramos
 		var sortableTramos = new Sortable(document.querySelector("[tipo='sort_tramos']"), {
@@ -970,5 +1059,5 @@
 				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
           	},
 		});
-	}
+	});
 </script>

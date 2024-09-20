@@ -58,7 +58,7 @@ func deleteHistoriaRecursiva(his HistoriaExport, repo Repo) error {
 			return err
 		}
 	}
-	err = EliminarHistoria(his.Historia.HistoriaID, repo)
+	_, err = EliminarHistoria(his.Historia.HistoriaID, repo)
 	if err != nil {
 		return err
 	}

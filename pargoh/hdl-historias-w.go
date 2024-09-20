@@ -6,6 +6,7 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 func (s *servidor) postHistoria(c *gecko.Context) error {
@@ -99,6 +100,14 @@ func (s *servidor) priorizarHistoria(c *gecko.Context) error {
 	return c.StatusOk("Historia priorizada")
 }
 
+func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
+	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.PathInt("prioridad"), s.repo)
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
 func (s *servidor) marcarHistoria(c *gecko.Context) error {
 	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.FormBool("completada"), s.repo)
 	if err != nil {
@@ -107,12 +116,31 @@ func (s *servidor) marcarHistoria(c *gecko.Context) error {
 	return c.StatusOk("Historia marcada")
 }
 
-func (s *servidor) deleteHistoria(c *gecko.Context) error {
-	err := dhistorias.EliminarHistoria(c.PathInt("historia_id"), s.repo)
+func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
+	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.PathBool("completada"), s.repo)
 	if err != nil {
 		return err
 	}
-	return c.StatusOk("Historia eliminada")
+	return c.RefreshHTMX()
+}
+
+func (s *servidor) deleteHistoria(c *gecko.Context) error {
+	padreID, err := dhistorias.EliminarHistoria(c.PathInt("historia_id"), s.repo)
+	if err != nil {
+		return err
+	}
+	padre, err := s.repo.GetNodo(padreID)
+	if err != nil {
+		return err
+	}
+	if padre.EsHistoria() {
+		return c.Redir("/historias/%v", padreID)
+	} else if padre.EsPersona() {
+		return c.Redir("/personas/%v", padreID)
+	} else {
+		gko.LogWarnf("deleteHistoria: padre %v no es persona ni historia", padreID)
+		return c.Redir("/proyectos")
+	}
 }
 
 func (s *servidor) moverHistoria(c *gecko.Context) error {

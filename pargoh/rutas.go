@@ -147,7 +147,9 @@ func main() {
 	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
 	s.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
+	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.priorizarHistoriaNuevo)
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
+	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
 	s.POS("/reordenar-historia", s.reordenarHistoria)
 
 	s.GET("/nav", s.navDesdeRoot)
