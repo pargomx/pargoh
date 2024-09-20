@@ -296,7 +296,7 @@
 	<!--* DESCENDIENTES *-->
 	<h3 class="mb-2 text-xl text-cyan-600">Descendientes</h3>
 	<ul tipo="sort_descendientes" class="mb-6">
-		{{ range .Descendientes }} {{ template "ctxMenuHistoria" . }}
+		{{ range .Descendientes }}
 		<li tipo="sort_descendiente" class="">
 			<div class="flex gap-1 p-1 group">
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
@@ -329,7 +329,7 @@
 			<!--* DESC NIVEL DOS  -->
 			{{ if .Descendientes -}}
 			<ul class="">
-				{{ range .Descendientes }} {{ template "ctxMenuHistoria" . }}
+				{{ range .Descendientes }}
 				<li class="flex gap-1 p-1 group">
 					<div class="pl-8">
 						<button
@@ -375,6 +375,14 @@
 			</div>
 		</li>
 	</ul>
+
+	<!-- Poner ctxMenu fuera de sortable para que no cuente doble el newIndex -->
+	{{ range .Descendientes -}}
+		{{ template "ctxMenuHistoria" . -}}
+		{{ range .Descendientes -}}
+			{{ template "ctxMenuHistoria" . -}}
+		{{ end }}
+	{{ end }}
 
 	<!--* REGLAS DE NEGOCIO -->
 	<h3 class="mb-2 text-xl text-cyan-600">Reglas</h3>
