@@ -57,7 +57,14 @@ func (s *servidor) setImagenTramo(c *gecko.Context) error {
 	}
 	defer foto.Close()
 	// gko.LogDebugf("Imagen recibida: %v\t Tamaño: %v\t MIME:%v", file.Filename, file.Size, file.Header.Get("Content-Type"))
-	err = dhistorias.SetFotoTramo(c.FormInt("historia_id"), c.FormInt("posicion"), foto, s.cfg.imagesDir, s.repo)
+	err = dhistorias.SetFotoTramo(
+		c.FormInt("historia_id"),
+		c.FormInt("posicion"),
+		foto,
+		s.cfg.imagesDir,
+		file.Header.Get("Content-Type"),
+		s.repo,
+	)
 	if err != nil {
 		return err
 	}

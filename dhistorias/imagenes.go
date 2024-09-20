@@ -52,18 +52,30 @@ func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int
 
 // ================================================================ //
 
-func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio string, repo Repo) error {
+func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio string, MIME string, repo Repo) error {
 	Tramo, err := repo.GetTramo(HistoriaID, Posicion)
 	if err != nil {
 		return err
 	}
-	Filename := fmt.Sprintf("h_%d_%d.jpeg", HistoriaID, Posicion)
+	extension := ""
+	switch MIME {
+	case "image/jpeg", "image/jpg":
+		extension = "jpeg"
+	case "image/png":
+		extension = "png"
+	case "image/gif":
+		extension = "gif"
+	default:
+		return gko.ErrNoSoportado().Msgf("MIME no soportado: %v", MIME)
+	}
+
+	Filename := fmt.Sprintf("h_%d_%d.%s", HistoriaID, Posicion, extension)
 	Filepath := filepath.Join(directorio, Filename)
 
 	if Tramo.Imagen != "" { // Mover archivo anterior a _trash
 		os.Rename(Filepath, filepath.Join(directorio, "trash_"+Filename))
 	}
-	err = GuardarImagen(foto, "jpeg", Filepath, 3000)
+	err = GuardarImagen(foto, extension, Filepath, 3000)
 	if err != nil {
 		return err
 	}
