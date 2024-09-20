@@ -71,7 +71,7 @@
 			<li class="pt-1">
 				<a href="/historias/{{ .HistoriaID }}" title="Ir al ancestro"
 					class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400">
-					{{- .Titulo -}}...
+					{{- enfatizar .Titulo -}}...
 				</a>
 		{{ end }}
 		{{ range .Ancestros -}}
