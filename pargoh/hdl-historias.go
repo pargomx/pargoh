@@ -180,6 +180,15 @@ func (s *servidor) reordenarTramo(c *gecko.Context) error {
 	return c.StatusOkf("Tramo reordenado")
 }
 
+func (s *servidor) moverTramo(c *gecko.Context) error {
+	historiaID, err := dhistorias.MoverTramo(c.FormInt("historia_id"), c.FormInt("posicion"), c.FormInt("target_historia_id"), s.repo)
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
+}
+
 // ================================================================ //
 // ================================================================ //
 

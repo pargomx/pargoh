@@ -46,6 +46,13 @@
 			"dependsOrder": "sequence", "dependsOn": ["install"]
 		},
 		{
+			"label": "Start db debug", "detail": "Ejecutar en directorio de prueba con log de DB",
+			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/pargodata -logdb",
+			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+			"isBackground": true,
+			"dependsOrder": "sequence", "dependsOn": ["install"]
+		},
+		{
 			"label": "Start prod", "detail": "Ejecutar en directorio de prueba",
 			"command": "pargoh -dir=/home/andrew/pargodata",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },

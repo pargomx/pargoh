@@ -140,7 +140,7 @@
 					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
 					{{- .Texto -}}
 				</textarea>
-				<div>
+				<div class="flex gap-2">
 					{{ if not .Imagen -}}
 					<button
 						type="button"
@@ -150,6 +150,13 @@
 						<i class="fa-solid fa-image"></i>
 					</button>
 					{{ end }}
+					<button
+						type="button"
+						onclick="showMoverTramo('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}')"
+						title="Mover tarea"
+						class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80">
+						<i class="fa-solid fa-person-walking"></i>
+					</button>
 				</div>
 			</div>
 			{{ if .Imagen -}}
@@ -859,13 +866,23 @@
 
 <!-- ======================================================== -->
 <script>
+	function showMoverTramo(historiaID, posicion, descripcion) {
+		let mov = document.getElementById('moverTramo');
+		mov.showModal();
+		mov.querySelector('input[name=historia_id]').value = historiaID;
+		mov.querySelector('input[name=posicion]').value = posicion;
+		mov.querySelector('p').innerText = descripcion;
+		document.getElementById('navTreeTramo').dispatchEvent(new Event('navTreeTramoShown'));
+		console.log(`showMoverTramo(${historiaID},${posicion})`);
+	}
+
 	function showMoverHistoria(historiaID, descripcion) {
 		let mov = document.getElementById('moverHistoria');
 		mov.showModal();
 		mov.querySelector('input[name=historia_id]').value = historiaID;
 		mov.querySelector('p').innerText = descripcion;
 		document.getElementById('navTreeHistoria').dispatchEvent(new Event('navTreeHistoriaShown'));
-		console.log('showMoverHistoria(' + historiaID + ')');
+		console.log(`showMoverHistoria(${historiaID})`);
 	}
 
 	function showMoverTarea(tareaID, descripcion) {
@@ -874,9 +891,45 @@
 		mov.querySelector('input[name=tarea_id]').value = tareaID;
 		mov.querySelector('p').innerText = descripcion;
 		document.getElementById('navTreeTarea').dispatchEvent(new Event('navTreeTareaShown'));
-		console.log('showMoverTarea(' + tareaID + ')');
+		console.log(`showMoverTarea(${tareaID})`);
 	}
 </script>
+
+<dialog id="moverTramo" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Mover tramo
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</header>
+	<form class="flex flex-col gap-2 p-2">
+		<p class="mb-2 italic">Nombre de la tramo</p>
+		<input type="hidden" name="historia_id" required>
+		<input type="hidden" name="posicion" required>
+		<div
+			id="navTreeTramo"
+			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-target="#navTreeTramo" hx-swap="innerHTML"
+			hx-trigger="navTreeTramoShown"
+			class="flex flex-col gap-1 sm:w-96">
+			<!-- nav_tree -->
+		</div>
+		<button
+			hx-post="/mover/tramo"
+			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			type="submit"
+			onclick="this.closest('dialog').close()"
+			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+			Mover
+		</button>
+	</form>
+</dialog>
 
 <dialog id="moverTarea" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">

@@ -157,6 +157,7 @@ func main() {
 	s.GET("/nav/pers/{persona_id}", s.navDesdePersona)
 	s.GET("/nav/hist/{historia_id}", s.navDesdeHistoria)
 
+	s.POS("/mover/tramo", s.moverTramo)
 	s.POS("/mover/tarea", s.moverTarea)
 	s.POS("/mover/historia", s.moverHistoria)
 
