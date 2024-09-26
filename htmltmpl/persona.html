@@ -126,7 +126,28 @@
 	{{ end }}
 
 	{{ with .PersonaCosto -}}
-	<h3 class="mb-4 text-xl text-cyan-600">Costo de {{ len .Historias }} historias.</h3>
+	
+	<h3 class="mb-4 text-xl text-cyan-600">Avance del proyecto</h3>
+	<div class="p-4 mb-4 max-w-96">
+		<canvas id="myChart"></canvas>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		const ctx = document.getElementById('myChart');
+		new Chart(ctx, {
+			type: 'doughnut',
+			data: {
+				labels: ['Historias entregadas', 'Historias pendientes',],
+				datasets: [{
+					label: 'Historias',
+					data: [{{ .NumHistCompletadas }}, {{ .NumHistNoCompletadas }}],
+				}]
+			},
+		});
+	</script>
+
+	<h3 class="mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
 	<p>
 		Estimado: {{ .TiempoEstimado }} <br>
 		Real: {{ .TiempoReal }}

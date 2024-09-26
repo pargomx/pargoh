@@ -1,5 +1,8 @@
 package ust
 
+// ================================================================ //
+// ========== PERSONA ============================================= //
+
 type PersonaCosto struct {
 	Persona
 	Historias []HistoriaCosto
@@ -20,6 +23,45 @@ func (p PersonaCosto) TiempoReal() string {
 	}
 	return SegundosToString(suma)
 }
+
+func (p PersonaCosto) HistCompletadas() (res []HistoriaCosto) {
+	for _, h := range p.Historias {
+		if h.Completada {
+			res = append(res, h)
+		}
+	}
+	return res
+}
+
+func (p PersonaCosto) HistNoCompletadas() (res []HistoriaCosto) {
+	for _, h := range p.Historias {
+		if !h.Completada {
+			res = append(res, h)
+		}
+	}
+	return res
+}
+
+func (p PersonaCosto) NumHistCompletadas() (res int) {
+	for _, h := range p.Historias {
+		if h.Completada {
+			res++
+		}
+	}
+	return res
+}
+
+func (p PersonaCosto) NumHistNoCompletadas() (res int) {
+	for _, h := range p.Historias {
+		if !h.Completada && h.Prioridad > 0 {
+			res++
+		}
+	}
+	return res
+}
+
+// ================================================================ //
+// ========== HISTORIA ============================================ //
 
 type HistoriaCosto struct {
 	HistoriaID      int
