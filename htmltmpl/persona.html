@@ -125,6 +125,47 @@
 	</details> -->
 	{{ end }}
 
+	{{ with .PersonaCosto -}}
+	<h3 class="mb-4 text-xl text-cyan-600">Costo de {{ len .Historias }} historias.</h3>
+	<p>
+		Estimado: {{ .TiempoEstimado }} <br>
+		Real: {{ .TiempoReal }}
+	</p>
+	<table>
+        <thead>
+            <tr>
+                <th>HistoriaID</th>
+                <th>PadreID</th>
+                <th>Nivel</th>
+                <th>Posicion</th>
+                <th>Titulo</th>
+                <th>Prioridad</th>
+                <th>Completada</th>
+				<th>MinutosEstimado</th>
+                <th>TiempoEstimado</th>
+				<th>SegundosReal</th>
+                <th>TiempoReal</th>
+            </tr>
+        </thead>
+        <tbody>
+			{{ range .Historias -}}
+            <tr>
+                <td>{{ .HistoriaID }}</td>
+                <td>{{ .PadreID }}</td>
+                <td>{{ .Nivel }}</td>
+                <td>{{ .Posicion }}</td>
+                <td>{{ .Titulo }}</td>
+                <td>{{ .Prioridad }}</td>
+                <td>{{ .Completada }}</td>
+				<td>{{ .MinutosEstimado }}</td>
+                <td>{{ .TiempoEstimado }}</td>
+				<td>{{ .SegundosReal }}</td>
+                <td>{{ .TiempoReal }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+	{{ end }}
 
 </main>
 

@@ -34,6 +34,42 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	return c.RenderOk("persona", data)
 }
 
+func (s *servidor) getPersonaCosto(c *gecko.Context) error {
+	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+	if err != nil {
+		return err
+	}
+	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	if err != nil {
+		return err
+	}
+	Historias, err := s.repo.ListNodoHistorias(Persona.PersonaID)
+	if err != nil {
+		return err
+	}
+	TareasEnCurso, err := s.repo.ListTareasEnCurso()
+	if err != nil {
+		return err
+	}
+	HistoriasCosto, err := s.repo.ListHistoriasCosto(Persona.PersonaID)
+	if err != nil {
+		return err
+	}
+	PersonaCosto := ust.PersonaCosto{
+		Persona:   *Persona,
+		Historias: HistoriasCosto,
+	}
+	data := map[string]any{
+		"Titulo":        "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
+		"Persona":       Persona,
+		"Proyecto":      Proyecto,
+		"Historias":     Historias,
+		"TareasEnCurso": TareasEnCurso,
+		"PersonaCosto":  PersonaCosto,
+	}
+	return c.RenderOk("persona", data)
+}
+
 func (s *servidor) postPersona(c *gecko.Context) error {
 	persona := ust.Persona{
 		PersonaID:   ust.NewPersonaID(),
