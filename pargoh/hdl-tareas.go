@@ -94,6 +94,22 @@ func (s *servidor) terminarTarea(c *gecko.Context) error {
 	return c.Redir("/historias/%v", historiaID)
 }
 
+func (s *servidor) getTarea(c *gecko.Context) error {
+	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
+	if err != nil {
+		return err
+	}
+	intervalos, err := s.repo.ListIntervalosByTareaID(tarea.TareaID)
+	if err != nil {
+		return err
+	}
+	data := map[string]any{
+		"Tarea":      tarea,
+		"Intervalos": intervalos,
+	}
+	return c.RenderOk("tarea", data)
+}
+
 func (s *servidor) getIntervalos(c *gecko.Context) error {
 	recientes, err := s.repo.ListIntervalosRecientes()
 	if err != nil {

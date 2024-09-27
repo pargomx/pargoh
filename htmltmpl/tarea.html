@@ -1,0 +1,45 @@
+<header class="flex items-center gap-2 p-2 bg-cyan-800">
+	<h2 class="grow text-xl">
+		Intervalos de trabajo
+	</h2>
+	<button
+		type="button"
+		onclick="this.closest('dialog').close()"
+		title="Cerrar"
+		class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+</header>
+<div class="flex flex-col gap-2 p-2">
+	<h3>{{ .Tarea.Descripcion }}</h3>
+	<table class="min-w-full divide-y divide-gray-200">
+		<thead class="">
+			<tr>
+				<th scope="col" class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase">
+					Inicio
+				</th>
+				<th scope="col" class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase">
+					Final
+				</th>
+				<th scope="col" class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase">
+					Duración
+				</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-gray-200">
+			{{ range .Intervalos -}}
+			<tr class="font-mono text-sm text-slate-300">
+				<td class="px-4 py-2 whitespace-nowrap">
+					{{ .Inicio }}
+				</td>
+				<td class="px-4 py-2 whitespace-nowrap">
+					{{ .Fin }}
+				</td>
+				<td class="px-4 py-2 whitespace-nowrap">
+					{{ .Duracion }}
+				</td>
+			</tr>
+			{{ end }}
+		</tbody>
+	</table>
+</div>

@@ -182,6 +182,7 @@ func main() {
 	s.POS("/nodos/{nodo_id}", s.postHistoria)
 	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
 
+	s.GET("/tareas/{tarea_id}", s.getTarea)
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
 	s.DEL("/tareas/{tarea_id}", s.eliminarTarea)
 	s.POS("/tareas/{tarea_id}/iniciar", s.iniciarTarea)

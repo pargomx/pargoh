@@ -551,16 +551,22 @@
 			</div>
 			<div class="grow hidden text-right sm:block">
 				{{- if .TiempoEstimado -}}
-				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+				<button
+					onclick="showIntervalos('{{ .TareaID }}')"
+					title="Tiempo estimado {{ .TiempoEstimadoString }}"
+					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-hourglass-start"></i>
 					{{ .TiempoEstimadoString }}
-				</span>
+				</button>
 				{{- end -}}
 				{{- if .TiempoReal -}}
-				<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo transcurrido {{ .TiempoRealString }}">
+				<button
+					onclick="showIntervalos('{{ .TareaID }}')"
+					title="Tiempo transcurrido {{ .TiempoRealString }}"
+					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-stopwatch"></i>
 					{{ .TiempoRealString }}
-				</span>
+				</button>
 				{{- end -}}
 			</div>
 		</li>
@@ -741,9 +747,27 @@
 	</dialog>
 	{{ end }}
 
-
 </main>
 {{ end }}
+
+<!-- Administrar intervalos -->
+<dialog id="modalIntervalos" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<div hx-target="this" hx-swap="innerHTML" hx-trigger="cargarIntervalos">
+		Cargando...
+	</div>
+</dialog>
+<script>
+	function showIntervalos(tareaID) {
+		let dialog = document.getElementById("modalIntervalos")
+		dialog.showModal()
+		let contenido = dialog.querySelector("div") 
+		contenido.setAttribute("hx-get", "/tareas/" + tareaID)
+		htmx.process(contenido)
+		contenido.dispatchEvent(new Event("cargarIntervalos"))
+		// htmx.trigger(dialog, "cargarIntervalos")
+		console.log(`showIntervalos(${tareaID})`)
+	}
+</script>
 
 <!-- ======================================================== -->
 {{ define "ctxMenuHistoria" -}}

@@ -92,6 +92,23 @@ func (h *HistoriaCosto) TiempoReal() string {
 // ================================================================ //
 // ========== INTERVALOS ========================================== //
 
+func (itv Intervalo) Segundos() int {
+	inicio, err := time.Parse("2006-01-02 15:04:05", itv.Inicio) // UTC
+	if err != nil {
+		gko.Err(err).Op("IntervaloEnDia.ParseInicio").Ctx("string", itv.Inicio).Log()
+	}
+	var fin time.Time
+	if itv.Fin == "" {
+		fin = time.Now()
+	} else {
+		fin, err = time.Parse("2006-01-02 15:04:05", itv.Fin) // UTC
+		if err != nil {
+			gko.Err(err).Op("IntervaloEnDia.ParseFin").Ctx("string", itv.Fin).Log()
+		}
+	}
+	return int(fin.Sub(inicio).Seconds())
+}
+
 func (itv IntervaloEnDia) Segundos() int {
 	inicio, err := time.Parse("2006-01-02 15:04:05", itv.Inicio) // UTC
 	if err != nil {
@@ -107,4 +124,8 @@ func (itv IntervaloEnDia) Segundos() int {
 		}
 	}
 	return int(fin.Sub(inicio).Seconds())
+}
+
+func (itv Intervalo) Duracion() string {
+	return SegundosToString(itv.Segundos())
 }
