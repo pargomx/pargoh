@@ -163,6 +163,20 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 }
 
 //  ================================================================  //
+//  ========== LIST ================================================  //
+
+func (s *Repositorio) ListTareas() ([]ust.Tarea, error) {
+	const op string = "ListTareas"
+	rows, err := s.db.Query(
+		"SELECT " + columnasTarea + " " + fromTarea,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsTarea(rows, op)
+}
+
+//  ================================================================  //
 //  ========== LIST_BY HISTORIA_ID =================================  //
 
 func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error) {

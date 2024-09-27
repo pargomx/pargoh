@@ -261,3 +261,21 @@ func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 	}
 	return tar.HistoriaID, nil
 }
+
+func MaterializarTiempoRealTareas(repo Repo) error {
+	tareas, err := repo.ListTareas()
+	if err != nil {
+		return err
+	}
+	for _, tar := range tareas {
+		err = actualizarTiempoReal(&tar, gko.Op("MaterializarTiempoRealTareas"), repo)
+		if err != nil {
+			return err
+		}
+		err = repo.UpdateTarea(tar)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

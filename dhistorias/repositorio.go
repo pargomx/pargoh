@@ -44,6 +44,7 @@ type Repo interface {
 	DeleteTarea(tareaID int) error
 	DeleteAllTareas(HistoriaID int) error
 	GetTarea(tareaID int) (*ust.Tarea, error)
+	ListTareas() ([]ust.Tarea, error)
 	ListTareasByHistoriaID(historiaID int) ([]ust.Tarea, error)
 
 	// Intervalos

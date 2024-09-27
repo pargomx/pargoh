@@ -189,6 +189,8 @@ func main() {
 	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
 
+	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
+
 	s.GET("/intervalos", s.getIntervalos)
 
 	s.GET("/reload", s.brodcastReload)
