@@ -34,7 +34,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	return c.RenderOk("persona", data)
 }
 
-func (s *servidor) getPersonaCosto(c *gecko.Context) error {
+func (s *servidor) getMétricas(c *gecko.Context) error {
 	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
@@ -59,27 +59,64 @@ func (s *servidor) getPersonaCosto(c *gecko.Context) error {
 		Persona:   *Persona,
 		Historias: HistoriasCosto,
 	}
-	DiasTrabajo, err := s.repo.ListIntervalosEnDias()
+
+	Intervalos, err := s.repo.ListIntervalosEnDias()
 	if err != nil {
 		return err
 	}
-	MapaDiasSegundos := make(map[string]float64)
-	for _, dia := range DiasTrabajo {
-		MapaDiasSegundos[dia.Fecha] += float64(dia.Segundos()) / 60 / 60
-		if MapaDiasSegundos[dia.Fecha] > 24 {
-			MapaDiasSegundos[dia.Fecha] = 20
+	DiasTrabajoMapHoras := make(map[string]float64)
+	for _, dia := range Intervalos {
+		DiasTrabajoMapHoras[dia.Fecha] += float64(dia.Segundos()) / 60 / 60
+	}
+
+	IntervalosMap := make(map[string][]ust.IntervaloEnDia)
+	for _, interv := range Intervalos {
+		IntervalosMap[interv.Fecha] = append(IntervalosMap[interv.Fecha], interv)
+	}
+
+	Dias, err := s.repo.ListDias()
+	if err != nil {
+		return err
+	}
+	type DiaTrabajo struct {
+		Fecha    string
+		Segundos int
+		Horas    float64
+		Tareas   map[int]ust.Tarea
+	}
+	DiasTrabajo := make([]DiaTrabajo, len(Dias))
+	for i, dia := range Dias {
+		DiasTrabajo[i].Fecha = dia
+		for _, interv := range IntervalosMap[dia] {
+			DiasTrabajo[i].Segundos += interv.Segundos()
+			if DiasTrabajo[i].Tareas == nil {
+				DiasTrabajo[i].Tareas = make(map[int]ust.Tarea)
+			}
+			if tar, ok := DiasTrabajo[i].Tareas[interv.TareaID]; !ok {
+				tarea, err := s.repo.GetTarea(interv.TareaID)
+				if err != nil {
+					return err
+				}
+				tarea.TiempoReal = interv.Segundos()
+				DiasTrabajo[i].Tareas[interv.TareaID] = *tarea
+			} else {
+				tar.TiempoReal += interv.Segundos()
+				DiasTrabajo[i].Tareas[interv.TareaID] = tar
+			}
 		}
+		DiasTrabajo[i].Horas = float64(DiasTrabajo[i].Segundos) / 60 / 60
 	}
 
 	data := map[string]any{
-		"Titulo":           "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
-		"Persona":          Persona,
-		"Proyecto":         Proyecto,
-		"Historias":        Historias,
-		"TareasEnCurso":    TareasEnCurso,
-		"PersonaCosto":     PersonaCosto,
-		"DiasTrabajo":      DiasTrabajo,
-		"MapaDiasSegundos": MapaDiasSegundos,
+		"Titulo":        "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
+		"Persona":       Persona,
+		"Proyecto":      Proyecto,
+		"Historias":     Historias,
+		"TareasEnCurso": TareasEnCurso,
+		"PersonaCosto":  PersonaCosto,
+
+		"DiasTrabajoMapHoras": DiasTrabajoMapHoras,
+		"DiasTrabajo":         DiasTrabajo,
 	}
 	return c.RenderOk("persona", data)
 }

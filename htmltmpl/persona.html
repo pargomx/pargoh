@@ -143,10 +143,36 @@
 		new Chart(document.getElementById('chartDiasTrabajo'), {
 			type: 'bar',
 			data: {
-				labels: [{{ range $k, $v := .MapaDiasSegundos }}'{{ $k }}',{{ end }}],
+				labels: [{{ range .DiasTrabajo }}'{{ .Fecha }}',{{ end }}],
 				datasets: [{
 					label: 'Horas',
-					data: [{{ range $k, $v := .MapaDiasSegundos }}{{ $v }},{{ end }}],
+					data: [{{ range .DiasTrabajo }}{{ .Horas }},{{ end }}],
+				}]
+			},
+		});
+	</script>
+	{{ end }}
+
+	<!--? DIAS DE TRABAJO OLD -->
+	{{ if .DiasTrabajoMapHoras -}}
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
+	<p>
+		{{ with .PersonaCosto -}}
+		Estimado total: {{ .TiempoEstimado }} <br>
+		Invertido total: {{ .TiempoReal }}
+		{{ end }}
+	</p>
+	<div class="p-4 mb-4">
+		<canvas id="chartIntervalos"></canvas>
+	</div>
+	<script>
+		new Chart(document.getElementById('chartIntervalos'), {
+			type: 'bar',
+			data: {
+				labels: [{{ range $k, $v := .DiasTrabajoMapHoras }}'{{ $k }}',{{ end }}],
+				datasets: [{
+					label: 'Horas',
+					data: [{{ range $k, $v := .DiasTrabajoMapHoras }}{{ $v }},{{ end }}],
 				}]
 			},
 		});

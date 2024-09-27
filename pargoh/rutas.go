@@ -119,7 +119,7 @@ func main() {
 	s.GET("/proyectos", s.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
 	s.GET("/personas/{persona_id}", s.getPersona)
-	s.GET("/personas/{persona_id}/costo", s.getPersonaCosto)
+	s.GET("/personas/{persona_id}/costo", s.getMétricas)
 	s.GET("/historias/{historia_id}", s.getHistoria)
 
 	s.POS("/proyectos", s.postProyecto)
