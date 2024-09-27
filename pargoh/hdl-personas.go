@@ -25,7 +25,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":        "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
+		"Titulo":        Persona.Nombre + " - " + Proyecto.Titulo,
 		"Persona":       Persona,
 		"Proyecto":      Proyecto,
 		"Historias":     Historias,
@@ -108,7 +108,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	}
 
 	data := map[string]any{
-		"Titulo":        "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
+		"Titulo":        Persona.Nombre + " - " + Proyecto.Titulo,
 		"Persona":       Persona,
 		"Proyecto":      Proyecto,
 		"Historias":     Historias,

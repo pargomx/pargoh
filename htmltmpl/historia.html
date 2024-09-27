@@ -90,7 +90,6 @@
 			placeholder="Hacer algo de valor..."
 			rows="1"
 			enterkeyhint="done"
-			autofocus
 			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
 			{{- .Historia.Titulo -}}
 		</textarea>
@@ -130,11 +129,6 @@
 					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
 					hx-target="main" hx-select="main" hx-swap="outerHTML"
 					name="texto"
-					onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
-					onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
-					onblur="if (this.hasAttribute('readonly')){ return }; this.setAttribute('readonly', true);"
-					onchange="this.blur();"
-					readonly
 					rows="1"
 					enterkeyhint="done"
 					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
@@ -405,11 +399,6 @@
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				name="texto"
-				onclick="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
-				onfocus="if (!this.hasAttribute('readonly')){ return }; this.removeAttribute('readonly');"
-				onblur="if (this.hasAttribute('readonly')){ return }; this.setAttribute('readonly', true);"
-				onchange="this.blur();"
-				readonly
 				rows="1"
 				enterkeyhint="done"
 				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
@@ -421,7 +410,7 @@
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				hx-confirm="¿Eliminar regla? {{ .Texto }}"
 				title="Quitar regla"
-				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 hover:text-red-600">
+				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
 				<i class="fa-solid fa-trash"></i>
 			</button>
 		</li>
@@ -522,29 +511,29 @@
 				</i>
 				{{- end }}
 			</p>
-			<div class="items-start hidden gap-2 transition-opacity opacity-0 md:flex group-hover:opacity-80">
+			<div class="items-start hidden gap-2 md:flex">
 				{{ if .NoIniciada -}}
 				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .EnCurso -}}
 				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-pause"></i>
 				</button>
 				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-square-check"></i>
 				</button>
 				{{ else if .EnPausa -}}
 				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .Finalizada -}}
 				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-70 hover:opacity-100">
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ end }}
@@ -764,8 +753,6 @@
 		contenido.setAttribute("hx-get", "/tareas/" + tareaID)
 		htmx.process(contenido)
 		contenido.dispatchEvent(new Event("cargarIntervalos"))
-		// htmx.trigger(dialog, "cargarIntervalos")
-		console.log(`showIntervalos(${tareaID})`)
 	}
 </script>
 
