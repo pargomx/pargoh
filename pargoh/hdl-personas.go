@@ -59,13 +59,27 @@ func (s *servidor) getPersonaCosto(c *gecko.Context) error {
 		Persona:   *Persona,
 		Historias: HistoriasCosto,
 	}
+	DiasTrabajo, err := s.repo.ListIntervalosEnDias()
+	if err != nil {
+		return err
+	}
+	MapaDiasSegundos := make(map[string]float64)
+	for _, dia := range DiasTrabajo {
+		MapaDiasSegundos[dia.Fecha] += float64(dia.Segundos()) / 60 / 60
+		if MapaDiasSegundos[dia.Fecha] > 24 {
+			MapaDiasSegundos[dia.Fecha] = 20
+		}
+	}
+
 	data := map[string]any{
-		"Titulo":        "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
-		"Persona":       Persona,
-		"Proyecto":      Proyecto,
-		"Historias":     Historias,
-		"TareasEnCurso": TareasEnCurso,
-		"PersonaCosto":  PersonaCosto,
+		"Titulo":           "👤 " + Persona.Nombre + " - " + Proyecto.Titulo,
+		"Persona":          Persona,
+		"Proyecto":         Proyecto,
+		"Historias":        Historias,
+		"TareasEnCurso":    TareasEnCurso,
+		"PersonaCosto":     PersonaCosto,
+		"DiasTrabajo":      DiasTrabajo,
+		"MapaDiasSegundos": MapaDiasSegundos,
 	}
 	return c.RenderOk("persona", data)
 }

@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
 		<img
@@ -125,17 +127,40 @@
 	</details> -->
 	{{ end }}
 
-	{{ with .PersonaCosto -}}
-	
-	<h3 class="mb-4 text-xl text-cyan-600">Avance del proyecto</h3>
-	<div class="p-4 mb-4 max-w-96">
-		<canvas id="myChart"></canvas>
+	<!--? DIAS DE TRABAJO -->
+	{{ if .DiasTrabajo -}}
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
+	<p>
+		{{ with .PersonaCosto -}}
+		Estimado total: {{ .TiempoEstimado }} <br>
+		Invertido total: {{ .TiempoReal }}
+		{{ end }}
+	</p>
+	<div class="p-4 mb-4">
+		<canvas id="chartDiasTrabajo"></canvas>
 	</div>
-
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script>
-		const ctx = document.getElementById('myChart');
-		new Chart(ctx, {
+		new Chart(document.getElementById('chartDiasTrabajo'), {
+			type: 'bar',
+			data: {
+				labels: [{{ range $k, $v := .MapaDiasSegundos }}'{{ $k }}',{{ end }}],
+				datasets: [{
+					label: 'Horas',
+					data: [{{ range $k, $v := .MapaDiasSegundos }}{{ $v }},{{ end }}],
+				}]
+			},
+		});
+	</script>
+	{{ end }}
+
+	<!--? PROGRESO EN EL PROYECTO -->
+	{{ with .PersonaCosto -}}
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Avance del proyecto</h3>
+	<div class="p-4 mb-4 max-w-96">
+		<canvas id="chartHistoriasCompletadas"></canvas>
+	</div>
+	<script>
+		new Chart(document.getElementById('chartHistoriasCompletadas'), {
 			type: 'doughnut',
 			data: {
 				labels: ['Historias entregadas', 'Historias pendientes',],
@@ -147,11 +172,7 @@
 		});
 	</script>
 
-	<h3 class="mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
-	<p>
-		Estimado: {{ .TiempoEstimado }} <br>
-		Real: {{ .TiempoReal }}
-	</p>
+	<h3 class="mb-4 text-xl text-cyan-600">Todas las historias</h3>
 	<table>
         <thead>
             <tr>
