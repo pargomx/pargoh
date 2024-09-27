@@ -113,6 +113,9 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 // ================================================================ //
 // ========== Intervalos ========================================== //
 
+// TODO: revisar error y quizá hacer configurable.
+var locationMexicoCity, _ = time.LoadLocation("America/Mexico_City")
+
 func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 	intervalos, err := repo.ListIntervalosByTareaID(tar.TareaID)
 	if err != nil {
@@ -157,7 +160,7 @@ func IniciarTarea(tareaID int, repo Repo) (int, error) {
 	// Iniciar intervalo.
 	interv := ust.Intervalo{
 		TareaID: tareaID,
-		Inicio:  time.Now().UTC().Format("2006-01-02 15:04:05"),
+		Inicio:  time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05"),
 	}
 	err = repo.InsertIntervalo(interv)
 	if err != nil {
@@ -197,7 +200,7 @@ func PausarTarea(tareaID int, repo Repo) (int, error) {
 	}
 
 	// Finalizar intervalo.
-	interv.Fin = time.Now().UTC().Format("2006-01-02 15:04:05")
+	interv.Fin = time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05")
 	err = repo.UpdateIntervalo(*interv)
 	if err != nil {
 		return 0, op.Err(err)
@@ -240,7 +243,7 @@ func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 	}
 
 	// Finalizar intervalo.
-	interv.Fin = time.Now().UTC().Format("2006-01-02 15:04:05")
+	interv.Fin = time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05")
 	err = repo.UpdateIntervalo(*interv)
 	if err != nil {
 		return 0, op.Err(err)
