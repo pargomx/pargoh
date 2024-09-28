@@ -9,6 +9,8 @@ type Historia struct {
 	Objetivo   string // `historias.objetivo`
 	Prioridad  int    // `historias.prioridad`
 	Completada bool   // `historias.completada`
+	PersonaID  int    // `historias.persona_id`  Para índice
+	ProyectoID string // `historias.proyecto_id`  Para índice
 }
 
 var (

@@ -192,6 +192,7 @@ func main() {
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
 
 	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
+	s.GET("/materializar-historias", s.materializarHistorias)
 
 	s.GET("/intervalos", s.getIntervalos)
 

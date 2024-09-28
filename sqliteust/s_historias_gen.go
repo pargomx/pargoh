@@ -21,9 +21,9 @@ func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
 	}
 	_, err := s.db.Exec("INSERT INTO historias "+
-		"(historia_id, titulo, objetivo, prioridad, completada) "+
-		"VALUES (?, ?, ?, ?, ?) ",
-		his.HistoriaID, his.Titulo, his.Objetivo, his.Prioridad, his.Completada,
+		"(historia_id, titulo, objetivo, prioridad, completada, persona_id, proyecto_id) "+
+		"VALUES (?, ?, ?, ?, ?, ?, ?) ",
+		his.HistoriaID, his.Titulo, his.Objetivo, his.Prioridad, his.Completada, his.PersonaID, his.ProyectoID,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
@@ -45,9 +45,9 @@ func (s *Repositorio) UpdateHistoria(his ust.Historia) error {
 	}
 	_, err := s.db.Exec(
 		"UPDATE historias SET "+
-			"historia_id=?, titulo=?, objetivo=?, prioridad=?, completada=? "+
+			"historia_id=?, titulo=?, objetivo=?, prioridad=?, completada=?, persona_id=?, proyecto_id=? "+
 			"WHERE historia_id = ?",
-		his.HistoriaID, his.Titulo, his.Objetivo, his.Prioridad, his.Completada,
+		his.HistoriaID, his.Titulo, his.Objetivo, his.Prioridad, his.Completada, his.PersonaID, his.ProyectoID,
 		his.HistoriaID,
 	)
 	if err != nil {
@@ -113,8 +113,10 @@ func (s *Repositorio) DeleteHistoria(HistoriaID int) error {
 //	titulo,
 //	objetivo,
 //	prioridad,
-//	completada
-const columnasHistoria string = "historia_id, titulo, objetivo, prioridad, completada"
+//	completada,
+//	persona_id,
+//	proyecto_id
+const columnasHistoria string = "historia_id, titulo, objetivo, prioridad, completada, persona_id, proyecto_id"
 
 // Origen de los datos de ust.Historia
 //
@@ -127,7 +129,7 @@ const fromHistoria string = "FROM historias "
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowHistoria(row *sql.Row, his *ust.Historia) error {
 	err := row.Scan(
-		&his.HistoriaID, &his.Titulo, &his.Objetivo, &his.Prioridad, &his.Completada,
+		&his.HistoriaID, &his.Titulo, &his.Objetivo, &his.Prioridad, &his.Completada, &his.PersonaID, &his.ProyectoID,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -173,7 +175,7 @@ func (s *Repositorio) scanRowsHistoria(rows *sql.Rows, op string) ([]ust.Histori
 	for rows.Next() {
 		his := ust.Historia{}
 		err := rows.Scan(
-			&his.HistoriaID, &his.Titulo, &his.Objetivo, &his.Prioridad, &his.Completada,
+			&his.HistoriaID, &his.Titulo, &his.Objetivo, &his.Prioridad, &his.Completada, &his.PersonaID, &his.ProyectoID,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
