@@ -178,19 +178,19 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 // ================================================================ //
 
 func (d DiaTrabajo) Horas() float64 {
-	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+	return math.Round(float64(d.Segundos)/3600*100) / 100
 }
 func (d DiaTrabajoPorProyecto) Horas() float64 {
-	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+	return math.Round(float64(d.Segundos)/3600*100) / 100
 }
 func (d DiaTrabajoPorHistoria) Horas() float64 {
-	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+	return math.Round(float64(d.Segundos)/3600*100) / 100
 }
 func (d DiaTrabajoPorTarea) Horas() float64 {
-	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+	return math.Round(float64(d.Segundos)/3600*100) / 100
 }
 func (d ProyectoTime) Horas() float64 {
-	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+	return math.Round(float64(d.Segundos)/3600*100) / 100
 }
 
 // ================================================================ //
