@@ -113,7 +113,7 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 // ================================================================ //
 // ========== Intervalos ========================================== //
 
-// TODO: revisar error y quizá hacer configurable.
+// TODO: revisar error y quizá hacer configurable. También en pargoh/hdl-metricas.go.
 var locationMexicoCity, _ = time.LoadLocation("America/Mexico_City")
 
 func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {

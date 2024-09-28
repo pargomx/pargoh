@@ -92,16 +92,19 @@ func (h *HistoriaCosto) TiempoReal() string {
 // ================================================================ //
 // ========== INTERVALOS ========================================== //
 
+// TODO: revisar error y quizá hacer configurable. También en dhistorias/e_tarea-w.go.
+var locationMexicoCity, _ = time.LoadLocation("America/Mexico_City")
+
 func (itv Intervalo) Segundos() int {
-	inicio, err := time.Parse("2006-01-02 15:04:05", itv.Inicio) // UTC
+	inicio, err := time.ParseInLocation("2006-01-02 15:04:05", itv.Inicio, locationMexicoCity)
 	if err != nil {
 		gko.Err(err).Op("IntervaloEnDia.ParseInicio").Ctx("string", itv.Inicio).Log()
 	}
 	var fin time.Time
 	if itv.Fin == "" {
-		fin = time.Now()
+		fin = time.Now().In(locationMexicoCity)
 	} else {
-		fin, err = time.Parse("2006-01-02 15:04:05", itv.Fin) // UTC
+		fin, err = time.ParseInLocation("2006-01-02 15:04:05", itv.Fin, locationMexicoCity)
 		if err != nil {
 			gko.Err(err).Op("IntervaloEnDia.ParseFin").Ctx("string", itv.Fin).Log()
 		}
@@ -110,15 +113,15 @@ func (itv Intervalo) Segundos() int {
 }
 
 func (itv IntervaloEnDia) Segundos() int {
-	inicio, err := time.Parse("2006-01-02 15:04:05", itv.Inicio) // UTC
+	inicio, err := time.ParseInLocation("2006-01-02 15:04:05", itv.Inicio, locationMexicoCity)
 	if err != nil {
 		gko.Err(err).Op("IntervaloEnDia.ParseInicio").Ctx("string", itv.Inicio).Log()
 	}
 	var fin time.Time
 	if itv.Fin == "" {
-		fin = time.Now()
+		fin = time.Now().In(locationMexicoCity)
 	} else {
-		fin, err = time.Parse("2006-01-02 15:04:05", itv.Fin) // UTC
+		fin, err = time.ParseInLocation("2006-01-02 15:04:05", itv.Fin, locationMexicoCity)
 		if err != nil {
 			gko.Err(err).Op("IntervaloEnDia.ParseFin").Ctx("string", itv.Fin).Log()
 		}
