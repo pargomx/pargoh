@@ -12,25 +12,14 @@
 		{{ end }}
 	</p>
 	<div class="p-4 mb-4">
-		<canvas id="chartDiasTrabajo"></canvas>
+		<canvas id="chartDiasTrabajoOld"></canvas>
 	</div>
 	<script>
-		new Chart(document.getElementById('chartDiasTrabajo'), {
+		new Chart(document.getElementById('chartDiasTrabajoOld'), {
 			type: 'bar',
-			options: {
-				scales: {
-					y: {
-						stacked: true
-					}
-				}
-			},
 			data: {
 				labels: [{{ range .DiasTrabajo }}'{{ .Fecha }}',{{ end }}],
 				datasets: [
-					{
-						label: 'Horas',
-						data: [{{ range .DiasTrabajo }}{{ .Horas }},{{ end }}],
-					},
 					{
 						label: 'Horas2',
 						data: [{{ range .DiasTrabajo }}{{ .Horas }},{{ end }}],
@@ -65,6 +54,92 @@
 			},
 		});
 	</script>
+	{{ end }}
+
+
+	<!--? DIAS DE TRABAJO NUEVO -->
+	{{ if .DiasTrabajo -}}
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
+	<p>
+		{{ with .PersonaCosto -}}
+		Estimado total: {{ .TiempoEstimado }} <br>
+		Invertido total: {{ .TiempoReal }}
+		{{ end }}
+	</p>
+	<div class="p-4 mb-4">
+		<canvas id="chartDiasTrabajo"></canvas>
+	</div>
+	<script>
+		new Chart(document.getElementById('chartDiasTrabajo'), {
+			type: 'bar',
+			options: {
+				scales: {
+					x: {
+						stacked: true,
+					},
+					y: {
+						stacked: true
+					}
+				}
+			},
+			data: {
+				labels: [{{ range .DiasTrabajo }}{{ if .Segundos }}'{{ .Fecha }}',{{ end }}{{ end }}],
+				datasets: [
+					{{ range $proyectoID, $v := $.Proyectos -}}
+					{
+						label: '{{ .Proyecto.Titulo }} {{ .Horas }}h',
+						data: [{{ range $.DiasTrabajo }}{{ if .Segundos }}{{ range .Proyectos }}{{ $horas := 0.0 }}{{ if eq $proyectoID .Proyecto.ProyectoID }}{{ $horas = .Horas }}{{ end }}{{ $horas }},{{ end }}{{ end }}{{ end }}],
+					},
+					{{ end }}
+				]
+			},
+		});
+	</script>
+	{{ end }}
+
+
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Días de trabajo</h3>
+	{{ range .DiasTrabajo -}}
+	{{ if .Segundos -}}
+	<div class="p-2 mb-2">
+		<h3 class="">
+			{{ .Fecha }}
+			<em class="inline-block w-16 px-2 py-1 text-sm font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .Horas }} h</em>
+		</h3>
+		{{ range .Proyectos -}}
+		<div class="pl-4">
+			<h4 class="py-1 text-xl font-bold text-cyan-600">
+				{{ .Proyecto.Titulo }}
+				<em class="inline-block w-16 px-2 py-1 text-sm font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .Horas }} h</em>
+			</h4>
+			{{ range .Historias -}}
+			<div>
+				<p class="py-1 pt-2 text-base font-bold">
+					<em class="inline-block w-16 px-2 py-1 text-sm font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .Horas }} h</em>
+					<a
+						href="/historias/{{ .Historia.HistoriaID }}"
+						class="transition-colors hover:text-cyan-400">
+						Historia: {{ .Historia.Titulo }}
+					</a>
+				</p>
+				{{ range .Tareas -}}
+				<div>
+					<p class="py-1 pl-16 text-sm opacity-75">
+						<em class="inline-block w-16 px-2 py-0 text-sm font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .Horas }} h</em>
+						<a
+							href="/historias/{{ .Tarea.HistoriaID }}#{{ .Tarea.TareaID }}"
+							class="transition-colors hover:text-cyan-400">
+							Tarea: {{ .Tarea.Descripcion }}
+						</a>
+					</p>
+				</div>
+				{{ end }}
+			</div>
+			{{ end }}
+		</div>
+		{{ end }}
+	</div>
+	{{ end }}
 	{{ end }}
 
 </main>

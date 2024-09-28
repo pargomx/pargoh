@@ -1,15 +1,17 @@
 package main
 
 import (
+	"math"
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 type DiaTrabajo struct {
 	Fecha     string
 	Segundos  int
-	Proyectos map[int]DiaTrabajoPorProyecto
+	Proyectos map[string]DiaTrabajoPorProyecto
 }
 
 type DiaTrabajoPorProyecto struct {
@@ -28,6 +30,12 @@ type DiaTrabajoPorTarea struct {
 	Tarea      ust.Tarea
 	Segundos   int
 	Intervalos []ust.IntervaloEnDia
+}
+
+type ProyectoTime struct {
+	ProyectoID string
+	Segundos   int
+	Proyecto   ust.Proyecto
 }
 
 func (s *servidor) getMétricas(c *gecko.Context) error {
@@ -70,47 +78,84 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		Dias[i].Fecha = dia
 
 		for _, itv := range IntervalosMapDia[dia] {
-			// Conocer a quién pertenece.
 
-			// tarea, ok := TareasMap[itv.TareaID]
-			// if !ok {
-			// 	return gko.ErrNoEncontrado().Msgf("Tarea %d no encontrada", itv.TareaID)
-			// }
-			// historia, ok := HistoriasMap[tarea.HistoriaID]
-			// if !ok {
-			// 	return gko.ErrNoEncontrado().Msgf("Historia %d no encontrada", tarea.HistoriaID)
-			// }
+			// Conocer a quién pertenece.
+			tarea, ok := TareasMap[itv.TareaID]
+			if !ok {
+				return gko.ErrNoEncontrado().Msgf("Tarea %d no encontrada", itv.TareaID)
+			}
+			historia, ok := HistoriasMap[tarea.HistoriaID]
+			if !ok {
+				return gko.ErrNoEncontrado().Msgf("Historia %d no encontrada", tarea.HistoriaID)
+			}
 
 			Dias[i].Segundos += itv.Segundos()
 
 			if Dias[i].Proyectos == nil {
-				Dias[i].Proyectos = make(map[int]DiaTrabajoPorProyecto)
+				Dias[i].Proyectos = make(map[string]DiaTrabajoPorProyecto)
+			}
+			pro, ok := Dias[i].Proyectos[historia.ProyectoID]
+			if !ok {
+				proyecto, err := s.repo.GetProyecto(historia.ProyectoID)
+				if err != nil {
+					return err
+				}
+				pro = DiaTrabajoPorProyecto{
+					Proyecto: *proyecto,
+					Segundos: itv.Segundos(),
+				}
+			} else {
+				pro.Segundos += itv.Segundos()
 			}
 
-			// if pro, ok := Dias[i].Proyectos[itv.ProyectoID]; !ok {
-			// 	proyecto, err := s.repo.GetProyecto(itv.ProyectoID)
-			// 	if err != nil {
-			// 		return err
-			// 	}
-			// 	pro.Proyecto = *proyecto
-			// 	pro.Segundos = itv.Segundos()
-			// 	Dias[i].Proyectos[itv.ProyectoID] = pro
-			// } else {
-			// 	pro.Segundos += itv.Segundos()
-			// 	Dias[i].Proyectos[itv.ProyectoID] = pro
-			// }
+			if pro.Historias == nil {
+				pro.Historias = make(map[int]DiaTrabajoPorHistoria)
+			}
+			his, ok := pro.Historias[historia.HistoriaID]
+			if !ok {
+				his = DiaTrabajoPorHistoria{
+					Historia: historia,
+					Segundos: itv.Segundos(),
+				}
+			} else {
+				his.Segundos += itv.Segundos()
+			}
 
-			// if tar, ok := Dias[i].Tareas[itv.TareaID]; !ok {
-			// 	tarea, err := s.repo.GetTarea(itv.TareaID)
-			// 	if err != nil {
-			// 		return err
-			// 	}
-			// 	tarea.TiempoReal = itv.Segundos()
-			// 	Dias[i].Tareas[itv.TareaID] = *tarea
-			// } else {
-			// 	tar.TiempoReal += itv.Segundos()
-			// 	Dias[i].Tareas[itv.TareaID] = tar
-			// }
+			if his.Tareas == nil {
+				his.Tareas = make(map[int]DiaTrabajoPorTarea)
+			}
+			tar, ok := his.Tareas[itv.TareaID]
+			if !ok {
+				tar = DiaTrabajoPorTarea{
+					Tarea:    tarea,
+					Segundos: itv.Segundos(),
+				}
+				tarea.TiempoReal = itv.Segundos() // reset para solo este día
+			} else {
+				tar.Segundos += itv.Segundos()
+				tarea.TiempoReal += itv.Segundos()
+			}
+
+			tar.Intervalos = append(tar.Intervalos, itv)
+			his.Tareas[itv.TareaID] = tar
+			pro.Historias[historia.HistoriaID] = his
+			Dias[i].Proyectos[historia.ProyectoID] = pro
+		}
+	}
+
+	Proyectos := map[string]ProyectoTime{}
+	for _, dia := range Dias {
+		for _, p := range dia.Proyectos {
+			pry, ok := Proyectos[p.Proyecto.ProyectoID]
+			if !ok {
+				Proyectos[p.Proyecto.ProyectoID] = ProyectoTime{
+					ProyectoID: p.Proyecto.ProyectoID,
+					Proyecto:   p.Proyecto,
+				}
+			} else {
+				pry.Segundos += p.Segundos
+				Proyectos[p.Proyecto.ProyectoID] = pry
+			}
 		}
 	}
 
@@ -125,6 +170,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 
 		"DiasTrabajoMapHoras": DiasTrabajoMapHoras,
 		"DiasTrabajo":         Dias,
+		"Proyectos":           Proyectos,
 	}
 	return c.RenderOk("metricas", data)
 }
@@ -132,7 +178,19 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 // ================================================================ //
 
 func (d DiaTrabajo) Horas() float64 {
-	return float64(d.Segundos) / 60 / 60
+	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+}
+func (d DiaTrabajoPorProyecto) Horas() float64 {
+	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+}
+func (d DiaTrabajoPorHistoria) Horas() float64 {
+	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+}
+func (d DiaTrabajoPorTarea) Horas() float64 {
+	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
+}
+func (d ProyectoTime) Horas() float64 {
+	return math.Trunc(float64(d.Segundos)/60/60*100) / 100
 }
 
 // ================================================================ //
