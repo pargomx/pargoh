@@ -34,7 +34,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	return c.RenderOk("persona", data)
 }
 
-func (s *servidor) getMétricas(c *gecko.Context) error {
+func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
