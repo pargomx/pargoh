@@ -89,7 +89,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 				return gko.ErrNoEncontrado().Msgf("Historia %d no encontrada", tarea.HistoriaID)
 			}
 
-			Dias[i].Segundos += itv.Segundos()
+			Dias[i].Segundos += itv.Segundos
 
 			if Dias[i].Proyectos == nil {
 				Dias[i].Proyectos = make(map[string]DiaTrabajoPorProyecto)
@@ -102,10 +102,10 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 				}
 				pro = DiaTrabajoPorProyecto{
 					Proyecto: *proyecto,
-					Segundos: itv.Segundos(),
+					Segundos: itv.Segundos,
 				}
 			} else {
-				pro.Segundos += itv.Segundos()
+				pro.Segundos += itv.Segundos
 			}
 
 			if pro.Historias == nil {
@@ -115,10 +115,10 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			if !ok {
 				his = DiaTrabajoPorHistoria{
 					Historia: historia,
-					Segundos: itv.Segundos(),
+					Segundos: itv.Segundos,
 				}
 			} else {
-				his.Segundos += itv.Segundos()
+				his.Segundos += itv.Segundos
 			}
 
 			if his.Tareas == nil {
@@ -128,12 +128,12 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			if !ok {
 				tar = DiaTrabajoPorTarea{
 					Tarea:    tarea,
-					Segundos: itv.Segundos(),
+					Segundos: itv.Segundos,
 				}
-				tarea.TiempoReal = itv.Segundos() // reset para solo este día
+				tarea.TiempoReal = itv.Segundos // reset para solo este día
 			} else {
-				tar.Segundos += itv.Segundos()
-				tarea.TiempoReal += itv.Segundos()
+				tar.Segundos += itv.Segundos
+				tarea.TiempoReal += itv.Segundos
 			}
 
 			tar.Intervalos = append(tar.Intervalos, itv)
@@ -151,6 +151,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 				Proyectos[p.Proyecto.ProyectoID] = ProyectoTime{
 					ProyectoID: p.Proyecto.ProyectoID,
 					Proyecto:   p.Proyecto,
+					Segundos:   p.Segundos,
 				}
 			} else {
 				pry.Segundos += p.Segundos
@@ -162,7 +163,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	// Viejo recuento de horas por día.
 	DiasTrabajoMapHoras := make(map[string]float64)
 	for _, dia := range Intervalos {
-		DiasTrabajoMapHoras[dia.Fecha] += float64(dia.Segundos()) / 60 / 60
+		DiasTrabajoMapHoras[dia.Fecha] += float64(dia.Segundos) / 60 / 60
 	}
 
 	data := map[string]any{
@@ -191,6 +192,22 @@ func (d DiaTrabajoPorTarea) Horas() float64 {
 }
 func (d ProyectoTime) Horas() float64 {
 	return math.Round(float64(d.Segundos)/3600*100) / 100
+}
+
+func (d DiaTrabajo) TiempoString() string {
+	return ust.SegundosToString(d.Segundos)
+}
+func (d DiaTrabajoPorProyecto) TiempoString() string {
+	return ust.SegundosToString(d.Segundos)
+}
+func (d DiaTrabajoPorHistoria) TiempoString() string {
+	return ust.SegundosToString(d.Segundos)
+}
+func (d DiaTrabajoPorTarea) TiempoString() string {
+	return ust.SegundosToString(d.Segundos)
+}
+func (d ProyectoTime) TiempoString() string {
+	return ust.SegundosToString(d.Segundos)
 }
 
 // ================================================================ //

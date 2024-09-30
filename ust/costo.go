@@ -23,11 +23,15 @@ func (p PersonaCosto) TiempoEstimado() string {
 }
 
 func (p PersonaCosto) TiempoReal() string {
+	return SegundosToString(p.Segundos())
+}
+
+func (p PersonaCosto) Segundos() int {
 	suma := 0
 	for _, h := range p.Historias {
 		suma += h.SegundosReal
 	}
-	return SegundosToString(suma)
+	return suma
 }
 
 func (p PersonaCosto) HistCompletadas() (res []HistoriaCosto) {
@@ -112,7 +116,7 @@ func (itv Intervalo) Segundos() int {
 	return int(fin.Sub(inicio).Seconds())
 }
 
-func (itv IntervaloEnDia) Segundos() int {
+func (itv IntervaloEnDia) Segundos2() int {
 	inicio, err := time.ParseInLocation("2006-01-02 15:04:05", itv.Inicio, locationMexicoCity)
 	if err != nil {
 		gko.Err(err).Op("IntervaloEnDia.ParseInicio").Ctx("string", itv.Inicio).Log()

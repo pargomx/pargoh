@@ -66,7 +66,7 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	}
 	DiasTrabajoMapHoras := make(map[string]float64)
 	for _, dia := range Intervalos {
-		DiasTrabajoMapHoras[dia.Fecha] += float64(dia.Segundos()) / 60 / 60
+		DiasTrabajoMapHoras[dia.Fecha] += float64(dia.Segundos) / 60 / 60
 	}
 
 	IntervalosMap := make(map[string][]ust.IntervaloEnDia)
@@ -88,7 +88,7 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	for i, dia := range Dias {
 		DiasTrabajo[i].Fecha = dia
 		for _, interv := range IntervalosMap[dia] {
-			DiasTrabajo[i].Segundos += interv.Segundos()
+			DiasTrabajo[i].Segundos += interv.Segundos
 			if DiasTrabajo[i].Tareas == nil {
 				DiasTrabajo[i].Tareas = make(map[int]ust.Tarea)
 			}
@@ -97,10 +97,10 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 				if err != nil {
 					return err
 				}
-				tarea.TiempoReal = interv.Segundos()
+				tarea.TiempoReal = interv.Segundos
 				DiasTrabajo[i].Tareas[interv.TareaID] = *tarea
 			} else {
-				tar.TiempoReal += interv.Segundos()
+				tar.TiempoReal += interv.Segundos
 				DiasTrabajo[i].Tareas[interv.TareaID] = tar
 			}
 		}

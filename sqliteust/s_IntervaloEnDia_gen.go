@@ -15,12 +15,15 @@ import (
 // en conjunto con scanRow o scanRows, ya que las columnas coinciden
 // con los campos escaneados.
 //
+//	coalesce(his.proyecto_id, ''),
+//	coalesce(his.persona_id, 0),
 //	coalesce(his.historia_id, 0),
 //	interv.tarea_id,
-//	coalesce(date(interv.inicio,'-5 hours'), '') AS fecha,
 //	interv.inicio,
-//	interv.fin
-const columnasIntervaloEnDia string = "coalesce(his.historia_id, 0), interv.tarea_id, coalesce(date(interv.inicio,'-5 hours'), '') AS fecha, interv.inicio, interv.fin"
+//	interv.fin,
+//	coalesce(date(interv.inicio,'-5 hours'), '') AS fecha,
+//	coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos
+const columnasIntervaloEnDia string = "coalesce(his.proyecto_id, ''), coalesce(his.persona_id, 0), coalesce(his.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(date(interv.inicio,'-5 hours'), '') AS fecha, coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos"
 
 // Origen de los datos de ust.IntervaloEnDia
 //
@@ -41,7 +44,7 @@ func (s *Repositorio) scanRowsIntervaloEnDia(rows *sql.Rows, op string) ([]ust.I
 	for rows.Next() {
 		intervd := ust.IntervaloEnDia{}
 		err := rows.Scan(
-			&intervd.HistoriaID, &intervd.TareaID, &intervd.Fecha, &intervd.Inicio, &intervd.Fin,
+			&intervd.ProyectoID, &intervd.PersonaID, &intervd.HistoriaID, &intervd.TareaID, &intervd.Inicio, &intervd.Fin, &intervd.Fecha, &intervd.Segundos,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)

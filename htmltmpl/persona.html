@@ -133,9 +133,14 @@
 	<p>
 		{{ with .PersonaCosto -}}
 		Estimado total: {{ .TiempoEstimado }} <br>
-		Invertido total: {{ .TiempoReal }}
+		Invertido total: {{ .TiempoReal }} ({{ .Segundos }}s)
 		{{ end }}
 	</p>
+
+	{{ range .PersonaCosto.Historias }}
+	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded">{{ .TiempoReal }} {{ .SegundosReal }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
+	{{ end }}
+	
 	<div class="p-4 mb-4">
 		<canvas id="chartDiasTrabajo"></canvas>
 	</div>
