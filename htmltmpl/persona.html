@@ -251,7 +251,7 @@
 	<div class="grid grid-cols-2 gap-1 text-sm">
 		<div class="col-span-2 text-xs opacity-50">Acciones</div>
 		<button type="button" onclick="tableroHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tablero</button>
-		<button type="button" onclick="moverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
+		<button type="button" onclick="showMoverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
 		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">❌ Eliminar</button>
 		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
 		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤩 Must</button>
@@ -268,16 +268,56 @@
 	<!-- Mensajes respuesta del servidor, utilizado para hacer trigger a reload -->
 </div>
 
+<dialog id="moverHistoria" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Mover historia
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</header>
+	<form class="flex flex-col gap-2 p-2">
+		<p class="mb-2 italic text-orange-400">Historia a mover</p>
+		<input type="hidden" name="historia_id" required>
+		<div
+			id="navTreeHistoria"
+			hx-get="/nav/pers/{{ .Persona.PersonaID }}"
+			hx-target="#navTreeHistoria" hx-swap="innerHTML"
+			hx-trigger="navTreeHistoriaShown"
+			class="flex flex-col gap-1 sm:w-96">
+			<!-- nav_tree -->
+		</div>
+		<button
+			hx-post="/mover/historia"
+			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			type="submit"
+			onclick="this.closest('dialog').close()"
+			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+			Mover
+		</button>
+	</form>
+</dialog>
+
 <!-- ======================================================== -->
 <script>
-	function tableroHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/tablero/${historiaID}`
+
+	function showMoverHistoria(historiaID, descripcion) {
+		historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
+		let mov = document.getElementById('moverHistoria');
+		mov.showModal();
+		mov.querySelector('input[name=historia_id]').value = historiaID;
+		mov.querySelector('p').innerText = descripcion;
+		document.getElementById('navTreeHistoria').dispatchEvent(new Event('navTreeHistoriaShown'));
 	}
 
-	function moverHistoria() {
+	function tableroHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}/mover`
+		window.location.href = `/historias/${historiaID}/tablero`
 	}
 
 	function priorizarHistoria(prioridad) {
