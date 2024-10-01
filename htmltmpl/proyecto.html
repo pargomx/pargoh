@@ -122,6 +122,21 @@
 		Agregar personaje <i class="fa-solid fa-plus"></i>
 	</button>
 	{{ end }}
+
+
+	{{ if .Historias -}}
+	<div class="">
+		{{ range .Historias -}}
+		<a href="/historias/{{ .HistoriaID }}" class="block">
+			{{ .Nivel }}.{{ .Posicion }}:
+			{{ .Titulo }}
+			<!-- PersonaID -->
+			<!-- Prioridad -->
+			<!-- Completada -->
+		</a>
+		{{ end }}
+	</div>
+	{{ end }}
 </main>
 
 <footer class="p-4 opacity-75">

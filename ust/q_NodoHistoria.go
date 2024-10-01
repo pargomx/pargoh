@@ -4,6 +4,10 @@ package ust
 type NodoHistoria struct {
 	//  `his.historia_id`
 	HistoriaID int
+	//  `his.proyecto_id`
+	ProyectoID string
+	//  `his.persona_id`
+	PersonaID int
 	//  `his.titulo`
 	Titulo string
 	//  `his.objetivo`

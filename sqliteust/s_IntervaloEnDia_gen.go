@@ -15,7 +15,7 @@ import (
 // en conjunto con scanRow o scanRows, ya que las columnas coinciden
 // con los campos escaneados.
 //
-//	coalesce(his.proyecto_id, ''),
+//	coalesce(his.proyecto_id, '') AS proyecto_id,
 //	coalesce(his.persona_id, 0),
 //	coalesce(his.historia_id, 0),
 //	interv.tarea_id,
@@ -23,7 +23,7 @@ import (
 //	interv.fin,
 //	coalesce(date(interv.inicio,'-5 hours'), '') AS fecha,
 //	coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos
-const columnasIntervaloEnDia string = "coalesce(his.proyecto_id, ''), coalesce(his.persona_id, 0), coalesce(his.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(date(interv.inicio,'-5 hours'), '') AS fecha, coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos"
+const columnasIntervaloEnDia string = "coalesce(his.proyecto_id, '') AS proyecto_id, coalesce(his.persona_id, 0), coalesce(his.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(date(interv.inicio,'-5 hours'), '') AS fecha, coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos"
 
 // Origen de los datos de ust.IntervaloEnDia
 //
@@ -61,6 +61,25 @@ func (s *Repositorio) ListIntervalosEnDias() ([]ust.IntervaloEnDia, error) {
 	const op string = "ListIntervalosEnDias"
 	rows, err := s.db.Query(
 		"SELECT " + columnasIntervaloEnDia + " " + fromIntervaloEnDia,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsIntervaloEnDia(rows, op)
+}
+
+//  ================================================================  //
+//  ========== LIST_BY PROYECTO_ID =================================  //
+
+func (s *Repositorio) ListIntervalosEnDiasByProyectoID(ProyectoID string) ([]ust.IntervaloEnDia, error) {
+	const op string = "ListIntervalosEnDiasByProyectoID"
+	if ProyectoID == "" {
+		return nil, gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("param_indefinido")
+	}
+	rows, err := s.db.Query(
+		"SELECT "+columnasIntervaloEnDia+" "+fromIntervaloEnDia+
+			"WHERE his.proyecto_id = ?",
+		ProyectoID,
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)

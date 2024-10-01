@@ -200,6 +200,25 @@ func (s *Repositorio) ListHistorias() ([]ust.Historia, error) {
 }
 
 //  ================================================================  //
+//  ========== LIST_BY PROYECTO_ID =================================  //
+
+func (s *Repositorio) ListHistoriasByProyectoID(ProyectoID string) ([]ust.Historia, error) {
+	const op string = "ListHistoriasByProyectoID"
+	if ProyectoID == "" {
+		return nil, gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("param_indefinido")
+	}
+	rows, err := s.db.Query(
+		"SELECT "+columnasHistoria+" "+fromHistoria+
+			"WHERE proyecto_id = ?",
+		ProyectoID,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsHistoria(rows, op)
+}
+
+//  ================================================================  //
 //  ========== LIST BYPADREID ======================================  //
 
 func (s *Repositorio) ListHistoriasByPadreID(nodoID int) ([]ust.Historia, error) {

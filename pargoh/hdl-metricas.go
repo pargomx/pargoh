@@ -211,3 +211,37 @@ func (d ProyectoTime) TiempoString() string {
 }
 
 // ================================================================ //
+
+func (s *servidor) getMetricasProyecto(c *gecko.Context) error {
+	Proyecto, err := s.repo.GetProyecto(c.PathVal("proyecto_id"))
+	if err != nil {
+		return err
+	}
+	Personas, err := s.repo.ListNodosPersonas(Proyecto.ProyectoID)
+	if err != nil {
+		return err
+	}
+	Proyectos, err := s.repo.ListProyectos()
+	if err != nil {
+		return err
+	}
+	TareasEnCurso, err := s.repo.ListTareasEnCurso()
+	if err != nil {
+		return err
+	}
+
+	Historias, err := s.repo.ListNodoHistoriasByProyectoID(Proyecto.ProyectoID)
+	if err != nil {
+		return err
+	}
+
+	data := map[string]any{
+		"Titulo":        Proyecto.Titulo,
+		"Proyecto":      Proyecto,
+		"Personas":      Personas,
+		"Proyectos":     Proyectos, // Para cambiar de proyecto a una persona.
+		"TareasEnCurso": TareasEnCurso,
+		"Historias":     Historias,
+	}
+	return c.RenderOk("proyecto", data)
+}

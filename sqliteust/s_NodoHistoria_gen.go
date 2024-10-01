@@ -17,6 +17,8 @@ import (
 // con los campos escaneados.
 //
 //	his.historia_id,
+//	his.proyecto_id AS proyecto_id,
+//	his.persona_id AS persona_id,
 //	his.titulo,
 //	his.objetivo,
 //	his.prioridad,
@@ -27,7 +29,7 @@ import (
 //	coalesce(nod.posicion, 0),
 //	coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias,
 //	coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas
-const columnasNodoHistoria string = "his.historia_id, his.titulo, his.objetivo, his.prioridad, his.completada, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0), coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias, coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas"
+const columnasNodoHistoria string = "his.historia_id, his.proyecto_id AS proyecto_id, his.persona_id AS persona_id, his.titulo, his.objetivo, his.prioridad, his.completada, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0), coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias, coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas"
 
 // Origen de los datos de ust.NodoHistoria
 //
@@ -41,7 +43,7 @@ const fromNodoHistoria string = "FROM historias his INNER JOIN nodos nod ON nodo
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria) error {
 	err := row.Scan(
-		&nhist.HistoriaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
+		&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -87,7 +89,7 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 	for rows.Next() {
 		nhist := ust.NodoHistoria{}
 		err := rows.Scan(
-			&nhist.HistoriaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
+			&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
@@ -95,6 +97,22 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 		items = append(items, nhist)
 	}
 	return items, nil
+}
+
+//  ================================================================  //
+//  ========== LIST BYPROYECTOID ===================================  //
+
+func (s *Repositorio) ListNodoHistoriasByProyectoID(ProyectoID string) ([]ust.NodoHistoria, error) {
+	const op string = "ListNodoHistoriasByProyectoID"
+	rows, err := s.db.Query(
+		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
+			"WHERE his.proyecto_id = ? ORDER BY nod.posicion",
+		ProyectoID,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsNodoHistoria(rows, op)
 }
 
 //  ================================================================  //

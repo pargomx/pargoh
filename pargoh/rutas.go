@@ -123,6 +123,7 @@ func main() {
 	s.GET("/historias/{historia_id}", s.getHistoria)
 
 	s.GET("/metricas", s.getMétricas)
+	s.GET("/proyectos/{proyecto_id}/metricas", s.getMetricasProyecto)
 
 	s.POS("/proyectos", s.postProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
