@@ -439,15 +439,15 @@
 			<a href="#tareas">Tareas</a>
 		</h3>
 		{{- if .TiempoEstimado -}}
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
 			<i class="fa-solid fa-hourglass-start"></i> Estimado
-			{{ .TiempoEstimadoString }}
+			{{ minutosToString .TiempoEstimado }}
 		</span>
 		{{- end -}}
 		{{- if .TiempoReal -}}
-		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ .TiempoRealString }}">
+		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .TiempoReal }}">
 			<i class="fa-solid fa-stopwatch"></i> Transcurrido
-			{{ .TiempoRealString }}
+			{{ segundosToString .TiempoReal }}
 		</span>
 		{{- end -}}
 	</div>
@@ -491,18 +491,18 @@
 
 				<span class="float-right sm:hidden">
 					{{- if .TiempoEstimado -}}
-					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ .TiempoEstimadoString }}">
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
 						<i class="fa-solid fa-hourglass-start"></i>
-						{{ .TiempoEstimadoString }}
+						{{ minutosToString .TiempoEstimado }}
 					</span>
 					{{- end -}}
 					{{- if .TiempoReal -}}
 					<button
 						onclick="showIntervalos('{{ .TareaID }}')"
-						title="Tiempo transcurrido {{ .TiempoRealString }}"
+						title="Tiempo transcurrido {{ segundosToString .TiempoReal }}"
 						class="pl-4 text-sm opacity-75 whitespace-nowrap">
 						<i class="fa-solid fa-stopwatch"></i>
-						{{ .TiempoRealString }}
+						{{ segundosToString .TiempoReal }}
 					</button>
 					{{- end -}}
 				</span>
@@ -544,19 +544,19 @@
 			<div class="grow hidden text-right sm:block">
 				{{- if .TiempoEstimado -}}
 				<span
-					title="Tiempo estimado {{ .TiempoEstimadoString }}"
+					title="Tiempo estimado {{ minutosToString .TiempoEstimado }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-hourglass-start"></i>
-					{{ .TiempoEstimadoString }}
+					{{ minutosToString .TiempoEstimado }}
 				</span>
 				{{- end -}}
 				{{- if .TiempoReal -}}
 				<button
 					onclick="showIntervalos('{{ .TareaID }}')"
-					title="Tiempo transcurrido {{ .TiempoRealString }}"
+					title="Tiempo transcurrido {{ segundosToString .TiempoReal }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-stopwatch"></i>
-					{{ .TiempoRealString }}
+					{{ segundosToString .TiempoReal }}
 				</button>
 				{{- end -}}
 			</div>

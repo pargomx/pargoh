@@ -194,22 +194,6 @@ func (d ProyectoTime) Horas() float64 {
 	return math.Round(float64(d.Segundos)/3600*100) / 100
 }
 
-func (d DiaTrabajo) TiempoString() string {
-	return ust.SegundosToString(d.Segundos)
-}
-func (d DiaTrabajoPorProyecto) TiempoString() string {
-	return ust.SegundosToString(d.Segundos)
-}
-func (d DiaTrabajoPorHistoria) TiempoString() string {
-	return ust.SegundosToString(d.Segundos)
-}
-func (d DiaTrabajoPorTarea) TiempoString() string {
-	return ust.SegundosToString(d.Segundos)
-}
-func (d ProyectoTime) TiempoString() string {
-	return ust.SegundosToString(d.Segundos)
-}
-
 // ================================================================ //
 
 func (s *servidor) getMetricasProyecto(c *gecko.Context) error {

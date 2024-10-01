@@ -50,8 +50,8 @@
 				{{- end }}
 				<br>
 				<span class="text-sm opacity-75">
-					{{ if .TiempoEstimado }}{{ .TiempoEstimadoString }}{{ end }}
-					{{ if .TiempoReal }}<span class="px-1 mr-1 bg-black bg-opacity-40 rounded-md">{{ .TiempoRealString }}</span>{{ end }}
+					{{ if .TiempoEstimado }}{{ minutosToString .TiempoEstimado }}{{ end }}
+					{{ if .TiempoReal }}<span class="px-1 mr-1 bg-black bg-opacity-40 rounded-md">{{ segundosToString .TiempoReal }}</span>{{ end }}
 				</span>
 			</p>
 
@@ -132,7 +132,7 @@
 				</div>
 				<div>
 					<label for="upd_06">Tiempo estimado</label>
-					<input id="upd_06" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}" class="form-control">
+					<input id="upd_06" name="tiempo_estimado" type="text" placeholder="mm ó hh:mm" value="{{ if .TiempoEstimado }}{{ minutosToString .TiempoEstimado }}{{ end }}" class="form-control">
 				</div>
 				<div class="pt-4">
 					<button type="submit" class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">

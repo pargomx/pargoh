@@ -6,7 +6,7 @@ require (
 	github.com/gingfrederik/docx v0.0.1
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/matoous/go-nanoid/v2 v2.1.0
-	github.com/pargomx/gecko v0.0.0-20240919051550-c94f5b32ee31
+	github.com/pargomx/gecko v0.0.0-20241001162422-bc0d80347e81
 	github.com/rwestlund/gotex v0.0.0-20170412080108-3c68d9bfff3b
 	golang.org/x/net v0.28.0
 )

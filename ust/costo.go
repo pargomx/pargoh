@@ -14,16 +14,16 @@ type PersonaCosto struct {
 	Historias []HistoriaCosto
 }
 
-func (p PersonaCosto) TiempoEstimado() string {
+func (p PersonaCosto) TiempoEstimado() int {
 	suma := 0
 	for _, h := range p.Historias {
 		suma += h.MinutosEstimado
 	}
-	return MinutosToString(suma)
+	return suma
 }
 
-func (p PersonaCosto) TiempoReal() string {
-	return SegundosToString(p.Segundos())
+func (p PersonaCosto) TiempoReal() int {
+	return p.Segundos()
 }
 
 func (p PersonaCosto) Segundos() int {
@@ -85,12 +85,12 @@ type HistoriaCosto struct {
 	SegundosReal    int
 }
 
-func (h *HistoriaCosto) TiempoEstimado() string {
-	return MinutosToString(h.MinutosEstimado)
+func (h *HistoriaCosto) TiempoEstimado() int {
+	return h.MinutosEstimado
 }
 
-func (h *HistoriaCosto) TiempoReal() string {
-	return SegundosToString(h.SegundosReal)
+func (h *HistoriaCosto) TiempoReal() int {
+	return h.SegundosReal
 }
 
 // ================================================================ //
@@ -131,8 +131,4 @@ func (itv IntervaloEnDia) Segundos2() int {
 		}
 	}
 	return int(fin.Sub(inicio).Seconds())
-}
-
-func (itv Intervalo) Duracion() string {
-	return SegundosToString(itv.Segundos())
 }

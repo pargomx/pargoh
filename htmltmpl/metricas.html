@@ -87,7 +87,7 @@
 				datasets: [
 					{{ range $proyectoID, $v := $.Proyectos -}}
 					{
-						label: '{{ .Proyecto.Titulo }} {{ .TiempoString }}h',
+						label: '{{ .Proyecto.Titulo }} {{ segundosToString .Segundos }}',
 						data: [{{ range $.DiasTrabajo }}{{ if .Segundos }}{{ range .Proyectos }}{{ $horas := 0.0 }}{{ if eq $proyectoID .Proyecto.ProyectoID }}{{ $horas = .Horas }}{{ end }}{{ $horas }},{{ end }}{{ end }}{{ end }}],
 					},
 					{{ end }}
@@ -99,7 +99,7 @@
 
 	{{ range $.Proyectos }}
 	<p>
-		{{ .Proyecto.Titulo }}: {{ .TiempoString }} ({{ .Segundos }}s)
+		{{ .Proyecto.Titulo }}: {{ segundosToString .Segundos }} ({{ .Segundos }}s)
 	</p>
 	{{ end }}
 
@@ -110,18 +110,18 @@
 	<div class="p-2 mb-2">
 		<h3 class="">
 			{{ .Fecha }}
-			<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .TiempoString }}</span>
+			<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ segundosToString .Segundos }}</span>
 		</h3>
 		{{ range .Proyectos -}}
 		<div class="pl-4">
 			<h4 class="py-1 text-xl font-bold text-cyan-600">
 				{{ .Proyecto.Titulo }}
-				<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .TiempoString }}</span>
+				<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ segundosToString .Segundos }}</span>
 			</h4>
 			{{ range .Historias -}}
 			<div>
 				<p class="py-1 pt-2 text-base font-bold">
-					<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .TiempoString }}</span>
+					<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ segundosToString .Segundos }}</span>
 					<a
 						href="/historias/{{ .Historia.HistoriaID }}"
 						class="transition-colors hover:text-cyan-400">
@@ -131,7 +131,7 @@
 				{{ range .Tareas -}}
 				<div>
 					<p class="py-1 pl-16 text-sm opacity-75">
-						<span class="inline-block w-16 px-2 py-0 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ .TiempoString }}</span>
+						<span class="inline-block w-16 px-2 py-0 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ segundosToString .Segundos }}</span>
 						<a
 							href="/historias/{{ .Tarea.HistoriaID }}#{{ .Tarea.TareaID }}"
 							class="transition-colors hover:text-cyan-400">

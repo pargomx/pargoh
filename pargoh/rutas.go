@@ -111,41 +111,41 @@ func main() {
 		s.gecko.FileFS("/htmx.js", "js/htmx.min.js", assets.AssetsFS)
 	}
 
+	// Sesiones
 	s.GET("/", s.auth.getLogin)
 	s.POS("/login", s.auth.postLogin)
 	s.GET("/logout", s.auth.logout)
 	s.GET("/sesiones", s.auth.printSesiones)
 
+	// Proyectos
 	s.GET("/proyectos", s.listaProyectos)
-	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
-	s.GET("/personas/{persona_id}", s.getPersona)
-	s.GET("/personas/{persona_id}/costo", s.getMétricasPersona)
-	s.GET("/historias/{historia_id}", s.getHistoria)
-
-	s.GET("/metricas", s.getMétricas)
-	s.GET("/proyectos/{proyecto_id}/metricas", s.getMetricasProyecto)
-
 	s.POS("/proyectos", s.postProyecto)
+	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
+	s.GET("/proyectos/{proyecto_id}/metricas", s.getMetricasProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
 	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.patchProyecto)
-
 	s.POS("/proyectos/{proyecto_id}/time/{seg}", s.postTimeGestion)
 
+	// Personas
 	s.POS("/personas", s.postPersona)
+	s.GET("/personas/{persona_id}", s.getPersona)
+	s.GET("/personas/{persona_id}/costo", s.getMétricasPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
 
+	// Nodos
+	s.POS("/nodos/{nodo_id}", s.postHistoria)
+	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
+
+	// Historias
+	s.GET("/historias/{historia_id}", s.getHistoria)
 	s.POS("/historias/{historia_id}", s.postHistoriaQuick)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.PUT("/historias/{historia_id}", s.updateHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
-
-	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
-	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
-	s.GET("/prioritarias", s.getHistoriasPrioritarias)
 
 	s.GET("/historias/{historia_id}/form", s.formHistoria)
 	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
@@ -156,6 +156,11 @@ func main() {
 	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
 	s.POS("/reordenar-historia", s.reordenarHistoria)
 
+	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
+	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
+	s.GET("/prioritarias", s.getHistoriasPrioritarias)
+
+	// Navegador del árbol de historias
 	s.GET("/nav", s.navDesdeRoot)
 	s.GET("/nav/proy/{proyecto_id}", s.navDesdeProyecto)
 	s.GET("/nav/pers/{persona_id}", s.navDesdePersona)
@@ -165,25 +170,9 @@ func main() {
 	s.POS("/mover/tarea", s.moverTarea)
 	s.POS("/mover/historia", s.moverHistoria)
 
+	// Tareas técnicas
 	s.GET("/historias/{historia_id}/tareas", s.getTareasDeHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
-
-	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
-	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
-	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.patchTramoDeViaje)
-	s.POS("/reordenar-tramo", s.reordenarTramo)
-
-	s.POS("/historias/{historia_id}/reglas", s.postRegla)
-	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
-	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.patchRegla)
-	s.POS("/reordenar-regla", s.reordenarRegla)
-
-	s.gecko.StaticSub("/imagenes", s.cfg.imagesDir)
-	s.POS("/imagenes", s.setImagenTramo)
-	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
-
-	s.POS("/nodos/{nodo_id}", s.postHistoria)
-	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
 
 	s.GET("/tareas/{tarea_id}", s.getTarea)
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
@@ -192,14 +181,24 @@ func main() {
 	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
 
-	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
-	s.GET("/materializar-historias", s.materializarHistorias)
-
 	s.GET("/intervalos", s.getIntervalos)
 	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
 
-	s.GET("/reload", s.brodcastReload)
-	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
+	// Viaje de usuario
+	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
+	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
+	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.patchTramoDeViaje)
+	s.POS("/reordenar-tramo", s.reordenarTramo)
+
+	s.gecko.StaticSub("/imagenes", s.cfg.imagesDir)
+	s.POS("/imagenes", s.setImagenTramo)
+	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
+
+	// Reglas de negocio
+	s.POS("/historias/{historia_id}/reglas", s.postRegla)
+	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
+	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.patchRegla)
+	s.POS("/reordenar-regla", s.reordenarRegla)
 
 	// Exportar e importar
 	s.GET("/arbol", s.exportarArbolTXT)
@@ -210,8 +209,15 @@ func main() {
 	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarDocx)
 	s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
 	s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
-
 	s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
+
+	// General
+	s.GET("/metricas", s.getMétricas)
+	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
+	s.GET("/materializar-historias", s.materializarHistorias)
+
+	s.GET("/reload", s.brodcastReload)
+	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
 
 	// LOG SQLITE
 	s.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })
