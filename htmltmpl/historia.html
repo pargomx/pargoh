@@ -497,10 +497,13 @@
 					</span>
 					{{- end -}}
 					{{- if .TiempoReal -}}
-					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo transcurrido {{ .TiempoRealString }}">
+					<button
+						onclick="showIntervalos('{{ .TareaID }}')"
+						title="Tiempo transcurrido {{ .TiempoRealString }}"
+						class="pl-4 text-sm opacity-75 whitespace-nowrap">
 						<i class="fa-solid fa-stopwatch"></i>
 						{{ .TiempoRealString }}
-					</span>
+					</button>
 					{{- end -}}
 				</span>
 
@@ -540,13 +543,12 @@
 			</div>
 			<div class="grow hidden text-right sm:block">
 				{{- if .TiempoEstimado -}}
-				<button
-					onclick="showIntervalos('{{ .TareaID }}')"
+				<span
 					title="Tiempo estimado {{ .TiempoEstimadoString }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-hourglass-start"></i>
 					{{ .TiempoEstimadoString }}
-				</button>
+				</span>
 				{{- end -}}
 				{{- if .TiempoReal -}}
 				<button

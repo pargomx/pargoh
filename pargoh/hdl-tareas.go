@@ -134,3 +134,12 @@ func (s *servidor) getIntervalos(c *gecko.Context) error {
 	}
 	return c.RenderOk("intervalos", data)
 }
+
+func (s *servidor) patchIntervalo(c *gecko.Context) error {
+	historiaID, err := dhistorias.ParcharIntervalo(c.PathInt("tarea_id"), c.PathVal("inicio"), c.FormVal("inicio"), c.FormVal("fin"), s.repo)
+	if err != nil {
+		return err
+	}
+	// defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
+}

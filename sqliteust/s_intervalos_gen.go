@@ -35,7 +35,7 @@ func (s *Repositorio) InsertIntervalo(interv ust.Intervalo) error {
 //  ========== UPDATE ==============================================  //
 
 // UpdateIntervalo valida y sobreescribe el registro en la base de datos.
-func (s *Repositorio) UpdateIntervalo(interv ust.Intervalo) error {
+func (s *Repositorio) UpdateIntervalo(TareaID int, Inicio string, interv ust.Intervalo) error {
 	const op string = "UpdateIntervalo"
 	if interv.TareaID == 0 {
 		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
@@ -48,7 +48,7 @@ func (s *Repositorio) UpdateIntervalo(interv ust.Intervalo) error {
 			"tarea_id=?, inicio=?, fin=? "+
 			"WHERE tarea_id = ? AND inicio = ?",
 		interv.TareaID, interv.Inicio, interv.Fin,
-		interv.TareaID, interv.Inicio,
+		TareaID, Inicio,
 	)
 	if err != nil {
 		return gko.ErrInesperado().Err(err).Op(op)

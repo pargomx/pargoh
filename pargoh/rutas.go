@@ -195,6 +195,7 @@ func main() {
 	s.GET("/materializar-historias", s.materializarHistorias)
 
 	s.GET("/intervalos", s.getIntervalos)
+	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
 
 	s.GET("/reload", s.brodcastReload)
 	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)

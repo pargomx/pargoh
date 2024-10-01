@@ -50,8 +50,9 @@ type Repo interface {
 
 	// Intervalos
 	InsertIntervalo(interv ust.Intervalo) error
-	UpdateIntervalo(interv ust.Intervalo) error
+	UpdateIntervalo(TareaID int, Inicio string, interv ust.Intervalo) error
 	DeleteIntervalo(TareaID int, Inicio string) error
+	GetIntervalo(TareaID int, Inicio string) (*ust.Intervalo, error)
 	ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, error)
 
 	// Viajes

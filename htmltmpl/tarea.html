@@ -4,6 +4,13 @@
 	</h2>
 	<button
 		type="button"
+		onclick="let tbl = this.closest('dialog').querySelector('table'); tbl.querySelectorAll('input').forEach(i => i.classList.remove('hidden')); tbl.querySelectorAll('span').forEach(i => i.classList.add('hidden')); this.classList.add('hidden');"
+		title="Editar tiempos"
+		class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75">
+		<i class="fa-solid fa-pencil"></i>
+	</button>
+	<button
+		type="button"
 		onclick="this.closest('dialog').close()"
 		title="Cerrar"
 		class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
@@ -30,10 +37,26 @@
 			{{ range .Intervalos -}}
 			<tr class="font-mono text-sm text-slate-300">
 				<td class="px-4 py-2 whitespace-nowrap">
-					{{ .Inicio }}
+					<input
+						type="datetime"
+						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
+						hx-target="main" hx-select="main" hx-swap="outerHTML"
+						name="inicio"
+						value="{{ .Inicio }}"
+						class="hidden form-control"
+					/>
+					<span>{{ .Inicio }}</span>
 				</td>
 				<td class="px-4 py-2 whitespace-nowrap">
-					{{ .Fin }}
+					<input
+						type="datetime"
+						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
+						hx-target="main" hx-select="main" hx-swap="outerHTML"
+						name="fin"
+						value="{{ .Fin }}"
+						class="hidden form-control"
+					/>
+					<span>{{ .Fin }}</span>
 				</td>
 				<td class="px-4 py-2 whitespace-nowrap">
 					{{ .Duracion }}
