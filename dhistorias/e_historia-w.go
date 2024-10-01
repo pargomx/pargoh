@@ -223,7 +223,7 @@ func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
 	}
 
 	// TODO: Get ancestros de historia
-	nueva, err := GetHistoriasDePadre(nuevoPadreID, repo)
+	nueva, err := GetHistoria(nuevoPadreID, repo)
 	if err != nil {
 		return op.Err(err)
 	}

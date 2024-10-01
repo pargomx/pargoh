@@ -1133,5 +1133,17 @@
 				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
           	},
 		});
+
+
+		// Ubicar una elemento seleccionada mediante el URL fragment.
+		if (window.location.hash) {
+			let elemento = document.getElementById(window.location.hash.substr(1));
+			if (elemento != null) {
+				elemento.classList.add("border-indigo-600");
+				elemento.classList.add("border-2");
+				elemento.scrollIntoView();
+			}
+		}
+
 	});
 </script>

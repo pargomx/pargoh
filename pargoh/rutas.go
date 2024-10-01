@@ -142,23 +142,19 @@ func main() {
 
 	// Historias
 	s.GET("/historias/{historia_id}", s.getHistoria)
+	s.GET("/historias/{historia_id}/tablero", s.getHistoriaTablero)
 	s.POS("/historias/{historia_id}", s.postHistoriaQuick)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.PUT("/historias/{historia_id}", s.updateHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
-
-	s.GET("/historias/{historia_id}/form", s.formHistoria)
-	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
-	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
 	s.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
 	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.priorizarHistoriaNuevo)
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
 	s.POS("/reordenar-historia", s.reordenarHistoria)
 
-	s.GET("/lista/{nodo_id}", s.getHistoriasLista)
-	s.GET("/tablero/{nodo_id}", s.getHistoriasTablero)
-	s.GET("/prioritarias", s.getHistoriasPrioritarias)
+	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
+	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
 
 	// Navegador del árbol de historias
 	s.GET("/nav", s.navDesdeRoot)
@@ -171,7 +167,6 @@ func main() {
 	s.POS("/mover/historia", s.moverHistoria)
 
 	// Tareas técnicas
-	s.GET("/historias/{historia_id}/tareas", s.getTareasDeHistoria)
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
 
 	s.GET("/tareas/{tarea_id}", s.getTarea)

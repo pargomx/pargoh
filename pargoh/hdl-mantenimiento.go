@@ -13,3 +13,20 @@ func (s *servidor) materializarHistorias(c *gecko.Context) error {
 	}
 	return c.StringOk("Proyecto y persona materializados para historias")
 }
+
+func (s *servidor) moverHistoriaForm(c *gecko.Context) error {
+	historia, err := s.repo.GetNodoHistoria(c.PathInt("historia_id"))
+	if err != nil {
+		return err
+	}
+	arboles, err := dhistorias.GetArbolCompleto(s.repo)
+	if err != nil {
+		return err
+	}
+	data := map[string]any{
+		"Titulo":   "Mover historia",
+		"Arboles":  arboles,
+		"Historia": historia,
+	}
+	return c.RenderOk("hist_mover", data)
+}

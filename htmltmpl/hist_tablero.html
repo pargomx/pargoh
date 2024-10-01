@@ -1,37 +1,37 @@
 {{ with .Agregado -}}
 
-<header class="mb-4 space-y-1">
+<header class="p-2 space-y-1">
 	{{ with .Persona -}}
 	<h3>
-		<a href="/tablero/{{ .PersonaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">1.<i class="fa-solid fa-person"></i></a>
+		<a href="/personas/{{ .PersonaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">1.<i class="fa-solid fa-person"></i></a>
 		<span class="opacity-50">Como</span>
-		<a href="/personas" class="text-xl lowercase">{{ .Nombre }}</a>
+		<a href="/personas/{{ .PersonaID }}" class="text-xl lowercase">{{ .Nombre }}</a>
 		<span class="opacity-50">quiero...</span>
 	</h3>
 	{{ end -}}
 	
 	{{ range .Ancestros -}}
 	<h3>
-		<a href="/tablero/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
-		<a href="/tablero/{{ .PadreID }}#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
+		<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
+		<a href="/historias/{{ .PadreID }}/tablero#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
 		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
 	</h3>
 	{{ end -}}
 
-	{{ with .Abuelo -}}
+	{{ with .Historia -}}
 	<h3>
-		<a href="/tablero/{{ .HistoriaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
-		<a href="/tablero/{{ .PadreID }}#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
+		<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
+		<a href="/historias/{{ .HistoriaID }}/tablero#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
 		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
 	</h3>
 	{{ end -}}
 
 </header>
 
-<main tipo="carriles_container" hx-get="/tablero/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start grow gap-4 pb-2 overflow-x-auto">
-	{{ range .Padres }}
-	<article tipo="carril" id="{{ .Padre.HistoriaID }}" class="relative flex flex-col max-h-full p-1 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96">
-		{{ with .Padre }}
+<main tipo="carriles_container" hx-get="/historias/{{ .Historia.HistoriaID }}/tablero" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start grow gap-4 p-2 overflow-x-auto">
+	{{ range .Descendientes }}
+	<article tipo="carril" id="{{ .Historia.HistoriaID }}" class="relative flex flex-col max-h-full p-1 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96">
+		{{ with .Historia }}
 		<header tipo="carril_header" class="p-1">
 			<span tipo="carril_handle" class="mr-1 cursor-pointer">⣿</span>
 			{{ if .Completada }}✅{{ end }}
@@ -46,12 +46,12 @@
 			<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Posicion }}</span>
 			<!-- <button tipo="carril_edit" type="button" onclick="showEditCarril({{ .HistoriaID }})" class="float-right text-sm"><i class="px-2 py-1 fa fa-pen"></i></button> -->
 			<!-- <input tipo="carril_edit" name="titulo" value="{{ .Titulo }}" hx-target="#titulo{{ .HistoriaID }}" hx-put="/historias/{{ .HistoriaID }}" type="text" class="hidden form-control"> -->
-			<!-- <a tipo="carril_expand" href="/tablero/{{ .HistoriaID }}" class="float-right text-sm"><i class="px-2 py-1 fa fa-eye"></i></a> -->
+			<!-- <a tipo="carril_expand" href="/historias/{{ .HistoriaID }}/tablero" class="float-right text-sm"><i class="px-2 py-1 fa fa-eye"></i></a> -->
 		</header>
 		{{ end }}
 		
 		<div tipo="carril_items_container" class="flex flex-col grow gap-3 p-1 overflow-x-hidden overflow-y-auto">
-			{{ range .Hijos -}}
+			{{ range .Descendientes -}}{{ with .Historia }}
 			<div tipo="carril_item" id="{{ .HistoriaID }}" gk-padre="{{ .PadreID }}" class="relative p-3 bg-slate-800 rounded-md shadow-lg">
 				<!-- <span tipo="carril_item_handle" class="mr-1 cursor-pointer">⣿</span> -->
 				{{ if .Completada }}✅{{ end }}
@@ -62,20 +62,20 @@
 					{{ if eq .Prioridad 2 }}🤔{{ end }}
 					{{ if eq .Prioridad 3 }}🤩{{ end }}
 				</span>
-				{{ if .NumHistorias }}<a href="/tablero/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumHistorias }}&nbsp;his.</a>{{ end }}
+				{{ if .NumHistorias }}<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumHistorias }}&nbsp;his.</a>{{ end }}
 				{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }}&nbsp;tar.</a>{{ end }}
 				<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Posicion }}</span>
 			</div>
-			{{ end }}
+			{{ end }}{{ end }}
 		</div>
 
 		<footer class="p-1 pt-2">
-			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Padre.HistoriaID }}" placeholder="Agregar historia..." class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100">
+			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100">
 		</footer>
 	</article>
 	{{ end }}
 
-	<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}" placeholder="Agregar historia..." class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+	<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
 </main>
 {{ end }}
 
@@ -83,7 +83,6 @@
 	<div class="grid grid-cols-2 gap-1 text-sm">
 		<div class="col-span-2 text-xs opacity-50">Acciones</div>
 		<button type="button" onclick="expandirHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✂️ Abrir</button>
-		<button type="button" onclick="editarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✏️ Editar</button>
 		<button type="button" onclick="moverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
 		<button type="button" onclick="tareasHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tareas</button>
 		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
@@ -128,15 +127,6 @@
 	function moverHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		window.location.href = `/historias/${historiaID}/mover`
-	}
-
-	function editarHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let dialog = document.getElementById("dialogHistoria")
-		dialog.showModal()
-		dialog.setAttribute("hx-get", `/historias/${historiaID}/form`)
-		htmx.process(dialog)
-		dialog.dispatchEvent(new Event("loadHistoriaForm"))
 	}
 
 	function priorizarHistoria(prioridad) {

@@ -246,7 +246,6 @@
 	<div class="grid grid-cols-2 gap-1 text-sm">
 		<div class="col-span-2 text-xs opacity-50">Acciones</div>
 		<button type="button" onclick="tableroHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tablero</button>
-		<button type="button" onclick="editarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✏️ Editar</button>
 		<button type="button" onclick="moverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
 		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">❌ Eliminar</button>
 		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
@@ -259,11 +258,6 @@
 		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🔻 Falta</button>
 	</div>
 </div>
-
-<dialog id="dialogHistoria" hx-get="" hx-swap="innerHTML" hx-trigger="loadHistoriaForm" hx-target="this" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
-	<!-- Loaded from editarHistoria() -->
-	Cargando...
-</dialog>
 
 <div id="msgStack" class="hidden">
 	<!-- Mensajes respuesta del servidor, utilizado para hacer trigger a reload -->
@@ -303,15 +297,6 @@
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let formData = new FormData();
 		fetch(`/historias/${historiaID}`, { method: 'DELETE' }).then(response => handleResponse(response));
-	}
-
-	function editarHistoria() {
-		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		let dialog = document.getElementById("dialogHistoria")
-		dialog.showModal()
-		dialog.setAttribute("hx-get", `/historias/${historiaID}/form`)
-		htmx.process(dialog)
-		dialog.dispatchEvent(new Event("loadHistoriaForm"))
 	}
 
 	// ================================================================ //

@@ -6,168 +6,80 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
-func (s *servidor) getHistoriasLista(c *gecko.Context) error {
-	agg, err := dhistorias.GetHistoriasDePadre(c.PathInt("nodo_id"), s.repo)
-	if err != nil {
-		return err
-	}
-	titulo := "Nodo"
-	if agg.Abuelo != nil {
-		titulo = "Historia" // agg.Abuelo.Titulo
-	} else {
-		titulo = agg.Persona.Nombre
-	}
-	data := map[string]any{
-		"Titulo":   titulo,
-		"Agregado": agg,
-	}
-	return c.RenderOk("hist_lista", data)
-}
-
-func (s *servidor) getHistoriasTablero(c *gecko.Context) error {
-	agg, err := dhistorias.GetHistoriasDePadre(c.PathInt("nodo_id"), s.repo)
-	if err != nil {
-		return err
-	}
-	titulo := "Nodo"
-	if agg.Abuelo != nil {
-		titulo = "Historia" // agg.Abuelo.Titulo
-	} else {
-		titulo = agg.Persona.Nombre
-	}
-	data := map[string]any{
-		"Titulo":   titulo,
-		"Agregado": agg,
-	}
-	return c.RenderOk("hist_tablero", data)
-}
-
-func (s *servidor) getHistoriasPrioritarias(c *gecko.Context) error {
-	Historias, err := s.repo.ListNodoHistoriasPrioritarias()
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":    "Historias prioritarias",
-		"Historias": Historias,
-	}
-	return c.RenderOk("hist_prioritarias", data)
-}
-
-func (s *servidor) formHistoria(c *gecko.Context) error {
-	historia, err := s.repo.GetHistoria(c.PathInt("historia_id"))
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":   historia.Titulo,
-		"Historia": historia,
-	}
-	return c.RenderOk("hist_form", data)
-}
-
-func (s *servidor) moverHistoriaForm(c *gecko.Context) error {
-	historia, err := s.repo.GetNodoHistoria(c.PathInt("historia_id"))
-	if err != nil {
-		return err
-	}
-	arboles, err := dhistorias.GetArbolCompleto(s.repo)
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":   "Mover historia",
-		"Arboles":  arboles,
-		"Historia": historia,
-	}
-	return c.RenderOk("hist_mover", data)
-}
-
-func (s *servidor) getTareasDeHistoria(c *gecko.Context) error {
-	historia, err := s.repo.GetNodoHistoria(c.PathInt("historia_id"))
-	if err != nil {
-		return err
-	}
-	tareas, err := s.repo.ListTareasByHistoriaID(historia.HistoriaID)
-	if err != nil {
-		return err
-	}
-	agg, err := dhistorias.GetHistoriasDePadre(historia.HistoriaID, s.repo)
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":   "Tareas",
-		"Historia": historia,
-		"Tareas":   tareas,
-		"Agregado": agg,
-
-		"ListaTipoTarea": ust.ListaTipoTarea,
-	}
-	return c.RenderOk("hist_tareas", data)
-}
+// ================================================================ //
+// ========== READ ================================================ //
 
 func (s *servidor) getHistoria(c *gecko.Context) error {
-	agg, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
+	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
 	if err != nil {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":   agg.Historia.Titulo,
-		"Agregado": agg,
+		"Titulo":   Historia.Historia.Titulo,
+		"Agregado": Historia,
 
 		"ListaTipoTarea": ust.ListaTipoTarea,
 	}
 	return c.RenderOk("historia", data)
 }
 
-func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
-	err := dhistorias.AgregarTramoDeViaje(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
+func (s *servidor) getHistoriaTablero(c *gecko.Context) error {
+	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
 	if err != nil {
 		return err
 	}
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	data := map[string]any{
+		"Titulo":   Historia.Historia.Titulo,
+		"Agregado": Historia,
+	}
+	return c.RenderOk("hist_tablero", data)
 }
 
-func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
+// ================================================================ //
+// ========== WRITE =============================================== //
+
+func (s *servidor) postHistoria(c *gecko.Context) error {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarTramoDeViaje(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	repotx := sqliteust.NuevoRepo(tx)
+	nuevaHistoria := ust.Historia{
+		HistoriaID: ust.NewRandomID(),
+		Titulo:     c.FormVal("titulo"),
+		Objetivo:   c.FormVal("objetivo"),
+		Prioridad:  c.FormInt("prioridad"),
+		Completada: c.FormBool("completada"),
+	}
+	err = dhistorias.AgregarHistoria(c.PathInt("nodo_id"), nuevaHistoria, repotx)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-	tx.Commit()
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return c.StatusOk("Historia creada")
 }
 
-func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
+func (s *servidor) postHistoriaQuick(c *gecko.Context) error {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarTramoDeViaje(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
-	if err != nil {
-		tx.Rollback()
-		return err
+	repotx := sqliteust.NuevoRepo(tx)
+	nuevaHistoria := ust.Historia{
+		HistoriaID: ust.NewRandomID(),
+		Titulo:     c.FormVal("titulo"),
+		Objetivo:   c.FormVal("objetivo"),
+		Prioridad:  c.FormInt("prioridad"),
+		Completada: c.FormBool("completada"),
 	}
-	tx.Commit()
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
-}
-
-func (s *servidor) reordenarTramo(c *gecko.Context) error {
-	tx, err := s.db.Begin()
-	if err != nil {
-		return err
-	}
-	err = dhistorias.ReordenarTramo(sqliteust.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.AgregarHistoria(c.PathInt("historia_id"), nuevaHistoria, repotx)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -177,11 +89,105 @@ func (s *servidor) reordenarTramo(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.StatusOkf("Tramo reordenado")
+	return c.Redir("/historias/%v", c.PathInt("historia_id"))
 }
 
-func (s *servidor) moverTramo(c *gecko.Context) error {
-	historiaID, err := dhistorias.MoverTramo(c.FormInt("historia_id"), c.FormInt("posicion"), c.FormInt("target_historia_id"), s.repo)
+func (s *servidor) updateHistoria(c *gecko.Context) error {
+	err := dhistorias.ActualizarHistoria(
+		c.PathInt("historia_id"),
+		ust.Historia{
+			HistoriaID: c.FormInt("historia_id"),
+			Titulo:     c.FormValue("titulo"),
+			Objetivo:   c.FormValue("objetivo"),
+			Prioridad:  c.FormInt("prioridad"),
+			Completada: c.FormBool("completada"),
+		},
+		s.repo,
+	)
+	if err != nil {
+		return err
+	}
+	return c.StatusOk("Historia actualizada")
+}
+
+func (s *servidor) patchHistoria(c *gecko.Context) error {
+	err := dhistorias.ParcharHistoria(
+		c.PathInt("historia_id"),
+		c.PathVal("param"),
+		c.FormValue("value"),
+		s.repo,
+	)
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.StatusOk("Historia parchada")
+}
+
+func (s *servidor) priorizarHistoria(c *gecko.Context) error {
+	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.FormInt("prioridad"), s.repo)
+	if err != nil {
+		return err
+	}
+	return c.StatusOk("Historia priorizada")
+}
+
+func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
+	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.PathInt("prioridad"), s.repo)
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
+func (s *servidor) marcarHistoria(c *gecko.Context) error {
+	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.FormBool("completada"), s.repo)
+	if err != nil {
+		return err
+	}
+	return c.StatusOk("Historia marcada")
+}
+
+func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
+	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.PathBool("completada"), s.repo)
+	if err != nil {
+		return err
+	}
+	return c.RefreshHTMX()
+}
+
+func (s *servidor) deleteHistoria(c *gecko.Context) error {
+	padreID, err := dhistorias.EliminarHistoria(c.PathInt("historia_id"), s.repo)
+	if err != nil {
+		return err
+	}
+	padre, err := s.repo.GetNodo(padreID)
+	if err != nil {
+		return err
+	}
+	if padre.EsHistoria() {
+		return c.Redir("/historias/%v", padreID)
+	} else if padre.EsPersona() {
+		return c.Redir("/personas/%v", padreID)
+	} else {
+		gko.LogWarnf("deleteHistoria: padre %v no es persona ni historia", padreID)
+		return c.Redir("/proyectos")
+	}
+}
+
+func (s *servidor) moverHistoria(c *gecko.Context) error {
+	nuevoPadreID := c.FormInt("target_historia_id")
+	if nuevoPadreID == 0 {
+		nuevoPadreID = c.FormInt("target_persona_id")
+		if nuevoPadreID == 0 {
+			nuevoPadreID = c.FormInt("nuevo_padre_id")
+		}
+	}
+	historiaID := c.FormInt("historia_id")
+	if historiaID == 0 {
+		historiaID = c.PathInt("historia_id")
+	}
+	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repo)
 	if err != nil {
 		return err
 	}
@@ -189,54 +195,12 @@ func (s *servidor) moverTramo(c *gecko.Context) error {
 	return c.Redir("/historias/%v", historiaID)
 }
 
-// ================================================================ //
-// ================================================================ //
-
-func (s *servidor) postRegla(c *gecko.Context) error {
-	err := dhistorias.AgregarRegla(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
-}
-
-func (s *servidor) deleteRegla(c *gecko.Context) error {
+func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarRegla(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
-}
-
-func (s *servidor) patchRegla(c *gecko.Context) error {
-	tx, err := s.db.Begin()
-	if err != nil {
-		return err
-	}
-	err = dhistorias.EditarRegla(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
-}
-
-func (s *servidor) reordenarRegla(c *gecko.Context) error {
-	tx, err := s.db.Begin()
-	if err != nil {
-		return err
-	}
-	err = dhistorias.ReordenarRegla(sqliteust.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), sqliteust.NuevoRepo(tx))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -245,6 +209,10 @@ func (s *servidor) reordenarRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	hist, err := s.repo.GetNodoHistoria(c.FormInt("historia_id"))
+	if err != nil {
+		return err
+	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.FormInt("historia_id"))
+	return c.Redir("/historias/%v", hist.PadreID)
 }
