@@ -2,6 +2,7 @@ package main
 
 import (
 	"monorepo/dhistorias"
+	"monorepo/sqliteust"
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
@@ -168,4 +169,25 @@ func (s *servidor) deletePersona(c *gecko.Context) error {
 		return err
 	}
 	return c.RefreshHTMX()
+}
+
+func (s *servidor) reordenarPersona(c *gecko.Context) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	err = dhistorias.ReordenarNodo(c.FormInt("persona_id"), c.FormInt("new_pos"), sqliteust.NuevoRepo(tx))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	pers, err := s.repo.GetPersona(c.FormInt("persona_id"))
+	if err != nil {
+		return err
+	}
+	return c.Redir("/proyectos/%v", pers.ProyectoID)
 }

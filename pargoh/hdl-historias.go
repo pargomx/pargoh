@@ -176,26 +176,6 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 	}
 }
 
-func (s *servidor) moverHistoria(c *gecko.Context) error {
-	nuevoPadreID := c.FormInt("target_historia_id")
-	if nuevoPadreID == 0 {
-		nuevoPadreID = c.FormInt("target_persona_id")
-		if nuevoPadreID == 0 {
-			nuevoPadreID = c.FormInt("nuevo_padre_id")
-		}
-	}
-	historiaID := c.FormInt("historia_id")
-	if historiaID == 0 {
-		historiaID = c.PathInt("historia_id")
-	}
-	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repo)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
-}
-
 func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	tx, err := s.db.Begin()
 	if err != nil {
@@ -225,23 +205,22 @@ func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	}
 }
 
-func (s *servidor) reordenarPersona(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+func (s *servidor) moverHistoria(c *gecko.Context) error {
+	nuevoPadreID := c.FormInt("target_historia_id")
+	if nuevoPadreID == 0 {
+		nuevoPadreID = c.FormInt("target_persona_id")
+		if nuevoPadreID == 0 {
+			nuevoPadreID = c.FormInt("nuevo_padre_id")
+		}
+	}
+	historiaID := c.FormInt("historia_id")
+	if historiaID == 0 {
+		historiaID = c.PathInt("historia_id")
+	}
+	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repo)
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarNodo(c.FormInt("persona_id"), c.FormInt("new_pos"), sqliteust.NuevoRepo(tx))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
-	pers, err := s.repo.GetPersona(c.FormInt("persona_id"))
-	if err != nil {
-		return err
-	}
-	return c.Redir("/proyectos/%v", pers.ProyectoID)
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v", historiaID)
 }

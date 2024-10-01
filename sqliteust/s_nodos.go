@@ -62,19 +62,23 @@ func (s *Repositorio) EliminarNodo(nodoID int) error {
 
 func (s *Repositorio) MoverNodo(nodoID int, nuevoPadreID int) error {
 	op := gko.Op("sqliteust.MoverNodo")
-	nodo, err := s.GetNodo(nodoID)
+	nodoMovido, err := s.GetNodo(nodoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	newPadre, err := s.GetNodo(nuevoPadreID)
 	if err != nil {
 		return op.Err(err)
 	}
 	_, err = s.db.Exec(
-		"UPDATE nodos SET padre_id = ?, nivel = (SELECT nivel+1 FROM nodos WHERE nodo_id = ?), posicion = (SELECT count(nodo_id)+1 FROM nodos WHERE padre_id = ?) WHERE nodo_id = ?",
-		nuevoPadreID, nuevoPadreID, nuevoPadreID, nodoID,
+		"UPDATE nodos SET padre_id = ?, padre_tbl = ?, nivel = (SELECT nivel+1 FROM nodos WHERE nodo_id = ?), posicion = (SELECT count(nodo_id)+1 FROM nodos WHERE padre_id = ?) WHERE nodo_id = ?",
+		newPadre.NodoID, newPadre.NodoTbl, newPadre.NodoID, newPadre.NodoID, nodoMovido.NodoID,
 	)
 	if err != nil {
 		return op.Err(err).Op("update_nodo")
 	}
 	_, err = s.db.Exec(
-		"UPDATE nodos SET posicion = posicion - 1 WHERE padre_id = ? AND posicion > ?", nodo.PadreID, nodo.Posicion,
+		"UPDATE nodos SET posicion = posicion - 1 WHERE padre_id = ? AND posicion > ?", nodoMovido.PadreID, nodoMovido.Posicion,
 	)
 	if err != nil {
 		return op.Err(err).Op("update_old_hermanos")
