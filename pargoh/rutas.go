@@ -131,19 +131,17 @@ func main() {
 	// Personas
 	s.POS("/personas", s.postPersona)
 	s.GET("/personas/{persona_id}", s.getPersona)
+	s.POS("/personas/{persona_id}", s.postHistoriaDePersona)
 	s.GET("/personas/{persona_id}/costo", s.getMétricasPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
 	s.POS("/reordenar-persona", s.reordenarPersona)
 
-	// Nodos
-	s.POS("/nodos/{nodo_id}", s.postHistoria)
-
 	// Historias
 	s.GET("/historias/{historia_id}", s.getHistoria)
 	s.GET("/historias/{historia_id}/tablero", s.getHistoriaTablero)
-	s.POS("/historias/{historia_id}", s.postHistoriaQuick)
+	s.POS("/historias/{historia_id}", s.postHistoriaDeHistoria)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.PUT("/historias/{historia_id}", s.updateHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)

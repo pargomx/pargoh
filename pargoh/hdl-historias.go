@@ -41,7 +41,7 @@ func (s *servidor) getHistoriaTablero(c *gecko.Context) error {
 // ================================================================ //
 // ========== WRITE =============================================== //
 
-func (s *servidor) postHistoria(c *gecko.Context) error {
+func (s *servidor) postHistoriaDePersona(c *gecko.Context) error {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func (s *servidor) postHistoria(c *gecko.Context) error {
 		Prioridad:  c.FormInt("prioridad"),
 		Completada: c.FormBool("completada"),
 	}
-	err = dhistorias.AgregarHistoria(c.PathInt("nodo_id"), nuevaHistoria, repotx)
+	err = dhistorias.AgregarHistoria(c.PathInt("persona_id"), nuevaHistoria, repotx)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -63,10 +63,11 @@ func (s *servidor) postHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusOk("Historia creada")
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/personas/%v", c.PathInt("persona_id"))
 }
 
-func (s *servidor) postHistoriaQuick(c *gecko.Context) error {
+func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err

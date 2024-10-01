@@ -70,12 +70,12 @@
 		</div>
 
 		<footer class="p-1 pt-2">
-			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100">
+			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100">
 		</footer>
 	</article>
 	{{ end }}
 
-	<input name="titulo" type="text" hx-target="#msgStack" hx-post="/nodos/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+	<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
 </main>
 {{ end }}
 

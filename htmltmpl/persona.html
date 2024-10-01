@@ -110,7 +110,7 @@
 		<div>
 			<textarea
 				id="input_AddHistoria"
-				hx-post="/nodos/{{ with .Abuelo }}{{ .HistoriaID }}{{ else }}{{ .Persona.PersonaID }}{{ end }}"
+				hx-post="/personas/{{ .Persona.PersonaID }}"
 				hx-target="#msgStack"
 				hx-trigger="keyup[key=='Enter']"
 				name="titulo" 
