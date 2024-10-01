@@ -7,12 +7,6 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
-
-func prioridadValida(prioridad int) bool {
-	return prioridad >= 0 && prioridad <= 3
-}
-
 func AgregarHistoria(padreID int, his ust.Historia, repo Repo) error {
 	op := gko.Op("AgregarHistoria").Ctx("padreID", padreID)
 
@@ -34,6 +28,23 @@ func AgregarHistoria(padreID int, his ust.Historia, repo Repo) error {
 	}
 	if padre.EsTarea() {
 		return op.Msg("el nodo padre es una tarea y no puede tener historias")
+	}
+
+	// Popular indice de proyecto_id y persona_id
+	if padre.EsPersona() {
+		pers, err := repo.GetPersona(padre.NodoID)
+		if err != nil {
+			return op.Err(err).Op("set_historia_ancestros_index")
+		}
+		his.PersonaID = pers.PersonaID
+		his.ProyectoID = pers.ProyectoID
+	} else {
+		hisPadre, err := repo.GetHistoria(padre.NodoID)
+		if err != nil {
+			return op.Err(err).Op("set_historia_ancestros_index")
+		}
+		his.PersonaID = hisPadre.PersonaID
+		his.ProyectoID = hisPadre.ProyectoID
 	}
 
 	// Insertar en la base de datos

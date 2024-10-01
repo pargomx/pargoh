@@ -2,16 +2,6 @@ package dhistorias
 
 import "monorepo/ust"
 
-type HistoriaConNietos struct {
-	Persona   ust.Persona        // Siempre hay persona
-	Proyecto  ust.Proyecto       // Siempre hay proyecto
-	Ancestros []ust.NodoHistoria // Lista de ancestros desde el más grande al más pequeño
-	Abuelo    *ust.NodoHistoria  // No siempre hay padre
-	Padres    []HistoriaConHijos // Puede haber o no hijos
-	Tareas    []ust.Tarea        // Puede haber o no tareas
-	Tramos    []ust.Tramo        // Puede haber o no tramos
-}
-
 type Historia struct {
 	Historia ust.NodoHistoria
 	Persona  ust.Persona
@@ -24,15 +14,17 @@ type Historia struct {
 	Descendientes []HistoriaRecursiva
 }
 
-type HistoriaConHijos struct {
-	Padre  ust.NodoHistoria
-	Hijos  []ust.NodoHistoria
-	Tareas []ust.Tarea
-}
-
 type HistoriaRecursiva struct {
 	Historia      ust.NodoHistoria
 	Descendientes []HistoriaRecursiva
+}
+
+// ================================================================ //
+
+const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
+
+func prioridadValida(prioridad int) bool {
+	return prioridad >= 0 && prioridad <= 3
 }
 
 // ================================================================ //
