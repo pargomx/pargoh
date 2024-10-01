@@ -85,6 +85,11 @@
 		<div>
 			<span tipo="sort_handle" class="text-4xl cursor-pointer" title="Mover persona">
 				<i class="fa-solid fa-person"></i>
+				<form tipo="sort_form" hx-post="/reordenar-persona" hx-trigger="reordenarEnd">
+					<input type="hidden" name="persona_id" value="{{ .PersonaID }}">
+					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
+					<input type="hidden" name="new_pos">
+				</form>
 			</span>
 		</div>
 		<div class="w-full">
@@ -252,16 +257,6 @@
 	// ================================================================ //
 	// ========== Reordenar =========================================== //
 
-	function reordenarPersona(personaID, newPosicion) {
-		console.debug(`reordenarPersona(id:${personaID}, pos:${newPosicion})`)
-		if (personaID == null) {
-			return console.error("No se puede reordenar persona sin ID")
-		}
-		let formData = new FormData();
-		formData.append("newPosicion", newPosicion);
-		fetch(`/nodos/${personaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-
 	function handleResponse(response) {
 		response.text().then((msg) => {
 			if (response.status >= 200 && response.status < 300) {
@@ -277,14 +272,10 @@
 		draggable: "[tipo='sort_persona']",
 		handle: "[tipo='sort_handle']",
 		ghostClass: "opacity-50",
-		onEnd: function(event) {
-			let personaID = event.item.id
-			if (personaID == null) { 
-				return console.error("personaID null") 
-			}
-			if (event.oldIndex != event.newIndex){
-				return reordenarPersona(personaID, event.newIndex + 1)
-			}
+		onEnd: function (event) {
+			if (event.oldIndex == event.newIndex){ return }
+			event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+			event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
 		},
 	});
 

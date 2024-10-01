@@ -118,6 +118,11 @@
 			<div class="flex w-full gap-1 p-1 group">
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 					⣿
+					<form tipo="sort_form" hx-post="/reordenar-tramo" hx-trigger="reordenarEnd">
+						<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+						<input type="hidden" name="old_pos" value="{{ .Posicion }}">
+						<input type="hidden" name="new_pos">
+					</form>
 				</div>
 				<div>
 					<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
@@ -1096,16 +1101,11 @@
 			draggable: "[tipo='sort_tramo']",
 			handle: "[tipo='sort_handle']",
 			ghostClass: "opacity-50",
-			onEnd: function(event) {
-				// if (event.oldIndex == event.newIndex){ return }
-				let formData = new FormData();
-				formData.append("historia_id", historiaID);
-				formData.append("old_pos", event.oldIndex + 1);
-				formData.append("new_pos", event.newIndex + 1);
-				let headers = new Headers();
-				headers.append('X-SocketID', wsID);
-				fetch('/reordenar-tramo', { method: 'POST', body: formData, headers: headers }).then(response => handleResponse(response));
-			},
+			onEnd: function (event) {
+				if (event.oldIndex == event.newIndex){ return }
+				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
+          	},
 		});
 
 		// Reordenar reglas

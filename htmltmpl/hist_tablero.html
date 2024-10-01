@@ -217,8 +217,9 @@
 			return console.error("No se puede reordenar persona sin ID")
 		}
 		let formData = new FormData();
-		formData.append("newPosicion", newPosicion);
-		fetch(`/nodos/${historiaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
+		formData.append("historiaID", historiaID);
+		formData.append("new_pos", newPosicion);
+		fetch(`reordenar-historia`, { method: 'POST', body: formData }).then(response => handleResponse(response));
 	}
 
 	function handleResponse(response) {

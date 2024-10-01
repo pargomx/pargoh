@@ -39,6 +39,9 @@ func agregarNodo(padreID int, nodoID int, tipo string, repo Repo) error {
 }
 
 func ReordenarNodo(nodoID int, newPosicion int, repo Repo) error {
+	if nodoID == 0 {
+		return gko.Op("ReordenarNodo").Msg("nodoID sin especificar")
+	}
 	nodo, err := repo.GetNodo(nodoID)
 	if err != nil {
 		return err

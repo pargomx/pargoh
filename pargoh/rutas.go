@@ -135,10 +135,10 @@ func main() {
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
+	s.POS("/reordenar-persona", s.reordenarPersona)
 
 	// Nodos
 	s.POS("/nodos/{nodo_id}", s.postHistoria)
-	s.POS("/nodos/{nodo_id}/reordenar", s.reordenarNodo)
 
 	// Historias
 	s.GET("/historias/{historia_id}", s.getHistoria)

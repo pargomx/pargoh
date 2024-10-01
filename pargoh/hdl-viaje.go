@@ -64,7 +64,7 @@ func (s *servidor) reordenarTramo(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.StatusOkf("Tramo reordenado")
+	return c.Redir("/historias/%v", c.FormInt("historia_id"))
 }
 
 func (s *servidor) moverTramo(c *gecko.Context) error {

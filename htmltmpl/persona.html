@@ -87,6 +87,11 @@
 			class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if eq .Prioridad 3 }} border-cyan-800 {{ else if eq .Prioridad 2 }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if eq .Prioridad 1 }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
 			<span tipo="sort_handle" class="p-3 cursor-pointer">
 				<i class="fa-solid fa-grip-vertical"></i>
+				<form tipo="sort_form" hx-post="/reordenar-historia" hx-trigger="reordenarEnd">
+					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
+					<input type="hidden" name="new_pos">
+				</form>
 			</span>
 			<a href="/historias/{{ .HistoriaID }}" class="grow py-2">
 				{{ enfatizar .Titulo }}
@@ -374,29 +379,15 @@
 	// ================================================================ //
 	// ========== Reordenar =========================================== //
 
-	function reordenarHistoria(historiaID, newPosicion) {
-		console.debug(`reordenarHistoria(id:${historiaID}, pos:${newPosicion})`)
-		if (historiaID == null) {
-			return console.error("No se puede reordenar sin ID")
-		}
-		let formData = new FormData();
-		formData.append("newPosicion", newPosicion);
-		fetch(`/nodos/${historiaID}/reordenar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
-	}
-
-	var zonaCarriles = new Sortable(document.querySelector("[tipo='sort_historias']"), {
-		group: "historias", animation: 150, swapThreshold: 0.50,
+	var sortableHistorias = new Sortable(document.querySelector("[tipo='sort_historias']"), {
+		group: "sort_historias", animation: 150, swapThreshold: 0.50,
 		draggable: "[tipo='sort_historia']",
 		handle: "[tipo='sort_handle']",
 		ghostClass: "opacity-50",
-		onEnd: function(event) {
-			let historiaID = event.item.id
-			if (historiaID == null) { 
-				return console.error("historiaID null") 
-			}
-			if (event.oldIndex != event.newIndex){
-				return reordenarHistoria(historiaID, event.newIndex + 1)
-			}
+		onEnd: function (event) {
+			if (event.oldIndex == event.newIndex){ return }
+			event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+			event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
 		},
 	});
 

@@ -214,5 +214,33 @@ func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", hist.PadreID)
+
+	if hist.PadreTbl == ust.TipoNodoPersona {
+		return c.Redir("/personas/%v", hist.PadreID)
+	} else if hist.PadreTbl == ust.TipoNodoHistoria {
+		return c.Redir("/historias/%v", hist.PadreID)
+	} else {
+		return gko.ErrInesperado().Msgf("reordenarHistoria: padre %v no es persona ni historia, sino %v", hist.PadreID, hist.PadreTbl)
+	}
+}
+
+func (s *servidor) reordenarPersona(c *gecko.Context) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	err = dhistorias.ReordenarNodo(c.FormInt("persona_id"), c.FormInt("new_pos"), sqliteust.NuevoRepo(tx))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	pers, err := s.repo.GetPersona(c.FormInt("persona_id"))
+	if err != nil {
+		return err
+	}
+	return c.Redir("/proyectos/%v", pers.ProyectoID)
 }
