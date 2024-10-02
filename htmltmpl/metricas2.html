@@ -1,0 +1,31 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<main class="flex flex-col grow w-full gap-4 p-2">
+	{{ range .Proyectos }}
+	<div class="p-2 border-2 border-cyan-900 rounded-md">
+		<h2 class="p-2 text-xl">
+			{{ .Titulo }}: {{ segundosToString .Segundos }} ({{ .Segundos }}s)
+		</h2>
+		
+		<table class="p-2 border-separate">
+			<tr>
+				<th>Nivel</th>
+				<th>Prioridad</th>
+				<th>Tiempo</th>
+				<th>Lista</th>
+				<th>Título</th>
+			</tr>
+			{{ range .Historias }}
+			<tr>
+				<td class="bg-cyan-950 rounded">{{ .Nivel }}.{{ .Posicion }}</td>
+				<td class="bg-cyan-950 rounded">{{ .Prioridad }}</td>
+				<td class="bg-cyan-950 rounded">{{ segundosToString .Segundos }}</td>
+				<td class="bg-cyan-950 rounded">{{ .Completada }}</td>
+				<td class="bg-cyan-950 rounded">{{ .Titulo }}</td>
+			</tr>
+			{{ end }}
+		</table>
+
+	</div>
+	{{ end }}
+</main>

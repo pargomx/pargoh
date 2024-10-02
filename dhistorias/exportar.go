@@ -57,7 +57,7 @@ func GetArbolCompleto(repo Repo) ([]ProyectoExport, error) {
 			Personas: make([]PersonaExport, len(personas)),
 		}
 		for j, p := range personas {
-			historias, err := repo.ListNodoHistorias(p.PersonaID)
+			historias, err := repo.ListNodoHistoriasByPadreID(p.PersonaID)
 			if err != nil {
 				return nil, op.Err(err)
 			}
@@ -89,7 +89,7 @@ func GetProyectoExport(proyectoID string, repo Repo) (*ProyectoExport, error) {
 		Personas: make([]PersonaExport, len(Personas)),
 	}
 	for i, per := range Personas {
-		historias, err := repo.ListNodoHistorias(per.PersonaID)
+		historias, err := repo.ListNodoHistoriasByPadreID(per.PersonaID)
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +117,7 @@ func GetPersonaExport(personaID int, repo Repo) (*PersonaExport, error) {
 	if err != nil {
 		return nil, err
 	}
-	historias, err := repo.ListNodoHistorias(per.PersonaID)
+	historias, err := repo.ListNodoHistoriasByPadreID(per.PersonaID)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport
 		Historia:  his,
 		Historias: nil,
 	}
-	hijos, err := repo.ListNodoHistorias(his.HistoriaID)
+	hijos, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
 	if err != nil {
 		fmt.Println("getHistoriaExportsRecursiva: %w", err)
 	}
@@ -270,7 +270,7 @@ func ExportarMarkdown(proyectoID string, w io.Writer, repo Repo) error {
 	for _, Persona := range Personas {
 		fmt.Fprintf(w, "\n## %s\n", Persona.Nombre)
 
-		Historias, err := repo.ListNodoHistorias(Persona.PersonaID)
+		Historias, err := repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
 		if err != nil {
 			return err
 		}
@@ -351,7 +351,7 @@ func printHistoriaMarkdown(w io.Writer, his ust.NodoHistoria, repo Repo) error {
 		}
 	}
 
-	Historias, err := repo.ListNodoHistorias(his.HistoriaID)
+	Historias, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
 	if err != nil {
 		return err
 	}
@@ -387,7 +387,7 @@ func ExportarDocx(proyectoID string, repo Repo, filepath string) error {
 		f.AddParagraph().AddText("").Size(12)
 		f.AddParagraph().AddText(Persona.Nombre).Size(22).Color("0b3d42") // PERSONA
 
-		Historias, err := repo.ListNodoHistorias(Persona.PersonaID)
+		Historias, err := repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
 		if err != nil {
 			return err
 		}
@@ -445,7 +445,7 @@ func printHistoriaDocx(f *docx.File, his ust.NodoHistoria, repo Repo) error {
 		}
 	}
 
-	Historias, err := repo.ListNodoHistorias(his.HistoriaID)
+	Historias, err := repo.ListNodoHistoriasByPadreID(his.HistoriaID)
 	if err != nil {
 		return err
 	}

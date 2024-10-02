@@ -17,7 +17,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias, err := s.repo.ListNodoHistorias(Persona.PersonaID)
+	Historias, err := s.repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias, err := s.repo.ListNodoHistorias(Persona.PersonaID)
+	Historias, err := s.repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
 	if err != nil {
 		return err
 	}

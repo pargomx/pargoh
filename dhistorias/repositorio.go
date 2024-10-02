@@ -37,7 +37,8 @@ type Repo interface {
 	GetHistoria(historiaID int) (*ust.Historia, error)
 	GetNodoHistoria(nodoID int) (*ust.NodoHistoria, error)
 	ListHistorias() ([]ust.Historia, error)
-	ListNodoHistorias(PadreID int) ([]ust.NodoHistoria, error)
+	ListNodoHistorias() ([]ust.NodoHistoria, error)
+	ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistoria, error)
 
 	// Tareas
 	InsertTarea(tar ust.Tarea) error

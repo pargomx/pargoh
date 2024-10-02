@@ -103,6 +103,37 @@
 	</p>
 	{{ end }}
 
+	<div id="tablaDias">
+		<table class="p-4 border border-separate border-cyan-600">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Fecha</th>
+					<th>Total</th>
+					{{ range $.Proyectos }}
+					<th>{{ .Proyecto.Titulo }}</th>
+					{{ end }}
+				</tr>
+			</thead>
+			<tbody class="">
+				{{ range $idx, $dia := .DiasTrabajo }}
+				<tr>
+					<td>{{ suma $idx 1 }}</td>
+					<td class="bg-cyan-950">{{ .Fecha }}</td>
+					<td class="bg-cyan-950">{{ segundosToString .Segundos }}</td>
+
+					{{ range $proyectoID, $v := .Proyectos -}}
+						{{ $horas := 0.0 }}{{ if eq $proyectoID .Proyecto.ProyectoID }}{{ $horas = .Horas }}{{ end }}
+						<td class="bg-cyan-950">
+							{{ segundosToString .Segundos }} {{ .Proyecto.ProyectoID }} {{ $horas }}h
+						</td>
+					{{ end }}
+				</tr>
+				{{ end }}
+			</tbody>
+		</table>
+	</div>
+
 
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Días de trabajo</h3>
 	{{ range .DiasTrabajo -}}

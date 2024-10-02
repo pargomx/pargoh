@@ -42,7 +42,7 @@ func (s *servidor) navDesdePersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	historias, err := s.repo.ListNodoHistorias(persona.PersonaID)
+	historias, err := s.repo.ListNodoHistoriasByPadreID(persona.PersonaID)
 	if err != nil {
 		return err
 	}

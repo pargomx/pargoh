@@ -16,6 +16,6 @@ type IntervaloEnDia struct {
 	Fin string
 	//  `date(interv.inicio,'-5 hours')`
 	Fecha string
-	//  `unixepoch(interv.fin) - unixepoch(interv.inicio)`
+	//  `unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)`
 	Segundos int
 }

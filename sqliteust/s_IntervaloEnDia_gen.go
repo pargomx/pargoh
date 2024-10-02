@@ -16,14 +16,14 @@ import (
 // con los campos escaneados.
 //
 //	coalesce(his.proyecto_id, '') AS proyecto_id,
-//	coalesce(his.persona_id, 0),
-//	coalesce(his.historia_id, 0),
+//	coalesce(his.persona_id, 0) AS persona_id,
+//	coalesce(his.historia_id, 0) AS historia_id,
 //	interv.tarea_id,
 //	interv.inicio,
 //	interv.fin,
 //	coalesce(date(interv.inicio,'-5 hours'), '') AS fecha,
-//	coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos
-const columnasIntervaloEnDia string = "coalesce(his.proyecto_id, '') AS proyecto_id, coalesce(his.persona_id, 0), coalesce(his.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(date(interv.inicio,'-5 hours'), '') AS fecha, coalesce(unixepoch(interv.fin) - unixepoch(interv.inicio), 0) AS segundos"
+//	coalesce(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio), 0) AS segundos
+const columnasIntervaloEnDia string = "coalesce(his.proyecto_id, '') AS proyecto_id, coalesce(his.persona_id, 0) AS persona_id, coalesce(his.historia_id, 0) AS historia_id, interv.tarea_id, interv.inicio, interv.fin, coalesce(date(interv.inicio,'-5 hours'), '') AS fecha, coalesce(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio), 0) AS segundos"
 
 // Origen de los datos de ust.IntervaloEnDia
 //

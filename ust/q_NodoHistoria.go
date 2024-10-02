@@ -28,4 +28,6 @@ type NodoHistoria struct {
 	NumHistorias int
 	//  `(SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id)`
 	NumTareas int
+	//  `(SELECT sum(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id )`
+	Segundos int
 }

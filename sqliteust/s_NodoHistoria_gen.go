@@ -28,8 +28,9 @@ import (
 //	coalesce(nod.nivel, 0),
 //	coalesce(nod.posicion, 0),
 //	coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias,
-//	coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas
-const columnasNodoHistoria string = "his.historia_id, his.proyecto_id AS proyecto_id, his.persona_id AS persona_id, his.titulo, his.objetivo, his.prioridad, his.completada, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0), coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias, coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas"
+//	coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas,
+//	coalesce((SELECT sum(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id ), 0) AS segundos
+const columnasNodoHistoria string = "his.historia_id, his.proyecto_id AS proyecto_id, his.persona_id AS persona_id, his.titulo, his.objetivo, his.prioridad, his.completada, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0), coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias, coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas, coalesce((SELECT sum(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id ), 0) AS segundos"
 
 // Origen de los datos de ust.NodoHistoria
 //
@@ -43,7 +44,7 @@ const fromNodoHistoria string = "FROM historias his INNER JOIN nodos nod ON nodo
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria) error {
 	err := row.Scan(
-		&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
+		&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas, &nhist.Segundos,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -89,7 +90,7 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 	for rows.Next() {
 		nhist := ust.NodoHistoria{}
 		err := rows.Scan(
-			&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas,
+			&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.NumHistorias, &nhist.NumTareas, &nhist.Segundos,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
@@ -100,13 +101,27 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 }
 
 //  ================================================================  //
+//  ========== LIST ================================================  //
+
+func (s *Repositorio) ListNodoHistorias() ([]ust.NodoHistoria, error) {
+	const op string = "ListNodoHistorias"
+	rows, err := s.db.Query(
+		"SELECT " + columnasNodoHistoria + " " + fromNodoHistoria,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsNodoHistoria(rows, op)
+}
+
+//  ================================================================  //
 //  ========== LIST BYPROYECTOID ===================================  //
 
 func (s *Repositorio) ListNodoHistoriasByProyectoID(ProyectoID string) ([]ust.NodoHistoria, error) {
 	const op string = "ListNodoHistoriasByProyectoID"
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
-			"WHERE his.proyecto_id = ? ORDER BY nod.posicion",
+			"WHERE his.proyecto_id = ? ORDER BY (his.prioridad * nod.nivel) + 20 - nod.posicion DESC",
 		ProyectoID,
 	)
 	if err != nil {
@@ -116,10 +131,10 @@ func (s *Repositorio) ListNodoHistoriasByProyectoID(ProyectoID string) ([]ust.No
 }
 
 //  ================================================================  //
-//  ========== LIST  ===============================================  //
+//  ========== LIST BYPADREID ======================================  //
 
-func (s *Repositorio) ListNodoHistorias(PadreID int) ([]ust.NodoHistoria, error) {
-	const op string = "ListNodoHistorias"
+func (s *Repositorio) ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistoria, error) {
+	const op string = "ListNodoHistoriasByPadreID"
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
 			"WHERE nod.padre_id = ? ORDER BY nod.posicion",

@@ -205,7 +205,8 @@ func main() {
 	s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
 
 	// General
-	s.GET("/metricas", s.getMétricas)
+	s.GET("/metricas", s.getMétricas1)
+	s.GET("/metricas2", s.getMétricas2)
 	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
 	s.GET("/materializar-historias", s.materializarHistorias)
 
