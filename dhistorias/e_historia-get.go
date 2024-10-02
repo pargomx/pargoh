@@ -76,22 +76,34 @@ func GetHistoria(historiaID int, repo Repo) (*Historia, error) {
 	}
 	item.Proyecto = *proy
 
-	// Obtener historias descendientes 2 niveles.
-	historias1, err := repo.ListNodoHistoriasByPadreID(historiaID)
+	// Obtener historias descendientes.
+	item.Descendientes, err = GetHistoriasDescendientes(historiaID, 0, repo)
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	item.Descendientes = make([]HistoriaRecursiva, len(historias1))
-	for i, his1 := range historias1 { // TODO: usar función recursiva.
-		item.Descendientes[i].Historia = his1
-		historias2, err := repo.ListNodoHistoriasByPadreID(his1.HistoriaID)
-		if err != nil {
-			return nil, op.Err(err)
+	return &item, nil
+}
+
+// Obtener árbol de historias descendientes de forma recursiva.
+// Si el nivel es 1, solo se obtienen las historias inmediatas.
+// Si el nivel es 2, se obtienen las historias inmediatas y sus historias inmediatas.
+// Y así sucesivamente.
+// Si el nivel es 0 o negativo no se limita la recursión y se traen todos los descendientes.
+func GetHistoriasDescendientes(padreID int, niveles int, repo Repo) ([]HistoriaRecursiva, error) {
+	historias, err := repo.ListNodoHistoriasByPadreID(padreID)
+	if err != nil {
+		return nil, gko.Err(err).Strf("padreID:%v niveles:%v", padreID, niveles)
+	}
+	res := make([]HistoriaRecursiva, len(historias))
+	for i, his := range historias {
+		res[i].NodoHistoria = his
+		if niveles == 1 {
+			continue // limitar la recursión cuando se da un nivel positivo.
 		}
-		item.Descendientes[i].Descendientes = make([]HistoriaRecursiva, len(historias2))
-		for j, his2 := range historias2 {
-			item.Descendientes[i].Descendientes[j].Historia = his2
+		res[i].Descendientes, err = GetHistoriasDescendientes(his.HistoriaID, niveles-1, repo)
+		if err != nil {
+			return nil, err
 		}
 	}
-	return &item, nil
+	return res, nil
 }

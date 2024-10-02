@@ -359,27 +359,30 @@
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 					⣿
 					<form tipo="sort_form" hx-post="/reordenar-historia" hx-trigger="reordenarEnd">
-						<input type="hidden" name="historia_id" value="{{ .Historia.HistoriaID }}">
-						<input type="hidden" name="old_pos" value="{{ .Historia.Posicion }}">
+						<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+						<input type="hidden" name="old_pos" value="{{ .Posicion }}">
 						<input type="hidden" name="new_pos">
 					</form>
 				</div>
 				<button
 					tipo="descendiente_bullet"
 					type="button"
-					onclick="showMenuHistoria({{ .Historia.HistoriaID }})"
+					onclick="showMenuHistoria({{ .HistoriaID }})"
 					class="inline-block w-5 text-center">
-					{{- if .Historia.Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-					{{- else if eq .Historia.Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-					{{- else if eq .Historia.Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-					{{- else if eq .Historia.Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+					{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
+					{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+					{{- else if eq .Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+					{{- else if eq .Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
 					{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
 					{{- end }}
 				</button>
 				<div class="grow">
-					<a href="/historias/{{ .Historia.HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
-						{{- enfatizar .Historia.Titulo -}}
+					<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+						{{- enfatizar .Titulo -}}
 					</a>
+					<span class="float-right text-sm font-bold opacity-75">
+						{{ segundosToString .TiempoReal }}
+					</span>
 				</div>
 			</div>
 
@@ -392,20 +395,23 @@
 						<button
 							tipo="descendiente_bullet"
 							type="button"
-							onclick="showMenuHistoria({{ .Historia.HistoriaID }})"
+							onclick="showMenuHistoria({{ .HistoriaID }})"
 							class="inline-block w-5 text-center">
-							{{- if .Historia.Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-							{{- else if eq .Historia.Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-							{{- else if eq .Historia.Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-							{{- else if eq .Historia.Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+							{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
+							{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+							{{- else if eq .Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+							{{- else if eq .Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
 							{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
 							{{- end }}
 						</button>
 					</div>
 					<div class="grow">
-						<a href="/historias/{{ .Historia.HistoriaID }}" class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300">
-							{{- enfatizar .Historia.Titulo -}}
+						<a href="/historias/{{ .HistoriaID }}" class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+							{{- enfatizar .Titulo -}}
 						</a>
+						<span class="float-right text-xs opacity-50">
+							{{ segundosToString .TiempoReal }}
+						</span>
 					</div>
 				</li>
 				{{ end }}
@@ -823,15 +829,15 @@
 
 <!-- ======================================================== -->
 {{ define "ctxMenuHistoria" -}}
-	<dialog id="ctxMenuHistoria{{ .Historia.HistoriaID }}" tipo="ctxMenuHistoria"
+	<dialog id="ctxMenuHistoria{{ .HistoriaID }}" tipo="ctxMenuHistoria"
 		class="absolute p-0 m-0 text-slate-300 bg-cyan-900 border border-slate-300 rounded shadow-md">
 		<form class="grid grid-cols-2 gap-1 p-2 text-sm">
 
 			<div class="col-span-2 px-1 text-xs opacity-50">Prioridad</div>
 			<button
 				type="button"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/3" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 3 }}font-bold{{ end }}">
+				hx-post="/historias/{{ .HistoriaID }}/priorizar/3" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 3 }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-600 fa-solid fa-angles-up"></i>
 				</span>
@@ -839,8 +845,8 @@
 			</button>
 			<button
 				type="button"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/2" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 2 }}font-bold{{ end }}">
+				hx-post="/historias/{{ .HistoriaID }}/priorizar/2" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 2 }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
 				</span>
@@ -848,8 +854,8 @@
 			</button>
 			<button
 				type="button"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/1" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 1 }}font-bold{{ end }}">
+				hx-post="/historias/{{ .HistoriaID }}/priorizar/1" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 1 }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-200 fa-solid fa-minus"></i>
 				</span>
@@ -857,8 +863,8 @@
 			</button>
 			<button
 				type="button"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/priorizar/0" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Historia.Prioridad 0 }}font-bold{{ end }}">
+				hx-post="/historias/{{ .HistoriaID }}/priorizar/0" 
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 0 }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-slate-400 fa-solid fa-ban"></i>
 				</span>
@@ -868,8 +874,8 @@
 			<div class="col-span-2 px-1 text-xs opacity-50">Estatus</div>
 			<button
 				type="button"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/marcar/0"
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if not .Historia.Completada }}font-bold{{ end }}">
+				hx-post="/historias/{{ .HistoriaID }}/marcar/0"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if not .Completada }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-600 fa-regular fa-circle"></i>
 				</span>
@@ -877,8 +883,8 @@
 			</button>
 			<button
 				type="button"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/marcar/1"
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .Historia.Completada }}font-bold{{ end }}">
+				hx-post="/historias/{{ .HistoriaID }}/marcar/1"
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .Completada }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-green-600 fa-solid fa-circle-check"></i>
 				</span>
@@ -888,8 +894,8 @@
 			<div class="col-span-2 px-1 text-xs opacity-50">Acciones</div>
 			<button
 				type="button"
-				hx-delete="/historias/{{ .Historia.HistoriaID }}"
-				hx-confirm="¿Eliminar historia? {{ .Historia.Titulo }}"
+				hx-delete="/historias/{{ .HistoriaID }}"
+				hx-confirm="¿Eliminar historia? {{ .Titulo }}"
 				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700">
 				<span class="inline-block w-5 text-center">
 					<i class="text-red-500 fa-solid fa-trash"></i>
@@ -898,7 +904,7 @@
 			</button>
 			<button
 				type="button"
-				onclick="showMoverHistoria('{{ .Historia.HistoriaID }}', '{{ .Historia.Titulo }}')"
+				onclick="showMoverHistoria('{{ .HistoriaID }}', '{{ .Titulo }}')"
 				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700">
 				<span class="inline-block w-5 text-center">
 					<i class="text-cyan-500 fa-solid fa-person-walking"></i>

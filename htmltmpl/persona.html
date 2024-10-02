@@ -96,6 +96,9 @@
 			<a href="/historias/{{ .HistoriaID }}" class="grow py-2">
 				{{ enfatizar .Titulo }}
 			</a>
+			<span class="float-right text-sm opacity-75">
+				{{ segundosToString .TiempoReal }}
+			</span>
 			<span class="p-3">
 				{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
 				{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>

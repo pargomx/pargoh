@@ -15,7 +15,7 @@ type Historia struct {
 }
 
 type HistoriaRecursiva struct {
-	Historia      ust.NodoHistoria
+	ust.NodoHistoria
 	Descendientes []HistoriaRecursiva
 }
 
@@ -41,6 +41,22 @@ func (h *Historia) TiempoReal() int {
 	total := 0
 	for _, t := range h.Tareas {
 		total += t.TiempoReal
+	}
+	return total
+}
+
+func (h *HistoriaRecursiva) TiempoEstimado() int {
+	total := h.Segundos
+	for _, h := range h.Descendientes {
+		total += h.TiempoEstimado()
+	}
+	return total
+}
+
+func (h *HistoriaRecursiva) TiempoReal() int {
+	total := h.Segundos
+	for _, h := range h.Descendientes {
+		total += h.TiempoReal()
 	}
 	return total
 }

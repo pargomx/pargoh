@@ -17,7 +17,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias, err := s.repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
+	Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
 	if err != nil {
 		return err
 	}
