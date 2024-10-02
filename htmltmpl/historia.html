@@ -143,7 +143,7 @@
 					{{ if not .Imagen -}}
 					<button
 						type="button"
-						onclick="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
+						onclick="showTramoImgModal(this.closest('li'))"
 						title="Definir imagen"
 						class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80">
 						<i class="fa-solid fa-image"></i>
@@ -162,7 +162,7 @@
 			<div class="relative mb-2 ml-12 border border-cyan-800 rounded-md shadow-lg">
 				<img
 					src="/imagenes/{{ .Imagen }}"
-					onclick="showTramoImgModal('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}','{{ .Imagen }}')"
+					onclick="showTramoImgModal(this.closest('li'))"
 					class="rounded-md cursor-pointer max-w-40 max-h-40">
 			</div>
 			{{ end }}
@@ -191,12 +191,24 @@
 	</ol>
 
 	<!--* IMAGEN DEL TRAMO -->
-	<dialog id="TramoImgModal" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<dialog id="TramoImgModal" class="w-full max-w-3xl text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 		<div class="flex flex-col max-w-3xl max-h-[90vh]"><!-- Para hacer scrollable manteniendo header -->
 			<header class="flex items-center gap-2 p-2 bg-cyan-800">
 				<h2 class="grow text-xl">
-					Imagen para tramo del viaje
+					Viaje de usuario
 				</h2>
+				<button
+					type="button"
+					title="Anterior"
+					class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75">
+					<i class="fa-solid fa-arrow-left"></i>
+				</button>
+				<button
+					type="button"
+					title="Siguiente"
+					class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75">
+					<i class="fa-solid fa-arrow-right"></i>
+				</button>
 				<button
 					type="button"
 					onclick="this.closest('dialog').close()" 
@@ -251,18 +263,27 @@
 			</div>
 		</div>
 	</dialog>
+
 	<script>
-		function showTramoImgModal(historiaID, posicion, texto, imagen) {
+		function showTramoImgModal(liElement) {
+			// Obtener datos del tramo seleccionado.
+			let historiaID= liElement.querySelector("input[name='historia_id']").value
+			let posicion =	liElement.querySelector("input[name='old_pos']").value
+			let texto = 	liElement.querySelector("textarea").value
+			let imgElem = 	liElement.querySelector("img")
+			let imgSrc = 	imgElem ? imgElem.src : ""
+			
+			// Poner datos en el dialog.
 			let dialog = document.getElementById("TramoImgModal")
 			let btnEliminarImg = dialog.querySelector("button[tipo='eliminar_img']")
-			dialog.querySelector("p").textContent = posicion + ". " + texto
+			dialog.querySelector("h2").textContent = `Viaje de usuario (${posicion})`
+			dialog.querySelector("p").textContent = texto
 			dialog.querySelector("input[name='historia_id']").value = historiaID
 			dialog.querySelector("input[name='posicion']").value = posicion
 			dialog.querySelector("input[type='file']").value = ""
-			dialog.querySelector("button[type='submit']").textContent = imagen ? "Remplazar" : "Subir imagen"
-			
-			if (imagen != "") {
-				dialog.querySelector("img").src = "/imagenes/" + imagen
+			dialog.querySelector("button[type='submit']").textContent = imgSrc ? "Remplazar" : "Subir imagen"
+			if (imgSrc != "") {
+				dialog.querySelector("img").src = imgSrc
 				dialog.querySelector("img").classList.remove("hidden")
 				btnEliminarImg.setAttribute("hx-delete", "/imagenes/" + historiaID + "/" + posicion)
 				btnEliminarImg.classList.remove("hidden")
@@ -275,9 +296,46 @@
 				dialog.querySelector("button[tipo='cancelar']").classList.remove('hidden')
 			}
 			htmx.process(btnEliminarImg)
+			
+			// Botón para ir a tramo anterior
+			prevTramo = liElement.previousElementSibling
+			let btnPrev = dialog.querySelector("button[title='Anterior']")
+			if (prevTramo && prevTramo.hasAttribute('tipo') && prevTramo.getAttribute('tipo') === 'sort_tramo') {
+				btnPrev.classList.remove('hidden');
+				btnPrev.onclick = function() { showTramoImgModal(prevTramo); }
+				dialog.addEventListener('keydown', showPrevTramoHdlrKey);
+			} else {
+				btnPrev.classList.add('hidden');
+				btnPrev.onclick = function() { console.log("imposible") }
+				dialog.removeEventListener('keydown', showPrevTramoHdlrKey);
+			}
+			// Botón para ir a tramo siguiente
+			nextTramo = liElement.nextElementSibling
+			let btnNext = dialog.querySelector("button[title='Siguiente']")
+			if (nextTramo && nextTramo.hasAttribute('tipo') && nextTramo.getAttribute('tipo') === 'sort_tramo') {
+				btnNext.classList.remove('hidden');
+				btnNext.onclick = function() { showTramoImgModal(nextTramo); }
+				dialog.addEventListener('keydown', showNextTramoHdlrKey);
+			} else {
+				btnNext.classList.add('hidden');
+				btnNext.onclick = function() { console.log("imposible") }
+				dialog.removeEventListener('keydown', showNextTramoHdlrKey);
+			}
+			// Mostrar dialog antes de hacer focus.
 			dialog.showModal()
-			// console.log(`showTramoImgModal(${historiaID}, ${posicion}, ${texto}, ${imagen}`)
+			dialog.querySelector("button[title='Cerrar']").focus()
 		}
+		// Handlers como funciones utilizando globales para poder removerlos.
+		function showPrevTramoHdlrKey(event) {
+			if (event.key === 'ArrowLeft') { showTramoImgModal(prevTramo); }
+		}
+		function showNextTramoHdlrKey(event) {
+			if (event.key === 'ArrowRight') { showTramoImgModal(nextTramo); }
+		}
+		let prevTramo = null
+		let nextTramo = null
+		
+		// Mostrar imagen cuando se selecciona un archivo.		
 		function showTramoImagePreview() {
 			let dialog = document.getElementById("TramoImgModal")
 			const [file] = dialog.querySelector("input[type='file']").files
