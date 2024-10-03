@@ -40,6 +40,9 @@ type Repo interface {
 	ListNodoHistorias() ([]ust.NodoHistoria, error)
 	ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistoria, error)
 
+	// Materializados
+	CambiarProyectoDeHistoriasByPersonaID(personaID int, proyectoID string) error
+
 	// Tareas
 	InsertTarea(tar ust.Tarea) error
 	UpdateTarea(tar ust.Tarea) error
