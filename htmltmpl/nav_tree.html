@@ -157,12 +157,12 @@
 {{ range .Descendientes -}}
 <div class="pl-4">
 	<a
-		hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
+		hx-get="/nav/hist/{{ .HistoriaID }}"
 		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Descendiente
 		</span>
-		{{ .Historia.Titulo }}
+		{{ .Titulo }}
 	</a>
 </div>
 {{ end }}

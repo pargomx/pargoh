@@ -18,10 +18,6 @@ github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWE
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdhx/f4=
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
-github.com/pargomx/gecko v0.0.0-20240906011421-570a18c35dde h1:Zy14YTwUcFKupuXETgUFWfHUksvzEuy/KYmeNlz1Gus=
-github.com/pargomx/gecko v0.0.0-20240906011421-570a18c35dde/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
-github.com/pargomx/gecko v0.0.0-20240919051550-c94f5b32ee31 h1:aU3gIPWAo4+21vpVIZt/QHHnr6fgUhgDhtwvpjDX4YQ=
-github.com/pargomx/gecko v0.0.0-20240919051550-c94f5b32ee31/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
 github.com/pargomx/gecko v0.0.0-20241001162422-bc0d80347e81 h1:cSFCLcZ2nI/oVIyZHgrNssYYsM3PO1cdGMn5FCM9fgw=
 github.com/pargomx/gecko v0.0.0-20241001162422-bc0d80347e81/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
