@@ -61,9 +61,9 @@
 			<h4 class="mb-2 text-2xl font-medium">
 				<a href="/proyectos/{{ .ProyectoID }}" class="transition-opacity hover:opacity-75">{{ .Titulo }}</a>
 			</h4>
-			<p class="mb-2 text-sm opacity-75 line-clamp-3">
+			<p class="mb-2 text-sm opacity-75 line-clamp-3"><a href="/proyectos/{{ .ProyectoID }}">
 				{{- enfatizar .Descripcion -}}
-			</p>
+			</a></p>
 			<ul class="flex flex-wrap pl-4 mb-2 list-disc gap-x-6 gap-y-1">
 				{{ range .Personas -}}
 				<li class="text-sm">

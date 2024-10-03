@@ -92,14 +92,14 @@
 				</form>
 			</span>
 		</div>
-		<div class="w-full">
-			<a href="/personas/{{ .PersonaID }}" class="inline-block text-lg font-medium">
+		<a href="/personas/{{ .PersonaID }}" class="block w-full" title="{{ .Nombre }}">
+			<h4 class="inline-block text-lg font-medium">
 				{{- .Nombre -}}
-			</a>
+			</h4>
 			<p class="text-sm opacity-75">
 				{{- .Descripcion -}}
 			</p>
-		</div>
+		</a>
 		<button 
 			type="button"
 			onclick="showPersonaForm(this.closest('article').id)"
