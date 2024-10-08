@@ -61,6 +61,15 @@
 				<option value="1" {{- if .Historia.Completada }} selected{{ end }}>✅ Completada</option>
 			</select>
 		</div>
+		<div>
+			<input
+				hx-swap="none"
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/estimado"
+				type="text"
+				name="value"
+				value="{{ minutosToString .Historia.MinutosEstimado }}"
+				class="form-control">
+		</div>
 	</div>
 
 	<!--* ANCESTROS *-->

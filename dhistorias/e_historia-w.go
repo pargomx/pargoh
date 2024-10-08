@@ -115,6 +115,12 @@ func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) err
 	case "completada":
 		num, _ := strconv.Atoi(newVal)
 		Hist.Completada = num > 0
+	case "estimado":
+		estimado, err := ust.NuevaDuración(newVal)
+		if err != nil {
+			return op.Err(err)
+		}
+		Hist.MinutosEstimado = estimado
 	default:
 		gko.LogWarnf("Nada cambió para historia %v", Hist.HistoriaID)
 		return nil

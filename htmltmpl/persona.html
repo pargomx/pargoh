@@ -98,6 +98,7 @@
 			</a>
 			<span class="float-right text-sm opacity-75">
 				{{ segundosToString .TiempoReal }}
+				{{ if .MinutosEstimado  }} / {{ minutosToString .MinutosEstimado }}{{ end }}
 			</span>
 			<span class="p-3">
 				{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>

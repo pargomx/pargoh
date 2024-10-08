@@ -24,6 +24,8 @@ type NodoHistoria struct {
 	Nivel int
 	//  `nod.posicion`
 	Posicion int
+	//  `his.minutos_estimado`
+	MinutosEstimado int
 	//  `(SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id)`
 	NumHistorias int
 	//  `(SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id)`
