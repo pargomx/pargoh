@@ -1,6 +1,9 @@
 package dhistorias
 
-import "monorepo/ust"
+import (
+	"math"
+	"monorepo/ust"
+)
 
 type Historia struct {
 	Historia ust.NodoHistoria
@@ -53,10 +56,31 @@ func (h *HistoriaRecursiva) TiempoEstimado() int {
 	return total
 }
 
-func (h *HistoriaRecursiva) TiempoReal() int {
+// ================================================================ //
+
+func (h *HistoriaRecursiva) SegundosEstimado() int {
+	return h.MinutosEstimado * 60
+}
+func (h *HistoriaRecursiva) SegundosTranscTotal() int {
 	total := h.Segundos
 	for _, h := range h.Descendientes {
-		total += h.TiempoReal()
+		total += h.SegundosTranscTotal()
 	}
 	return total
+}
+func (h *HistoriaRecursiva) SegundosAvanceTeorico() int {
+	return h.AvancePorcentual() * h.SegundosEstimado() / 100
+}
+func (h *HistoriaRecursiva) AvancePorcentual() int {
+	return 75
+}
+
+func (h *HistoriaRecursiva) HorasEstimado() float64 {
+	return math.Round(float64(h.SegundosEstimado())/3600*100) / 100
+}
+func (h *HistoriaRecursiva) HorasTranscTotal() float64 {
+	return math.Round(float64(h.SegundosTranscTotal())/3600*100) / 100
+}
+func (h *HistoriaRecursiva) HorasAvanceTeorico() float64 {
+	return math.Round(float64(h.SegundosAvanceTeorico())/3600*100) / 100
 }

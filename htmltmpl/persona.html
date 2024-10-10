@@ -97,7 +97,7 @@
 				{{ enfatizar .Titulo }}
 			</a>
 			<span class="float-right text-sm opacity-75">
-				{{ segundosToString .TiempoReal }}
+				{{ segundosToString .SegundosTranscTotal }}
 				{{ if .MinutosEstimado  }} / {{ minutosToString .MinutosEstimado }}{{ end }}
 			</span>
 			<span class="p-3">
@@ -136,6 +136,137 @@
 	</details> -->
 	{{ end }}
 
+	<!--? COSTO DE LAS HISTORIAS -->
+	{{ if .Historias -}}
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Desglose de costo</h3>
+	<div class="px-4 mb-4" style="background-color: transparent;">
+		<canvas id="chartHistoriasCosto"></canvas>
+	</div>
+	<script>
+		const tTooltips = [{{ range .Historias }}[
+			{{ if .SegundosEstimado -}}
+			"Presupuesto: {{ segundosToString .SegundosEstimado }}",
+			{{ end -}}
+			"Avance: {{ .AvancePorcentual }}%",
+			"Tiempo utilizado: {{ segundosToString .SegundosTranscTotal }}",
+			{{ if .SegundosEstimado -}}
+			"Tiempo teórico: {{ segundosToString .SegundosAvanceTeorico }}",
+			{{ end -}}
+			],{{ end }}]
+
+		new Chart(document.getElementById('chartHistoriasCosto'), {
+			type: 'bar',
+			data: {
+				labels: [{{ range .Historias }}'{{ .Titulo }}',{{ end }}],
+				datasets: [
+					{
+						data: [{{ range .Historias }}{{ .HorasEstimado }},{{ end }}],
+						label: 'Presupuesto',
+						categoryPercentage: 0.8,
+						backgroundColor: 'transparent',
+						borderWidth: {top: 3, right: 5, bottom: 3, left: 0},
+						borderColor: 'lightblue',
+					},
+					{
+						data: [{{ range .Historias }}{{ .HorasAvanceTeorico }},{{ end }}],
+						label: 'Gasto teórico',
+						categoryPercentage: 0.8,
+						backgroundColor: 'transparent',
+						borderWidth: {top: 0, right: 5, bottom: 0, left: 0},
+						borderColor: 'orange',
+					},
+					{
+						data: [{{ range .Historias }}{{ .HorasTranscTotal }},{{ end }}],
+						label: 'Gasto real',
+						backgroundColor: '#155e75',
+						categoryPercentage: 0.8,
+						// borderWidth: {top: 0, right: 5, bottom: 0, left: 0},
+						// borderColor: 'green',
+					},
+				]
+			},
+			options: {
+				indexAxis: 'y',
+				elements: {
+					bar: {
+						// borderWidth: 2,
+					}
+				},
+				responsive: true,
+				scales: {
+					y: {
+						stacked: true,
+						ticks: {
+							callback: function(value, index, ticks) { // Limitar etiquetas a 20 caracteres.
+								let valueLegend = this.getLabelForValue(value);
+								if (valueLegend.length > 20) {
+									valueLegend = valueLegend.substring(0, 20).trimEnd() + "…";
+								}
+								return valueLegend;
+							},
+							color: 'white'
+						},
+						grid: {
+							display: false,
+							// drawOnChartArea: false,
+							// color: 'white',
+							// lineWidth: 2,
+						},
+						border: {
+							color: 'white',
+							width: 2,
+						},
+					},
+					x: {
+						beginAtZero: true,
+						grid: {
+							drawOnChartArea: false,
+							color: 'white',
+							lineWidth: 2,
+						},
+						border: {
+							display: false,
+						},
+						ticks: {
+							color: 'white',
+							callback: function(value, index, ticks) {
+								return this.getLabelForValue(value) + " h";
+							},
+						},
+					}
+				},
+				plugins: {
+					legend: {
+						display: true,
+						position: 'top',
+						labels: {
+							color: 'white',
+							boxWidth: 20,
+						}
+					},
+					title: {
+						display: false,
+						text: 'Tiempo de implementación'
+					},
+					tooltip: {
+						callbacks: {
+							title: function(context) {
+								return tTooltips[context[0].dataIndex];
+							},
+							label: function(context) {
+								return ""
+							},
+							beforeBody: function(context) {
+								return context[0].label;
+							},
+						}
+					},
+				}
+			},
+		});
+	</script>
+	{{ end }}
+
 	<!--? DIAS DE TRABAJO -->
 	{{ if .DiasTrabajo -}}
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
@@ -147,7 +278,7 @@
 	</p>
 
 	{{ range .PersonaCosto.Historias }}
-	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded">{{ .TiempoReal }} {{ .SegundosReal }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
+	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded">{{ .SegundosTranscTotal }} {{ .SegundosReal }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
 	{{ end }}
 	
 	<div class="p-4 mb-4">
@@ -242,7 +373,7 @@
 				<td>{{ .MinutosEstimado }}</td>
                 <td>{{ .TiempoEstimado }}</td>
 				<td>{{ .SegundosReal }}</td>
-                <td>{{ .TiempoReal }}</td>
+                <td>{{ .SegundosTranscTotal }}</td>
             </tr>
             {{ end }}
         </tbody>
