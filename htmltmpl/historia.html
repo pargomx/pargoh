@@ -551,6 +551,10 @@
 				</span>
 			</div>
 			<p class="">
+				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+					{{- .ImportanciaString -}}
+				</span>
+
 				{{ if not .Tipo.EsIndefinido -}}
 				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 					{{- .Tipo.Etiqueta -}}
@@ -762,6 +766,14 @@
 					value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}"
 					placeholder="mm ó hh:mm"
 					class="form-control">
+			</div>
+			<div>
+				<label for="upd{{ .TareaID }}_07">Importancia</label>
+				<select id="upd{{ .TareaID }}_07" name="importancia" class="form-control">
+					<option value="0" {{ if .EsIdea }}selected{{ end }}>Idea</option>
+					<option value="1" {{ if .EsMejora }}selected{{ end }}>Mejora</option>
+					<option value="2" {{ if .EsNecesaria }}selected{{ end }}>Necesaria</option>
+				</select>
 			</div>
 
 			<input type="hidden" name="tarea_id" value="{{ .TareaID }}">

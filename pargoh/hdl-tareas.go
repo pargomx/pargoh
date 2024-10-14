@@ -20,6 +20,7 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 		Descripcion:    c.FormVal("descripcion"),
 		Impedimentos:   c.FormVal("impedimentos"),
 		TiempoEstimado: estimado,
+		Importancia:    c.FormInt("importancia"),
 	}
 	err = dhistorias.AgregarTarea(tarea, s.repo)
 	if err != nil {
@@ -41,6 +42,7 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 		Descripcion:    c.FormVal("descripcion"),
 		Impedimentos:   c.FormVal("impedimentos"),
 		TiempoEstimado: estimado,
+		Importancia:    c.FormInt("importancia"),
 	}
 	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), tarea, s.repo)
 	if err != nil {

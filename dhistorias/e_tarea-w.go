@@ -51,6 +51,7 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	tar.Descripcion = nueva.Descripcion
 	tar.Impedimentos = nueva.Impedimentos
 	tar.TiempoEstimado = nueva.TiempoEstimado
+	tar.Importancia = nueva.Importancia
 
 	err = actualizarTiempoReal(tar, op, repo)
 	if err != nil {

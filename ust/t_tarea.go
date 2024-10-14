@@ -16,6 +16,7 @@ type Tarea struct {
 	TiempoEstimado int       // `tareas.tiempo_estimado`
 	TiempoReal     int       // `tareas.tiempo_real`
 	Estatus        int       // `tareas.estatus`  0:no_iniciada 1:en_curso 2:en_pausa 3:finalizada
+	Importancia    int       // `tareas.importancia`
 }
 
 var (
