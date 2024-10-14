@@ -28,6 +28,7 @@ func (t *Tarea) ImportanciaString() string {
 	case TareaNecesaria:
 		return "Necesaria"
 	default:
+		gko.LogWarnf("Importancia inválida: %v para tarea %v", t.Importancia, t.TareaID)
 		return "???"
 	}
 }
@@ -40,4 +41,48 @@ func (t *Tarea) EsMejora() bool {
 }
 func (t *Tarea) EsNecesaria() bool {
 	return t.Importancia == TareaNecesaria
+}
+
+func (t *Tarea) PonderacionImportancia() int {
+	switch t.Importancia {
+	case TareaIdea:
+		return 1
+	case TareaMejora:
+		return 32
+	case TareaNecesaria:
+		return 128
+	default:
+		gko.LogWarnf("Importancia inválida: %v para tarea %v", t.Importancia, t.TareaID)
+		return 0
+	}
+}
+
+// TODO: todos los campos deberían usar segundos para ser consistentes.
+// TODO: usar campo STRING para importancia, de todas formas no se usan los números de la DB en la lógica y así es expandible a otras ponderaciones.
+
+const TIEMPO_CALCULO_DEFAULT = 60 // minutos
+
+func (t *Tarea) ValorPonderado() int {
+	estimado := t.TiempoEstimado * 60 // minutos
+	real := t.TiempoReal              // segundos
+
+	tiempo := estimado
+	if t.Finalizada() || (!t.Finalizada() && real >= estimado) {
+		tiempo = real
+	}
+	if tiempo == 0 {
+		tiempo = TIEMPO_CALCULO_DEFAULT
+	}
+	return tiempo * t.PonderacionImportancia()
+}
+
+func (t *Tarea) AvancePonderado() int {
+	pond := t.ValorPonderado()
+	if t.Finalizada() {
+		return pond
+	}
+	if t.TiempoReal >= t.TiempoEstimado*60 {
+		return pond * 90 / 100 // 90%
+	}
+	return t.PonderacionImportancia() * t.TiempoReal
 }

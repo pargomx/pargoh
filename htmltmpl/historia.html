@@ -516,6 +516,11 @@
 		<h3 id="tareas" class="grow text-xl">
 			<a href="#tareas">Tareas</a>
 		</h3>
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
+			v:{{ .ValorPonderadoTotal }}
+			a:{{ .AvancePonderadoTotal }}
+			{{ .AvancePorcentual }}%
+		</span>
 		{{- if .TiempoEstimado -}}
 		<span class="text-sm opacity-75" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
 			<i class="fa-solid fa-hourglass-start"></i> Estimado
@@ -551,6 +556,14 @@
 				</span>
 			</div>
 			<p class="">
+				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+					e:{{ .TiempoEstimado }}
+					r:{{ div .TiempoReal 60 }}
+					v:{{ .ValorPonderado }}
+					a:{{ .AvancePonderado }}
+					{{ $.Agregado.ValorPorcentual .TareaID }}%
+				</span>
+
 				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 					{{- .ImportanciaString -}}
 				</span>

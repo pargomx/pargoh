@@ -84,3 +84,44 @@ func (h *HistoriaRecursiva) HorasTranscTotal() float64 {
 func (h *HistoriaRecursiva) HorasAvanceTeorico() float64 {
 	return math.Round(float64(h.SegundosAvanceTeorico())/3600*100) / 100
 }
+
+// ================================================================ //
+
+func (h *Historia) ValorPonderadoTotal() int {
+	total := 0
+	for _, t := range h.Tareas {
+		total += t.ValorPonderado()
+	}
+	return total
+}
+
+func (h *Historia) AvancePonderadoTotal() int {
+	total := 0
+	for _, t := range h.Tareas {
+		total += t.AvancePonderado()
+	}
+	return total
+}
+
+func (h *Historia) ValorPorcentual(tareaID int) float64 {
+	for _, t := range h.Tareas {
+		if t.TareaID == tareaID {
+			valor := float64(t.ValorPonderado())
+			total := float64(h.ValorPonderadoTotal())
+			if total == 0 {
+				return 0
+			}
+			return math.Round(valor/total*100*100) / 100
+		}
+	}
+	return 0
+}
+
+func (h *Historia) AvancePorcentual() float64 {
+	valor := float64(h.ValorPonderadoTotal())
+	avance := float64(h.AvancePonderadoTotal())
+	if valor == 0 {
+		return 0
+	}
+	return math.Round(avance/valor*100*100) / 100
+}
