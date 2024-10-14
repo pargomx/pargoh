@@ -132,7 +132,7 @@ func main() {
 	s.POS("/personas", s.postPersona)
 	s.GET("/personas/{persona_id}", s.getPersona)
 	s.POS("/personas/{persona_id}", s.postHistoriaDePersona)
-	s.GET("/personas/{persona_id}/costo", s.getMétricasPersona)
+	s.GET("/personas/{persona_id}/metricas", s.getMétricasPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)

@@ -29,7 +29,7 @@ func (s *Repositorio) ListHistoriasCosto(personaID int) ([]ust.HistoriaCosto, er
 			&item.Titulo,
 			&item.Prioridad,
 			&item.Completada,
-			&item.MinutosEstimado,
+			&item.SegundosEstimado,
 			&item.SegundosReal,
 		)
 		if err != nil {

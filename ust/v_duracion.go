@@ -8,7 +8,7 @@ import (
 
 // Duración representa la duración de una tarea.
 // Acepta strings en las siguientes formas, tanto minutos como horas:
-// - "15" para un minutos
+// - "15" para 15 minutos
 // - "90" para 90 minutos
 // - "90m" para 90 minutos
 // - "90 m" para 90 minutos
@@ -18,7 +18,7 @@ import (
 // - "1h15" para una hora y 15 minutos
 // - "1h 15 min" para una hora y 15 minutos
 // - "2:30" para dos horas y 30 minutos
-func NuevaDuración(txt string) (int, error) {
+func NuevaDuraciónSegundos(txt string) (int, error) {
 	if txt == "" {
 		return 0, nil
 	}
@@ -46,7 +46,7 @@ func NuevaDuración(txt string) (int, error) {
 		if err != nil {
 			return 0, fmt.Errorf("duración inválida: %w", err)
 		}
-		return mins, nil
+		return mins * 60, nil
 	case 2:
 		hrs, err := strconv.Atoi(split[0])
 		if err != nil {
@@ -59,7 +59,7 @@ func NuevaDuración(txt string) (int, error) {
 				return 0, fmt.Errorf("duración inválida: %w", err)
 			}
 		}
-		return hrs*60 + mins, nil
+		return hrs*3600 + mins*60, nil
 	}
 	return 0, fmt.Errorf("duración inválida: %s", txt)
 }

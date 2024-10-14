@@ -161,10 +161,10 @@ func (s *servidor) getMétricas2(c *gecko.Context) error {
 					Tarea:    tarea,
 					Segundos: itv.Segundos,
 				}
-				tarea.TiempoReal = itv.Segundos // reset para solo este día
+				tarea.SegundosReal = itv.Segundos // reset para solo este día
 			} else {
 				tar.Segundos += itv.Segundos
-				tarea.TiempoReal += itv.Segundos
+				tarea.SegundosReal += itv.Segundos
 			}
 
 			tar.Intervalos = append(tar.Intervalos, itv)

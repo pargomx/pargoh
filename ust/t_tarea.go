@@ -8,15 +8,15 @@ import (
 
 // Tarea corresponde a un elemento de la tabla 'tareas'.
 type Tarea struct {
-	TareaID        int       // `tareas.tarea_id`
-	HistoriaID     int       // `tareas.historia_id`
-	Tipo           TipoTarea // `tareas.tipo`
-	Descripcion    string    // `tareas.descripcion`
-	Impedimentos   string    // `tareas.impedimentos`
-	TiempoEstimado int       // `tareas.tiempo_estimado`
-	TiempoReal     int       // `tareas.tiempo_real`
-	Estatus        int       // `tareas.estatus`  0:no_iniciada 1:en_curso 2:en_pausa 3:finalizada
-	Importancia    int       // `tareas.importancia`
+	TareaID          int       // `tareas.tarea_id`
+	HistoriaID       int       // `tareas.historia_id`
+	Tipo             TipoTarea // `tareas.tipo`
+	Descripcion      string    // `tareas.descripcion`
+	Impedimentos     string    // `tareas.impedimentos`
+	SegundosEstimado int       // `tareas.segundos_estimado`
+	SegundosReal     int       // `tareas.segundos_real`
+	Estatus          int       // `tareas.estatus`  0:no_iniciada 1:en_curso 2:en_pausa 3:finalizada
+	Importancia      int       // `tareas.importancia`
 }
 
 var (

@@ -10,7 +10,7 @@ func TestNuevaDuración(t *testing.T) {
 
 	tests := []struct {
 		txt  string
-		want int
+		want int // en minutos
 	}{
 		{"", 0},
 		{"15", 15},
@@ -28,11 +28,11 @@ func TestNuevaDuración(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.txt, func(t *testing.T) {
-			got, err := ust.NuevaDuración(tt.txt)
+			got, err := ust.NuevaDuraciónSegundos(tt.txt)
 			if err != nil {
 				t.Fatalf("NuevaDuración() error = %v", err)
 			}
-			if got != tt.want {
+			if got != tt.want*60 {
 				t.Errorf("NuevaDuración() = %v, want %v", got, tt.want)
 			}
 		})

@@ -16,10 +16,10 @@ type IntervaloReciente struct {
 	Descripcion string
 	//  `tar.impedimentos`
 	Impedimentos string
-	//  `tar.tiempo_estimado`
-	TiempoEstimado int
-	//  `tar.tiempo_real`
-	TiempoReal int
+	//  `tar.segundos_estimado`
+	SegundosEstimado int
+	//  `tar.segundos_real`
+	SegundosReal int
 	//  `tar.estatus`
 	Estatus int
 	//  `his.titulo`

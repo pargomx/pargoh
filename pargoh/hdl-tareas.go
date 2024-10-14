@@ -9,18 +9,18 @@ import (
 )
 
 func (s *servidor) postTarea(c *gecko.Context) error {
-	estimado, err := ust.NuevaDuración(c.FormVal("tiempo_estimado"))
+	estimado, err := ust.NuevaDuraciónSegundos(c.FormVal("segundos_estimado"))
 	if err != nil {
 		return err
 	}
 	tarea := ust.Tarea{
-		TareaID:        ust.NewRandomID(),
-		HistoriaID:     c.PathInt("historia_id"),
-		Tipo:           ust.SetTipoTareaDB(c.FormVal("tipo")),
-		Descripcion:    c.FormVal("descripcion"),
-		Impedimentos:   c.FormVal("impedimentos"),
-		TiempoEstimado: estimado,
-		Importancia:    c.FormInt("importancia"),
+		TareaID:          ust.NewRandomID(),
+		HistoriaID:       c.PathInt("historia_id"),
+		Tipo:             ust.SetTipoTareaDB(c.FormVal("tipo")),
+		Descripcion:      c.FormVal("descripcion"),
+		Impedimentos:     c.FormVal("impedimentos"),
+		SegundosEstimado: estimado,
+		Importancia:      c.FormInt("importancia"),
 	}
 	err = dhistorias.AgregarTarea(tarea, s.repo)
 	if err != nil {
@@ -31,18 +31,18 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context) error {
-	estimado, err := ust.NuevaDuración(c.FormVal("tiempo_estimado"))
+	estimado, err := ust.NuevaDuraciónSegundos(c.FormVal("segundos_estimado"))
 	if err != nil {
 		return err
 	}
 	tarea := ust.Tarea{
-		TareaID:        c.FormInt("tarea_id"),
-		HistoriaID:     c.FormInt("historia_id"),
-		Tipo:           ust.SetTipoTareaDB(c.FormVal("tipo")),
-		Descripcion:    c.FormVal("descripcion"),
-		Impedimentos:   c.FormVal("impedimentos"),
-		TiempoEstimado: estimado,
-		Importancia:    c.FormInt("importancia"),
+		TareaID:          c.FormInt("tarea_id"),
+		HistoriaID:       c.FormInt("historia_id"),
+		Tipo:             ust.SetTipoTareaDB(c.FormVal("tipo")),
+		Descripcion:      c.FormVal("descripcion"),
+		Impedimentos:     c.FormVal("impedimentos"),
+		SegundosEstimado: estimado,
+		Importancia:      c.FormInt("importancia"),
 	}
 	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), tarea, s.repo)
 	if err != nil {

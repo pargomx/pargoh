@@ -50,7 +50,7 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	tar.Tipo = nueva.Tipo
 	tar.Descripcion = nueva.Descripcion
 	tar.Impedimentos = nueva.Impedimentos
-	tar.TiempoEstimado = nueva.TiempoEstimado
+	tar.SegundosEstimado = nueva.SegundosEstimado
 	tar.Importancia = nueva.Importancia
 
 	err = actualizarTiempoReal(tar, op, repo)
@@ -122,7 +122,7 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 	if err != nil {
 		return op.Err(err)
 	}
-	tar.TiempoReal = 0
+	tar.SegundosReal = 0
 	for _, itv := range intervalos {
 		if itv.Fin == "" {
 			continue
@@ -135,7 +135,7 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 		if err != nil {
 			return op.Err(err).Op("ParseFin").Ctx("string", itv.Fin)
 		}
-		tar.TiempoReal += int(fin.Sub(inicio).Seconds())
+		tar.SegundosReal += int(fin.Sub(inicio).Seconds())
 	}
 	return nil
 }

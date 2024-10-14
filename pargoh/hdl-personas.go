@@ -44,7 +44,7 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias, err := s.repo.ListNodoHistoriasByPadreID(Persona.PersonaID)
+	Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
 	if err != nil {
 		return err
 	}
@@ -98,10 +98,10 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 				if err != nil {
 					return err
 				}
-				tarea.TiempoReal = interv.Segundos
+				tarea.SegundosReal = interv.Segundos
 				DiasTrabajo[i].Tareas[interv.TareaID] = *tarea
 			} else {
-				tar.TiempoReal += interv.Segundos
+				tar.SegundosReal += interv.Segundos
 				DiasTrabajo[i].Tareas[interv.TareaID] = tar
 			}
 		}

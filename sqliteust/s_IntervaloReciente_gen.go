@@ -22,14 +22,14 @@ import (
 //	coalesce(tar.tipo, ''),
 //	coalesce(tar.descripcion, ''),
 //	coalesce(tar.impedimentos, ''),
-//	coalesce(tar.tiempo_estimado, 0),
-//	coalesce(tar.tiempo_real, 0),
+//	coalesce(tar.segundos_estimado, 0),
+//	coalesce(tar.segundos_real, 0),
 //	coalesce(tar.estatus, 0),
 //	coalesce(his.titulo, ''),
 //	coalesce(his.objetivo, ''),
 //	coalesce(his.completada, 0),
 //	coalesce(his.prioridad, 0)
-const columnasIntervaloReciente string = "coalesce(tar.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(tar.tipo, ''), coalesce(tar.descripcion, ''), coalesce(tar.impedimentos, ''), coalesce(tar.tiempo_estimado, 0), coalesce(tar.tiempo_real, 0), coalesce(tar.estatus, 0), coalesce(his.titulo, ''), coalesce(his.objetivo, ''), coalesce(his.completada, 0), coalesce(his.prioridad, 0)"
+const columnasIntervaloReciente string = "coalesce(tar.historia_id, 0), interv.tarea_id, interv.inicio, interv.fin, coalesce(tar.tipo, ''), coalesce(tar.descripcion, ''), coalesce(tar.impedimentos, ''), coalesce(tar.segundos_estimado, 0), coalesce(tar.segundos_real, 0), coalesce(tar.estatus, 0), coalesce(his.titulo, ''), coalesce(his.objetivo, ''), coalesce(his.completada, 0), coalesce(his.prioridad, 0)"
 
 // Origen de los datos de ust.IntervaloReciente
 //
@@ -51,7 +51,7 @@ func (s *Repositorio) scanRowsIntervaloReciente(rows *sql.Rows, op string) ([]us
 		itvr := ust.IntervaloReciente{}
 		var tipo string
 		err := rows.Scan(
-			&itvr.HistoriaID, &itvr.TareaID, &itvr.Inicio, &itvr.Fin, &tipo, &itvr.Descripcion, &itvr.Impedimentos, &itvr.TiempoEstimado, &itvr.TiempoReal, &itvr.Estatus, &itvr.Titulo, &itvr.Objetivo, &itvr.Completada, &itvr.Prioridad,
+			&itvr.HistoriaID, &itvr.TareaID, &itvr.Inicio, &itvr.Fin, &tipo, &itvr.Descripcion, &itvr.Impedimentos, &itvr.SegundosEstimado, &itvr.SegundosReal, &itvr.Estatus, &itvr.Titulo, &itvr.Objetivo, &itvr.Completada, &itvr.Prioridad,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)

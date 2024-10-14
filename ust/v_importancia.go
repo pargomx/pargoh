@@ -60,20 +60,18 @@ func (t *Tarea) PonderacionImportancia() int {
 // TODO: todos los campos deberían usar segundos para ser consistentes.
 // TODO: usar campo STRING para importancia, de todas formas no se usan los números de la DB en la lógica y así es expandible a otras ponderaciones.
 
-const TIEMPO_CALCULO_DEFAULT = 60 // minutos
+const SEGUNDOS_CALCULO_DEFAULT = 3600 // 1h
 
 func (t *Tarea) ValorPonderado() int {
-	estimado := t.TiempoEstimado * 60 // minutos
-	real := t.TiempoReal              // segundos
-
-	tiempo := estimado
-	if t.Finalizada() || (!t.Finalizada() && real >= estimado) {
-		tiempo = real
+	segundos := t.SegundosEstimado
+	if t.Finalizada() ||
+		(!t.Finalizada() && t.SegundosReal >= t.SegundosEstimado) {
+		segundos = t.SegundosReal
 	}
-	if tiempo == 0 {
-		tiempo = TIEMPO_CALCULO_DEFAULT
+	if segundos == 0 {
+		segundos = SEGUNDOS_CALCULO_DEFAULT
 	}
-	return tiempo * t.PonderacionImportancia()
+	return segundos * t.PonderacionImportancia()
 }
 
 func (t *Tarea) AvancePonderado() int {
@@ -81,8 +79,8 @@ func (t *Tarea) AvancePonderado() int {
 	if t.Finalizada() {
 		return pond
 	}
-	if t.TiempoReal >= t.TiempoEstimado*60 {
+	if t.SegundosReal >= t.SegundosEstimado*60 {
 		return pond * 90 / 100 // 90%
 	}
-	return t.PonderacionImportancia() * t.TiempoReal
+	return t.PonderacionImportancia() * t.SegundosReal
 }

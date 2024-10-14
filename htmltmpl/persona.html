@@ -98,7 +98,7 @@
 			</a>
 			<span class="float-right text-sm opacity-75">
 				{{ segundosToString .SegundosTranscTotal }}
-				{{ if .MinutosEstimado  }} / {{ minutosToString .MinutosEstimado }}{{ end }}
+				{{ if .SegundosPresupuesto  }} / {{ segundosToString .SegundosPresupuesto }}{{ end }}
 			</span>
 			<span class="p-3">
 				{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
@@ -144,12 +144,12 @@
 	</div>
 	<script>
 		const tTooltips = [{{ range .Historias }}[
-			{{ if .SegundosEstimado -}}
-			"Presupuesto: {{ segundosToString .SegundosEstimado }}",
+			{{ if .SegundosPresupuesto -}}
+			"Presupuesto: {{ segundosToString .SegundosPresupuesto }}",
 			{{ end -}}
 			"Avance: {{ .AvancePorcentual }}%",
 			"Tiempo utilizado: {{ segundosToString .SegundosTranscTotal }}",
-			{{ if .SegundosEstimado -}}
+			{{ if .SegundosPresupuesto -}}
 			"Tiempo teórico: {{ segundosToString .SegundosAvanceTeorico }}",
 			{{ end -}}
 			],{{ end }}]
@@ -272,8 +272,8 @@
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
 	<p>
 		{{ with .PersonaCosto -}}
-		Estimado total: {{ .TiempoEstimado }} <br>
-		Invertido total: {{ .TiempoReal }} ({{ .Segundos }}s)
+		Estimado total: {{ .SegundosEstimado }} <br>
+		Invertido total: {{ .SegundosReal }}
 		{{ end }}
 	</p>
 
@@ -303,8 +303,8 @@
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
 	<p>
 		{{ with .PersonaCosto -}}
-		Estimado total: {{ .TiempoEstimado }} <br>
-		Invertido total: {{ .TiempoReal }}
+		Estimado total: {{ .SegundosEstimado }} <br>
+		Invertido total: {{ .SegundosReal }}
 		{{ end }}
 	</p>
 	<div class="p-4 mb-4">
@@ -354,8 +354,7 @@
                 <th>Titulo</th>
                 <th>Prioridad</th>
                 <th>Completada</th>
-				<th>MinutosEstimado</th>
-                <th>TiempoEstimado</th>
+				<th>SegundosPresupuesto</th>
 				<th>SegundosReal</th>
                 <th>TiempoReal</th>
             </tr>
@@ -370,8 +369,7 @@
                 <td>{{ .Titulo }}</td>
                 <td>{{ .Prioridad }}</td>
                 <td>{{ .Completada }}</td>
-				<td>{{ .MinutosEstimado }}</td>
-                <td>{{ .TiempoEstimado }}</td>
+				<td>{{ .SegundosPresupuesto }}</td>
 				<td>{{ .SegundosReal }}</td>
                 <td>{{ .SegundosTranscTotal }}</td>
             </tr>

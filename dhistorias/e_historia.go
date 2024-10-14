@@ -32,35 +32,32 @@ func prioridadValida(prioridad int) bool {
 
 // ================================================================ //
 
-func (h *Historia) TiempoEstimado() int {
+func (h *Historia) SegundosEstimadoTareas() int {
 	total := 0
 	for _, t := range h.Tareas {
-		total += t.TiempoEstimado
+		total += t.SegundosEstimado
 	}
 	return total
 }
 
-func (h *Historia) TiempoReal() int {
+func (h *Historia) SegundosRealTareas() int {
 	total := 0
 	for _, t := range h.Tareas {
-		total += t.TiempoReal
+		total += t.SegundosReal
 	}
 	return total
 }
 
-func (h *HistoriaRecursiva) TiempoEstimado() int {
+func (h *HistoriaRecursiva) SegundosEstimadoTareas() int {
 	total := h.Segundos
 	for _, h := range h.Descendientes {
-		total += h.TiempoEstimado()
+		total += h.SegundosEstimadoTareas()
 	}
 	return total
 }
 
 // ================================================================ //
 
-func (h *HistoriaRecursiva) SegundosEstimado() int {
-	return h.MinutosEstimado * 60
-}
 func (h *HistoriaRecursiva) SegundosTranscTotal() int {
 	total := h.Segundos
 	for _, h := range h.Descendientes {
@@ -69,14 +66,14 @@ func (h *HistoriaRecursiva) SegundosTranscTotal() int {
 	return total
 }
 func (h *HistoriaRecursiva) SegundosAvanceTeorico() int {
-	return h.AvancePorcentual() * h.SegundosEstimado() / 100
+	return h.AvancePorcentual() * h.SegundosPresupuesto / 100
 }
 func (h *HistoriaRecursiva) AvancePorcentual() int {
 	return 75
 }
 
 func (h *HistoriaRecursiva) HorasEstimado() float64 {
-	return math.Round(float64(h.SegundosEstimado())/3600*100) / 100
+	return math.Round(float64(h.SegundosPresupuesto)/3600*100) / 100
 }
 func (h *HistoriaRecursiva) HorasTranscTotal() float64 {
 	return math.Round(float64(h.SegundosTranscTotal())/3600*100) / 100

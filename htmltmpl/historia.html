@@ -67,7 +67,7 @@
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/estimado"
 				type="text"
 				name="value"
-				value="{{ minutosToString .Historia.MinutosEstimado }}"
+				value="{{ segundosToString .Historia.SegundosPresupuesto }}"
 				class="form-control">
 		</div>
 	</div>
@@ -516,21 +516,21 @@
 		<h3 id="tareas" class="grow text-xl">
 			<a href="#tareas">Tareas</a>
 		</h3>
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .SegundosEstimadoTareas }}">
 			v:{{ .ValorPonderadoTotal }}
 			a:{{ .AvancePonderadoTotal }}
 			{{ .AvancePorcentual }}%
 		</span>
-		{{- if .TiempoEstimado -}}
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
+		{{- if .SegundosEstimadoTareas -}}
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .SegundosEstimadoTareas }}">
 			<i class="fa-solid fa-hourglass-start"></i> Estimado
-			{{ minutosToString .TiempoEstimado }}
+			{{ segundosToString .SegundosEstimadoTareas }}
 		</span>
 		{{- end -}}
-		{{- if .TiempoReal -}}
-		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .TiempoReal }}">
+		{{- if .SegundosRealTareas -}}
+		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .SegundosRealTareas }}">
 			<i class="fa-solid fa-stopwatch"></i> Transcurrido
-			{{ segundosToString .TiempoReal }}
+			{{ segundosToString .SegundosRealTareas }}
 		</span>
 		{{- end -}}
 	</div>
@@ -557,8 +557,8 @@
 			</div>
 			<p class="">
 				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
-					e:{{ .TiempoEstimado }}
-					r:{{ div .TiempoReal 60 }}
+					e:{{ .SegundosEstimado }}
+					r:{{ .SegundosReal }}
 					v:{{ .ValorPonderado }}
 					a:{{ .AvancePonderado }}
 					{{ $.Agregado.ValorPorcentual .TareaID }}%
@@ -585,19 +585,19 @@
 				{{- end -}}
 
 				<span class="float-right sm:hidden">
-					{{- if .TiempoEstimado -}}
-					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ minutosToString .TiempoEstimado }}">
+					{{- if .SegundosEstimado -}}
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ segundosToString .SegundosEstimado }}">
 						<i class="fa-solid fa-hourglass-start"></i>
-						{{ minutosToString .TiempoEstimado }}
+						{{ segundosToString .SegundosEstimado }}
 					</span>
 					{{- end -}}
-					{{- if .TiempoReal -}}
+					{{- if .SegundosReal -}}
 					<button
 						onclick="showIntervalos('{{ .TareaID }}')"
-						title="Tiempo transcurrido {{ segundosToString .TiempoReal }}"
+						title="Tiempo transcurrido {{ segundosToString .SegundosReal }}"
 						class="pl-4 text-sm opacity-75 whitespace-nowrap">
 						<i class="fa-solid fa-stopwatch"></i>
-						{{ segundosToString .TiempoReal }}
+						{{ segundosToString .SegundosReal }}
 					</button>
 					{{- end -}}
 				</span>
@@ -637,21 +637,21 @@
 				{{ end }}
 			</div>
 			<div class="grow hidden text-right sm:block">
-				{{- if .TiempoEstimado -}}
+				{{- if .SegundosEstimado -}}
 				<span
-					title="Tiempo estimado {{ minutosToString .TiempoEstimado }}"
+					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-hourglass-start"></i>
-					{{ minutosToString .TiempoEstimado }}
+					{{ segundosToString .SegundosEstimado }}
 				</span>
 				{{- end -}}
-				{{- if .TiempoReal -}}
+				{{- if .SegundosReal -}}
 				<button
 					onclick="showIntervalos('{{ .TareaID }}')"
-					title="Tiempo transcurrido {{ segundosToString .TiempoReal }}"
+					title="Tiempo transcurrido {{ segundosToString .SegundosReal }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-stopwatch"></i>
-					{{ segundosToString .TiempoReal }}
+					{{ segundosToString .SegundosReal }}
 				</button>
 				{{- end -}}
 			</div>
@@ -677,7 +677,7 @@
 				class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-none invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 			>
 			<input type="text"
-				name="tiempo_estimado"
+				name="segundos_estimado"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				hx-trigger="keyup[key=='Enter']"
@@ -775,8 +775,8 @@
 				<input
 					id="upd{{ .TareaID }}_06"
 					type="text"
-					name="tiempo_estimado"
-					value="{{ if .TiempoEstimado }}{{ .TiempoEstimado }}{{ end }}"
+					name="segundos_estimado"
+					value="{{ if .SegundosEstimado }}{{ div .SegundosEstimado 60 }}{{ end }}"
 					placeholder="mm ó hh:mm"
 					class="form-control">
 			</div>
