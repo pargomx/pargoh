@@ -8,15 +8,15 @@ import (
 
 // Tarea corresponde a un elemento de la tabla 'tareas'.
 type Tarea struct {
-	TareaID          int       // `tareas.tarea_id`
-	HistoriaID       int       // `tareas.historia_id`
-	Tipo             TipoTarea // `tareas.tipo`
-	Descripcion      string    // `tareas.descripcion`
-	Impedimentos     string    // `tareas.impedimentos`
-	SegundosEstimado int       // `tareas.segundos_estimado`
-	SegundosReal     int       // `tareas.segundos_real`
-	Estatus          int       // `tareas.estatus`  0:no_iniciada 1:en_curso 2:en_pausa 3:finalizada
-	Importancia      int       // `tareas.importancia`
+	TareaID          int              // `tareas.tarea_id`
+	HistoriaID       int              // `tareas.historia_id`
+	Tipo             TipoTarea        // `tareas.tipo`
+	Descripcion      string           // `tareas.descripcion`
+	Impedimentos     string           // `tareas.impedimentos`
+	SegundosEstimado int              // `tareas.segundos_estimado`
+	SegundosReal     int              // `tareas.segundos_real`
+	Estatus          int              // `tareas.estatus`  0:no_iniciada 1:en_curso 2:en_pausa 3:finalizada
+	Importancia      ImportanciaTarea // `tareas.importancia`
 }
 
 var (
@@ -28,6 +28,10 @@ func (tar *Tarea) Validar() error {
 
 	if tar.Tipo.EsTodos() {
 		return errors.New("ust.Tarea no admite propiedad TipoTodos")
+	}
+
+	if tar.Importancia.EsTodos() {
+		return errors.New("ust.Tarea no admite propiedad ImportanciaTodos")
 	}
 
 	return nil
@@ -267,4 +271,149 @@ func (i *Tarea) SetTipo(str string) {
 	}
 	gko.LogWarnf("ust.SetTipoTarea inválido: '%v'", str)
 	i.Tipo = TipoTareaIndefinido
+}
+
+//  ================================================================  //
+//  ========== Importancia =========================================  //
+
+// Enumeración
+type ImportanciaTarea struct {
+	ID          int
+	String      string
+	Filtro      string
+	Etiqueta    string
+	Descripcion string
+}
+
+var (
+	// ImportanciaTareaTodos solo se utiliza como filtro.
+	ImportanciaTareaTodos = ImportanciaTarea{
+		ID:          -1,
+		String:      "",
+		Filtro:      "todos",
+		Etiqueta:    "Todos",
+		Descripcion: "Todos los valores posibles para Importancia",
+	}
+	// Indica explícitamente que la propiedad está indefinida.
+	ImportanciaTareaIndefinido = ImportanciaTarea{
+		ID:          0,
+		String:      "",
+		Filtro:      "sin_importancia",
+		Etiqueta:    "Indefinido",
+		Descripcion: "Indefinido",
+	}
+
+	// Idea: Algo que aún no está bien planteado o que no aporta suficiente valor y por lo tanto no cuenta mucho para el progreso de la historia de usuario
+	ImportanciaTareaIdea = ImportanciaTarea{
+		ID:          1,
+		String:      "IDEA",
+		Filtro:      "idea",
+		Etiqueta:    "Idea",
+		Descripcion: "Algo que aún no está bien planteado o que no aporta suficiente valor y por lo tanto no cuenta mucho para el progreso de la historia de usuario",
+	}
+	// Mejora: Una mejora a la UI, UX, optimizaciones, etc.
+	ImportanciaTareaMejora = ImportanciaTarea{
+		ID:          2,
+		String:      "MEJORA",
+		Filtro:      "mejora",
+		Etiqueta:    "Mejora",
+		Descripcion: "Una mejora a la UI, UX, optimizaciones, etc.",
+	}
+	// Necesaria: Indispensable para la implementación de la historia de usuario
+	ImportanciaTareaNecesaria = ImportanciaTarea{
+		ID:          3,
+		String:      "NECESARIA",
+		Filtro:      "necesaria",
+		Etiqueta:    "Necesaria",
+		Descripcion: "Indispensable para la implementación de la historia de usuario",
+	}
+)
+
+// Enumeración excluyendo ImportanciaTareaTodos
+var ListaImportanciaTarea = []ImportanciaTarea{
+	ImportanciaTareaIndefinido,
+
+	ImportanciaTareaIdea,
+	ImportanciaTareaMejora,
+	ImportanciaTareaNecesaria,
+}
+
+// Enumeración incluyendo ImportanciaTareaTodos
+var ListaFiltroImportanciaTarea = []ImportanciaTarea{
+	ImportanciaTareaTodos,
+	ImportanciaTareaIndefinido,
+
+	ImportanciaTareaIdea,
+	ImportanciaTareaMejora,
+	ImportanciaTareaNecesaria,
+}
+
+// Comparar un Importancia con otro.
+func (a ImportanciaTarea) Es(e ImportanciaTarea) bool {
+	return a.ID == e.ID
+}
+
+func (e ImportanciaTarea) EsTodos() bool {
+	return e.ID == ImportanciaTareaTodos.ID
+}
+func (e ImportanciaTarea) EsIndefinido() bool {
+	return e.ID == ImportanciaTareaIndefinido.ID
+}
+func (e ImportanciaTarea) EsIdea() bool {
+	return e.ID == ImportanciaTareaIdea.ID
+}
+func (e ImportanciaTarea) EsMejora() bool {
+	return e.ID == ImportanciaTareaMejora.ID
+}
+func (e ImportanciaTarea) EsNecesaria() bool {
+	return e.ID == ImportanciaTareaNecesaria.ID
+}
+
+// Recibe la forma .String
+func SetImportanciaTareaDB(str string) ImportanciaTarea {
+	for _, e := range ListaImportanciaTarea {
+		if e.String == str {
+			return e
+		}
+	}
+	if str == ImportanciaTareaTodos.String {
+		gko.LogWarn("ust.SetImportanciaTarea: ImportanciaTareaTodos es inválido en DB")
+		return ImportanciaTareaIndefinido
+	}
+	gko.LogWarnf("ust.SetImportanciaTarea inválido: '%v'", str)
+	return ImportanciaTareaIndefinido
+}
+
+// Recibe la forma .Filtro
+func SetImportanciaTareaFiltro(str string) ImportanciaTarea {
+	if str == "" || str == ImportanciaTareaTodos.Filtro {
+		return ImportanciaTareaTodos
+	}
+	for _, e := range ListaImportanciaTarea {
+		if e.Filtro == str {
+			return e
+		}
+	}
+	gko.LogWarnf("ust.SetImportanciaTarea inválido: '%v'", str)
+	return ImportanciaTareaIndefinido
+}
+
+// Recibe la forma .String o .Filtro
+func (i *Tarea) SetImportancia(str string) {
+	for _, e := range ListaImportanciaTarea {
+		if e.String == str {
+			i.Importancia = e
+			return
+		}
+		if e.Filtro == str {
+			i.Importancia = e
+			return
+		}
+	}
+	if str == ImportanciaTareaTodos.String {
+		gko.LogWarn("ust.SetImportanciaTarea: ImportanciaTareaTodos es inválido en DB")
+		i.Importancia = ImportanciaTareaIndefinido
+	}
+	gko.LogWarnf("ust.SetImportanciaTarea inválido: '%v'", str)
+	i.Importancia = ImportanciaTareaIndefinido
 }

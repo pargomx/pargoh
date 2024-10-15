@@ -15,6 +15,9 @@ func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 		return err
 	}
 	tarea.Estatus = 0
+	if tarea.Importancia.EsIndefinido() {
+		tarea.Importancia = ust.ImportanciaTareaIdea
+	}
 	err = repo.InsertTarea(tarea)
 	if err != nil {
 		return err
@@ -52,7 +55,9 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	tar.Impedimentos = nueva.Impedimentos
 	tar.SegundosEstimado = nueva.SegundosEstimado
 	tar.Importancia = nueva.Importancia
-
+	if tar.Importancia.EsIndefinido() {
+		tar.Importancia = ust.ImportanciaTareaIdea
+	}
 	err = actualizarTiempoReal(tar, op, repo)
 	if err != nil {
 		return err

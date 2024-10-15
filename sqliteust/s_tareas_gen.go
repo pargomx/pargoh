@@ -20,7 +20,7 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 	_, err := s.db.Exec("INSERT INTO tareas "+
 		"(tarea_id, historia_id, tipo, descripcion, impedimentos, segundos_estimado, segundos_real, estatus, importancia) "+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ",
-		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosReal, tar.Estatus, tar.Importancia,
+		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosReal, tar.Estatus, tar.Importancia.String,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
@@ -41,7 +41,7 @@ func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 		"UPDATE tareas SET "+
 			"tarea_id=?, historia_id=?, tipo=?, descripcion=?, impedimentos=?, segundos_estimado=?, segundos_real=?, estatus=?, importancia=? "+
 			"WHERE tarea_id = ?",
-		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosReal, tar.Estatus, tar.Importancia,
+		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosReal, tar.Estatus, tar.Importancia.String,
 		tar.TareaID,
 	)
 	if err != nil {
@@ -103,8 +103,9 @@ const fromTarea string = "FROM tareas "
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
 	var tipo string
+	var importancia string
 	err := row.Scan(
-		&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosReal, &tar.Estatus, &tar.Importancia,
+		&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosReal, &tar.Estatus, &importancia,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -113,6 +114,7 @@ func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
 		return gko.ErrInesperado().Err(err)
 	}
 	tar.Tipo = ust.SetTipoTareaDB(tipo)
+	tar.Importancia = ust.SetImportanciaTareaDB(importancia)
 	return nil
 }
 
@@ -151,13 +153,15 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 	for rows.Next() {
 		tar := ust.Tarea{}
 		var tipo string
+		var importancia string
 		err := rows.Scan(
-			&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosReal, &tar.Estatus, &tar.Importancia,
+			&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosReal, &tar.Estatus, &importancia,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
 		tar.Tipo = ust.SetTipoTareaDB(tipo)
+		tar.Importancia = ust.SetImportanciaTareaDB(importancia)
 		items = append(items, tar)
 	}
 	return items, nil
