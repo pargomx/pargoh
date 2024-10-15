@@ -6,14 +6,14 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-func GetHistoria(historiaID int, repo Repo) (*Historia, error) {
+func GetHistoria(historiaID int, repo Repo) (*HistoriaAgregado, error) {
 	op := gko.Op("dhistorias.GetHistoria").Ctx("historiaID", historiaID)
 
 	historia, err := repo.GetNodoHistoria(historiaID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	item := Historia{
+	item := HistoriaAgregado{
 		Historia: *historia,
 	}
 

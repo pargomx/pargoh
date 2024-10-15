@@ -131,6 +131,7 @@ func main() {
 	// Personas
 	s.POS("/personas", s.postPersona)
 	s.GET("/personas/{persona_id}", s.getPersona)
+	s.GET("/personas/{persona_id}/debug", s.getPersonaDebug)
 	s.POS("/personas/{persona_id}", s.postHistoriaDePersona)
 	s.GET("/personas/{persona_id}/metricas", s.getMétricasPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)

@@ -35,6 +35,43 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	return c.RenderOk("persona", data)
 }
 
+func (s *servidor) getPersonaDebug(c *gecko.Context) error {
+	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+	if err != nil {
+		return err
+	}
+	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	if err != nil {
+		return err
+	}
+	type HistoriaDebug struct {
+		Agg dhistorias.HistoriaAgregado
+		Rec dhistorias.HistoriaRecursiva
+	}
+	HistoriasRec, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
+	if err != nil {
+		return err
+	}
+	Historias := make([]HistoriaDebug, len(HistoriasRec))
+	for i, h := range HistoriasRec {
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, s.repo)
+		if err != nil {
+			return err
+		}
+		Historias[i] = HistoriaDebug{
+			Agg: *agg,
+			Rec: h,
+		}
+	}
+	data := map[string]any{
+		"Titulo":    Persona.Nombre + " - Debug historias",
+		"Persona":   Persona,
+		"Proyecto":  Proyecto,
+		"Historias": Historias,
+	}
+	return c.RenderOk("persona_debug", data)
+}
+
 func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {

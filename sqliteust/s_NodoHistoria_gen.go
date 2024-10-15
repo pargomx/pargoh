@@ -30,8 +30,9 @@ import (
 //	his.segundos_presupuesto,
 //	coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias,
 //	coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas,
-//	coalesce((SELECT sum(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id ), 0) AS segundos
-const columnasNodoHistoria string = "his.historia_id, his.proyecto_id AS proyecto_id, his.persona_id AS persona_id, his.titulo, his.objetivo, his.prioridad, his.completada, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0), his.segundos_presupuesto, coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias, coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas, coalesce((SELECT sum(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id ), 0) AS segundos"
+//	coalesce((SELECT SUM(segundos_estimado) FROM tareas WHERE historia_id = his.historia_id), 0) AS segundos_estimado,
+//	coalesce((SELECT SUM(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id), 0) AS segundos_real
+const columnasNodoHistoria string = "his.historia_id, his.proyecto_id AS proyecto_id, his.persona_id AS persona_id, his.titulo, his.objetivo, his.prioridad, his.completada, coalesce(nod.padre_id, 0), coalesce(nod.padre_tbl, ''), coalesce(nod.nivel, 0), coalesce(nod.posicion, 0), his.segundos_presupuesto, coalesce((SELECT COUNT(nodo_id) FROM nodos WHERE padre_id = his.historia_id), 0) AS num_historias, coalesce((SELECT COUNT(tarea_id) FROM tareas WHERE historia_id = his.historia_id), 0) AS num_tareas, coalesce((SELECT SUM(segundos_estimado) FROM tareas WHERE historia_id = his.historia_id), 0) AS segundos_estimado, coalesce((SELECT SUM(unixepoch(coalesce(nullif(interv.fin,''),datetime('now','-6 hours'))) - unixepoch(interv.inicio)) FROM intervalos interv JOIN tareas tar ON tar.tarea_id = interv.tarea_id WHERE tar.historia_id = his.historia_id GROUP BY tar.historia_id), 0) AS segundos_real"
 
 // Origen de los datos de ust.NodoHistoria
 //
@@ -45,7 +46,7 @@ const fromNodoHistoria string = "FROM historias his INNER JOIN nodos nod ON nodo
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria) error {
 	err := row.Scan(
-		&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.SegundosPresupuesto, &nhist.NumHistorias, &nhist.NumTareas, &nhist.Segundos,
+		&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.SegundosPresupuesto, &nhist.NumHistorias, &nhist.NumTareas, &nhist.SegundosEstimado, &nhist.SegundosReal,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -91,7 +92,7 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 	for rows.Next() {
 		nhist := ust.NodoHistoria{}
 		err := rows.Scan(
-			&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.SegundosPresupuesto, &nhist.NumHistorias, &nhist.NumTareas, &nhist.Segundos,
+			&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.SegundosPresupuesto, &nhist.NumHistorias, &nhist.NumTareas, &nhist.SegundosEstimado, &nhist.SegundosReal,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)

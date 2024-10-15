@@ -7,6 +7,14 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
+const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
+
+func prioridadValida(prioridad int) bool {
+	return prioridad >= 0 && prioridad <= 3
+}
+
+// ================================================================ //
+
 func AgregarHistoria(padreID int, his ust.Historia, repo Repo) error {
 	op := gko.Op("AgregarHistoria").Ctx("padreID", padreID)
 

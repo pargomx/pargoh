@@ -62,6 +62,7 @@ func (t *Tarea) PonderacionImportancia() int {
 
 const SEGUNDOS_CALCULO_DEFAULT = 3600 // 1h
 
+// Puntaje basado en la importancia y esfuerzo en tiempo de la tarea.
 func (t *Tarea) ValorPonderado() int {
 	segundos := t.SegundosEstimado
 	if t.Finalizada() ||

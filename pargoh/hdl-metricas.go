@@ -53,7 +53,7 @@ func (s *servidor) getMétricas1(c *gecko.Context) error {
 		}
 		segs := 0
 		for _, historia := range historias {
-			segs += historia.Segundos
+			segs += historia.SegundosReal
 		}
 		Proyectos[i] = Proyecto1{
 			Proyecto:  proyecto,
