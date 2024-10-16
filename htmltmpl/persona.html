@@ -199,6 +199,8 @@
 						ticks: {
 							callback: function(value, index, ticks) { // Limitar etiquetas a 20 caracteres.
 								let valueLegend = this.getLabelForValue(value);
+								valueLegend = valueLegend.replaceAll("*", "");
+								valueLegend = valueLegend.replaceAll("_", "");
 								if (valueLegend.length > 20) {
 									valueLegend = valueLegend.substring(0, 20).trimEnd() + "…";
 								}
