@@ -29,3 +29,29 @@ func (his NodoHistoria) PrioridadEmoji() string {
 		return "🤯"
 	}
 }
+
+func (his Historia) EsPrioridadMust() bool {
+	return his.Prioridad == 3
+}
+func (his Historia) EsPrioridadShould() bool {
+	return his.Prioridad == 2
+}
+func (his Historia) EsPrioridadCould() bool {
+	return his.Prioridad == 1
+}
+func (his Historia) EsPrioridadWont() bool {
+	return his.Prioridad == 0
+}
+
+func (his NodoHistoria) EsPrioridadMust() bool {
+	return his.Prioridad == 3
+}
+func (his NodoHistoria) EsPrioridadShould() bool {
+	return his.Prioridad == 2
+}
+func (his NodoHistoria) EsPrioridadCould() bool {
+	return his.Prioridad == 1
+}
+func (his NodoHistoria) EsPrioridadWont() bool {
+	return his.Prioridad == 0
+}

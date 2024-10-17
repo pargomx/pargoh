@@ -387,10 +387,13 @@
 				</button>
 				<div class="grow">
 					<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
-						{{- enfatizar .Titulo -}}
+						{{- enfatizar .Titulo -}} 
 					</a>
 					<span class="float-right text-sm font-bold opacity-75">
 						{{ segundosToString .SegundosTranscTotal }}
+						{{ segundosToString .Tareas.SegundosReal }} /
+						{{ segundosToString .Tareas.SegundosEstimado }}
+						[{{ .AvancePorcentual }}%]
 					</span>
 				</div>
 			</div>
@@ -420,6 +423,9 @@
 						</a>
 						<span class="float-right text-xs opacity-50">
 							{{ segundosToString .SegundosTranscTotal }}
+							{{ segundosToString .Tareas.SegundosReal }} /
+							{{ segundosToString .Tareas.SegundosEstimado }}
+							[{{ .AvancePorcentual }}%]
 						</span>
 					</div>
 				</li>
@@ -511,26 +517,33 @@
 		</li>
 	</ol>
 
+	<!--* AVANCE  -->
+	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
+		<h3 id="avance" class="grow text-xl">
+			<a href="#avance">Progreso {{ .AvancePorcentual }}%</a>
+		</h3>
+	</div>
+
 	<!--* TAREAS -->
 	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
 		<h3 id="tareas" class="grow text-xl">
 			<a href="#tareas">Tareas</a>
 		</h3>
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .SegundosEstimadoTareas }}">
-			v:{{ .ValorPonderadoTotal }}
-			a:{{ .AvancePonderadoTotal }}
-			{{ .AvancePorcentual }}%
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .Tareas.SegundosEstimado }}">
+			v:{{ .Tareas.ValorPonderado }}
+			a:{{ .Tareas.AvancePonderado }}
+			{{ .Tareas.AvancePorcentual }}%
 		</span>
-		{{- if .SegundosEstimadoTareas -}}
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .SegundosEstimadoTareas }}">
+		{{- if .Tareas.SegundosEstimado -}}
+		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .Tareas.SegundosEstimado }}">
 			<i class="fa-solid fa-hourglass-start"></i> Estimado
-			{{ segundosToString .SegundosEstimadoTareas }}
+			{{ segundosToString .Tareas.SegundosEstimado }}
 		</span>
 		{{- end -}}
-		{{- if .SegundosRealTareas -}}
-		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .SegundosRealTareas }}">
+		{{- if .Tareas.SegundosReal -}}
+		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .Tareas.SegundosReal }}">
 			<i class="fa-solid fa-stopwatch"></i> Transcurrido
-			{{ segundosToString .SegundosRealTareas }}
+			{{ segundosToString .Tareas.SegundosReal }}
 		</span>
 		{{- end -}}
 	</div>
@@ -606,7 +619,7 @@
 					r:{{ .SegundosReal }}
 					v:{{ .ValorPonderado }}
 					a:{{ .AvancePonderado }}
-					{{ $.Agregado.ValorPorcentual .TareaID }}%
+					{{ $.Agregado.Tareas.ValorPorcentual .TareaID }}%
 				</span>
 			</p>
 			<div class="items-start hidden gap-2 md:flex">

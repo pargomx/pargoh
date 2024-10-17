@@ -97,6 +97,10 @@ func GetHistoriasDescendientes(padreID int, niveles int, repo Repo) ([]HistoriaR
 	res := make([]HistoriaRecursiva, len(historias))
 	for i, his := range historias {
 		res[i].NodoHistoria = his
+		res[i].Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
+		if err != nil {
+			return nil, err
+		}
 		if niveles == 1 {
 			continue // limitar la recursión cuando se da un nivel positivo.
 		}

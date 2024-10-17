@@ -7,14 +7,17 @@ import (
 
 type HistoriaRecursiva struct {
 	ust.NodoHistoria
+	Tareas        TareasList
 	Descendientes []HistoriaRecursiva
 }
 
 // ================================================================ //
 
 // Tiempo estimado para todas las tareas de la historia raíz y todas sus descendientes.
-func (h *HistoriaRecursiva) SegundosEstimadoTareas() int {
-	total := h.SegundosEstimado
+func (h *HistoriaRecursiva) SegundosEstimadoTareas() (total int) {
+	if h.EsPrioridadMust() || h.Completada {
+		total = h.SegundosEstimado
+	}
 	for _, h := range h.Descendientes {
 		total += h.SegundosEstimadoTareas()
 	}
@@ -22,23 +25,57 @@ func (h *HistoriaRecursiva) SegundosEstimadoTareas() int {
 }
 
 // Tiempo real para todas las tareas de la historia raíz y todas sus descendientes.
-func (h *HistoriaRecursiva) SegundosTranscTotal() int {
-	total := h.SegundosReal
+func (h *HistoriaRecursiva) SegundosTranscTotal() (total int) {
+	if h.EsPrioridadMust() || h.Completada {
+		total = h.SegundosReal
+	}
 	for _, h := range h.Descendientes {
 		total += h.SegundosTranscTotal()
 	}
 	return total
 }
 
-func (h *HistoriaRecursiva) SegundosAvanceTeorico() int {
-	return h.AvancePorcentual() * h.SegundosPresupuesto / 100
+// Puntaje obtenido de las tareas en todas las historias del árbol.
+func (h *HistoriaRecursiva) ValorPonderado() (total int) {
+	if h.EsPrioridadMust() || h.Completada {
+		for _, t := range h.Tareas {
+			total += t.ValorPonderado()
+		}
+	}
+	for _, h := range h.Descendientes {
+		total += h.ValorPonderado()
+	}
+	return total
 }
 
-func (h *HistoriaRecursiva) AvancePorcentual() int {
-	if h.SegundosEstimado == 0 {
+// Puntaje obtenido de las tareas en todas las historias del árbol.
+func (h *HistoriaRecursiva) AvancePonderado() (total int) {
+	if h.EsPrioridadMust() || h.Completada {
+		for _, t := range h.Tareas {
+			total += t.AvancePonderado()
+		}
+	}
+	for _, h := range h.Descendientes {
+		total += h.AvancePonderado()
+	}
+	return total
+}
+
+// Relación entre ValorPonderado y AvancePonderado
+func (h *HistoriaRecursiva) AvancePorcentual() float64 {
+	if h.ValorPonderado() == 0 {
 		return 0
 	}
-	return h.SegundosReal * 100 / h.SegundosEstimado
+	return math.Round(
+		float64(h.AvancePonderado())/
+			float64(h.ValorPonderado())*
+			10*100) / 10
+}
+
+// ================================================================ //
+
+func (h *HistoriaRecursiva) SegundosAvanceTeorico() int {
+	return int(h.AvancePorcentual() * float64(h.SegundosPresupuesto) / 100)
 }
 
 // ================================================================ //
