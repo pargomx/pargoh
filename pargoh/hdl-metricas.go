@@ -53,7 +53,7 @@ func (s *servidor) getMétricas1(c *gecko.Context) error {
 		}
 		segs := 0
 		for _, historia := range historias {
-			segs += historia.SegundosReal
+			segs += historia.SegundosUtilizado
 		}
 		Proyectos[i] = Proyecto1{
 			Proyecto:  proyecto,
@@ -161,10 +161,10 @@ func (s *servidor) getMétricas2(c *gecko.Context) error {
 					Tarea:    tarea,
 					Segundos: itv.Segundos,
 				}
-				tarea.SegundosReal = itv.Segundos // reset para solo este día
+				tarea.SegundosUtilizado = itv.Segundos // reset para solo este día
 			} else {
 				tar.Segundos += itv.Segundos
-				tarea.SegundosReal += itv.Segundos
+				tarea.SegundosUtilizado += itv.Segundos
 			}
 
 			tar.Intervalos = append(tar.Intervalos, itv)

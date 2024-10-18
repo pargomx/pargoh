@@ -22,10 +22,10 @@ func (p PersonaCosto) SegundosEstimado() int {
 	return suma
 }
 
-func (p PersonaCosto) SegundosReal() int {
+func (p PersonaCosto) SegundosUtilizado() int {
 	suma := 0
 	for _, h := range p.Historias {
-		suma += h.SegundosReal
+		suma += h.SegundosUtilizado
 	}
 	return suma
 }
@@ -70,18 +70,18 @@ func (p PersonaCosto) NumHistNoCompletadas() (res int) {
 // ========== HISTORIA ============================================ //
 
 type HistoriaCosto struct {
-	HistoriaID       int
-	PadreID          int
-	Nivel            int
-	Posicion         int
-	Titulo           string
-	Prioridad        int
-	Completada       bool
-	SegundosEstimado int
-	SegundosReal     int
+	HistoriaID        int
+	PadreID           int
+	Nivel             int
+	Posicion          int
+	Titulo            string
+	Prioridad         int
+	Completada        bool
+	SegundosEstimado  int
+	SegundosUtilizado int
 }
 
-func (h *HistoriaCosto) SegundosTranscTotal() int {
+func (h *HistoriaCosto) SegundosUtilizadoMust() int {
 	return -50 // TODO: eliminar, solo se usa en personas métrica
 }
 func (h *HistoriaCosto) SegundosPresupuesto() int {

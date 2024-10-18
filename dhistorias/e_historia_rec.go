@@ -14,23 +14,23 @@ type HistoriaRecursiva struct {
 // ================================================================ //
 
 // Tiempo estimado para todas las tareas de la historia raíz y todas sus descendientes.
-func (h *HistoriaRecursiva) SegundosEstimadoTareas() (total int) {
+func (h *HistoriaRecursiva) SegundosEstimadoMust() (total int) {
 	if h.EsPrioridadMust() || h.Completada {
 		total = h.SegundosEstimado
 	}
 	for _, h := range h.Descendientes {
-		total += h.SegundosEstimadoTareas()
+		total += h.SegundosEstimadoMust()
 	}
 	return total
 }
 
 // Tiempo real para todas las tareas de la historia raíz y todas sus descendientes.
-func (h *HistoriaRecursiva) SegundosTranscTotal() (total int) {
+func (h *HistoriaRecursiva) SegundosUtilizadoMust() (total int) {
 	if h.EsPrioridadMust() || h.Completada {
-		total = h.SegundosReal
+		total = h.SegundosUtilizado
 	}
 	for _, h := range h.Descendientes {
-		total += h.SegundosTranscTotal()
+		total += h.SegundosUtilizadoMust()
 	}
 	return total
 }
@@ -85,7 +85,7 @@ func (h *HistoriaRecursiva) HorasEstimado() float64 {
 }
 
 func (h *HistoriaRecursiva) HorasTranscTotal() float64 {
-	return math.Round(float64(h.SegundosTranscTotal())/3600*100) / 100
+	return math.Round(float64(h.SegundosUtilizadoMust())/3600*100) / 100
 }
 
 func (h *HistoriaRecursiva) HorasAvanceTeorico() float64 {

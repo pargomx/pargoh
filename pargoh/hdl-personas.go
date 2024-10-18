@@ -135,10 +135,10 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 				if err != nil {
 					return err
 				}
-				tarea.SegundosReal = interv.Segundos
+				tarea.SegundosUtilizado = interv.Segundos
 				DiasTrabajo[i].Tareas[interv.TareaID] = *tarea
 			} else {
-				tar.SegundosReal += interv.Segundos
+				tar.SegundosUtilizado += interv.Segundos
 				DiasTrabajo[i].Tareas[interv.TareaID] = tar
 			}
 		}

@@ -127,7 +127,7 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 	if err != nil {
 		return op.Err(err)
 	}
-	tar.SegundosReal = 0
+	tar.SegundosUtilizado = 0
 	for _, itv := range intervalos {
 		if itv.Fin == "" {
 			continue
@@ -140,7 +140,7 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 		if err != nil {
 			return op.Err(err).Op("ParseFin").Ctx("string", itv.Fin)
 		}
-		tar.SegundosReal += int(fin.Sub(inicio).Seconds())
+		tar.SegundosUtilizado += int(fin.Sub(inicio).Seconds())
 	}
 	return nil
 }

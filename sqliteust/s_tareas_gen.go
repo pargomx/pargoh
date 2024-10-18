@@ -18,9 +18,9 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
 	}
 	_, err := s.db.Exec("INSERT INTO tareas "+
-		"(tarea_id, historia_id, tipo, descripcion, impedimentos, segundos_estimado, segundos_real, estatus, importancia) "+
+		"(tarea_id, historia_id, descripcion, importancia, tipo, estatus, impedimentos, segundos_estimado, segundos_real) "+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ",
-		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosReal, tar.Estatus, tar.Importancia.String,
+		tar.TareaID, tar.HistoriaID, tar.Descripcion, tar.Importancia.String, tar.Tipo.String, tar.Estatus, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosUtilizado,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
@@ -39,9 +39,9 @@ func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 	}
 	_, err := s.db.Exec(
 		"UPDATE tareas SET "+
-			"tarea_id=?, historia_id=?, tipo=?, descripcion=?, impedimentos=?, segundos_estimado=?, segundos_real=?, estatus=?, importancia=? "+
+			"tarea_id=?, historia_id=?, descripcion=?, importancia=?, tipo=?, estatus=?, impedimentos=?, segundos_estimado=?, segundos_real=? "+
 			"WHERE tarea_id = ?",
-		tar.TareaID, tar.HistoriaID, tar.Tipo.String, tar.Descripcion, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosReal, tar.Estatus, tar.Importancia.String,
+		tar.TareaID, tar.HistoriaID, tar.Descripcion, tar.Importancia.String, tar.Tipo.String, tar.Estatus, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosUtilizado,
 		tar.TareaID,
 	)
 	if err != nil {
@@ -83,14 +83,14 @@ func (s *Repositorio) ExisteTarea(TareaID int) error {
 //
 //	tarea_id,
 //	historia_id,
-//	tipo,
 //	descripcion,
+//	importancia,
+//	tipo,
+//	estatus,
 //	impedimentos,
 //	segundos_estimado,
-//	segundos_real,
-//	estatus,
-//	importancia
-const columnasTarea string = "tarea_id, historia_id, tipo, descripcion, impedimentos, segundos_estimado, segundos_real, estatus, importancia"
+//	segundos_real
+const columnasTarea string = "tarea_id, historia_id, descripcion, importancia, tipo, estatus, impedimentos, segundos_estimado, segundos_real"
 
 // Origen de los datos de ust.Tarea
 //
@@ -102,10 +102,10 @@ const fromTarea string = "FROM tareas "
 
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
-	var tipo string
 	var importancia string
+	var tipo string
 	err := row.Scan(
-		&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosReal, &tar.Estatus, &importancia,
+		&tar.TareaID, &tar.HistoriaID, &tar.Descripcion, &importancia, &tipo, &tar.Estatus, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosUtilizado,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -113,8 +113,8 @@ func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
 		}
 		return gko.ErrInesperado().Err(err)
 	}
-	tar.Tipo = ust.SetTipoTareaDB(tipo)
 	tar.Importancia = ust.SetImportanciaTareaDB(importancia)
+	tar.Tipo = ust.SetTipoTareaDB(tipo)
 	return nil
 }
 
@@ -152,16 +152,16 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 	items := []ust.Tarea{}
 	for rows.Next() {
 		tar := ust.Tarea{}
-		var tipo string
 		var importancia string
+		var tipo string
 		err := rows.Scan(
-			&tar.TareaID, &tar.HistoriaID, &tipo, &tar.Descripcion, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosReal, &tar.Estatus, &importancia,
+			&tar.TareaID, &tar.HistoriaID, &tar.Descripcion, &importancia, &tipo, &tar.Estatus, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosUtilizado,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
 		}
-		tar.Tipo = ust.SetTipoTareaDB(tipo)
 		tar.Importancia = ust.SetImportanciaTareaDB(importancia)
+		tar.Tipo = ust.SetTipoTareaDB(tipo)
 		items = append(items, tar)
 	}
 	return items, nil

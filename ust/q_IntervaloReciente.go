@@ -19,7 +19,7 @@ type IntervaloReciente struct {
 	//  `tar.segundos_estimado`
 	SegundosEstimado int
 	//  `tar.segundos_real`
-	SegundosReal int
+	SegundosUtilizado int
 	//  `tar.estatus`
 	Estatus int
 	//  `his.titulo`

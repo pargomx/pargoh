@@ -97,7 +97,7 @@
 				{{ enfatizar .Titulo }}
 			</a>
 			<span class="float-right text-sm opacity-75">
-				{{ segundosToString .SegundosTranscTotal }}
+				{{ segundosToString .SegundosUtilizadoMust }}
 				{{ if .SegundosPresupuesto  }} / {{ segundosToString .SegundosPresupuesto }}{{ end }}
 				[{{ .AvancePorcentual }}%]
 			</span>
@@ -149,7 +149,7 @@
 			"Presupuesto: {{ segundosToString .SegundosPresupuesto }}",
 			{{ end -}}
 			"Avance: {{ .AvancePorcentual }}%",
-			"Tiempo utilizado: {{ segundosToString .SegundosTranscTotal }}",
+			"Tiempo utilizado: {{ segundosToString .SegundosUtilizadoMust }}",
 			{{ if .SegundosPresupuesto -}}
 			"Tiempo teórico: {{ segundosToString .SegundosAvanceTeorico }}",
 			{{ end -}}
@@ -276,12 +276,12 @@
 	<p>
 		{{ with .PersonaCosto -}}
 		Estimado total: {{ .SegundosEstimado }} <br>
-		Invertido total: {{ .SegundosReal }}
+		Invertido total: {{ .SegundosUtilizado }}
 		{{ end }}
 	</p>
 
 	{{ range .PersonaCosto.Historias }}
-	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded">{{ .SegundosTranscTotal }} {{ .SegundosReal }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
+	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded">{{ .SegundosUtilizadoMust }} {{ .SegundosUtilizado }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
 	{{ end }}
 	
 	<div class="p-4 mb-4">
@@ -307,7 +307,7 @@
 	<p>
 		{{ with .PersonaCosto -}}
 		Estimado total: {{ .SegundosEstimado }} <br>
-		Invertido total: {{ .SegundosReal }}
+		Invertido total: {{ .SegundosUtilizado }}
 		{{ end }}
 	</p>
 	<div class="p-4 mb-4">
@@ -358,7 +358,7 @@
                 <th>Prioridad</th>
                 <th>Completada</th>
 				<th>SegundosPresupuesto</th>
-				<th>SegundosReal</th>
+				<th>SegundosUtilizado</th>
                 <th>TiempoReal</th>
             </tr>
         </thead>
@@ -373,8 +373,8 @@
                 <td>{{ .Prioridad }}</td>
                 <td>{{ .Completada }}</td>
 				<td>{{ .SegundosPresupuesto }}</td>
-				<td>{{ .SegundosReal }}</td>
-                <td>{{ .SegundosTranscTotal }}</td>
+				<td>{{ .SegundosUtilizado }}</td>
+                <td>{{ .SegundosUtilizadoMust }}</td>
             </tr>
             {{ end }}
         </tbody>

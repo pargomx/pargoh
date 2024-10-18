@@ -7,7 +7,7 @@ import (
 
 type TareasList []ust.Tarea
 
-// Tiempo estimado solo para las tareas de la historia raíz.
+// Suma del tiempo estimado para las tareas.
 func (tareas TareasList) SegundosEstimado() (total int) {
 	for _, t := range tareas {
 		total += t.SegundosEstimado
@@ -15,15 +15,15 @@ func (tareas TareasList) SegundosEstimado() (total int) {
 	return total
 }
 
-// Tiempo real solo para las tareas de la historia raíz.
-func (tareas TareasList) SegundosReal() (total int) {
+// Suma del tiempo utilizado para las tareas.
+func (tareas TareasList) SegundosUtilizado() (total int) {
 	for _, t := range tareas {
-		total += t.SegundosReal
+		total += t.SegundosUtilizado
 	}
 	return total
 }
 
-// Puntaje obtenido de las tareas en la historia raíz.
+// Suma del valor ponderado para las tareas.
 func (tareas TareasList) ValorPonderado() (total int) {
 	for _, t := range tareas {
 		total += t.ValorPonderado()
@@ -31,7 +31,7 @@ func (tareas TareasList) ValorPonderado() (total int) {
 	return total
 }
 
-// Puntaje obtenido de las tareas en la historia raíz.
+// Suma del avance ponderado para las tareas.
 func (tareas TareasList) AvancePonderado() (total int) {
 	for _, t := range tareas {
 		total += t.AvancePonderado()

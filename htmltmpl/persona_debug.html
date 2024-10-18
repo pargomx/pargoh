@@ -38,13 +38,13 @@
 					<th title="Presupuesto">Presup</th>
 
 					<th title="Agg.Tareas.SegundosEstimado" class="bg-cyan-900">Estimado<br>individual</th>
-					<th title="Agg.Tareas.SegundosReal" class="bg-cyan-900">Transcurr.<br>individual</th>
+					<th title="Agg.Tareas.SegundosUtilizado" class="bg-cyan-900">Transcurr.<br>individual</th>
 					<th title="Agg.Tareas.ValorPonderado" class="bg-cyan-900">Valor<br>pond.</th>
 					<th title="Agg.Tareas.AvancePonderado" class="bg-cyan-900">Avan<br>pond.</th>
 					<th title="Agg.Tareas.AvancePorcentual" class="bg-cyan-900">Avance<br>individual</th>
 					
-					<th title="Rec.SegundosEstimadoTareas">Estimado<br>recursivo</th>
-					<th title="Rec.SegundosTranscTotal">Transcurr.<br>recursivo</th>
+					<th title="Rec.SegundosEstimadoMust">Estimado<br>recursivo</th>
+					<th title="Rec.SegundosUtilizadoMust">Transcurr.<br>recursivo</th>
 					<th title="Rec.ValorPonderado">Valor<br>pond.</th>
 					<th title="Rec.AvancePonderado">Avan<br>pond.</th>
 					<th title="Rec.AvancePorcentual">Avance<br>recursivo</th>
@@ -66,13 +66,13 @@
 					<td>{{ segundosToString .Rec.SegundosPresupuesto }}</td>
 
 					<td class="bg-cyan-950/60">{{ segundosToString .Agg.Tareas.SegundosEstimado }}</td>
-					<td class="bg-cyan-950/60">{{ segundosToString .Agg.Tareas.SegundosReal }}</td>
+					<td class="bg-cyan-950/60">{{ segundosToString .Agg.Tareas.SegundosUtilizado }}</td>
 					<td class="bg-cyan-950/60">{{ .Agg.Tareas.ValorPonderado }}</td>
 					<td class="bg-cyan-950/60">{{ .Agg.Tareas.AvancePonderado }}</td>
 					<td class="bg-cyan-950/60"><b class="opacity-75">{{ .Agg.Tareas.AvancePorcentual }}%</b></td>
 					
-					<td>{{ segundosToString .Rec.SegundosEstimadoTareas }}</td>
-					<td>{{ segundosToString .Rec.SegundosTranscTotal }}</td>
+					<td>{{ segundosToString .Rec.SegundosEstimadoMust }}</td>
+					<td>{{ segundosToString .Rec.SegundosUtilizadoMust }}</td>
 					<td>{{ .Rec.ValorPonderado }}</td>
 					<td>{{ .Rec.AvancePonderado }}</td>
 					<td>{{ .Rec.AvancePorcentual }}%</td>

@@ -30,7 +30,7 @@ func (s *Repositorio) ListHistoriasCosto(personaID int) ([]ust.HistoriaCosto, er
 			&item.Prioridad,
 			&item.Completada,
 			&item.SegundosEstimado,
-			&item.SegundosReal,
+			&item.SegundosUtilizado,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)

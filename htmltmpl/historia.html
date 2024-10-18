@@ -390,8 +390,8 @@
 						{{- enfatizar .Titulo -}} 
 					</a>
 					<span class="float-right text-sm font-bold opacity-75">
-						{{ segundosToString .SegundosTranscTotal }}
-						{{ segundosToString .Tareas.SegundosReal }} /
+						{{ segundosToString .SegundosUtilizadoMust }}
+						{{ segundosToString .Tareas.SegundosUtilizado }} /
 						{{ segundosToString .Tareas.SegundosEstimado }}
 						[{{ .AvancePorcentual }}%]
 					</span>
@@ -422,8 +422,8 @@
 							{{- enfatizar .Titulo -}}
 						</a>
 						<span class="float-right text-xs opacity-50">
-							{{ segundosToString .SegundosTranscTotal }}
-							{{ segundosToString .Tareas.SegundosReal }} /
+							{{ segundosToString .SegundosUtilizadoMust }}
+							{{ segundosToString .Tareas.SegundosUtilizado }} /
 							{{ segundosToString .Tareas.SegundosEstimado }}
 							[{{ .AvancePorcentual }}%]
 						</span>
@@ -540,10 +540,10 @@
 			{{ segundosToString .Tareas.SegundosEstimado }}
 		</span>
 		{{- end -}}
-		{{- if .Tareas.SegundosReal -}}
-		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .Tareas.SegundosReal }}">
+		{{- if .Tareas.SegundosUtilizado -}}
+		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .Tareas.SegundosUtilizado }}">
 			<i class="fa-solid fa-stopwatch"></i> Transcurrido
-			{{ segundosToString .Tareas.SegundosReal }}
+			{{ segundosToString .Tareas.SegundosUtilizado }}
 		</span>
 		{{- end -}}
 	</div>
@@ -596,13 +596,13 @@
 						{{ segundosToString .SegundosEstimado }}
 					</span>
 					{{- end -}}
-					{{- if .SegundosReal -}}
+					{{- if .SegundosUtilizado -}}
 					<button
 						onclick="showIntervalos('{{ .TareaID }}')"
-						title="Tiempo transcurrido {{ segundosToString .SegundosReal }}"
+						title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
 						class="pl-4 text-sm opacity-75 whitespace-nowrap">
 						<i class="fa-solid fa-stopwatch"></i>
-						{{ segundosToString .SegundosReal }}
+						{{ segundosToString .SegundosUtilizado }}
 					</button>
 					{{- end -}}
 				</span>
@@ -616,7 +616,7 @@
 
 				<span class="px-2 py-1 text-xs font-semibold leading-none text-white bg-cyan-950 rounded-md opacity-50">
 					e:{{ .SegundosEstimado }}
-					r:{{ .SegundosReal }}
+					r:{{ .SegundosUtilizado }}
 					v:{{ .ValorPonderado }}
 					a:{{ .AvancePonderado }}
 					{{ $.Agregado.Tareas.ValorPorcentual .TareaID }}%
@@ -658,13 +658,13 @@
 					{{ segundosToString .SegundosEstimado }}
 				</span>
 				{{- end -}}
-				{{- if .SegundosReal -}}
+				{{- if .SegundosUtilizado -}}
 				<button
 					onclick="showIntervalos('{{ .TareaID }}')"
-					title="Tiempo transcurrido {{ segundosToString .SegundosReal }}"
+					title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
 					<i class="fa-solid fa-stopwatch"></i>
-					{{ segundosToString .SegundosReal }}
+					{{ segundosToString .SegundosUtilizado }}
 				</button>
 				{{- end -}}
 			</div>

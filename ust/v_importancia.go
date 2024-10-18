@@ -22,8 +22,8 @@ const SEGUNDOS_CALCULO_DEFAULT = 3600 // 1h
 func (t *Tarea) ValorPonderado() int {
 	segundos := t.SegundosEstimado
 	if t.Finalizada() ||
-		(!t.Finalizada() && t.SegundosReal >= t.SegundosEstimado) {
-		segundos = t.SegundosReal
+		(!t.Finalizada() && t.SegundosUtilizado >= t.SegundosEstimado) {
+		segundos = t.SegundosUtilizado
 	}
 	if segundos == 0 {
 		segundos = SEGUNDOS_CALCULO_DEFAULT
@@ -36,8 +36,8 @@ func (t *Tarea) AvancePonderado() int {
 	if t.Finalizada() {
 		return pond
 	}
-	if t.SegundosReal >= t.SegundosEstimado*60 {
+	if t.SegundosUtilizado >= t.SegundosEstimado*60 {
 		return pond * 90 / 100 // 90%
 	}
-	return t.PonderacionImportancia() * t.SegundosReal
+	return t.PonderacionImportancia() * t.SegundosUtilizado
 }

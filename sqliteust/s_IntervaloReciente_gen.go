@@ -51,7 +51,7 @@ func (s *Repositorio) scanRowsIntervaloReciente(rows *sql.Rows, op string) ([]us
 		itvr := ust.IntervaloReciente{}
 		var tipo string
 		err := rows.Scan(
-			&itvr.HistoriaID, &itvr.TareaID, &itvr.Inicio, &itvr.Fin, &tipo, &itvr.Descripcion, &itvr.Impedimentos, &itvr.SegundosEstimado, &itvr.SegundosReal, &itvr.Estatus, &itvr.Titulo, &itvr.Objetivo, &itvr.Completada, &itvr.Prioridad,
+			&itvr.HistoriaID, &itvr.TareaID, &itvr.Inicio, &itvr.Fin, &tipo, &itvr.Descripcion, &itvr.Impedimentos, &itvr.SegundosEstimado, &itvr.SegundosUtilizado, &itvr.Estatus, &itvr.Titulo, &itvr.Objetivo, &itvr.Completada, &itvr.Prioridad,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
