@@ -19,8 +19,34 @@ type HistoriaAgregado struct {
 
 // ================================================================ //
 
-// Relación entre ValorPonderado y AvancePonderado
-// obtenido de las tareas en la historia raíz & sus hijos.
+// Presupuesto agregando todo el árbol de historias.
+func (h *HistoriaAgregado) SegundosPresupuesto() int {
+	total := h.Historia.SegundosPresupuesto
+	for _, d := range h.Descendientes {
+		total += d.SegundosPresupuesto
+	}
+	return total
+}
+
+// Tiempo estimado agregando todo el árbol de historias.
+func (h *HistoriaAgregado) SegundosEstimado() int {
+	total := h.Tareas.SegundosEstimado()
+	for _, d := range h.Descendientes {
+		total += d.SegundosEstimado
+	}
+	return total
+}
+
+// Tiempo utilizado agregando todo el árbol de historias.
+func (h *HistoriaAgregado) SegundosUtilizado() int {
+	total := h.Tareas.SegundosUtilizado()
+	for _, d := range h.Descendientes {
+		total += d.SegundosUtilizado
+	}
+	return total
+}
+
+// Progreso agregando la ponderación y avance de todo el árbol de historias.
 func (h *HistoriaAgregado) AvancePorcentual() float64 {
 	avance := h.Tareas.AvancePonderado()
 	valor := h.Tareas.ValorPonderado()
