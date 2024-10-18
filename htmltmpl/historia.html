@@ -44,10 +44,10 @@
 				hx-swap="none"
 				name="value"
 				class="form-control">
-				<option value="0" {{ if eq .Historia.Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
-				<option value="1" {{ if eq .Historia.Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
-				<option value="2" {{ if eq .Historia.Prioridad 2 }}selected{{ end }}>🤔 Should</option>
-				<option value="3" {{ if eq .Historia.Prioridad 3 }}selected{{ end }}>🤩 Must</option>
+				<option value="0" {{ if .Historia.EsPrioridadWont }}selected{{ end }}>🚫 Won't</option>
+				<option value="1" {{ if .Historia.EsPrioridadCould }}selected{{ end }}>😶‍🌫️ Could</option>
+				<option value="2" {{ if .Historia.EsPrioridadShould }}selected{{ end }}>🤔 Should</option>
+				<option value="3" {{ if .Historia.EsPrioridadMust }}selected{{ end }}>🤩 Must</option>
 			</select>
 		</div>
 		<!--* COMPLETADA -->
@@ -379,9 +379,9 @@
 					onclick="showMenuHistoria({{ .HistoriaID }})"
 					class="inline-block w-5 text-center">
 					{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-					{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-					{{- else if eq .Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-					{{- else if eq .Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+					{{- else if .EsPrioridadMust }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+					{{- else if .EsPrioridadShould }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+					{{- else if .EsPrioridadCould }}<i class="text-orange-200 fa-solid fa-minus"></i>
 					{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
 					{{- end }}
 				</button>
@@ -410,9 +410,9 @@
 							onclick="showMenuHistoria({{ .HistoriaID }})"
 							class="inline-block w-5 text-center">
 							{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-							{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-							{{- else if eq .Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-							{{- else if eq .Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+							{{- else if .EsPrioridadMust }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+							{{- else if .EsPrioridadShould }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+							{{- else if .EsPrioridadCould }}<i class="text-orange-200 fa-solid fa-minus"></i>
 							{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
 							{{- end }}
 						</button>
@@ -906,7 +906,7 @@
 			<button
 				type="button"
 				hx-post="/historias/{{ .HistoriaID }}/priorizar/3" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 3 }}font-bold{{ end }}">
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadMust }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-600 fa-solid fa-angles-up"></i>
 				</span>
@@ -915,7 +915,7 @@
 			<button
 				type="button"
 				hx-post="/historias/{{ .HistoriaID }}/priorizar/2" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 2 }}font-bold{{ end }}">
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadShould }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
 				</span>
@@ -924,7 +924,7 @@
 			<button
 				type="button"
 				hx-post="/historias/{{ .HistoriaID }}/priorizar/1" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 1 }}font-bold{{ end }}">
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadCould }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-orange-200 fa-solid fa-minus"></i>
 				</span>
@@ -933,7 +933,7 @@
 			<button
 				type="button"
 				hx-post="/historias/{{ .HistoriaID }}/priorizar/0" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if eq .Prioridad 0 }}font-bold{{ end }}">
+				class="block w-full p-1 pr-2 text-left transition-colors rounded hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadWont }}font-bold{{ end }}">
 				<span class="inline-block w-5 text-center">
 					<i class="text-slate-400 fa-solid fa-ban"></i>
 				</span>

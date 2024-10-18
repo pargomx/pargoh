@@ -37,10 +37,10 @@
 			{{ if .Completada }}✅{{ end }}
 			<span tipo="carril_titulo" class="font-medium text-center">{{ .Titulo }}</span>
 			<span class="float-right text-sm">
-				{{ if eq .Prioridad 0 }}{{ end }}
-				{{ if eq .Prioridad 1 }}😶‍🌫️{{ end }}
-				{{ if eq .Prioridad 2 }}🤔{{ end }}
-				{{ if eq .Prioridad 3 }}🤩{{ end }}
+				{{ if .EsPrioridadWont }}{{ end }}
+				{{ if .EsPrioridadCould }}😶‍🌫️{{ end }}
+				{{ if .EsPrioridadShould }}🤔{{ end }}
+				{{ if .EsPrioridadMust }}🤩{{ end }}
 			</span>
 			{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }}&nbsp;tar.</a>{{ end }}
 			<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Posicion }}</span>
@@ -57,10 +57,10 @@
 				{{ if .Completada }}✅{{ end }}
 				<span tipo="carril_item_titulo" class="text-center">{{ .Titulo }}</span>
 				<span class="float-right">
-					{{ if eq .Prioridad 0 }}{{ end }}
-					{{ if eq .Prioridad 1 }}😶‍🌫️{{ end }}
-					{{ if eq .Prioridad 2 }}🤔{{ end }}
-					{{ if eq .Prioridad 3 }}🤩{{ end }}
+					{{ if .EsPrioridadWont }}{{ end }}
+					{{ if .EsPrioridadCould }}😶‍🌫️{{ end }}
+					{{ if .EsPrioridadShould }}🤔{{ end }}
+					{{ if .EsPrioridadMust }}🤩{{ end }}
 				</span>
 				{{ if .NumHistorias }}<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumHistorias }}&nbsp;his.</a>{{ end }}
 				{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }}&nbsp;tar.</a>{{ end }}

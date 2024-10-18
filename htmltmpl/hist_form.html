@@ -31,10 +31,10 @@
 	<div>
 		<label for="pinput4">Prioridad</label>
 		<select class="form-control" name="prioridad" id="pinput4">
-			<option value="0" {{ if eq .Prioridad 0 }}selected{{ end }}>🚫 Won't</option>
-			<option value="1" {{ if eq .Prioridad 1 }}selected{{ end }}>😶‍🌫️ Could</option>
-			<option value="2" {{ if eq .Prioridad 2 }}selected{{ end }}>🤔 Should</option>
-			<option value="3" {{ if eq .Prioridad 3 }}selected{{ end }}>🤩 Must</option>
+			<option value="0" {{ if .EsPrioridadWont }}selected{{ end }}>🚫 Won't</option>
+			<option value="1" {{ if .EsPrioridadCould }}selected{{ end }}>😶‍🌫️ Could</option>
+			<option value="2" {{ if .EsPrioridadShould }}selected{{ end }}>🤔 Should</option>
+			<option value="3" {{ if .EsPrioridadMust }}selected{{ end }}>🤩 Must</option>
 		</select>
 		<!-- <input name="prioridad" id="pinput4" type="number" min="0" max="3" placeholder="ejemplo" value="{{ .Prioridad }}"> -->
 	</div>
