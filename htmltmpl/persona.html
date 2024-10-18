@@ -83,29 +83,28 @@
 		{{ range .Historias -}}
 		<article
 			tipo="sort_historia"
-			id="{{ .HistoriaID }}"
-			class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if eq .Prioridad 3 }} border-cyan-800 {{ else if eq .Prioridad 2 }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if eq .Prioridad 1 }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
+			id="{{ .Historia.HistoriaID }}"
+			class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if .Historia.EsPrioridadMust }} border-cyan-800 {{ else if .Historia.EsPrioridadShould }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if .Historia.EsPrioridadCould }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
 			<span tipo="sort_handle" class="p-3 cursor-pointer">
 				<i class="fa-solid fa-grip-vertical"></i>
 				<form tipo="sort_form" hx-post="/reordenar-historia" hx-trigger="reordenarEnd">
-					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
+					<input type="hidden" name="historia_id" value="{{ .Historia.HistoriaID }}">
+					<input type="hidden" name="old_pos" value="{{ .Historia.Posicion }}">
 					<input type="hidden" name="new_pos">
 				</form>
 			</span>
-			<a href="/historias/{{ .HistoriaID }}" class="grow py-2">
-				{{ enfatizar .Titulo }}
+			<a href="/historias/{{ .Historia.HistoriaID }}" class="grow py-2">
+				{{ enfatizar .Historia.Titulo }}
 			</a>
 			<span class="float-right text-sm opacity-75">
-				{{ segundosToString .SegundosUtilizadoMust }}
-				{{ if .SegundosPresupuesto  }} / {{ segundosToString .SegundosPresupuesto }}{{ end }}
-				[{{ .AvancePorcentual }}%]
+				{{ segundosToString .SegundosPresupuesto }} |
+				{{ .AvancePorcentual }}%
 			</span>
 			<span class="p-3">
-				{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-				{{- else if eq .Prioridad 3 }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-				{{- else if eq .Prioridad 2 }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-				{{- else if eq .Prioridad 1 }}<i class="text-orange-200 fa-solid fa-minus"></i>
+				{{ if .Historia.Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
+				{{- else if .Historia.EsPrioridadMust }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
+				{{- else if .Historia.EsPrioridadShould }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+				{{- else if .Historia.EsPrioridadCould }}<i class="text-orange-200 fa-solid fa-minus"></i>
 				{{- end }}
 			</span>
 		</article>
@@ -145,40 +144,49 @@
 	</div>
 	<script>
 		const tTooltips = [{{ range .Historias }}[
-			{{ if .SegundosPresupuesto -}}
-			"Presupuesto: {{ segundosToString .SegundosPresupuesto }}",
-			{{ end -}}
 			"Avance: {{ .AvancePorcentual }}%",
-			"Tiempo utilizado: {{ segundosToString .SegundosUtilizadoMust }}",
-			{{ if .SegundosPresupuesto -}}
-			"Tiempo teórico: {{ segundosToString .SegundosAvanceTeorico }}",
-			{{ end -}}
+			"Presupuesto: {{ segundosToString .SegundosPresupuesto }}",
+			"Estimado: {{ segundosToString .SegundosEstimado }}",
+			"Utilizado: {{ segundosToString .SegundosUtilizado }} {{ if .SegundosPresupuesto }}({{ .DesviacionPresupuestal}}%){{ end }}",
+			"Expectativa: {{ segundosToString .SegundosExpectativaAvancePresupuesto }}",
 			],{{ end }}]
 
 		new Chart(document.getElementById('chartHistoriasCosto'), {
 			type: 'bar',
 			data: {
-				labels: [{{ range .Historias }}'{{ .Titulo }}',{{ end }}],
+				labels: [{{ range .Historias }}'{{ .Historia.Titulo }}',{{ end }}],
 				datasets: [
 					{
+						// MARCA DE TIEMPO ESTIMADO
 						data: [{{ range .Historias }}{{ .HorasEstimado }},{{ end }}],
+						label: 'Estimado',
+						categoryPercentage: 0.8,
+						backgroundColor: 'transparent',
+						borderWidth: {top: 0, right: 2, bottom: 0, left: 0},
+						borderColor: 'gray',
+					},
+					{
+						// MARCA DE EXPECTATIVA SEGÚN AVANCE Y PRESUPUESTO
+						data: [{{ range .Historias }}{{ .HorasExpectativaAvancePresupuesto }},{{ end }}],
+						label: 'Avance obtenido',
+						categoryPercentage: 0.8,
+						backgroundColor: 'transparent',
+						borderWidth: {top: 0, right: 3, bottom: 0, left: 0},
+						borderColor: 'lime',
+					},
+					{
+						// RECUADRO DE PRESUPUESTO
+						data: [{{ range .Historias }}{{ .HorasPresupuesto }},{{ end }}],
 						label: 'Presupuesto',
 						categoryPercentage: 0.8,
 						backgroundColor: 'transparent',
-						borderWidth: {top: 3, right: 5, bottom: 3, left: 0},
+						borderWidth: {top: 2, right: 5, bottom: 2, left: 0},
 						borderColor: 'lightblue',
 					},
 					{
-						data: [{{ range .Historias }}{{ .HorasAvanceTeorico }},{{ end }}],
-						label: 'Gasto teórico',
-						categoryPercentage: 0.8,
-						backgroundColor: 'transparent',
-						borderWidth: {top: 0, right: 5, bottom: 0, left: 0},
-						borderColor: 'orange',
-					},
-					{
-						data: [{{ range .Historias }}{{ .HorasTranscTotal }},{{ end }}],
-						label: 'Gasto real',
+						// RELLENO UTILIZADO
+						data: [{{ range .Historias }}{{ .HorasUtilizado }},{{ end }}],
+						label: 'Utilizado',
 						backgroundColor: '#155e75',
 						categoryPercentage: 0.8,
 						// borderWidth: {top: 0, right: 5, bottom: 0, left: 0},

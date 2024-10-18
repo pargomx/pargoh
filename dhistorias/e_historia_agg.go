@@ -59,3 +59,35 @@ func (h *HistoriaAgregado) AvancePorcentual() float64 {
 	}
 	return math.Round(float64(avance)/float64(valor)*10*100) / 10
 }
+
+// Porcentaje utilizado del presupuesto.
+func (h *HistoriaAgregado) DesviacionPresupuestal() float64 {
+	if h.SegundosPresupuesto() == 0 {
+		return 0
+	}
+	return math.Round(float64(h.SegundosUtilizado())/float64(h.SegundosPresupuesto())*100*10) / 10
+}
+
+// Tiempo que debería haberse gastado del persupuesto según el avance obtenido.
+func (h *HistoriaAgregado) SegundosExpectativaAvancePresupuesto() int {
+	if h.AvancePorcentual() == 0 {
+		return 0
+	}
+	return int(math.Round(float64(h.SegundosPresupuesto()) * h.AvancePorcentual() / 100))
+}
+
+// ================================================================ //
+
+// Para valor en gráfico de barras.
+func (h *HistoriaAgregado) HorasPresupuesto() float64 {
+	return math.Round(float64(h.SegundosPresupuesto())/3600*100) / 100
+}
+func (h *HistoriaAgregado) HorasEstimado() float64 {
+	return math.Round(float64(h.SegundosEstimado())/3600*100) / 100
+}
+func (h *HistoriaAgregado) HorasUtilizado() float64 {
+	return math.Round(float64(h.SegundosUtilizado())/3600*100) / 100
+}
+func (h *HistoriaAgregado) HorasExpectativaAvancePresupuesto() float64 {
+	return math.Round(float64(h.SegundosExpectativaAvancePresupuesto())/3600*100) / 100
+}

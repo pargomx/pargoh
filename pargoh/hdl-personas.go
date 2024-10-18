@@ -17,9 +17,18 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
+	// Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
+	hists, err := s.repo.ListHistoriasByPadreID(Persona.PersonaID)
 	if err != nil {
 		return err
+	}
+	Historias := make([]dhistorias.HistoriaAgregado, len(hists))
+	for i, h := range hists {
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, s.repo)
+		if err != nil {
+			return err
+		}
+		Historias[i] = *agg
 	}
 	TareasEnCurso, err := s.repo.ListTareasEnCurso()
 	if err != nil {

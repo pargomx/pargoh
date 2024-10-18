@@ -84,7 +84,7 @@ func (h *HistoriaRecursiva) HorasEstimado() float64 {
 	return math.Round(float64(h.SegundosPresupuesto)/3600*100) / 100
 }
 
-func (h *HistoriaRecursiva) HorasTranscTotal() float64 {
+func (h *HistoriaRecursiva) HorasUtilizado() float64 {
 	return math.Round(float64(h.SegundosUtilizadoMust())/3600*100) / 100
 }
 
