@@ -173,7 +173,7 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 func (s *Repositorio) ListTareas() ([]ust.Tarea, error) {
 	const op string = "ListTareas"
 	rows, err := s.db.Query(
-		"SELECT " + columnasTarea + " " + fromTarea + "ORDER BY importancia DESC",
+		"SELECT " + columnasTarea + " " + fromTarea,
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)
@@ -191,7 +191,7 @@ func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasTarea+" "+fromTarea+
-			"WHERE historia_id = ? ORDER BY importancia DESC",
+			"WHERE historia_id = ?",
 		HistoriaID,
 	)
 	if err != nil {
