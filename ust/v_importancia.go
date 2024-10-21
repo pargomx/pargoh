@@ -2,7 +2,7 @@ package ust
 
 import "github.com/pargomx/gecko/gko"
 
-func (t *Tarea) PonderacionImportancia() int {
+func (t *Tarea) FactorImportancia() int {
 	switch {
 	case t.Importancia.EsIdea(), t.Importancia.EsIndefinido():
 		return 1
@@ -16,19 +16,19 @@ func (t *Tarea) PonderacionImportancia() int {
 	}
 }
 
-const SEGUNDOS_CALCULO_DEFAULT = 3600 // 1h
+const SEGUNDOS_PONDERACION_DEFAULT = 3600 // 1h
 
 // Puntaje basado en la importancia y esfuerzo en tiempo de la tarea.
 func (t *Tarea) ValorPonderado() int {
 	segundos := t.SegundosEstimado
 	if t.Finalizada() ||
-		(!t.Finalizada() && t.SegundosUtilizado >= t.SegundosEstimado) {
+		(!t.Finalizada() && t.SegundosUtilizado > t.SegundosEstimado) {
 		segundos = t.SegundosUtilizado
 	}
 	if segundos == 0 {
-		segundos = SEGUNDOS_CALCULO_DEFAULT
+		segundos = SEGUNDOS_PONDERACION_DEFAULT
 	}
-	return segundos * t.PonderacionImportancia()
+	return segundos * t.FactorImportancia()
 }
 
 func (t *Tarea) AvancePonderado() int {
@@ -36,8 +36,8 @@ func (t *Tarea) AvancePonderado() int {
 	if t.Finalizada() {
 		return pond
 	}
-	if t.SegundosUtilizado >= t.SegundosEstimado*60 {
-		return pond * 90 / 100 // 90%
+	if t.SegundosUtilizado > t.SegundosEstimado {
+		return pond * 90 / 100 // 90% para tareas no completadas que superaron estimado.
 	}
-	return t.PonderacionImportancia() * t.SegundosUtilizado
+	return t.SegundosUtilizado * t.FactorImportancia()
 }
