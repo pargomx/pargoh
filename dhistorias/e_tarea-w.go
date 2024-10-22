@@ -16,7 +16,7 @@ func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 	}
 	tarea.Estatus = 0
 	if tarea.Importancia.EsIndefinido() {
-		tarea.Importancia = ust.ImportanciaTareaIdea
+		tarea.Importancia = ust.ImportanciaTareaNecesaria
 	}
 	err = repo.InsertTarea(tarea)
 	if err != nil {
@@ -109,10 +109,32 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 	if err != nil {
 		return op.Err(err).Ctx("historiaID", tarea.HistoriaID)
 	}
+	// Helpers para descripción.
 	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "bug:") {
 		tarea.Tipo = ust.TipoTareaBug
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[4:])
 	}
+	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "ui:") {
+		tarea.Tipo = ust.TipoTareaWebUi
+		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[3:])
+	}
+	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "db:") {
+		tarea.Tipo = ust.TipoTareaDb
+		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[3:])
+	}
+	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "idea:") {
+		tarea.Importancia = ust.ImportanciaTareaIdea
+		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[5:])
+	}
+	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "mejora:") {
+		tarea.Importancia = ust.ImportanciaTareaMejora
+		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[7:])
+	}
+	if len(tarea.Descripcion) < 3 {
+		return op.Msg("La descripción de la tarea debe tener al menos 3 caracteres")
+	}
+	// Primera letra en mayúscula.
+	tarea.Descripcion = strings.ToUpper(tarea.Descripcion[:1]) + tarea.Descripcion[1:]
 	return nil
 }
 

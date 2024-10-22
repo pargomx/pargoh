@@ -67,7 +67,8 @@
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/estimado"
 				type="text"
 				name="value"
-				value="{{ segundosToString .Historia.SegundosPresupuesto }}"
+				value="{{ if .Historia.SegundosPresupuesto }}{{ segundosToString .Historia.SegundosPresupuesto }}{{ end }}"
+				placeholder="Presupuesto"
 				class="form-control">
 		</div>
 	</div>
@@ -117,6 +118,35 @@
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 text-white/75 placeholder:text-slate-600">
 			{{- .Historia.Objetivo -}}
 		</textarea>
+	</div>
+
+	<!--* AVANCE  -->
+	<h3 id="progreso" class="mb-2 text-xl text-cyan-600">
+		<a href="#progreso">Progreso</a>
+	</h3>
+	<div class="flex flex-wrap justify-around gap-4 mb-6 text-4xl">
+		
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold text-white">{{ .AvancePorcentual }}%</span>
+			<span class="text-sm text-cyan-200">Avance</span>
+		</div>
+
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosPresupuesto }}</span>
+			<span class="text-sm text-cyan-200">Presupuesto</span>
+		</div>
+
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosEstimado }}</span>
+			<span class="text-sm text-cyan-200">Estimación</span>
+		</div>
+
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold {{ if gt .SegundosUtilizado .SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
+				{{ segundosToString .SegundosUtilizado }}
+			</span>
+			<span class="text-sm text-cyan-200">Utilizado</span>
+		</div>
 	</div>
 
 	<!--* VIAJE DE USUARIO *-->
@@ -389,10 +419,11 @@
 					<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 						{{- enfatizar .Titulo -}} 
 					</a>
-					<span class="float-right text-sm font-bold opacity-75">
-						{{ segundosToString .SegundosUtilizadoMust }}
+					<span class="float-right text-sm opacity-75">
+						<!-- {{ segundosToString .SegundosUtilizadoMust }}
 						{{ segundosToString .Tareas.SegundosUtilizado }} /
-						{{ segundosToString .Tareas.SegundosEstimado }}
+						{{ segundosToString .Tareas.SegundosEstimado }} -->
+						{{ segundosToString .SegundosPresupuesto }}
 						[{{ .AvancePorcentual }}%]
 					</span>
 				</div>
@@ -422,9 +453,10 @@
 							{{- enfatizar .Titulo -}}
 						</a>
 						<span class="float-right text-xs opacity-50">
-							{{ segundosToString .SegundosUtilizadoMust }}
+							<!-- {{ segundosToString .SegundosUtilizadoMust }}
 							{{ segundosToString .Tareas.SegundosUtilizado }} /
-							{{ segundosToString .Tareas.SegundosEstimado }}
+							{{ segundosToString .Tareas.SegundosEstimado }} -->
+							{{ segundosToString .SegundosPresupuesto }}
 							[{{ .AvancePorcentual }}%]
 						</span>
 					</div>
@@ -517,55 +549,25 @@
 		</li>
 	</ol>
 
-	<!--* AVANCE  -->
-	<h3 id="progreso" class="mb-2 text-xl text-cyan-600">
-		<a href="#progreso">Progreso</a>
-	</h3>
-	<div class="flex flex-wrap justify-around gap-4 mb-2 text-4xl">
-		
-		<div class="flex flex-col items-center justify-center p-4 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ .AvancePorcentual }}%</span>
-			<span class="text-sm text-cyan-200">Avance</span>
-		</div>
-
-		<div class="flex flex-col items-center justify-center p-4 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosPresupuesto }}</span>
-			<span class="text-sm text-cyan-200">Presupuesto</span>
-		</div>
-
-		<div class="flex flex-col items-center justify-center p-4 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosEstimado }}</span>
-			<span class="text-sm text-cyan-200">Estimación</span>
-		</div>
-
-		<div class="flex flex-col items-center justify-center p-4 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold {{ if gt .SegundosUtilizado .SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
-				{{ segundosToString .SegundosUtilizado }}
-			</span>
-			<span class="text-sm text-cyan-200">Utilizado</span>
-		</div>
-	</div>
-
 	<!--* TAREAS -->
 	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
 		<h3 id="tareas" class="grow text-xl">
 			<a href="#tareas">Tareas</a>
 		</h3>
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .Tareas.SegundosEstimado }}">
-			v:{{ .Tareas.ValorPonderado }}
-			a:{{ .Tareas.AvancePonderado }}
+		<span class="text-sm opacity-75">
+			<i class="fa-solid fa-list-check"></i> Progreso
 			{{ .Tareas.AvancePorcentual }}%
 		</span>
-		{{- if .Tareas.SegundosEstimado -}}
-		<span class="text-sm opacity-75" title="Tiempo estimado {{ segundosToString .Tareas.SegundosEstimado }}">
-			<i class="fa-solid fa-hourglass-start"></i> Estimado
-			{{ segundosToString .Tareas.SegundosEstimado }}
-		</span>
-		{{- end -}}
 		{{- if .Tareas.SegundosUtilizado -}}
 		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .Tareas.SegundosUtilizado }}">
 			<i class="fa-solid fa-stopwatch"></i> Transcurrido
 			{{ segundosToString .Tareas.SegundosUtilizado }}
+		</span>
+		{{- end -}}
+		{{- if .Tareas.SegundosEstimado -}}
+		<span class="text-sm opacity-75">
+			<i class="fa-solid fa-hourglass-start"></i> Estimado
+			{{ segundosToString .Tareas.SegundosEstimado }}
 		</span>
 		{{- end -}}
 	</div>
@@ -591,9 +593,13 @@
 				</span>
 			</div>
 			<p class="">
-				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+				<button
+					hx-post="/tareas/{{ .TareaID }}/importancia"
+					title="{{ $.Agregado.Tareas.ValorPorcentual .TareaID }}% del trabajo"
+					tabindex="-1"
+					class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 					{{- .Importancia.Etiqueta -}}
-				</span>
+				</button>
 
 				{{ if not .Tipo.EsIndefinido -}}
 				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
@@ -636,13 +642,13 @@
 				</i>
 				{{- end }}
 
-				<span class="px-2 py-1 text-xs font-semibold leading-none text-white bg-cyan-950 rounded-md opacity-50">
+				<!-- <span class="px-2 py-1 text-xs font-semibold leading-none text-white bg-cyan-950 rounded-md opacity-50">
 					e:{{ .SegundosEstimado }}
 					r:{{ .SegundosUtilizado }}
 					v:{{ .ValorPonderado }}
 					a:{{ .AvancePonderado }}
 					{{ $.Agregado.Tareas.ValorPorcentual .TareaID }}%
-				</span>
+				</span> -->
 			</p>
 			<div class="items-start hidden gap-2 md:flex">
 				{{ if .NoIniciada -}}
@@ -672,14 +678,6 @@
 				{{ end }}
 			</div>
 			<div class="grow hidden text-right sm:block">
-				{{- if .SegundosEstimado -}}
-				<span
-					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
-					class="pl-4 text-sm opacity-75 whitespace-nowrap">
-					<i class="fa-solid fa-hourglass-start"></i>
-					{{ segundosToString .SegundosEstimado }}
-				</span>
-				{{- end -}}
 				{{- if .SegundosUtilizado -}}
 				<button
 					onclick="showIntervalos('{{ .TareaID }}')"
@@ -689,6 +687,14 @@
 					{{ segundosToString .SegundosUtilizado }}
 				</button>
 				{{- end -}}
+				<button
+					hx-patch="/tareas/{{ .TareaID }}/estimado"
+					hx-prompt="Nuevo estimado"
+					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
+					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					<i class="fa-solid fa-hourglass-start"></i>
+					{{ if .SegundosEstimado }}{{ segundosToString .SegundosEstimado }}{{ else }}1h{{ end -}}
+				</button>
 			</div>
 		</li>
 		{{ end }}

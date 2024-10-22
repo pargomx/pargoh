@@ -23,7 +23,7 @@ type HistoriaAgregado struct {
 func (h *HistoriaAgregado) SegundosPresupuesto() int {
 	total := h.Historia.SegundosPresupuesto
 	for _, d := range h.Descendientes {
-		total += d.SegundosPresupuesto
+		total += d.SegundosPresupuestoMust()
 	}
 	return total
 }
@@ -32,7 +32,7 @@ func (h *HistoriaAgregado) SegundosPresupuesto() int {
 func (h *HistoriaAgregado) SegundosEstimado() int {
 	total := h.Tareas.SegundosEstimado()
 	for _, d := range h.Descendientes {
-		total += d.SegundosEstimado
+		total += d.SegundosEstimadoMust()
 	}
 	return total
 }
@@ -41,7 +41,7 @@ func (h *HistoriaAgregado) SegundosEstimado() int {
 func (h *HistoriaAgregado) SegundosUtilizado() int {
 	total := h.Tareas.SegundosUtilizado()
 	for _, d := range h.Descendientes {
-		total += d.SegundosUtilizado
+		total += d.SegundosUtilizadoMust()
 	}
 	return total
 }

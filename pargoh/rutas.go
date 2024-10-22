@@ -171,6 +171,8 @@ func main() {
 	s.GET("/tareas/{tarea_id}", s.getTarea)
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
 	s.DEL("/tareas/{tarea_id}", s.eliminarTarea)
+	s.PCH("/tareas/{tarea_id}/estimado", s.cambiarEstimadoTarea)
+	s.POS("/tareas/{tarea_id}/importancia", s.ciclarImportanciaTarea)
 	s.POS("/tareas/{tarea_id}/iniciar", s.iniciarTarea)
 	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)

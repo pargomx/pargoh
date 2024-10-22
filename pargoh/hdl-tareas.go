@@ -49,7 +49,50 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
+}
+
+func (s *servidor) ciclarImportanciaTarea(c *gecko.Context) error {
+	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
+	if err != nil {
+		return err
+	}
+	if tarea.Importancia.EsIdea() {
+		tarea.Importancia = ust.ImportanciaTareaNecesaria
+	} else if tarea.Importancia.EsNecesaria() {
+		tarea.Importancia = ust.ImportanciaTareaMejora
+	} else if tarea.Importancia.EsMejora() {
+		tarea.Importancia = ust.ImportanciaTareaIdea
+	} else {
+		tarea.Importancia = ust.ImportanciaTareaIdea
+	}
+	err = dhistorias.ActualizarTarea(tarea.TareaID, *tarea, s.repo)
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
 	return c.Redir("/historias/%v", tarea.HistoriaID)
+}
+
+func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
+	estimado, err := ust.NuevaDuraciónSegundos(c.PromptVal())
+	if err != nil {
+		return err
+	}
+	if estimado <= 0 {
+		return gko.ErrDatoInvalido().Msg("El estimado debe ser mayor a 0")
+	}
+	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
+	if err != nil {
+		return err
+	}
+	tarea.SegundosEstimado = estimado
+	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), *tarea, s.repo)
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.Redir("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
 func (s *servidor) moverTarea(c *gecko.Context) error {

@@ -13,6 +13,17 @@ type HistoriaRecursiva struct {
 
 // ================================================================ //
 
+// Tiempo presupuestado para la historia raíz y todas sus descendientes.
+func (h *HistoriaRecursiva) SegundosPresupuestoMust() (total int) {
+	if h.EsPrioridadMust() || h.Completada {
+		total = h.SegundosPresupuesto
+	}
+	for _, h := range h.Descendientes {
+		total += h.SegundosPresupuestoMust()
+	}
+	return total
+}
+
 // Tiempo estimado para todas las tareas de la historia raíz y todas sus descendientes.
 func (h *HistoriaRecursiva) SegundosEstimadoMust() (total int) {
 	if h.EsPrioridadMust() || h.Completada {
