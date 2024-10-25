@@ -14,7 +14,9 @@
 				{{ .Proyecto.Titulo }}
 			</a>
 		</h2>
-		<h3 class="flex items-center gap-1 py-1">
+		<h3
+			data-persona-id="{{ .Persona.PersonaID }}"
+			class="flex items-center gap-1 py-1">
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
 			<span class="text-xl">{{ .Persona.Nombre }}</span>
 		</h3>
@@ -139,6 +141,9 @@
 	<!--? COSTO DE LAS HISTORIAS -->
 	{{ if .Historias -}}
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Desglose de costo</h3>
+	<p>
+		Gestión: {{ segundosToString $.Persona.SegundosGestion }}
+	</p>
 	<div class="px-4 mb-4" style="background-color: transparent;">
 		<canvas id="chartHistoriasCosto"></canvas>
 	</div>
@@ -149,16 +154,18 @@
 			"Estimado: {{ segundosToString .SegundosEstimado }}",
 			"Utilizado: {{ segundosToString .SegundosUtilizado }} {{ if .SegundosPresupuesto }}({{ .DesviacionPresupuestal}}%){{ end }}",
 			"Expectativa: {{ segundosToString .SegundosExpectativaAvancePresupuesto }}",
-			],{{ end }}]
+			],{{ end }}
+			["Gestión: {{ segundosToString $.Persona.SegundosGestion }}"]
+		]
 
 		new Chart(document.getElementById('chartHistoriasCosto'), {
 			type: 'bar',
 			data: {
-				labels: [{{ range .Historias }}'{{ .Historia.Titulo }}',{{ end }}],
+				labels: [{{ range .Historias }}'{{ .Historia.Titulo }}',{{ end }} 'Documentación'],
 				datasets: [
 					{
 						// MARCA DE TIEMPO ESTIMADO
-						data: [{{ range .Historias }}{{ .HorasEstimado }},{{ end }}],
+						data: [{{ range .Historias }}{{ .HorasEstimado }},{{ end }} 0],
 						label: 'Estimado',
 						categoryPercentage: 0.8,
 						backgroundColor: 'transparent',
@@ -167,7 +174,7 @@
 					},
 					{
 						// MARCA DE EXPECTATIVA SEGÚN AVANCE Y PRESUPUESTO
-						data: [{{ range .Historias }}{{ .HorasExpectativaAvancePresupuesto }},{{ end }}],
+						data: [{{ range .Historias }}{{ .HorasExpectativaAvancePresupuesto }},{{ end }} 0],
 						label: 'Avance obtenido',
 						categoryPercentage: 0.8,
 						backgroundColor: 'transparent',
@@ -176,7 +183,7 @@
 					},
 					{
 						// RECUADRO DE PRESUPUESTO
-						data: [{{ range .Historias }}{{ .HorasPresupuesto }},{{ end }}],
+						data: [{{ range .Historias }}{{ .HorasPresupuesto }},{{ end }} 0],
 						label: 'Presupuesto',
 						categoryPercentage: 0.8,
 						backgroundColor: 'transparent',
@@ -185,7 +192,7 @@
 					},
 					{
 						// RELLENO UTILIZADO
-						data: [{{ range .Historias }}{{ .HorasUtilizado }},{{ end }}],
+						data: [{{ range .Historias }}{{ .HorasUtilizado }},{{ end }} {{ .Persona.HorasGestion }}],
 						label: 'Utilizado',
 						backgroundColor: '#155e75',
 						categoryPercentage: 0.8,

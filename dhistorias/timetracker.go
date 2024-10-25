@@ -9,13 +9,13 @@ import (
 
 type GestionTimeTracker struct {
 	repo      gestionTimeTrackerRepo
-	buffer    map[string]int // [proyectoID] segundos
-	maxBuffer int            // cuántos segundos acumular antes de guardar en DB.
+	buffer    map[int]int // [personaID] segundos
+	maxBuffer int         // cuántos segundos acumular antes de guardar en DB.
 }
 
 type gestionTimeTrackerRepo interface {
-	GetProyecto(ProyectoID string) (*ust.Proyecto, error)
-	UpdateProyecto(pro ust.Proyecto) error
+	GetPersona(PersonaID int) (*ust.Persona, error)
+	UpdatePersona(per ust.Persona) error
 	InsertLatido(lat ust.Latido) error
 }
 
@@ -28,15 +28,14 @@ func NewGestionTimeTracker(repo gestionTimeTrackerRepo, maxBuffer int) *GestionT
 	}
 	return &GestionTimeTracker{
 		repo:      repo,
-		buffer:    make(map[string]int),
+		buffer:    make(map[int]int),
 		maxBuffer: maxBuffer, // segundos
 	}
 }
 
-// Agregar tiempo utilizado en gestionar un proyecto.
-func (s *GestionTimeTracker) AddTimeSpent(ProyectoID string, segundos int) error {
+func (s *GestionTimeTracker) AddTimeSpent(PersonaID int, segundos int) error {
 	const op = "AddTimeSpent"
-	pry, err := s.repo.GetProyecto(ProyectoID)
+	per, err := s.repo.GetPersona(PersonaID)
 	if err != nil {
 		return gko.Err(err).Op(op)
 	}
@@ -44,22 +43,22 @@ func (s *GestionTimeTracker) AddTimeSpent(ProyectoID string, segundos int) error
 		return gko.ErrDatoInvalido().Msg("El tiempo no puede ser negativo").Op(op)
 	}
 	err = s.repo.InsertLatido(ust.Latido{
-		Timestamp:  time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05"),
-		Segundos:   segundos,
-		ProyectoID: pry.ProyectoID,
+		Timestamp: time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05"),
+		Segundos:  segundos,
+		PersonaID: per.PersonaID,
 	})
 	if err != nil {
 		return gko.Err(err).Op(op)
 	}
 
-	s.buffer[pry.ProyectoID] += segundos
-	if s.buffer[pry.ProyectoID] > s.maxBuffer {
-		pry.TiempoGestion += s.buffer[pry.ProyectoID]
-		err = s.repo.UpdateProyecto(*pry)
+	s.buffer[per.PersonaID] += segundos
+	if s.buffer[per.PersonaID] > s.maxBuffer {
+		per.SegundosGestion += s.buffer[per.PersonaID]
+		err = s.repo.UpdatePersona(*per)
 		if err != nil {
 			return gko.Err(err).Op(op)
 		}
-		s.buffer[pry.ProyectoID] = 0
+		s.buffer[per.PersonaID] = 0
 	}
 
 	return nil

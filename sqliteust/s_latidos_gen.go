@@ -15,9 +15,9 @@ func (s *Repositorio) InsertLatido(lat ust.Latido) error {
 		return gko.ErrDatoIndef().Op(op).Msg("Timestamp sin especificar").Str("pk_indefinida")
 	}
 	_, err := s.db.Exec("INSERT INTO latidos "+
-		"(timestamp, segundos, proyecto_id, historia_id) "+
-		"VALUES (?, ?, ?, ?) ",
-		lat.Timestamp, lat.Segundos, lat.ProyectoID, lat.HistoriaID,
+		"(timestamp, persona_id, segundos) "+
+		"VALUES (?, ?, ?) ",
+		lat.Timestamp, lat.PersonaID, lat.Segundos,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)

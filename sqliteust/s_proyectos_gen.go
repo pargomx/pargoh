@@ -21,9 +21,9 @@ func (s *Repositorio) InsertProyecto(pro ust.Proyecto) error {
 		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
 	}
 	_, err := s.db.Exec("INSERT INTO proyectos "+
-		"(proyecto_id, titulo, descripcion, imagen, tiempo_gestion) "+
-		"VALUES (?, ?, ?, ?, ?) ",
-		pro.ProyectoID, pro.Titulo, pro.Descripcion, pro.Imagen, pro.TiempoGestion,
+		"(proyecto_id, titulo, imagen, descripcion) "+
+		"VALUES (?, ?, ?, ?) ",
+		pro.ProyectoID, pro.Titulo, pro.Imagen, pro.Descripcion,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
@@ -40,10 +40,9 @@ func (s *Repositorio) InsertProyecto(pro ust.Proyecto) error {
 //
 //	proyecto_id,
 //	titulo,
-//	descripcion,
 //	imagen,
-//	tiempo_gestion
-const columnasProyecto string = "proyecto_id, titulo, descripcion, imagen, tiempo_gestion"
+//	descripcion
+const columnasProyecto string = "proyecto_id, titulo, imagen, descripcion"
 
 // Origen de los datos de ust.Proyecto
 //
@@ -56,7 +55,7 @@ const fromProyecto string = "FROM proyectos "
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowProyecto(row *sql.Row, pro *ust.Proyecto) error {
 	err := row.Scan(
-		&pro.ProyectoID, &pro.Titulo, &pro.Descripcion, &pro.Imagen, &pro.TiempoGestion,
+		&pro.ProyectoID, &pro.Titulo, &pro.Imagen, &pro.Descripcion,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -104,9 +103,9 @@ func (s *Repositorio) UpdateProyecto(pro ust.Proyecto) error {
 	}
 	_, err := s.db.Exec(
 		"UPDATE proyectos SET "+
-			"proyecto_id=?, titulo=?, descripcion=?, imagen=?, tiempo_gestion=? "+
+			"proyecto_id=?, titulo=?, imagen=?, descripcion=? "+
 			"WHERE proyecto_id = ?",
-		pro.ProyectoID, pro.Titulo, pro.Descripcion, pro.Imagen, pro.TiempoGestion,
+		pro.ProyectoID, pro.Titulo, pro.Imagen, pro.Descripcion,
 		pro.ProyectoID,
 	)
 	if err != nil {
@@ -173,7 +172,7 @@ func (s *Repositorio) scanRowsProyecto(rows *sql.Rows, op string) ([]ust.Proyect
 	for rows.Next() {
 		pro := ust.Proyecto{}
 		err := rows.Scan(
-			&pro.ProyectoID, &pro.Titulo, &pro.Descripcion, &pro.Imagen, &pro.TiempoGestion,
+			&pro.ProyectoID, &pro.Titulo, &pro.Imagen, &pro.Descripcion,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)

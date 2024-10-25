@@ -1,6 +1,7 @@
 package ust
 
 import (
+	"math"
 	"time"
 
 	"github.com/pargomx/gecko/gko"
@@ -8,6 +9,10 @@ import (
 
 // ================================================================ //
 // ========== PERSONA ============================================= //
+
+func (p *Persona) HorasGestion() float64 {
+	return math.Round(float64(p.SegundosGestion)/3600*100) / 100
+}
 
 type PersonaCosto struct {
 	Persona

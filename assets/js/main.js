@@ -295,7 +295,7 @@ htmx.onLoad(function(content) {
 const segundosParaInactividad = 20;
 const segundosParaEnviarHeartbeat = 5;
 let segundosContados = 0;
-let proyectoID = "_none";
+let timePersonaID = "0";
 let timeCounterIntvl = null;
 let interactionTimeout;
 
@@ -308,7 +308,7 @@ function setCounterDisplay(text) {
 // Enviar un pulso al servidor cada x segundos.
 function sendHeartbeat() {
 	// Enviar segundos al servidor
-	fetch(`/proyectos/${proyectoID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
+	fetch(`/personas/${timePersonaID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
 	    if (!response.ok) {
 			// TODO: no dar error al usuario, pero guardar en localStorage y enviar cuando se pueda.
 	        throw new Error('Network response was not ok');
@@ -317,24 +317,24 @@ function sendHeartbeat() {
 	// Cuenta local para mostrar al usuario.
 	segundosContados += segundosParaEnviarHeartbeat;
     // localStorage.setItem('timeActive', segundosContados);
-	// setCounterDisplay(`🌿 ${segundosContados}s ${proyectoID}`);
+	// setCounterDisplay(`🌿 ${segundosContados}s ${timePersonaID}`);
 }
 
-// Contar el tiempo que se trabaja en un proyecto. Idempotente.
+// Contar el tiempo que se trabaja en un personaje. Idempotente.
 function startHeartbeat(razon) {
-	if (!document.querySelector("[data-proyecto-id]")) {
-		proyectoID = 0;
-		return // Solo contar cuando se trabaja en un proyecto.
+	if (!document.querySelector("[data-persona-id]")) {
+		timePersonaID = 0;
+		return // Solo contar cuando se trabaja con un personaje.
 	}
 	if (timeCounterIntvl) {
 		// console.log(razon + " [already started]");
 		return // Idempotente si ya está contando.
 	}
 	// console.log(razon);
-	proyectoID = document.querySelector("[data-proyecto-id]").getAttribute("data-proyecto-id");
+	timePersonaID = document.querySelector("[data-persona-id]").getAttribute("data-persona-id");
 	// segundosContados = parseInt(localStorage.getItem('timeActive')) || segundosContados
 	timeCounterIntvl = setInterval(sendHeartbeat, segundosParaEnviarHeartbeat * 1000);
-	// setCounterDisplay(`🌿 Start: ${segundosContados}s ${proyectoID}`);
+	// setCounterDisplay(`🌿 Start: ${segundosContados}s ${timePersonaID}`);
 }
 
 // Pausar el contador de tiempo.
@@ -347,7 +347,7 @@ function stopHeartbeat(razon) {
 	clearInterval(timeCounterIntvl);
 	timeCounterIntvl = null;
 	// localStorage.setItem('timeActive', segundosContados); // inecesario?
-	// setCounterDisplay(`⏸️ Cuenta detenida ${segundosContados}s ${proyectoID}`);
+	// setCounterDisplay(`⏸️ Cuenta detenida ${segundosContados}s ${timePersonaID}`);
 }
 
 // Detectar cuando la pestaña está enfocada o si deja de estarlo.

@@ -126,7 +126,6 @@ func main() {
 	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.patchProyecto)
-	s.POS("/proyectos/{proyecto_id}/time/{seg}", s.postTimeGestion)
 
 	// Personas
 	s.POS("/personas", s.postPersona)
@@ -137,6 +136,7 @@ func main() {
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
+	s.POS("/personas/{persona_id}/time/{seg}", s.postTimeGestion)
 	s.POS("/reordenar-persona", s.reordenarPersona)
 
 	// Historias

@@ -13,7 +13,9 @@
 				{{ enfatizar .Proyecto.Titulo }}
 			</a>
 		</h2>
-		<h3 class="flex items-center gap-1 py-1">
+		<h3
+			data-persona-id="{{ .Persona.PersonaID }}"
+			class="flex items-center gap-1 py-1">
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
 			<span class="text-xl">{{ .Persona.Nombre }}</span>
 		</h3>
@@ -221,7 +223,7 @@
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
 				hx-target="main" hx-select="main" hx-swap="outerHTML"
 				hx-trigger="keyup[key=='Enter']"
-				name="texto" 
+				name="texto"
 				rows="1"
 				enterkeyhint="done"
 				placeholder="Agregar un tramo al viaje"

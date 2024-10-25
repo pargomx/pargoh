@@ -4,10 +4,9 @@ import "errors"
 
 // Latido corresponde a un elemento de la tabla 'latidos'.
 type Latido struct {
-	Timestamp  string // `latidos.timestamp`
-	Segundos   int    // `latidos.segundos`
-	ProyectoID string // `latidos.proyecto_id`
-	HistoriaID *int   // `latidos.historia_id`
+	Timestamp string // `latidos.timestamp`
+	PersonaID int    // `latidos.persona_id`
+	Segundos  int    // `latidos.segundos`
 }
 
 var (

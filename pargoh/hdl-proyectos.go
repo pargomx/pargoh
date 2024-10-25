@@ -115,7 +115,7 @@ func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
 }
 
 func (s *servidor) postTimeGestion(c *gecko.Context) error {
-	err := s.timeTracker.AddTimeSpent(c.PathVal("proyecto_id"), c.PathInt("seg"))
+	err := s.timeTracker.AddTimeSpent(c.PathInt("persona_id"), c.PathInt("seg"))
 	if err != nil {
 		return err
 	}
