@@ -70,9 +70,16 @@
 	<h3 class="mb-4 text-xl text-cyan-600" title="Historias de usuario">Quiero...
 		<button
 			onclick="document.getElementById('input_AddHistoria').focus()"
+			title="Agregar historia"
 			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
 			<i class="fa-solid fa-square-plus"></i>
 		</button>
+		<a
+			href="/personas/{{ .Persona.PersonaID }}/doc"
+			title="Documentación de las historias"
+			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
+			<i class="fa-solid fa-book"></i>
+		</a>
 	</h3>
 	<div
 		tipo="sort_historias" 

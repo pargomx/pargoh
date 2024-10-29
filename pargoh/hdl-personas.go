@@ -24,7 +24,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	}
 	Historias := make([]dhistorias.HistoriaAgregado, len(hists))
 	for i, h := range hists {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, s.repo)
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repo)
 		if err != nil {
 			return err
 		}
@@ -44,6 +44,36 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	return c.RenderOk("persona", data)
 }
 
+func (s *servidor) getPersonaDoc(c *gecko.Context) error {
+	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+	if err != nil {
+		return err
+	}
+	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	if err != nil {
+		return err
+	}
+	hists, err := s.repo.ListHistoriasByPadreID(Persona.PersonaID)
+	if err != nil {
+		return err
+	}
+	Historias := make([]dhistorias.HistoriaAgregado, len(hists))
+	for i, h := range hists {
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes|dhistorias.GetTramos|dhistorias.GetReglas, s.repo)
+		if err != nil {
+			return err
+		}
+		Historias[i] = *agg
+	}
+	data := map[string]any{
+		"Titulo":    Persona.Nombre + " - " + Proyecto.Titulo,
+		"Persona":   Persona,
+		"Proyecto":  Proyecto,
+		"Historias": Historias,
+	}
+	return c.RenderOk("persona_doc", data)
+}
+
 func (s *servidor) getPersonaDebug(c *gecko.Context) error {
 	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
@@ -57,13 +87,13 @@ func (s *servidor) getPersonaDebug(c *gecko.Context) error {
 		Agg dhistorias.HistoriaAgregado
 		Rec dhistorias.HistoriaRecursiva
 	}
-	HistoriasRec, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
+	HistoriasRec, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, dhistorias.GetReglas|dhistorias.GetTareas, s.repo)
 	if err != nil {
 		return err
 	}
 	Historias := make([]HistoriaDebug, len(HistoriasRec))
 	for i, h := range HistoriasRec {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, s.repo)
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repo)
 		if err != nil {
 			return err
 		}
@@ -90,7 +120,7 @@ func (s *servidor) getMétricasPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
+	Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, dhistorias.GetTareas, s.repo)
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,7 @@ import (
 // ========== READ ================================================ //
 
 func (s *servidor) getHistoria(c *gecko.Context) error {
-	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
+	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repo)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (s *servidor) getHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) getHistoriaTablero(c *gecko.Context) error {
-	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
+	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repo)
 	if err != nil {
 		return err
 	}

@@ -55,7 +55,7 @@ func (s *servidor) navDesdePersona(c *gecko.Context) error {
 }
 
 func (s *servidor) navDesdeHistoria(c *gecko.Context) error {
-	agg, err := dhistorias.GetHistoria(c.PathInt("historia_id"), s.repo)
+	agg, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repo)
 	if err != nil {
 		return err
 	}

@@ -248,7 +248,7 @@ func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
 	}
 
 	// TODO: Get ancestros de historia
-	nueva, err := GetHistoria(nuevoPadreID, repo)
+	nueva, err := GetHistoria(nuevoPadreID, 0, repo)
 	if err != nil {
 		return op.Err(err)
 	}
@@ -271,7 +271,7 @@ func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
 	}
 
 	// Actualizar índices proyecto_id y persona_id.
-	hist, err := GetHistoria(historiaID, repo)
+	hist, err := GetHistoria(historiaID, 0, repo)
 	if err != nil {
 		return op.Err(err).Ctx("historiaID", historiaID)
 	}
@@ -297,7 +297,7 @@ func MaterializarAncestrosDeHistorias(repo Repo) error {
 		return op.Err(err)
 	}
 	for _, his := range historias {
-		hist, err := GetHistoria(his.HistoriaID, repo)
+		hist, err := GetHistoria(his.HistoriaID, 0, repo)
 		if err != nil {
 			return op.Err(err).Ctx("historiaID", his.HistoriaID)
 		}

@@ -1,0 +1,117 @@
+<header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
+	<div class="p-1">
+		<img
+			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+			alt="Portada del proyecto"
+			class="w-24 rounded-md">
+	</div>
+	<div class="w-full p-2">
+		<h2 class="text-2xl font-medium">
+			<a href="/proyectos/{{ .Proyecto.ProyectoID }}">
+				{{ .Proyecto.Titulo }}
+			</a>
+		</h2>
+		<h3
+			class="flex items-center gap-1 py-1">
+			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
+			<span class="text-xl">{{ .Persona.Nombre }}</span>
+		</h3>
+	</div>
+	<span class="absolute right-2 top-2">
+		<a href="/personas/{{ .Persona.PersonaID }}" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+	</span>
+</header>
+
+<main class="grow w-full p-4 mx-auto">
+
+	<!--* PERSONA -->
+	<h4 class="mb-1 text-xl font-semibold text-cyan-600">
+		{{- .Persona.Nombre -}}
+	</h4>
+	<p class="mb-4 whitespace-pre-line opacity-75">
+		{{- .Persona.Descripcion -}}
+	</p>
+
+	<!--* HISTORIAS -->
+	{{ range .Historias }}
+	<hr class="my-4 border-t-2 border-cyan-600 opacity-75">
+	<h3 class="mb-2 text-2xl whitespace-pre-line">
+		{{- enfatizar .Historia.Titulo -}}
+	</h3>
+	<p class="mb-4 whitespace-pre-line opacity-75">
+		{{- .Historia.Objetivo -}}
+	</p>
+
+	{{ if .Reglas -}}
+		{{ template "historia_doc_reglas" . }}
+	{{ end }}
+
+	{{ if .Tramos -}}
+		{{ template "historia_doc_tramos" . }}
+	{{ end }}
+
+	{{ range .Descendientes -}}
+	<div class="lg:mx-4">
+		{{ template "historia_doc_desc" . }}
+	</div>
+	{{ end }}
+
+	{{ end }}
+</main>
+
+{{- define "historia_doc_desc" -}}
+	<hr class="mt-8 mb-2 border-t border-cyan-600 opacity-50">
+	<h3 class="mb-2 text-xl whitespace-pre-line">
+		{{- enfatizar .Titulo -}}
+	</h3>
+	<p class="mb-4 whitespace-pre-line opacity-75">
+		{{- .Objetivo -}}
+	</p>
+
+	{{ if .Reglas -}}
+		{{ template "historia_doc_reglas" . }}
+	{{ end }}
+
+	{{ if .Tramos -}}
+		{{ template "historia_doc_tramos" . }}
+	{{ end }}
+
+	{{ range .Descendientes }}
+	<div class="lg:mx-4">
+		{{ template "historia_doc_desc" . }}
+	</div>
+	{{ end }}
+{{- end -}}
+
+{{- define "historia_doc_reglas" -}}
+<ul class="mb-4">
+	{{ range .Reglas }}
+	<li class="flex items-baseline gap-2 mb-2 opacity-75">
+		<i class="px-1 text-sm fa-solid fa-arrow-right"></i>
+		<p>{{- .Texto -}}</p>
+	</li>
+	{{ end }}
+</ul>
+{{- end -}}
+
+{{- define "historia_doc_tramos" -}}
+<div class="flex flex-col items-start">
+	{{ range .Tramos }}
+	<div class="flex items-start gap-2 mb-2">
+		<span class="px-2 py-1 mr-1 font-mono text-sm bg-cyan-900 rounded-md whitespace-nowrap">
+			{{ .Posicion }}
+		</span>
+		<div>
+			<p>
+				{{- .Texto -}}
+			</p>
+			{{ if .Imagen -}}
+			<div class="float-left mt-2 mb-2 border border-cyan-800 rounded-md shadow-lg">
+				<img src="/imagenes/{{ .Imagen }}" class="w-full rounded-md max-w-96 max-h-96">
+			</div>
+			{{ end }}
+		</div>
+	</div>
+	{{ end }}
+</div>
+{{- end -}}

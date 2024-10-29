@@ -8,6 +8,8 @@ import (
 type HistoriaRecursiva struct {
 	ust.NodoHistoria
 	Tareas        TareasList
+	Tramos        []ust.Tramo
+	Reglas        []ust.Regla
 	Descendientes []HistoriaRecursiva
 }
 

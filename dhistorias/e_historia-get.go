@@ -6,7 +6,17 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-func GetHistoria(historiaID int, repo Repo) (*HistoriaAgregado, error) {
+type flagGet int
+
+// Flags para popular tramos, reglas y tareas de cada historia recursiva usando OR.
+const (
+	GetDescendientes flagGet = 1 << iota
+	GetTramos
+	GetReglas
+	GetTareas
+)
+
+func GetHistoria(historiaID int, flags flagGet, repo Repo) (*HistoriaAgregado, error) {
 	op := gko.Op("dhistorias.GetHistoria").Ctx("historiaID", historiaID)
 
 	historia, err := repo.GetNodoHistoria(historiaID)
@@ -77,9 +87,11 @@ func GetHistoria(historiaID int, repo Repo) (*HistoriaAgregado, error) {
 	item.Proyecto = *proy
 
 	// Obtener historias descendientes.
-	item.Descendientes, err = GetHistoriasDescendientes(historiaID, 0, repo)
-	if err != nil {
-		return nil, op.Err(err)
+	if flags&GetDescendientes != 0 {
+		item.Descendientes, err = GetHistoriasDescendientes(historiaID, 0, flags, repo)
+		if err != nil {
+			return nil, op.Err(err)
+		}
 	}
 	return &item, nil
 }
@@ -89,7 +101,7 @@ func GetHistoria(historiaID int, repo Repo) (*HistoriaAgregado, error) {
 // Si el nivel es 2, se obtienen las historias inmediatas y sus historias inmediatas.
 // Y así sucesivamente.
 // Si el nivel es 0 o negativo no se limita la recursión y se traen todos los descendientes.
-func GetHistoriasDescendientes(padreID int, niveles int, repo Repo) ([]HistoriaRecursiva, error) {
+func GetHistoriasDescendientes(padreID int, niveles int, flags flagGet, repo Repo) ([]HistoriaRecursiva, error) {
 	historias, err := repo.ListNodoHistoriasByPadreID(padreID)
 	if err != nil {
 		return nil, gko.Err(err).Strf("padreID:%v niveles:%v", padreID, niveles)
@@ -97,14 +109,29 @@ func GetHistoriasDescendientes(padreID int, niveles int, repo Repo) ([]HistoriaR
 	res := make([]HistoriaRecursiva, len(historias))
 	for i, his := range historias {
 		res[i].NodoHistoria = his
-		res[i].Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
-		if err != nil {
-			return nil, err
+
+		if flags&GetTramos != 0 {
+			res[i].Tramos, err = repo.ListTramosByHistoriaID(his.HistoriaID)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if flags&GetReglas != 0 {
+			res[i].Reglas, err = repo.ListReglasByHistoriaID(his.HistoriaID)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if flags&GetTareas != 0 {
+			res[i].Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
+			if err != nil {
+				return nil, err
+			}
 		}
 		if niveles == 1 {
 			continue // limitar la recursión cuando se da un nivel positivo.
 		}
-		res[i].Descendientes, err = GetHistoriasDescendientes(his.HistoriaID, niveles-1, repo)
+		res[i].Descendientes, err = GetHistoriasDescendientes(his.HistoriaID, niveles-1, flags, repo)
 		if err != nil {
 			return nil, err
 		}
