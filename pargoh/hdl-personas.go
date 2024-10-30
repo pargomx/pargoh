@@ -59,7 +59,7 @@ func (s *servidor) getPersonaDoc(c *gecko.Context) error {
 	}
 	Historias := make([]dhistorias.HistoriaAgregado, len(hists))
 	for i, h := range hists {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes|dhistorias.GetTramos|dhistorias.GetReglas, s.repo)
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes|dhistorias.GetTramos|dhistorias.GetReglas|dhistorias.GetRelacionadas, s.repo)
 		if err != nil {
 			return err
 		}

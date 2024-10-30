@@ -50,6 +50,10 @@
 		{{ template "historia_doc_tramos" . }}
 	{{ end }}
 
+	{{ if .Relacionadas -}}
+		{{ template "historia_doc_relacionadas" . }}
+	{{ end }}
+
 	{{ range .Descendientes -}}
 	<div class="lg:mx-4">
 		{{ template "historia_doc_desc" . }}
@@ -76,6 +80,11 @@
 		{{ template "historia_doc_tramos" . }}
 	{{ end }}
 
+	{{ if .Relacionadas -}}
+		{{ template "historia_doc_relacionadas" . }}
+	{{ end }}
+
+
 	{{ range .Descendientes }}
 	<div class="lg:mx-4">
 		{{ template "historia_doc_desc" . }}
@@ -95,7 +104,7 @@
 {{- end -}}
 
 {{- define "historia_doc_tramos" -}}
-<div class="flex flex-col items-start">
+<div class="flex flex-col items-start mb-2">
 	{{ range .Tramos }}
 	<div class="flex items-start gap-2 mb-2">
 		<span class="px-2 py-1 mr-1 font-mono text-sm bg-cyan-900 rounded-md whitespace-nowrap">
@@ -114,4 +123,18 @@
 	</div>
 	{{ end }}
 </div>
+{{- end -}}
+
+{{- define "historia_doc_relacionadas" -}}
+<p>Puede interesar:</p>
+<ul class="mb-4">
+	{{ range .Relacionadas }}
+	<li class="flex items-baseline gap-2 opacity-75">
+		<i class="px-1 text-xs opacity-75 fa-regular fa-circle"></i>
+		<a href="/personas/{{ .PersonaID }}/doc#{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+			{{- enfatizar .Titulo -}} 
+		</a>
+	</li>
+	{{ end }}
+</ul>
 {{- end -}}

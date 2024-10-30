@@ -14,6 +14,7 @@ const (
 	GetTramos
 	GetReglas
 	GetTareas
+	GetRelacionadas
 )
 
 func GetHistoria(historiaID int, flags flagGet, repo Repo) (*HistoriaAgregado, error) {
@@ -38,6 +39,11 @@ func GetHistoria(historiaID int, flags flagGet, repo Repo) (*HistoriaAgregado, e
 	}
 
 	item.Reglas, err = repo.ListReglasByHistoriaID(historiaID)
+	if err != nil {
+		return nil, op.Err(err)
+	}
+
+	item.Relacionadas, err = repo.ListNodoHistoriasRelacionadas(historiaID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
@@ -124,6 +130,12 @@ func GetHistoriasDescendientes(padreID int, niveles int, flags flagGet, repo Rep
 		}
 		if flags&GetTareas != 0 {
 			res[i].Tareas, err = repo.ListTareasByHistoriaID(his.HistoriaID)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if flags&GetRelacionadas != 0 {
+			res[i].Relacionadas, err = repo.ListNodoHistoriasRelacionadas(his.HistoriaID)
 			if err != nil {
 				return nil, err
 			}

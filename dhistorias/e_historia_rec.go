@@ -11,6 +11,7 @@ type HistoriaRecursiva struct {
 	Tramos        []ust.Tramo
 	Reglas        []ust.Regla
 	Descendientes []HistoriaRecursiva
+	Relacionadas  []ust.NodoHistoria
 }
 
 // ================================================================ //

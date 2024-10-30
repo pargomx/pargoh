@@ -38,8 +38,8 @@ const columnasNodoHistoria string = "his.historia_id, his.proyecto_id AS proyect
 // Origen de los datos de ust.NodoHistoria
 //
 //	FROM historias his
-//	INNER JOIN nodos nod ON nodo_id = historia_id
-const fromNodoHistoria string = "FROM historias his INNER JOIN nodos nod ON nodo_id = historia_id "
+//	INNER JOIN nodos nod ON nod.nodo_id = his.historia_id
+const fromNodoHistoria string = "FROM historias his INNER JOIN nodos nod ON nod.nodo_id = his.historia_id "
 
 //  ================================================================  //
 //  ========== SCAN ================================================  //
@@ -157,6 +157,22 @@ func (s *Repositorio) ListNodoHistoriasPrioritarias() ([]ust.NodoHistoria, error
 	rows, err := s.db.Query(
 		"SELECT " + columnasNodoHistoria + " " + fromNodoHistoria +
 			"WHERE his.prioridad > 0 AND completada == 0 ORDER BY (his.prioridad * nod.nivel) + 20 - nod.posicion DESC LIMIT 50",
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsNodoHistoria(rows, op)
+}
+
+//  ================================================================  //
+//  ========== LIST RELACIONADAS ===================================  //
+
+func (s *Repositorio) ListNodoHistoriasRelacionadas(HistoriaID int) ([]ust.NodoHistoria, error) {
+	const op string = "ListNodoHistoriasRelacionadas"
+	rows, err := s.db.Query(
+		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
+			"JOIN referencias ref ON ref.ref_historia_id = his.historia_id WHERE ref.historia_id = ?",
+		HistoriaID,
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)

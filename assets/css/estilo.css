@@ -1814,11 +1814,23 @@ select optgroup {
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .md\:pl-4 {
+    padding-left: 1rem;
+  }
 }
 
 @media (min-width: 1024px) {
   .lg\:mx-4 {
     margin-left: 1rem;
     margin-right: 1rem;
+  }
+
+  .lg\:pr-6 {
+    padding-right: 1.5rem;
+  }
+
+  .lg\:pl-4 {
+    padding-left: 1rem;
   }
 }

@@ -197,6 +197,10 @@ func main() {
 	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.patchRegla)
 	s.POS("/reordenar-regla", s.reordenarRegla)
 
+	// Referencias
+	s.POS("/historias/{historia_id}/referencias", s.postReferencia)
+	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
+
 	// Exportar e importar
 	s.GET("/arbol", s.exportarArbolTXT)
 	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })

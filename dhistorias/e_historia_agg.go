@@ -15,6 +15,7 @@ type HistoriaAgregado struct {
 
 	Ancestros     []ust.NodoHistoria
 	Descendientes []HistoriaRecursiva
+	Relacionadas  []ust.NodoHistoria
 }
 
 // ================================================================ //

@@ -624,6 +624,40 @@
 		{{ end }}
 	{{ end }}
 
+	<!--* RELACIONADAS *-->
+	<h3 class="mb-2 text-xl text-cyan-600 group">
+		Relacionadas
+		<button
+			type="button"
+			onclick="showAddReferencia()"
+			title="Agregar historia relacionada"
+			class="ml-2 text-base transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-cyan-300">
+			<i class="fa-solid fa-square-plus"></i>
+		</button>
+	</h3>
+	<ul class="mb-6">
+		{{ range .Relacionadas -}}
+		<li class="flex gap-1 p-1 group">
+			<div class="pr-2 md:pl-4">
+				<i class="text-xs text-slate-400 fa-solid fa-circle"></i>
+			</div>
+			<div class="grow">
+				<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+					{{- enfatizar .Titulo -}} 
+				</a>
+			</div>
+			<button
+				type="button"
+				hx-delete="/historias/{{ $.Agregado.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				title="Quitar historia relacionada"
+				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
+				<i class="fa-solid fa-trash"></i>
+			</button>
+		</li>
+		{{ end }}
+	</ul>
+
 	<!--* REGLAS DE NEGOCIO -->
 	<h3 class="mb-2 text-xl text-cyan-600">Reglas</h3>
 	<ol tipo="sort_reglas" class="mb-6">
@@ -1170,6 +1204,12 @@
 		document.getElementById('navTreeTarea').dispatchEvent(new Event('navTreeTareaShown'));
 		console.log(`showMoverTarea(${tareaID})`);
 	}
+
+	function showAddReferencia() {
+		let mov = document.getElementById('dialogAddReferencia');
+		mov.showModal();
+		document.getElementById('navAddReferencia').dispatchEvent(new Event('navAddReferenciaShown'));
+	}
 </script>
 
 <dialog id="moverTramo" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
@@ -1274,6 +1314,39 @@
 			onclick="this.closest('dialog').close()"
 			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
 			Mover
+		</button>
+	</form>
+</dialog>
+
+<dialog id="dialogAddReferencia" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Agregar referencia a historia relacionada
+		</h2>
+		<button
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</header>
+	<form class="flex flex-col gap-2 p-2">
+		<div
+			id="navAddReferencia"
+			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-target="#navAddReferencia" hx-swap="innerHTML"
+			hx-trigger="navAddReferenciaShown"
+			class="flex flex-col gap-1 sm:w-96">
+			<!-- nav_tree -->
+		</div>
+		<button
+			hx-post="/historias/{{ .Agregado.Historia.HistoriaID }}/referencias"
+			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			type="submit"
+			onclick="this.closest('dialog').close()"
+			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+			Agregar
 		</button>
 	</form>
 </dialog>

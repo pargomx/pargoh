@@ -79,4 +79,9 @@ type Repo interface {
 	GetRegla(HistoriaID int, Posicion int) (*ust.Regla, error)
 	ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error)
 	ReordenarRegla(HistoriaID, oldPos, newPos int) error
+
+	// Referencias
+	InsertReferencia(ref ust.Referencia) error
+	DeleteReferencia(HistoriaID int, RefHistoriaID int) error
+	ListNodoHistoriasRelacionadas(HistoriaID int) ([]ust.NodoHistoria, error)
 }
