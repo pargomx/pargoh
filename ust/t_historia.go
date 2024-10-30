@@ -12,6 +12,7 @@ type Historia struct {
 	PersonaID           int    // `historias.persona_id`  Para índice
 	ProyectoID          string // `historias.proyecto_id`  Para índice
 	SegundosPresupuesto int    // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
+	Descripcion         string // `historias.descripcion`  Descripción  de la historia en infinitivo para que la lea el usuario en la documentación.
 }
 
 var (

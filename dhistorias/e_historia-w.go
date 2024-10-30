@@ -3,6 +3,7 @@ package dhistorias
 import (
 	"monorepo/ust"
 	"strconv"
+	"strings"
 
 	"github.com/pargomx/gecko/gko"
 )
@@ -112,9 +113,11 @@ func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) err
 	}
 	switch param {
 	case "titulo":
-		Hist.Titulo = newVal
+		Hist.Titulo = strings.TrimSpace(newVal)
 	case "objetivo":
-		Hist.Objetivo = newVal
+		Hist.Objetivo = strings.TrimSpace(newVal)
+	case "descripcion":
+		Hist.Descripcion = strings.TrimSpace(newVal)
 	case "prioridad":
 		Hist.Prioridad, _ = strconv.Atoi(newVal)
 		if !prioridadValida(Hist.Prioridad) {

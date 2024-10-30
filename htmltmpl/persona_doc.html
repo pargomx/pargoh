@@ -35,11 +35,11 @@
 	<!--* HISTORIAS -->
 	{{ range .Historias }}
 	<hr class="my-4 border-t-2 border-cyan-600 opacity-75">
-	<h3 class="mb-2 text-2xl whitespace-pre-line">
+	<h3 id="{{ .Historia.HistoriaID }}" class="mb-2 text-2xl whitespace-pre-line">
 		{{- enfatizar .Historia.Titulo -}}
 	</h3>
 	<p class="mb-4 whitespace-pre-line opacity-75">
-		{{- .Historia.Objetivo -}}
+		{{- .Historia.Descripcion -}}
 	</p>
 
 	{{ if .Reglas -}}
@@ -61,11 +61,11 @@
 
 {{- define "historia_doc_desc" -}}
 	<hr class="mt-8 mb-2 border-t border-cyan-600 opacity-50">
-	<h3 class="mb-2 text-xl whitespace-pre-line">
+	<h3 id="{{ .HistoriaID }}" class="mb-2 text-xl whitespace-pre-line">
 		{{- enfatizar .Titulo -}}
 	</h3>
 	<p class="mb-4 whitespace-pre-line opacity-75">
-		{{- .Objetivo -}}
+		{{- .Descripcion -}}
 	</p>
 
 	{{ if .Reglas -}}

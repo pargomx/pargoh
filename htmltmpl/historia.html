@@ -99,6 +99,7 @@
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/titulo"
 			hx-swap="none"
 			name="value"
+			title="Título de la historia"
 			placeholder="Hacer algo de valor..."
 			rows="1"
 			enterkeyhint="done"
@@ -114,7 +115,8 @@
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:60s"
 			name="value"
-			placeholder="Descripción del contexto..."
+			title="Objetivo empático de la historia"
+			placeholder="Porque me sirve para..."
 			rows="1"
 			enterkeyhint="done"
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 text-white/75 placeholder:text-slate-600">
@@ -152,7 +154,29 @@
 	</div>
 
 	<!--* VIAJE DE USUARIO *-->
-	<h3 class="mb-2 text-xl text-cyan-600">Viaje de usuario</h3>
+	<h3 class="mb-2 text-xl text-cyan-600 group">
+		Viaje de usuario
+		<a
+			href="/personas/{{ .Persona.PersonaID }}/doc#{{ .Historia.HistoriaID }}"
+			title="Ver en documentación"
+			class="mx-1 text-base opacity-0 group-hover:opacity-100 focus:opacity-100">
+			<i class="fa-solid fa-book"></i>
+		</a>
+	</h3>
+	<div class="mb-2">
+		<textarea
+			hx-patch="/historias/{{ .Historia.HistoriaID }}/descripcion"
+			hx-swap="none"
+			hx-trigger="change, keyup changed delay:60s"
+			name="value"
+			title="Descripción de la historia"
+			placeholder="Descripción para el usuario en infinitivo..."
+			rows="1"
+			enterkeyhint="done"
+			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400 text-white/75 placeholder:text-slate-600">
+			{{- .Historia.Descripcion -}}
+		</textarea>
+	</div>
 	<ol tipo="sort_tramos" class="mb-6">
 		{{ range .Tramos -}}
 		<li tipo="sort_tramo" class="flex flex-col items-start">
