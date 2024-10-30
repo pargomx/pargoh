@@ -735,6 +735,10 @@ video {
   aspect-ratio: 1 / 1;
 }
 
+.h-24 {
+  height: 6rem;
+}
+
 .h-dvh {
   height: 100dvh;
 }
