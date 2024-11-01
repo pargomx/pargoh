@@ -1,4 +1,12 @@
 
+// Force reload when BFCache activates despite Cache-Control: no-store.
+window.addEventListener('pageshow', (event) => {
+	if (event.persisted) {
+		console.log("persisted aborted")
+		location.reload();
+	}
+});
+
 // ================================================================ //
 // ========== PLATAFORMA ========================================== //
 function getPlatform() {
