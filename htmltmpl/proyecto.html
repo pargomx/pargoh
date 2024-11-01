@@ -232,7 +232,7 @@
 			<button
 				type="button"
 				hx-delete="/personas/{{ .PersonaID}}"
-				hx-confirm="¿Eliminar persona {{ .Nombre }}?"
+				hx-confirm="¿Eliminar persona {{ .Nombre }}? Se perderá el tiempo de gestión contabilizado."
 				onclick="this.closest('dialog').close()"
 				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
 				Eliminar

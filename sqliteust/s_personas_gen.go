@@ -93,6 +93,13 @@ func (s *Repositorio) DeletePersona(PersonaID int) error {
 		return gko.Err(err).Op(op)
 	}
 	_, err = s.db.Exec(
+		"DELETE FROM latidos WHERE persona_id = ?",
+		PersonaID,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op)
+	}
+	_, err = s.db.Exec(
 		"DELETE FROM personas WHERE persona_id = ?",
 		PersonaID,
 	)
