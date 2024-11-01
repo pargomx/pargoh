@@ -436,6 +436,33 @@
 	</dialog>
 
 	<script>
+		// Capturar CTRL + V para subir imagen al tramo.
+		const tramoImgModal = document.getElementById("TramoImgModal")
+		window.addEventListener('paste', function(event) {
+			if (!tramoImgModal.open) {
+				return
+			}
+			const imgFileInput = tramoImgModal.querySelector("input[type='file']")
+			const items = (event.clipboardData || event.originalEvent.clipboardData).items
+
+			console.log("Pegando", tramoImgModal.open, imgFileInput)
+
+			for (const item of items) {
+				console.log("Item", item)
+
+				// TODO: solo aceptar un archivo y que sea imagen.
+				if (item.type.startsWith('image/')) {
+					imgFileInput.files = event.clipboardData.files
+					showTramoImagePreview()
+				}
+
+				// TODO: recibir de google docs
+				if (item.type === 'application/x-vnd.google-docs-image-clip+wrapped') {
+					item.getAsString(url => { console.log(url) })
+				}
+			}
+		})
+
 		function showTramoImgModal(liElement) {
 			// Obtener datos del tramo seleccionado.
 			let historiaID= liElement.querySelector("input[name='historia_id']").value
