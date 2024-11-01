@@ -2,6 +2,7 @@ package dhistorias
 
 import (
 	"monorepo/ust"
+	"strings"
 
 	"github.com/pargomx/gecko/gko"
 )
@@ -24,7 +25,7 @@ func AgregarRegla(repo Repo, historiaID int, texto string) error {
 	}
 	regla := ust.Regla{
 		HistoriaID: historiaID,
-		Texto:      texto,
+		Texto:      strings.TrimSpace(texto),
 		Posicion:   len(reglas) + 1,
 	}
 	err = repo.InsertRegla(regla)
@@ -71,7 +72,7 @@ func EditarRegla(repo Repo, historiaID int, posicion int, texto string) error {
 		// return op.Msg("El texto no puede estar vacío")
 		return EliminarRegla(repo, historiaID, posicion)
 	}
-	regla.Texto = texto
+	regla.Texto = strings.TrimSpace(texto)
 	err = repo.UpdateRegla(*regla)
 	if err != nil {
 		return op.Err(err)
