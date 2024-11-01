@@ -437,7 +437,37 @@
 
 	<script>
 		// Capturar CTRL + V para subir imagen al tramo.
-		const tramoImgModal = document.getElementById("TramoImgModal")
+
+		function getGoogleusercontentImageUrl(htmlString) {
+			if (htmlString == "") {
+				throw new Error('Invalid HTML: Empty string');
+			}
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(htmlString, 'text/html');
+			const imgTag = doc.querySelector('img');
+			if (!imgTag) {
+				throw new Error('Invalid HTML: Must contain an image tag');
+			}
+			const imgUrl = imgTag.getAttribute('src');
+			const regex = /^https?:\/\/([a-zA-Z0-9-]+\.)*googleusercontent\.com/;
+			if (!regex.test(imgUrl)) {
+				throw new Error('Invalid URL: Must be an image hosted on googleusercontent.com');
+			}
+			return imgUrl;
+		}
+
+		async function fetchImageFromURL(imgUrl) {
+			if (imgUrl == "") {
+				throw new Error('fetchImageFromURL: empty url');
+			}
+			console.log("Fetching image:", imgUrl)
+            const response = await fetch(imgUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'image.jpg', { type: blob.type });
+            return file;
+        }
+
+		const tramoImgModal = document.getElementById("TramoImgModal");
 		window.addEventListener('paste', function(event) {
 			if (!tramoImgModal.open) {
 				return
@@ -445,22 +475,49 @@
 			const imgFileInput = tramoImgModal.querySelector("input[type='file']")
 			const items = (event.clipboardData || event.originalEvent.clipboardData).items
 
-			console.log("Pegando", tramoImgModal.open, imgFileInput)
+			// console.log("Pegando", tramoImgModal.open, imgFileInput)
 
+			let isGoogleImage = false
+			let isImageFile = false
+			
+			// Averiguar qué hacer.
 			for (const item of items) {
-				console.log("Item", item)
-
-				// TODO: solo aceptar un archivo y que sea imagen.
+				// item.getAsString(url => { console.log(`ITEM kind:${item.kind} type:${item.type}`, url) })
 				if (item.type.startsWith('image/')) {
-					imgFileInput.files = event.clipboardData.files
-					showTramoImagePreview()
-				}
+					isImageFile = true
 
-				// TODO: recibir de google docs
-				if (item.type === 'application/x-vnd.google-docs-image-clip+wrapped') {
-					item.getAsString(url => { console.log(url) })
+				} else if (item.type === 'application/x-vnd.google-docs-image-clip+wrapped') {
+					isGoogleImage = true
 				}
 			}
+
+			if (isImageFile) {
+				// TODO: solo aceptar un archivo y que sea imagen.
+				imgFileInput.files = event.clipboardData.files
+				imgFileInput.dispatchEvent(new Event('change'));
+
+			} else if (isGoogleImage) {
+				for (const item of items) {
+					if (item.type === 'text/html') {
+						item.getAsString(htmlString => {
+							// Todo se hace aquí adentro porque getAsString es async y hay que esperarla.
+							try {
+								const imgUrl = getGoogleusercontentImageUrl(htmlString)
+								fetchImageFromURL(imgUrl).then(file => {
+									const dataTransfer = new DataTransfer();
+									dataTransfer.items.add(file);
+									imgFileInput.files = dataTransfer.files;
+            						imgFileInput.dispatchEvent(new Event('change'));
+								});
+							} catch (error) {
+								console.error(error)
+							}
+
+						})
+					}
+				}
+			}
+
 		})
 
 		function showTramoImgModal(liElement) {
