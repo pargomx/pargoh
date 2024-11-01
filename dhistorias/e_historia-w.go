@@ -239,26 +239,13 @@ func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
 	if historiaID == nuevoPadreID {
 		return op.Msg("No se puede mover la historia hacia sí misma")
 	}
-	nodo, err := repo.GetNodo(historiaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	if !nodo.EsHistoria() {
-		return op.Msgf("El nodo %v no es historia, sino %v", nodo.NodoID, nodo.NodoTbl)
-	}
-	if nodo.PadreID == nuevoPadreID {
-		return op.Msg("No se moverá porque sigue siendo el mismo padre")
-	}
 
-	// TODO: Get ancestros de historia
-	nueva, err := GetHistoria(nuevoPadreID, 0, repo)
+	nodoHistoria, err := repo.GetNodoHistoria(historiaID)
 	if err != nil {
 		return op.Err(err)
 	}
-	for _, ancestro := range nueva.Ancestros {
-		if ancestro.HistoriaID == historiaID {
-			return op.Msg("La historia no puede ser hija de su propio descendiente")
-		}
+	if nodoHistoria.PadreID == nuevoPadreID {
+		return op.Msg("No se moverá porque sigue siendo el mismo padre")
 	}
 
 	nuevoPadre, err := repo.GetNodo(nuevoPadreID)
@@ -268,7 +255,18 @@ func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
 	if !(nuevoPadre.EsPersona() || nuevoPadre.EsHistoria()) {
 		return op.Msgf("El nuevo padre debe ser historia o persona pero es %v", nuevoPadre.NodoTbl)
 	}
-	err = repo.MoverNodo(nodo.NodoID, nuevoPadreID)
+	if nuevoPadre.EsHistoria() {
+		nuevaHistoriaPadre, err := GetHistoria(nuevoPadreID, 0, repo)
+		if err != nil {
+			return op.Err(err)
+		}
+		for _, ancestro := range nuevaHistoriaPadre.Ancestros {
+			if ancestro.HistoriaID == historiaID {
+				return op.Msg("La historia no puede ser hija de su propio descendiente")
+			}
+		}
+	}
+	err = repo.MoverNodo(historiaID, nuevoPadreID)
 	if err != nil {
 		return op.Err(err)
 	}
