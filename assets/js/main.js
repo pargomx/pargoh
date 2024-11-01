@@ -248,8 +248,20 @@ const observer = new IntersectionObserver((entries, observer) => {
 function hdlTextAreaEnter(event) {
 	if (event.key === 'Enter') {
 		if (event.ctrlKey) {
-			event.target.value += '\n';
-			autosizeTextarea(event.target);
+			let textarea = event.target
+			if (textarea.selectionStart || textarea.selectionStart == '0') {
+				var startPos = textarea.selectionStart;
+				var endPos = textarea.selectionEnd;
+				textarea.value = textarea.value.substring(0, startPos)
+					+ '\n'
+					+ textarea.value.substring(endPos, textarea.value.length);
+				console.log(startPos, endPos);
+				textarea.selectionStart = startPos+1;
+				textarea.selectionEnd = endPos+1;
+			} else {
+				textarea.value += '\n';
+			}
+			autosizeTextarea(textarea);
 			event.preventDefault();
 		} else {
 			event.preventDefault();
