@@ -2,6 +2,7 @@ package dhistorias
 
 import (
 	"monorepo/ust"
+	"strings"
 
 	"github.com/pargomx/gecko/gko"
 )
@@ -24,7 +25,7 @@ func AgregarTramoDeViaje(repo Repo, historiaID int, texto string) error {
 	}
 	tramo := ust.Tramo{
 		HistoriaID: historiaID,
-		Texto:      texto,
+		Texto:      strings.TrimSpace(texto),
 		Posicion:   len(tramos) + 1,
 	}
 	err = repo.InsertTramo(tramo)
@@ -63,6 +64,7 @@ func EditarTramoDeViaje(repo Repo, historiaID int, posicion int, texto string) e
 	if err != nil {
 		return op.Err(err)
 	}
+	texto = strings.TrimSpace(texto)
 	if texto == "" {
 		// return op.Msg("El texto no puede estar vacío")
 		return EliminarTramoDeViaje(repo, historiaID, posicion)

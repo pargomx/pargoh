@@ -99,7 +99,7 @@
 	{{ range .Reglas }}
 	<li class="flex items-baseline gap-2 mb-2 opacity-75">
 		<i class="px-1 text-sm fa-solid fa-arrow-right"></i>
-		<p>{{- .Texto -}}</p>
+		<p class="whitespace-pre-line">{{- enfatizar .Texto -}}</p>
 	</li>
 	{{ end }}
 </ul>
@@ -113,8 +113,8 @@
 			{{ .Posicion }}
 		</span>
 		<div>
-			<p>
-				{{- .Texto -}}
+			<p class="whitespace-pre-line">
+				{{- enfatizar .Texto -}}
 			</p>
 			{{ if .Imagen -}}
 			<div class="float-left mt-2 mb-2 border border-cyan-800 rounded-md shadow-lg">
