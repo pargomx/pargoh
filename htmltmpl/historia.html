@@ -1313,7 +1313,7 @@
 		return file;
 	}
 
-	const tramoImgModal = document.getElementById("TramoImgModal");
+	let tramoImgModal = document.getElementById("TramoImgModal");
 	window.addEventListener('paste', function(event) {
 		if (!tramoImgModal.open) {
 			return
@@ -1563,6 +1563,9 @@
 				elemento.scrollIntoView();
 			}
 		}
+
+		// Para poder pegar imagen para el tramo.
+		tramoImgModal = document.getElementById("TramoImgModal");
 
 	});
 </script>
