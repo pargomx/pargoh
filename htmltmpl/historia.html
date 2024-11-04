@@ -36,7 +36,12 @@
 		<!--* PERSONA  -->
 		<h4 class="grow">
 			<span class="opacity-50">Como</span>
-			<a href="/personas/{{ .Persona.PersonaID }}" class="text-lg lowercase transition-colors hover:text-cyan-600">{{ .Persona.Nombre }}</a>
+			<a 
+				href="/personas/{{ .Persona.PersonaID }}"
+				{{ if not .Ancestros }}tipo="ancestro_directo"{{ end }}
+				class="text-lg lowercase transition-colors hover:text-cyan-600">
+				{{- .Persona.Nombre -}}
+			</a>
 			<span class="opacity-50">quiero...</span>
 		</h4>
 		<!--* PRIORIDAD -->
@@ -82,6 +87,7 @@
 		<ul class="pl-2 list-disc">
 			<li class="pt-1">
 				<a href="/historias/{{ .HistoriaID }}" title="Ir al ancestro"
+					{{ if eq (suma $i 1) (len $.Agregado.Ancestros) }}tipo="ancestro_directo"{{ end }}
 					class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400">
 					{{- enfatizar .Titulo -}}...
 				</a>

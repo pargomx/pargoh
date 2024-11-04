@@ -410,3 +410,16 @@ function clickSubmit(form) {
 	}
 	form.querySelector('button[type="submit"]').click();
 }
+
+// ================================================================ //
+
+// Navegar en el árbol de historias con CTRL + UP
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey && event.key === 'ArrowUp') {
+        event.preventDefault();
+		let ancestroDirectoLink = document.querySelector('a[tipo="ancestro_directo"]');
+		if (ancestroDirectoLink) {
+			ancestroDirectoLink.click();
+		}
+    }
+});
