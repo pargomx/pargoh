@@ -415,7 +415,7 @@ function clickSubmit(form) {
 
 // Navegar en el árbol de historias con CTRL + UP
 document.addEventListener('keydown', function(event) {
-    if (event.ctrlKey && event.key === 'ArrowUp') {
+    if ((event.altKey || event.ctrlKey) && event.key === 'ArrowUp') {
         event.preventDefault();
 		let ancestroDirectoLink = document.querySelector('a[tipo="ancestro_directo"]');
 		if (ancestroDirectoLink) {
