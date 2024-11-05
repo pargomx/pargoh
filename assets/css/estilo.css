@@ -852,6 +852,10 @@ video {
   cursor: pointer;
 }
 
+.resize-none {
+  resize: none;
+}
+
 .list-disc {
   list-style-type: disc;
 }
@@ -1824,13 +1828,5 @@ select optgroup {
   .lg\:mx-4 {
     margin-left: 1rem;
     margin-right: 1rem;
-  }
-
-  .lg\:pr-6 {
-    padding-right: 1.5rem;
-  }
-
-  .lg\:pl-4 {
-    padding-left: 1rem;
   }
 }

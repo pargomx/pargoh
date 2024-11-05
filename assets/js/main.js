@@ -224,11 +224,20 @@ function autosizeTextarea(textarea) {
     let bTop = parseFloat(style.getPropertyValue('border-top-width'));
     let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
     let borderPx = Math.ceil(bTop + bBottom);
-    textarea.setAttribute("style", "height:" + (textarea.scrollHeight + borderPx) + "px; resize: none;");
-    textarea.addEventListener("input", function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight + borderPx) + "px";
-    }, false);
+	textarea.style.height = (textarea.scrollHeight + borderPx) + "px";
+	textarea.classList.add('resize-none');
+	textarea.addEventListener("input", function() {
+		// Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
+		let scrollTopRestore = null;
+		if (document.getElementById('contenido')) {
+			scrollTopRestore = document.getElementById('contenido').scrollTop;
+		}
+		// this.style.height = 'auto'; // para evitar saltos al entrar texto en textareas muy grandes.
+		this.style.height = (this.scrollHeight + borderPx) + "px";
+		if (scrollTopRestore) {
+			contenido.scrollTop = scrollTopRestore;
+		}
+	}, false);
 }
 
 // Aplicar autosize cuando el textarea se hace visible, no solo al cargar la página.
@@ -237,7 +246,6 @@ const observer = new IntersectionObserver((entries, observer) => {
 	entries.forEach(entry => {
 		if (entry.isIntersecting) {
 			// console.log('Textarea is visible');
-			entry.target.style.backgroundColor = 'lightyellow';
 			autosizeTextarea(entry.target);
 			observer.unobserve(entry.target);
 		}
@@ -255,7 +263,7 @@ function hdlTextAreaEnter(event) {
 				textarea.value = textarea.value.substring(0, startPos)
 					+ '\n'
 					+ textarea.value.substring(endPos, textarea.value.length);
-				console.log(startPos, endPos);
+				// console.log("textarea_edit: ", startPos, endPos);
 				textarea.selectionStart = startPos+1;
 				textarea.selectionEnd = endPos+1;
 			} else {
@@ -266,6 +274,7 @@ function hdlTextAreaEnter(event) {
 		} else {
 			event.preventDefault();
 			event.target.blur();
+			// console.log("textarea_focus")
 			event.target.focus(); // para que htmx sepa qué elemento enfocar after swap.
 		}
 	} else if (event.key === 'Escape') {
