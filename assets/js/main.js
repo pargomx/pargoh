@@ -327,6 +327,44 @@ document.addEventListener('htmx:beforeSwap', function(evt) {
     }
 });
 
+// Guardar scroll position antes de navegar a otra página.
+window.addEventListener('beforeunload', function() {
+    var contenido = document.getElementById('contenido');
+    if (contenido) {
+        var scrollTop = contenido.scrollTop;
+        var currentUrl = window.location.href;
+        // Get the stored data
+        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
+        // Remove the current URL if it already exists in the array
+        scrollData = scrollData.filter(item => item.url !== currentUrl);
+        // Add the current URL and scroll position to the beginning of the array
+        scrollData.unshift({ url: currentUrl, scrollTop: scrollTop });
+        // Keep only the last 5 entries
+        if (scrollData.length > 5) {
+            scrollData.pop();
+        }
+        // Save the updated data back to localStorage
+        localStorage.setItem('scrollData', JSON.stringify(scrollData));
+    }
+});
+
+// Restore scroll position al cargar sin HTMX.
+window.addEventListener('load', function() {
+    var contenido = document.getElementById('contenido');
+    if (contenido) {
+        var currentUrl = window.location.href;
+        // Get the stored data
+        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
+        // Find the scroll position for the current URL
+        var scrollItem = scrollData.find(item => item.url === currentUrl);
+        // Do de scroll
+		if (scrollItem) {
+            contenido.scrollTop = scrollItem.scrollTop;
+			// console.log("scrolled "+scrollItem.scrollTop + " for "+ scrollItem.url)
+        }
+    }
+});
+
 // ================================================================ //
 // ========== TimeTracker para gestión de proyecto ================ //
 
