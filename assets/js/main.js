@@ -307,7 +307,25 @@ htmx.onLoad(function(content) {
 	if (typeof onLoad === 'function') { 
 		onLoad(content);
 	}
+	
+	// Restablecer scroll position después de autosize textarea.
+	// ya que HTMX al hacer el scrollIntoView sin tener en cuenta el autosize
+	// hace que se mueva todo.
+	var contenido = document.getElementById('contenido');
+	if (contenido && contenido.dataset.scrollPosition) {
+		contenido.scrollTop = contenido.dataset.scrollPosition;
+		// console.log("Restored scroll: " + contenido.dataset.scrollPosition)
+	}
 })
+
+// Guardar scroll position antes de swap.
+document.addEventListener('htmx:beforeSwap', function(evt) {
+    var contenido = document.getElementById('contenido');
+    if (contenido) {
+      contenido.dataset.scrollPosition = contenido.scrollTop;
+	//   console.log("Saved scroll: " + contenido.scrollTop)
+    }
+});
 
 // ================================================================ //
 // ========== TimeTracker para gestión de proyecto ================ //
