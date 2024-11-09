@@ -71,7 +71,7 @@ func (s *servidor) getPersonaDoc(c *gecko.Context) error {
 		"Proyecto":  Proyecto,
 		"Historias": Historias,
 	}
-	return c.RenderOk("persona_doc", data)
+	return c.Render(200, "persona_doc", data)
 }
 
 func (s *servidor) getPersonaDebug(c *gecko.Context) error {

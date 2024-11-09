@@ -1,4 +1,40 @@
-<header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
+<!DOCTYPE html>
+<html lang="es_MX">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>{{ if $.Titulo }}{{ $.Titulo }}{{ else }}Pargo{{ end }}</title>
+		<link rel="shortcut icon" href="/assets/img/pargo_32.png" type="image/png">
+		<link rel="stylesheet" type="text/css" href="/assets/css/estilo.css">
+		<link rel="stylesheet" type="text/css" href="/assets/css/fontawesome.min.css">
+		<style>
+			@media print {
+				@page {
+					margin: 1in;
+				}
+				body {
+					font-family: 'Times New Roman', serif;
+					font-size: 12pt;
+				}
+				.header, .footer {
+					display: none;
+				}
+			}
+		</style>
+		<script src="/htmx.js"></script>
+		<script defer src="/assets/js/main.js"></script>
+	</head>
+	
+	<body class="h-full text-white bg-[#091a20] print:text-black print:bg-transparent print:font-serif">
+		{{ template "persona_doc_content" . }}
+	</body>
+</html>
+
+{{ define "persona_doc_content" }}
+{{ if not $.Print }}
+<header class="relative flex items-center w-full bg-cyan-950 shadow-lg print:bg-transparent">
 	<div class="p-1">
 		<img
 			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
@@ -7,27 +43,17 @@
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
-			<a href="/proyectos/{{ .Proyecto.ProyectoID }}">
-				{{ .Proyecto.Titulo }}
-			</a>
+			<span class="font-bold text-cyan-700">{{ .Persona.Nombre }}:</span>
+			<br>
+			{{ .Proyecto.Titulo }}
 		</h2>
-		<h3
-			class="flex items-center gap-1 py-1">
-			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
-			<span class="text-xl">{{ .Persona.Nombre }}</span>
-		</h3>
 	</div>
-	<span class="absolute right-2 top-2">
-		<a href="/personas/{{ .Persona.PersonaID }}" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
-	</span>
 </header>
+{{ end }}
 
-<main class="grow w-full p-4 mx-auto">
+<main class="grow max-w-4xl px-6 py-4 mx-auto">
 
 	<!--* PERSONA -->
-	<h4 class="mb-1 text-xl font-semibold text-cyan-600">
-		{{- .Persona.Nombre -}}
-	</h4>
 	<p class="mb-4 whitespace-pre-line opacity-75">
 		{{- .Persona.Descripcion -}}
 	</p>
@@ -36,17 +62,25 @@
 	{{ range .Historias }}
 	<hr class="my-4 border-t-2 border-cyan-600 opacity-75">
 	{{ with .Historia -}}
-	<h3 id="{{ .HistoriaID }}" class="mb-2 text-2xl whitespace-pre-line">
+	
+	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl whitespace-pre-line group">
 		{{- enfatizar .Titulo -}}
+		<a href="/historias/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
 	</h3>
+
 	<p class="mb-4 whitespace-pre-line opacity-75">
-		{{- if .Descripcion }}{{ enfatizar .Descripcion }}{{ else }}{{ enfatizar .Objetivo }}{{ end -}}
+		{{- enfatizar .Objetivo -}}
 	</p>
+	
 	{{ end 	}}
 
 	{{ if .Reglas -}}
 		{{ template "historia_doc_reglas" . }}
 	{{ end }}
+
+	<p class="mb-4 whitespace-pre-line opacity-75">
+		{{- enfatizar .Historia.Descripcion -}}
+	</p>
 
 	{{ if .Tramos -}}
 		{{ template "historia_doc_tramos" . }}
@@ -64,28 +98,35 @@
 
 	{{ end }}
 </main>
+{{ end }}
 
 {{- define "historia_doc_desc" -}}
 	<hr class="mt-8 mb-2 border-t border-cyan-600 opacity-50">
-	<h3 id="{{ .HistoriaID }}" class="mb-2 text-xl whitespace-pre-line">
+	
+	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl whitespace-pre-line group">
 		{{- enfatizar .Titulo -}}
+		<a href="/historias/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
 	</h3>
+
 	<p class="mb-4 whitespace-pre-line opacity-75">
-		{{- if .Descripcion }}{{ enfatizar .Descripcion }}{{ else }}{{ enfatizar .Objetivo }}{{ end -}}
+		{{- enfatizar .Objetivo -}}
 	</p>
 
 	{{ if .Reglas -}}
 		{{ template "historia_doc_reglas" . }}
 	{{ end }}
 
-	{{ if .Tramos -}}
-		{{ template "historia_doc_tramos" . }}
-	{{ end }}
-
 	{{ if .Relacionadas -}}
 		{{ template "historia_doc_relacionadas" . }}
 	{{ end }}
 
+	<p class="mb-4 whitespace-pre-line opacity-75">
+		{{- enfatizar .Descripcion -}}
+	</p>
+
+	{{ if .Tramos -}}
+		{{ template "historia_doc_tramos" . }}
+	{{ end }}
 
 	{{ range .Descendientes }}
 	<div class="lg:mx-4">
@@ -109,7 +150,7 @@
 <div class="flex flex-col items-start mb-2">
 	{{ range .Tramos }}
 	<div class="flex items-start gap-2 mb-2">
-		<span class="px-2 py-1 mr-1 font-mono text-sm bg-cyan-900 rounded-md whitespace-nowrap">
+		<span class="px-2 py-1 mr-1 font-mono text-sm rounded-md bg-black/25 whitespace-nowrap">
 			{{ .Posicion }}
 		</span>
 		<div>
@@ -118,7 +159,7 @@
 			</p>
 			{{ if .Imagen -}}
 			<div class="float-left mt-2 mb-2 border border-cyan-800 rounded-md shadow-lg">
-				<img src="/imagenes/{{ .Imagen }}" class="w-full rounded-md max-w-96 max-h-96">
+				<img src="/imagenes/{{ .Imagen }}" class="w-full rounded-md ">
 			</div>
 			{{ end }}
 		</div>
