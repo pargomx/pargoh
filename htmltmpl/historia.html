@@ -109,7 +109,7 @@
 			placeholder="Hacer algo de valor..."
 			rows="1"
 			enterkeyhint="done"
-			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none focus:border-blue-400">
+			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-none resize-none focus:border-blue-400">
 			{{- .Historia.Titulo -}}
 		</textarea>
 	</div>
@@ -118,7 +118,7 @@
 	<div class="mb-4">
 		<textarea
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/objetivo"
-			hx-swap="none" 
+			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			name="value"
 			title="Objetivo empático de la historia"
@@ -129,6 +129,61 @@
 			{{- .Historia.Objetivo -}}
 		</textarea>
 	</div>
+
+	<!--* REGLAS DE NEGOCIO -->
+	<!-- <h3 class="mb-2 text-xl text-cyan-600">Reglas</h3> -->
+	<ol tipo="sort_reglas" class="mb-6">
+		{{ range .Reglas -}}
+		<li tipo="sort_regla" class="flex gap-1 p-1 group">
+			<div tipo="sort_handle" title="Posición {{ .Posicion }}" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+				⣿
+				<form tipo="sort_form" hx-post="/reordenar-regla" hx-trigger="reordenarEnd">
+					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
+					<input type="hidden" name="new_pos">
+				</form>
+			</div>
+			<div class="pr-2">
+				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+			</div>
+			<textarea
+				id="input_Regla{{ .Posicion }}"
+				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				name="texto"
+				rows="1"
+				enterkeyhint="done"
+				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
+				{{- .Texto -}}
+			</textarea>
+			<button
+				type="button"
+				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-confirm="¿Eliminar regla? {{ .Texto }}"
+				title="Quitar regla"
+				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
+				<i class="fa-solid fa-trash"></i>
+			</button>
+		</li>
+		{{ end }}
+		<li class="flex items-center gap-1 p-1">
+			<div class="hidden opacity-0 md:block">⣿</div>
+			<div class="pr-2">
+				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+			</div>
+			<textarea
+				id="input_AddRegla"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
+				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-trigger="keyup[key=='Enter']"
+				name="texto"
+				rows="1"
+				enterkeyhint="done"
+				placeholder="Agregar regla"
+				class="inline-block w-full bg-transparent border-b border-transparent outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+		</li>
+	</ol>
 
 	<!--* AVANCE  -->
 	{{ if .SegundosPresupuesto }}
@@ -580,61 +635,6 @@
 		{{ end }}
 	</ul>
 
-	<!--* REGLAS DE NEGOCIO -->
-	<h3 class="mb-2 text-xl text-cyan-600">Reglas</h3>
-	<ol tipo="sort_reglas" class="mb-6">
-		{{ range .Reglas -}}
-		<li tipo="sort_regla" class="flex gap-1 p-1 group">
-			<div tipo="sort_handle" title="Posición {{ .Posicion }}" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
-				⣿
-				<form tipo="sort_form" hx-post="/reordenar-regla" hx-trigger="reordenarEnd">
-					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
-					<input type="hidden" name="new_pos">
-				</form>
-			</div>
-			<div class="pr-2">
-				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
-			</div>
-			<textarea
-				id="input_Regla{{ .Posicion }}"
-				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				name="texto"
-				rows="1"
-				enterkeyhint="done"
-				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-none read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
-				{{- .Texto -}}
-			</textarea>
-			<button
-				type="button"
-				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-confirm="¿Eliminar regla? {{ .Texto }}"
-				title="Quitar regla"
-				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
-				<i class="fa-solid fa-trash"></i>
-			</button>
-		</li>
-		{{ end }}
-		<li class="flex items-center gap-1 p-1">
-			<div class="hidden opacity-0 md:block">⣿</div>
-			<div class="pr-2">
-				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
-			</div>
-			<textarea
-				id="input_AddRegla"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-trigger="keyup[key=='Enter']"
-				name="texto"
-				rows="1"
-				enterkeyhint="done"
-				placeholder="Agregar regla"
-				class="inline-block w-full bg-transparent border-b border-transparent outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
-		</li>
-	</ol>
-
 	<!--* TAREAS -->
 	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
 		<h3 id="tareas" class="grow text-xl">
@@ -966,6 +966,19 @@
 
 		</form>
 	</dialog>
+	{{ end }}
+
+	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
+	<div class="text-center">
+		<button
+			type="button"
+			hx-delete="/historias/{{ .Historia.HistoriaID }}"
+			hx-confirm="¿Eliminar historia vacía?"
+			class="px-4 py-2 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100">
+			<i class="mr-2 fa-solid fa-trash"></i>
+			Eliminar historia
+		</button>
+	</div>
 	{{ end }}
 
 </main>
