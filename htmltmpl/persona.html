@@ -80,6 +80,14 @@
 			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
 			<i class="fa-solid fa-book"></i>
 		</a>
+		<button
+			hx-post="/personas/{{ .Persona.PersonaID }}/docx"
+			hx-prompt="Unidoc API Key"
+			hx-swap="none"
+			title="Generar documento docx"
+			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
+			<i class="fa-solid fa-file-word"></i>
+		</button>
 	</h3>
 	<div
 		tipo="sort_historias" 

@@ -1,12 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"monorepo/dhistorias"
+	"monorepo/exportdocx"
 	"monorepo/sqliteust"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
+	"github.com/unidoc/unioffice/common/license"
 )
 
 func (s *servidor) exportarJSON(c *gecko.Context) error {
@@ -49,7 +54,7 @@ func (s *servidor) exportarMarkdown(c *gecko.Context) error {
 	return nil
 }
 
-func (s *servidor) exportarDocx(c *gecko.Context) error {
+func (s *servidor) exportarProyectoDocx(c *gecko.Context) error {
 	err := dhistorias.ExportarDocx(c.PathVal("proyecto_id"), s.repo, "export.docx")
 	if err != nil {
 		return err
@@ -78,6 +83,33 @@ func (s *servidor) exportarProyectoTeX(c *gecko.Context) error {
 		return err
 	}
 	return c.StringOk(tex.String())
+}
+
+func (s *servidor) exportarPersonaDocx(apiKey string) gecko.HandlerFunc {
+	var errLic error
+	if apiKey == "" {
+		errLic = gko.ErrDatoIndef().Msg("API Key para Unidoc indefinida")
+	} else {
+		errLic = license.SetMeteredKey(apiKey)
+		if errLic != nil {
+			gko.Err(errLic).Op("UnidocApiKey").Log()
+		}
+	}
+	return func(c *gecko.Context) error {
+		if errLic != nil {
+			errLic = license.SetMeteredKey(c.PromptVal())
+			if errLic != nil {
+				return gko.Err(errLic).Op("UnidocApiKey").Msg("Licencia inválida")
+			}
+		}
+		personaID := c.PathInt("persona_id")
+		filename := fmt.Sprintf("p_%d_%s.docx", personaID, time.Now().Format("060102_150405"))
+		err := exportdocx.ExportarDocx(personaID, s.repo, filepath.Join(s.cfg.exportDir, filename))
+		if err != nil {
+			return err
+		}
+		return c.RedirectHTMX("/exports/" + filename)
+	}
 }
 
 func (s *servidor) exportarPersonaPDF(c *gecko.Context) error {

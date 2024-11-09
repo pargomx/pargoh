@@ -8,6 +8,7 @@ require (
 	github.com/matoous/go-nanoid/v2 v2.1.0
 	github.com/pargomx/gecko v0.0.0-20241001162422-bc0d80347e81
 	github.com/rwestlund/gotex v0.0.0-20170412080108-3c68d9bfff3b
+	github.com/unidoc/unioffice v1.37.0
 	golang.org/x/net v0.28.0
 )
 
@@ -18,6 +19,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+	github.com/richardlehane/msoleps v1.0.3 // indirect
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	modernc.org/libc v1.56.0 // indirect

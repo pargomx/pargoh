@@ -9,6 +9,7 @@ import (
 
 	"monorepo/assets"
 	"monorepo/dhistorias"
+	"monorepo/exportdocx"
 	"monorepo/htmltmpl"
 	"monorepo/migraciones"
 	"monorepo/sqlitedb"
@@ -33,6 +34,8 @@ type configs struct {
 	logDB        bool   // Log de consultas a la base de datos
 	sourceDir    string // Directorio raíz para leer assets y plantillas (shadow embed)
 	imagesDir    string // Directorio para guardar imágenes
+	exportDir    string // Directorio para guardar exports
+	unidocApiKey string // API Key para unidoc
 }
 
 type servidor struct {
@@ -59,6 +62,8 @@ func main() {
 	flag.BoolVar(&s.cfg.logDB, "logdb", false, "log de consultas a la base de datos")
 	flag.StringVar(&s.cfg.sourceDir, "src", "", "directorio con assets y htmltmpl para no usar embeded")
 	flag.StringVar(&s.cfg.imagesDir, "img", "imagenes", "directorio con las imágenes de historias y proyectos")
+	flag.StringVar(&s.cfg.exportDir, "exp", "exports", "directorio con los archivos exportados")
+	flag.StringVar(&s.cfg.unidocApiKey, "unidoc", "", "api key para exportar docx con unidoc")
 
 	flag.Parse()
 	if s.cfg.directorio != "" {
@@ -92,6 +97,10 @@ func main() {
 	}
 
 	if err = s.verificarDirectorioImagenes(); err != nil {
+		gko.FatalError(err)
+	}
+
+	if err = exportdocx.VerificarDirectorioExports(s.cfg.exportDir); err != nil {
 		gko.FatalError(err)
 	}
 
@@ -207,10 +216,12 @@ func main() {
 	s.POS("/proyectos/importar", s.importarJSON)
 	s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
 	s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
-	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarDocx)
+	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarProyectoDocx)
 	s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
 	s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
 	s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
+	s.POS("/personas/{persona_id}/docx", s.exportarPersonaDocx(s.cfg.unidocApiKey))
+	s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
 
 	// General
 	s.GET("/metricas", s.getMétricas1)
