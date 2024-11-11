@@ -27,7 +27,7 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", tarea.HistoriaID)
+	return c.Redirf("/historias/%v", tarea.HistoriaID)
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context) error {
@@ -49,7 +49,7 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
+	return c.Redirf("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
 func (s *servidor) ciclarImportanciaTarea(c *gecko.Context) error {
@@ -71,7 +71,7 @@ func (s *servidor) ciclarImportanciaTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", tarea.HistoriaID)
+	return c.Redirf("/historias/%v", tarea.HistoriaID)
 }
 
 func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
@@ -92,7 +92,7 @@ func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
+	return c.Redirf("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
 func (s *servidor) moverTarea(c *gecko.Context) error {
@@ -101,7 +101,7 @@ func (s *servidor) moverTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }
 
 func (s *servidor) eliminarTarea(c *gecko.Context) error {
@@ -111,7 +111,7 @@ func (s *servidor) eliminarTarea(c *gecko.Context) error {
 	}
 	gko.LogInfof("Tarea %d eliminada", c.PathInt("tarea_id"))
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }
 
 func (s *servidor) iniciarTarea(c *gecko.Context) error {
@@ -120,7 +120,7 @@ func (s *servidor) iniciarTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }
 func (s *servidor) pausarTarea(c *gecko.Context) error {
 	historiaID, err := dhistorias.PausarTarea(c.PathInt("tarea_id"), s.repo)
@@ -128,7 +128,7 @@ func (s *servidor) pausarTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }
 func (s *servidor) terminarTarea(c *gecko.Context) error {
 	historiaID, err := dhistorias.FinalizarTarea(c.PathInt("tarea_id"), s.repo)
@@ -136,7 +136,7 @@ func (s *servidor) terminarTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }
 
 func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
@@ -186,5 +186,5 @@ func (s *servidor) patchIntervalo(c *gecko.Context) error {
 		return err
 	}
 	// defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }

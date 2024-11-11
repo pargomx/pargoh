@@ -74,7 +74,7 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 	if len(referer) < 2 || referer[1] == "/" {
 		return c.Redir("/")
 	} else {
-		return c.Redir("/proyectos/%v", c.PathVal("proyecto_id"))
+		return c.Redirf("/proyectos/%v", c.PathVal("proyecto_id"))
 	}
 }
 

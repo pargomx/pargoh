@@ -20,6 +20,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/pargomx/gecko v0.0.0-20241001162422-bc0d80347e81 h1:cSFCLcZ2nI/oVIyZHgrNssYYsM3PO1cdGMn5FCM9fgw=
 github.com/pargomx/gecko v0.0.0-20241001162422-bc0d80347e81/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
+github.com/pargomx/gecko v0.0.0-20241111181133-87a06af76ba7 h1:qZUJbYK+UOqDyot9+r7FtrOxsDV60bMI5y+CZhSOdgA=
+github.com/pargomx/gecko v0.0.0-20241111181133-87a06af76ba7/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=

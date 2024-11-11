@@ -64,7 +64,7 @@ func (s *servidor) postHistoriaDePersona(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/personas/%v", c.PathInt("persona_id"))
+	return c.Redirf("/personas/%v", c.PathInt("persona_id"))
 }
 
 func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
@@ -90,7 +90,7 @@ func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) updateHistoria(c *gecko.Context) error {
@@ -167,9 +167,9 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 		return err
 	}
 	if padre.EsHistoria() {
-		return c.Redir("/historias/%v", padreID)
+		return c.Redirf("/historias/%v", padreID)
 	} else if padre.EsPersona() {
-		return c.Redir("/personas/%v", padreID)
+		return c.Redirf("/personas/%v", padreID)
 	} else {
 		gko.LogWarnf("deleteHistoria: padre %v no es persona ni historia", padreID)
 		return c.Redir("/proyectos")
@@ -197,9 +197,9 @@ func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	defer s.reloader.brodcastReload(c)
 
 	if hist.PadreTbl == ust.TipoNodoPersona {
-		return c.Redir("/personas/%v", hist.PadreID)
+		return c.Redirf("/personas/%v", hist.PadreID)
 	} else if hist.PadreTbl == ust.TipoNodoHistoria {
-		return c.Redir("/historias/%v", hist.PadreID)
+		return c.Redirf("/historias/%v", hist.PadreID)
 	} else {
 		return gko.ErrInesperado().Msgf("reordenarHistoria: padre %v no es persona ni historia, sino %v", hist.PadreID, hist.PadreTbl)
 	}
@@ -222,5 +222,6 @@ func (s *servidor) moverHistoria(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	// TODO: enviar link a la nueva ubicación como sugerencia.
+	return c.RefreshHTMX()
 }

@@ -16,7 +16,7 @@ func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
@@ -31,7 +31,7 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 	}
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
@@ -46,7 +46,7 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	}
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) reordenarTramo(c *gecko.Context) error {
@@ -64,7 +64,7 @@ func (s *servidor) reordenarTramo(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.FormInt("historia_id"))
+	return c.Redirf("/historias/%v", c.FormInt("historia_id"))
 }
 
 func (s *servidor) moverTramo(c *gecko.Context) error {
@@ -73,5 +73,5 @@ func (s *servidor) moverTramo(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", historiaID)
+	return c.Redirf("/historias/%v", historiaID)
 }

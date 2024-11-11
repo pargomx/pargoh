@@ -18,7 +18,7 @@ func (s *servidor) postReferencia(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) deleteReferencia(c *gecko.Context) error {
@@ -33,5 +33,5 @@ func (s *servidor) deleteReferencia(c *gecko.Context) error {
 	}
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }

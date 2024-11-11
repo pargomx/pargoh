@@ -265,5 +265,5 @@ func (s *servidor) reordenarPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redir("/proyectos/%v", pers.ProyectoID)
+	return c.Redirf("/proyectos/%v", pers.ProyectoID)
 }

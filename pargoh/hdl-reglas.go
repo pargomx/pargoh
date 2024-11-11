@@ -16,7 +16,7 @@ func (s *servidor) postRegla(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) deleteRegla(c *gecko.Context) error {
@@ -31,7 +31,7 @@ func (s *servidor) deleteRegla(c *gecko.Context) error {
 	}
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) patchRegla(c *gecko.Context) error {
@@ -46,7 +46,7 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 	}
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) reordenarRegla(c *gecko.Context) error {
@@ -64,5 +64,5 @@ func (s *servidor) reordenarRegla(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.FormInt("historia_id"))
+	return c.Redirf("/historias/%v", c.FormInt("historia_id"))
 }

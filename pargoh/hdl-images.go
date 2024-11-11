@@ -69,7 +69,7 @@ func (s *servidor) setImagenTramo(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.FormInt("historia_id"))
+	return c.Redirf("/historias/%v", c.FormInt("historia_id"))
 }
 
 func (s *servidor) deleteImagenTramo(c *gecko.Context) error {
@@ -78,5 +78,5 @@ func (s *servidor) deleteImagenTramo(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.Redir("/historias/%v", c.PathInt("historia_id"))
+	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
 }
