@@ -62,7 +62,7 @@
 			name="value"
 			rows="1"
 			placeholder="Descripción del personaje..." 
-			class="w-full px-2 py-1 text-sm font-medium text-center transition-opacity bg-transparent border-b border-cyan-800 outline-none opacity-75 focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600">
+			class="w-full px-2 py-1 text-sm font-medium text-center transition-opacity bg-transparent border-b border-cyan-800 outline-hidden opacity-75 focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600">
 			{{- .Persona.Descripcion -}}
 		</textarea>
 	</div>
@@ -138,7 +138,7 @@
 				rows="1"
 				enterkeyhint="done"
 				placeholder="Agregar historia..."
-				class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-none text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+				class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</div>
 	</div>
 
@@ -311,7 +311,7 @@
 	</p>
 
 	{{ range .PersonaCosto.Historias }}
-	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded">{{ .SegundosUtilizadoMust }} {{ .SegundosUtilizado }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
+	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded-sm">{{ .SegundosUtilizadoMust }} {{ .SegundosUtilizado }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
 	{{ end }}
 	
 	<div class="p-4 mb-4">
@@ -413,20 +413,20 @@
 
 </main>
 
-<div id="ctxMenu" tipo="ctxMenu" gk-historia="" class="absolute hidden p-2 text-black bg-cyan-50 rounded shadow-md">
+<div id="ctxMenu" tipo="ctxMenu" gk-historia="" class="absolute hidden p-2 text-black bg-cyan-50 rounded-sm shadow-md">
 	<div class="grid grid-cols-2 gap-1 text-sm">
 		<div class="col-span-2 text-xs opacity-50">Acciones</div>
-		<button type="button" onclick="tableroHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">📋 Tablero</button>
-		<button type="button" onclick="showMoverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚙 Mover</button>
-		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">❌ Eliminar</button>
+		<button type="button" onclick="tableroHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">📋 Tablero</button>
+		<button type="button" onclick="showMoverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🚙 Mover</button>
+		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">❌ Eliminar</button>
 		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
-		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤩 Must</button>
-		<button type="button" onclick="priorizarHistoria(2)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🤔 Should</button>
-		<button type="button" onclick="priorizarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">😶‍🌫️ Would</button>
-		<button type="button" onclick="priorizarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🚫 Won't</button>
+		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🤩 Must</button>
+		<button type="button" onclick="priorizarHistoria(2)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🤔 Should</button>
+		<button type="button" onclick="priorizarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">😶‍🌫️ Would</button>
+		<button type="button" onclick="priorizarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🚫 Won't</button>
 		<div class="col-span-2 text-xs opacity-50">Estatus</div>
-		<button type="button" onclick="marcarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">✅ Okey</button>
-		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded hover:bg-gray-300">🔻 Falta</button>
+		<button type="button" onclick="marcarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">✅ Okey</button>
+		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🔻 Falta</button>
 	</div>
 </div>
 
@@ -463,7 +463,7 @@
 			hx-target="main" hx-select="main" hx-swap="outerHTML"
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded shadow-md hover:bg-blue-600">
+			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
 			Mover
 		</button>
 	</form>

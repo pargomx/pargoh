@@ -1,14 +1,33 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer components {
-	.form-control {
-	  @apply w-full px-2 py-1 text-base font-medium text-white border rounded-md outline-none bg-cyan-950/50 border-cyan-700/50 focus:border-blue-400 focus:shadow-md;
-	}
-	.form-control-white {
-	  @apply w-full px-2 py-1 text-base font-medium text-gray-800 bg-white border border-slate-300 rounded-md outline-none focus:border-blue-800 focus:shadow-md;
-	}
+@theme {
+  --cursor-edit: url('/assets/img/pen.svg'), pointer;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@utility form-control {
+  @apply w-full px-2 py-1 text-base font-medium text-white border rounded-md outline-hidden bg-cyan-950/50 border-cyan-700/50 focus:border-blue-400 focus:shadow-md;
+}
+
+@utility form-control-white {
+  @apply w-full px-2 py-1 text-base font-medium text-gray-800 bg-white border border-slate-300 rounded-md outline-hidden focus:border-blue-800 focus:shadow-md;
 }
 
 /* Orden de tablas por columnas. Ver JS. */

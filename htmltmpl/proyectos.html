@@ -135,7 +135,7 @@
 		<button
 			type="button"
 			onclick="frmPryNew.close(); importProyecto.showModal()"
-			class="italic font-semibold text-cyan-500 underline transition-colors rounded hover:text-cyan-400 whitespace-nowrap">
+			class="italic font-semibold text-cyan-500 underline transition-colors rounded-sm hover:text-cyan-400 whitespace-nowrap">
 			Importar JSON...
 		</button>
 	</div>
@@ -155,7 +155,7 @@
 		<button 
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600">
 			Guardar
 		</button>
 	</form>
@@ -185,7 +185,7 @@
 			hx-post="/proyectos/importar"
 			hx-encoding="multipart/form-data"
 			onclick="this.closest('dialog').close()"
-			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+			class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600">
 			Importar
 		</button>
 	</form>
@@ -209,13 +209,13 @@
 		<a 
 			href="/proyectos/{{ .ProyectoID}}/exportar.json"
 			target="_blank"
-			class="italic font-semibold text-cyan-500 underline transition-colors rounded hover:text-cyan-400 whitespace-nowrap">
+			class="italic font-semibold text-cyan-500 underline transition-colors rounded-sm hover:text-cyan-400 whitespace-nowrap">
 			Exportar JSON
 		</a>
 		<a 
 			href="/proyectos/{{ .ProyectoID}}/exportar.md"
 			target="_blank"
-			class="italic font-semibold text-cyan-500 underline transition-colors rounded hover:text-cyan-400 whitespace-nowrap">
+			class="italic font-semibold text-cyan-500 underline transition-colors rounded-sm hover:text-cyan-400 whitespace-nowrap">
 			Exportar Markdown
 		</a>
 	</div>
@@ -241,7 +241,7 @@
 			<button
 				type="submit"
 				onclick="this.closest('dialog').close()"
-				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded shadow-md hover:bg-cyan-600">
+				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600">
 				Guardar
 			</button>
 			<!-- <button
@@ -249,7 +249,7 @@
 				hx-delete="/proyectos/{{ .ProyectoID}}"
 				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?"
 				onclick="this.closest('dialog').close()"
-				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
+				class="p-2 transition-opacity bg-red-800 rounded-sm shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
 				Eliminar
 			</button> -->
 			<button
@@ -258,7 +258,7 @@
 				hx-confirm="Se sugiere exportar JSON antes de continuar. ¿Eliminar proyecto {{ .Titulo }} junto con todo lo que contiene?"
 				hx-prompt="Escribe 'eliminar_{{ .ProyectoID}}' para confirmar"
 				onclick="this.closest('dialog').close()"
-				class="p-2 transition-opacity bg-red-800 rounded shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
+				class="p-2 transition-opacity bg-red-800 rounded-sm shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
 				Eliminar
 			</button>
 		</div>

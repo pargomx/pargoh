@@ -17,11 +17,11 @@
 			</tr>
 			{{ range .Historias }}
 			<tr>
-				<td class="bg-cyan-950 rounded">{{ .Nivel }}.{{ .Posicion }}</td>
-				<td class="bg-cyan-950 rounded">{{ .Prioridad }}</td>
-				<td class="bg-cyan-950 rounded">{{ segundosToString .Segundos }}</td>
-				<td class="bg-cyan-950 rounded">{{ .Completada }}</td>
-				<td class="bg-cyan-950 rounded">{{ .Titulo }}</td>
+				<td class="bg-cyan-950 rounded-sm">{{ .Nivel }}.{{ .Posicion }}</td>
+				<td class="bg-cyan-950 rounded-sm">{{ .Prioridad }}</td>
+				<td class="bg-cyan-950 rounded-sm">{{ segundosToString .Segundos }}</td>
+				<td class="bg-cyan-950 rounded-sm">{{ .Completada }}</td>
+				<td class="bg-cyan-950 rounded-sm">{{ .Titulo }}</td>
 			</tr>
 			{{ end }}
 		</table>
