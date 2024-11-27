@@ -20,7 +20,7 @@
 	</p>
 </header>
 <form id="formMoverHistoria" action="/historias/{{ .Historia.HistoriaID }}/mover" method="POST" class="flex flex-col items-start grow p-4 overflow-y-auto">
-	<ul class="px-4 grow">
+	<ul class="grow px-4">
 		{{ range .Arboles -}}{{ range .Personas }}
 		<li class="pt-4">
 			<input id="{{ .Persona.PersonaID }}" type="radio" name="nuevo_padre_id" value="{{ .Persona.PersonaID }}">
