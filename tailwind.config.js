@@ -3,6 +3,7 @@ module.exports = {
   content: [
 	"./htmltmpl/*.html",
 	"./htmltmpl/**/*.html",
+	"./assets/js/main.js"
 	
 ],
   theme: {
