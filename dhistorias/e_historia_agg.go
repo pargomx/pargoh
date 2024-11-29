@@ -92,3 +92,29 @@ func (h *HistoriaAgregado) HorasUtilizado() float64 {
 func (h *HistoriaAgregado) HorasExpectativaAvancePresupuesto() float64 {
 	return math.Round(float64(h.SegundosExpectativaAvancePresupuesto())/3600*100) / 100
 }
+
+// ================================================================ //
+
+type HistoriaAgregadoList []HistoriaAgregado
+
+func (h HistoriaAgregadoList) SegundosPresupuesto() int {
+	total := 0
+	for _, d := range h {
+		total += d.SegundosPresupuesto()
+	}
+	return total
+}
+func (h HistoriaAgregadoList) SegundosEstimado() int {
+	total := 0
+	for _, d := range h {
+		total += d.SegundosEstimado()
+	}
+	return total
+}
+func (h HistoriaAgregadoList) SegundosUtilizado() int {
+	total := 0
+	for _, d := range h {
+		total += d.SegundosUtilizado()
+	}
+	return total
+}

@@ -155,10 +155,29 @@
 
 	<!--? COSTO DE LAS HISTORIAS -->
 	{{ if .Historias -}}
-	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Desglose de costo</h3>
-	<p>
-		Gestión: {{ segundosToString $.Persona.SegundosGestion }}
-	</p>
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Costo y progreso</h3>
+	<!-- Tarjetas avance -->
+	<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold text-white">{{ segundosToString .Historias.SegundosPresupuesto }}</span>
+			<span class="text-sm text-cyan-200">Presupuesto</span>
+		</div>
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold text-white">{{ segundosToString .Historias.SegundosEstimado }}</span>
+			<span class="text-sm text-cyan-200">Estimación</span>
+		</div>
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold {{ if gt .Historias.SegundosUtilizado .Historias.SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
+				{{ segundosToString .Historias.SegundosUtilizado }}
+			</span>
+			<span class="text-sm text-cyan-200">Utilizado</span>
+		</div>
+		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+			<span class="text-3xl font-bold text-white">{{ segundosToString $.Persona.SegundosGestion }}</span>
+			<span class="text-sm text-cyan-200">Gestión</span>
+		</div>
+	</div>
+	<!-- Gráfico avance -->
 	<div class="px-4 mb-4" style="background-color: transparent;">
 		<canvas id="chartHistoriasCosto"></canvas>
 	</div>

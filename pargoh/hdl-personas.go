@@ -22,7 +22,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias := make([]dhistorias.HistoriaAgregado, len(hists))
+	Historias := make(dhistorias.HistoriaAgregadoList, len(hists))
 	for i, h := range hists {
 		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repo)
 		if err != nil {
@@ -57,7 +57,7 @@ func (s *servidor) getPersonaDoc(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	Historias := make([]dhistorias.HistoriaAgregado, len(hists))
+	Historias := make(dhistorias.HistoriaAgregadoList, len(hists))
 	for i, h := range hists {
 		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes|dhistorias.GetTramos|dhistorias.GetReglas|dhistorias.GetRelacionadas, s.repo)
 		if err != nil {
