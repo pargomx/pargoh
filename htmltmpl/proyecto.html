@@ -150,7 +150,7 @@
 </footer>
 
 <!--* NUEVA PERSONA -->
-<dialog id="frmPerNueva" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="frmPerNueva" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Agregar personaje
@@ -191,7 +191,7 @@
 
 <!--* EDITAR PERSONA -->
 {{ range .Personas }}{{ $persona := . }}
-<dialog id="frmPer{{ .PersonaID }}" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="frmPer{{ .PersonaID }}" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Modificar persona

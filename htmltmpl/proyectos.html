@@ -118,7 +118,7 @@
 </footer>
 
 <!--* NUEVO PROYECTO -->
-<dialog id="frmPryNew" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="frmPryNew" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Nuevo proyecto
@@ -162,7 +162,7 @@
 </dialog>
 
 <!--* IMPORTAR -->
-<dialog id="importProyecto" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="importProyecto" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Importar proyecto
@@ -192,7 +192,7 @@
 </dialog>
 
 {{ define "proyecto_form" }}
-<dialog id="frmPry{{ .ProyectoID }}" class="{{ if gt (len .Descripcion) 500 }}w-full {{ end }}text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="frmPry{{ .ProyectoID }}" class="m-auto {{ if gt (len .Descripcion) 500 }}w-full {{ end }}text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Modificar proyecto

@@ -567,6 +567,9 @@
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
+  .m-auto {
+    margin: auto;
+  }
   .mx-1 {
     margin-inline: calc(var(--spacing) * 1);
   }
@@ -732,14 +735,14 @@
   .max-w-3xl {
     max-width: var(--container-3xl);
   }
-  .max-w-5xl {
-    max-width: var(--container-5xl);
-  }
   .max-w-40 {
     max-width: calc(var(--spacing) * 40);
   }
   .max-w-4xl {
     max-width: var(--container-4xl);
+  }
+  .max-w-5xl {
+    max-width: var(--container-5xl);
   }
   .max-w-96 {
     max-width: calc(var(--spacing) * 96);

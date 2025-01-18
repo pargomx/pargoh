@@ -423,7 +423,7 @@
 	</ol>
 
 	<!--* IMAGEN DEL TRAMO -->
-	<dialog id="TramoImgModal" class="w-full max-w-3xl text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<dialog id="TramoImgModal" class="m-auto w-full max-w-3xl text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 		<div class="flex flex-col max-w-3xl max-h-[90vh]"><!-- Para hacer scrollable manteniendo header -->
 			<header class="flex items-center gap-2 p-2 bg-cyan-800">
 				<h2 class="grow text-xl">
@@ -817,7 +817,7 @@
 	</ol>
 	<!-- Editar tareas -->
 	{{ range .Tareas -}}
-	<dialog id="edit{{ .TareaID }}" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<dialog id="edit{{ .TareaID }}" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 		<header class="flex items-center gap-2 p-2 bg-cyan-800">
 			<h2 class="grow text-xl">
 				Tarea
@@ -985,7 +985,7 @@
 {{ end }}
 
 <!-- Administrar intervalos -->
-<dialog id="modalIntervalos" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="modalIntervalos" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<div hx-target="this" hx-swap="innerHTML" hx-trigger="cargarIntervalos">
 		Cargando...
 	</div>
@@ -1147,7 +1147,7 @@
 	}
 </script>
 
-<dialog id="moverTramo" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="moverTramo" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Mover tramo
@@ -1183,7 +1183,7 @@
 	</form>
 </dialog>
 
-<dialog id="moverTarea" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="moverTarea" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Mover tarea
@@ -1218,7 +1218,7 @@
 	</form>
 </dialog>
 
-<dialog id="moverHistoria" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="moverHistoria" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Mover historia
@@ -1253,7 +1253,7 @@
 	</form>
 </dialog>
 
-<dialog id="dialogAddReferencia" class="text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+<dialog id="dialogAddReferencia" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
 			Agregar referencia a historia relacionada
