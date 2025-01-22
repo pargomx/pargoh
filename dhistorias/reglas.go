@@ -80,6 +80,28 @@ func EditarRegla(repo Repo, historiaID int, posicion int, texto string) error {
 	return nil
 }
 
+func MarcarRegla(repo Repo, historiaID int, posicion int) error {
+	op := gko.Op("MarcarRegla")
+	regla, err := repo.GetRegla(historiaID, posicion)
+	if err != nil {
+		return op.Err(err)
+	}
+	switch {
+	case !regla.Implementada && !regla.Probada:
+		regla.Implementada = true
+	case regla.Implementada && !regla.Probada:
+		regla.Probada = true
+	default:
+		regla.Implementada = false
+		regla.Probada = false
+	}
+	err = repo.UpdateRegla(*regla)
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
 func ReordenarRegla(repo Repo, historiaID, oldPos, newPos int) error {
 	if historiaID == 0 {
 		return gko.Op("ReordenarRegla").Msg("falta historiaID")

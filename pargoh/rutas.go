@@ -204,6 +204,7 @@ func main() {
 	s.POS("/historias/{historia_id}/reglas", s.postRegla)
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
 	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.patchRegla)
+	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.marcarRegla)
 	s.POS("/reordenar-regla", s.reordenarRegla)
 
 	// Referencias

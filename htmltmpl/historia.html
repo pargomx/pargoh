@@ -132,7 +132,7 @@
 
 	<!--* REGLAS DE NEGOCIO -->
 	<!-- <h3 class="mb-2 text-xl text-cyan-600">Reglas</h3> -->
-	<ol tipo="sort_reglas" class="mb-6">
+	<ol id="reglasDeNegocio" tipo="sort_reglas" class="mb-6">
 		{{ range .Reglas -}}
 		<li tipo="sort_regla" class="flex gap-1 p-1 group">
 			<div tipo="sort_handle" title="Posición {{ .Posicion }}" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
@@ -143,9 +143,19 @@
 					<input type="hidden" name="new_pos">
 				</form>
 			</div>
-			<div class="pr-2">
+			<button type="button"
+				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}/marcar"
+				hx-target="#reglasDeNegocio"
+				hx-select="#reglasDeNegocio"
+				class="pr-2">
+				{{ if and .Implementada .Probada }}
+				<i class="text-sm text-green-500 fa-solid fa-arrow-right"></i>
+				{{ else if .Implementada }}
+				<i class="text-sm text-orange-500 fa-solid fa-arrow-right"></i>
+				{{ else }}
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
-			</div>
+				{{ end }}
+			</button>
 			<textarea
 				id="input_Regla{{ .Posicion }}"
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"

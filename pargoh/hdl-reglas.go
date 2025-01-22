@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"monorepo/dhistorias"
 	"monorepo/sqliteust"
+	"net/http"
 
 	"github.com/pargomx/gecko"
 )
@@ -47,6 +49,22 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	return c.Redirf("/historias/%v", c.PathInt("historia_id"))
+}
+
+func (s *servidor) marcarRegla(c *gecko.Context) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	err = dhistorias.MarcarRegla(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	defer s.reloader.brodcastReload(c)
+	// TODO: Solo enviar el fragmento.
+	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/historias/%v", c.PathInt("historia_id")))
 }
 
 func (s *servidor) reordenarRegla(c *gecko.Context) error {

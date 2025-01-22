@@ -1,4 +1,4 @@
-/*! tailwindcss v4.0.0-beta.2 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.0.0-beta.9 | MIT License | https://tailwindcss.com */
 @layer theme, base, components, utilities;
 @layer theme {
   :root {
@@ -270,23 +270,22 @@
     --container-5xl: 64rem;
     --container-6xl: 72rem;
     --container-7xl: 80rem;
-    --container-prose: 65ch;
     --text-xs: 0.75rem;
-    --text-xs--line-height: 1rem;
+    --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
-    --text-sm--line-height: 1.25rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
     --text-base: 1rem;
-    --text-base--line-height: 1.5rem;
+    --text-base--line-height: calc(1.5 / 1);
     --text-lg: 1.125rem;
-    --text-lg--line-height: 1.75rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
-    --text-xl--line-height: 1.75rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
-    --text-2xl--line-height: 2rem;
+    --text-2xl--line-height: calc(2 / 1.5);
     --text-3xl: 1.875rem;
-    --text-3xl--line-height: 2.25rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
     --text-4xl: 2.25rem;
-    --text-4xl--line-height: 2.5rem;
+    --text-4xl--line-height: calc(2.5 / 2.25);
     --text-5xl: 3rem;
     --text-5xl--line-height: 1;
     --text-6xl: 3.75rem;
@@ -360,6 +359,7 @@
     --perspective-normal: 500px;
     --perspective-midrange: 800px;
     --perspective-distant: 1200px;
+    --aspect-video: 16 / 9;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -447,7 +447,7 @@
     display: list-item;
   }
   ol, ul, menu {
-    list-style: none;
+    list-style-type: none;
   }
   img, svg, video, canvas, audio, iframe, embed, object {
     display: block;
@@ -478,7 +478,7 @@
   }
   ::placeholder {
     opacity: 1;
-    color: color-mix(in oklch, currentColor 50%, transparent);
+    color: color-mix(in oklab, currentColor 50%, transparent);
   }
   textarea {
     resize: vertical;
@@ -683,8 +683,8 @@
     border-radius: var(--radius-md);
     border-style: var(--tw-border-style);
     border-width: 1px;
-    border-color: color-mix(in oklch, var(--color-cyan-700) 50%, transparent);
-    background-color: color-mix(in oklch, var(--color-cyan-950) 50%, transparent);
+    border-color: color-mix(in oklab, var(--color-cyan-700) 50%, transparent);
+    background-color: color-mix(in oklab, var(--color-cyan-950) 50%, transparent);
     padding-inline: calc(var(--spacing) * 2);
     padding-block: calc(var(--spacing) * 1);
     font-size: var(--text-base);
@@ -755,6 +755,9 @@
   }
   .shrink {
     flex-shrink: 1;
+  }
+  .flex-grow {
+    flex-grow: 1;
   }
   .grow {
     flex-grow: 1;
@@ -885,6 +888,9 @@
   .overflow-y-auto {
     overflow-y: auto;
   }
+  .rounded {
+    border-radius: 0.25rem;
+  }
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
@@ -955,13 +961,13 @@
     background-color: var(--color-black);
   }
   .bg-black\/25 {
-    background-color: color-mix(in oklch, var(--color-black) 25%, transparent);
+    background-color: color-mix(in oklab, var(--color-black) 25%, transparent);
   }
   .bg-black\/40 {
-    background-color: color-mix(in oklch, var(--color-black) 40%, transparent);
+    background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
   }
   .bg-black\/50 {
-    background-color: color-mix(in oklch, var(--color-black) 50%, transparent);
+    background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
   }
   .bg-blue-700 {
     background-color: var(--color-blue-700);
@@ -973,7 +979,7 @@
     background-color: var(--color-cyan-700);
   }
   .bg-cyan-700\/70 {
-    background-color: color-mix(in oklch, var(--color-cyan-700) 70%, transparent);
+    background-color: color-mix(in oklab, var(--color-cyan-700) 70%, transparent);
   }
   .bg-cyan-800 {
     background-color: var(--color-cyan-800);
@@ -985,10 +991,10 @@
     background-color: var(--color-cyan-950);
   }
   .bg-cyan-950\/50 {
-    background-color: color-mix(in oklch, var(--color-cyan-950) 50%, transparent);
+    background-color: color-mix(in oklab, var(--color-cyan-950) 50%, transparent);
   }
   .bg-cyan-950\/60 {
-    background-color: color-mix(in oklch, var(--color-cyan-950) 60%, transparent);
+    background-color: color-mix(in oklab, var(--color-cyan-950) 60%, transparent);
   }
   .bg-gray-600 {
     background-color: var(--color-gray-600);
@@ -1194,6 +1200,9 @@
   .text-cyan-700 {
     color: var(--color-cyan-700);
   }
+  .text-green-500 {
+    color: var(--color-green-500);
+  }
   .text-green-600 {
     color: var(--color-green-600);
   }
@@ -1208,6 +1217,9 @@
   }
   .text-orange-400 {
     color: var(--color-orange-400);
+  }
+  .text-orange-500 {
+    color: var(--color-orange-500);
   }
   .text-orange-600 {
     color: var(--color-orange-600);
@@ -1234,10 +1246,10 @@
     color: var(--color-white);
   }
   .text-white\/50 {
-    color: color-mix(in oklch, var(--color-white) 50%, transparent);
+    color: color-mix(in oklab, var(--color-white) 50%, transparent);
   }
   .text-white\/75 {
-    color: color-mix(in oklch, var(--color-white) 75%, transparent);
+    color: color-mix(in oklab, var(--color-white) 75%, transparent);
   }
   .lowercase {
     text-transform: lowercase;
@@ -1381,7 +1393,7 @@
   .hover\:bg-cyan-950\/75 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in oklch, var(--color-cyan-950) 75%, transparent);
+        background-color: color-mix(in oklab, var(--color-cyan-950) 75%, transparent);
       }
     }
   }
@@ -1620,11 +1632,11 @@ table > thead > tr > th {
   padding-block: calc(var(--spacing) * 1);
 }
 select option {
-  background-color: color-mix(in oklch, var(--color-cyan-100) 50%, transparent);
+  background-color: color-mix(in oklab, var(--color-cyan-100) 50%, transparent);
   color: var(--color-black);
 }
 select optgroup {
-  background-color: color-mix(in oklch, var(--color-cyan-950) 70%, transparent);
+  background-color: color-mix(in oklab, var(--color-cyan-950) 70%, transparent);
   color: var(--color-white);
 }
 ::-webkit-scrollbar {
@@ -1711,7 +1723,7 @@ select optgroup {
   }
 }
 @property --tw-border-style {
-  syntax: "<custom-ident>";
+  syntax: "*";
   inherits: false;
   initial-value: solid;
 }
@@ -1785,37 +1797,37 @@ select optgroup {
   initial-value: 0;
 }
 @property --tw-rotate-x {
-  syntax: "<transform-function>";
+  syntax: "*";
   inherits: false;
   initial-value: rotateX(0);
 }
 @property --tw-rotate-y {
-  syntax: "<transform-function>";
+  syntax: "*";
   inherits: false;
   initial-value: rotateY(0);
 }
 @property --tw-rotate-z {
-  syntax: "<transform-function>";
+  syntax: "*";
   inherits: false;
   initial-value: rotateZ(0);
 }
 @property --tw-skew-x {
-  syntax: "<transform-function>";
+  syntax: "*";
   inherits: false;
   initial-value: skewX(0);
 }
 @property --tw-skew-y {
-  syntax: "<transform-function>";
+  syntax: "*";
   inherits: false;
   initial-value: skewY(0);
 }
 @property --tw-space-y-reverse {
-  syntax: "<number>";
+  syntax: "*";
   inherits: false;
   initial-value: 0;
 }
 @property --tw-divide-y-reverse {
-  syntax: "<number>";
+  syntax: "*";
   inherits: false;
   initial-value: 0;
 }
