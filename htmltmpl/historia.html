@@ -159,7 +159,8 @@
 			<textarea
 				id="input_Regla{{ .Posicion }}"
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-target="#reglasDeNegocio"
+				hx-select="#reglasDeNegocio"
 				name="texto"
 				rows="1"
 				enterkeyhint="done"
@@ -169,7 +170,8 @@
 			<button
 				type="button"
 				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-target="#reglasDeNegocio"
+				hx-select="#reglasDeNegocio"
 				hx-confirm="¿Eliminar regla? {{ .Texto }}"
 				title="Quitar regla"
 				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
@@ -185,7 +187,8 @@
 			<textarea
 				id="input_AddRegla"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-target="#reglasDeNegocio"
+				hx-select="#reglasDeNegocio"
 				hx-trigger="keyup[key=='Enter']"
 				name="texto"
 				rows="1"

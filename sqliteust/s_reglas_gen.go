@@ -108,9 +108,17 @@ func (s *Repositorio) DeleteRegla(HistoriaID int, Posicion int) error {
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
 	}
+	// porque sqlite no mueve los IDs de manera que no haya conflictos.
 	_, err = s.db.Exec(
-		"UPDATE reglas SET posicion = posicion - 1 WHERE historia_id = ? AND posicion > ?", // TODO: fix porque sqlite no mueve los IDs de manera que no haya conflictos.
+		"UPDATE reglas SET posicion = -(posicion - 1) WHERE historia_id = ? AND posicion > ?",
 		HistoriaID, Posicion,
+	)
+	if err != nil {
+		return gko.ErrAlEscribir().Err(err).Op(op)
+	}
+	_, err = s.db.Exec(
+		"UPDATE reglas SET posicion = -posicion WHERE historia_id = ? AND posicion < 0",
+		HistoriaID,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
