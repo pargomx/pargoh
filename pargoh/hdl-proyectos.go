@@ -148,3 +148,35 @@ func (s *servidor) getProyecto(c *gecko.Context) error {
 	}
 	return c.RenderOk("proyecto", data)
 }
+
+func (s *servidor) getDocumentacionProyecto(c *gecko.Context) error {
+	Proyecto, err := s.repo.GetProyecto(c.PathVal("proyecto_id"))
+	if err != nil {
+		return err
+	}
+	Personas, err := s.repo.ListNodosPersonas(Proyecto.ProyectoID)
+	if err != nil {
+		return err
+	}
+	type Personaje struct {
+		Persona   ust.NodoPersona
+		Historias []ust.Historia
+	}
+	Personajes := make([]Personaje, len(Personas))
+	for i, p := range Personas {
+		hists, err := s.repo.ListHistoriasByPadreID(p.PersonaID)
+		if err != nil {
+			return err
+		}
+		Personajes[i] = Personaje{
+			Persona:   Personas[i],
+			Historias: hists,
+		}
+	}
+	data := map[string]any{
+		"Titulo":     Proyecto.Titulo,
+		"Proyecto":   Proyecto,
+		"Personajes": Personajes,
+	}
+	return c.RenderOk("proyecto_doc", data)
+}

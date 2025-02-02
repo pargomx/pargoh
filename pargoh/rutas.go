@@ -131,6 +131,7 @@ func main() {
 	s.POS("/proyectos", s.postProyecto)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
 	s.GET("/proyectos/{proyecto_id}/metricas", s.getMetricasProyecto)
+	s.GET("/proyectos/{proyecto_id}/doc", s.getDocumentacionProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
 	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)

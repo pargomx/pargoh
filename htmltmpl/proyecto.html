@@ -15,9 +15,15 @@
 		</p>
 	</div>
 	<span class="absolute right-2 top-2">
+		<a
+			href="/proyectos/{{ .Proyecto.ProyectoID }}/doc"
+			title="Documentación"
+			class="px-2 py-1 mr-2 rounded-md opacity-75 hover:opacity-100">
+			<i class="fa-solid fa-book"></i>
+		</a>
 		<button
 			type="button"
-			onclick="document.getElementById('frmPry{{ .Proyecto.ProyectoID}}').showModal()"
+			onclick="document.getElementById('frmPry{{ .Proyecto.ProyectoID }}').showModal()"
 			class="px-2 py-1 mr-2 rounded-md opacity-75 hover:opacity-100">
 			<i class="fa fa-pen"></i>
 		</button>

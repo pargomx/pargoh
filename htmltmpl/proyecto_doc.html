@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es_MX">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>{{ if $.Titulo }}{{ $.Titulo }}{{ else }}Pargo{{ end }}</title>
+		<link rel="shortcut icon" href="/assets/img/pargo_32.png" type="image/png">
+		<link rel="stylesheet" type="text/css" href="/assets/css/estilo.css">
+		<link rel="stylesheet" type="text/css" href="/assets/css/fontawesome.min.css">
+		<style>
+			@media print {
+				@page {
+					margin: 1in;
+				}
+				body {
+					font-family: 'Times New Roman', serif;
+					font-size: 12pt;
+				}
+				.header, .footer {
+					display: none;
+				}
+			}
+		</style>
+		<script src="/htmx.js"></script>
+		<script defer src="/assets/js/main.js"></script>
+	</head>
+	
+	{{/* Separar layout de contenido aunque sea dentro del mismo archivo */}}
+	<body class="h-full text-white bg-[#091a20] print:text-black print:bg-transparent print:font-serif">
+		{{ template "proyecto_doc_content" . }}
+	</body>
+</html>
+
+{{ define "proyecto_doc_content" }}
+<header class="relative flex items-center w-full bg-cyan-950 shadow-lg print:bg-transparent">
+	<div class="p-1">
+		<img
+			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+			alt="Portada del proyecto"
+			class="w-24 rounded-md">
+	</div>
+	<div class="w-full p-2">
+		<h2 class="text-2xl font-medium">
+			{{ .Proyecto.Titulo }}
+		</h2>
+		<p>
+			Documentación para el usuario
+		</p>
+	</div>
+</header>
+
+<main class="grow w-full max-w-4xl px-6 py-4 mx-auto">
+	<p class="opacity-75 mb-4">
+		{{ .Proyecto.Descripcion }}
+	</p>
+
+{{ range .Personajes }}
+	{{ with .Persona }}
+	<h3 id="{{ .PersonaID }}" class="relative mb-2 text-2xl group">
+		<a href="/personas/{{ .PersonaID }}/doc">
+			{{- enfatizar .Nombre -}}
+		</a>
+		<a href="/personas/{{ .PersonaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90">
+			<i class="fa-solid fa-section"></i>
+		</a>
+	</h3>
+	{{ end }}
+
+	<ul class="list-disc list-inside mb-4">
+		{{ range .Historias -}}
+		<li class="text-lg">
+			<a href="/personas/{{ .PersonaID }}/doc#{{ .HistoriaID }}"
+				class="opacity-75 hover:opacity-100 transition-opacity">
+				{{- enfatizar .Titulo -}}
+			</a>
+		</li>
+		{{ end }}
+	</ul>
+	
+	<!-- <hr class="my-4 border-t-2 border-cyan-600 opacity-75"> -->
+{{ end }}
+</main>
+
+{{ end }}
