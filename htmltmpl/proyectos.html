@@ -58,8 +58,16 @@
 		</div>
 
 		<div class="w-full p-2">
-			<h4 class="mb-2 text-2xl font-medium">
-				<a href="/proyectos/{{ .ProyectoID }}" class="transition-opacity hover:opacity-75">{{ .Titulo }}</a>
+			<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
+				<a
+					href="/proyectos/{{ .Proyecto.ProyectoID }}/doc"
+					title="Documentación"
+					class="rounded-md opacity-75 hover:opacity-100 text-lg">
+					<i class="fa-solid fa-book"></i>
+				</a>
+				<a href="/proyectos/{{ .ProyectoID }}" class="transition-opacity hover:opacity-75">
+					{{ .Titulo }}
+				</a>
 			</h4>
 			<p class="mb-2 text-sm opacity-75 line-clamp-3"><a href="/proyectos/{{ .ProyectoID }}">
 				{{- enfatizar .Descripcion -}}
