@@ -48,7 +48,7 @@ func (s *servidor) postProyecto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redir("/")
+	return c.RedirOtro("/")
 }
 
 func (s *servidor) updateProyecto(c *gecko.Context) error {
@@ -72,9 +72,9 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 	// TODO: integrar getHxCurrentURL a gecko
 	referer := strings.Split(c.Request().Header.Get("Hx-Current-Url"), c.Request().Host)
 	if len(referer) < 2 || referer[1] == "/" {
-		return c.Redir("/")
+		return c.RedirOtro("/")
 	} else {
-		return c.Redirf("/proyectos/%v", c.PathVal("proyecto_id"))
+		return c.RedirOtrof("/proyectos/%v", c.PathVal("proyecto_id"))
 	}
 }
 
@@ -96,7 +96,7 @@ func (s *servidor) deleteProyecto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redir("/")
+	return c.RedirOtro("/")
 }
 
 func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
@@ -111,7 +111,7 @@ func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redir("/")
+	return c.RedirOtro("/")
 }
 
 func (s *servidor) postTimeGestion(c *gecko.Context) error {

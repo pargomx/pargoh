@@ -169,7 +169,7 @@ func (s *authService) Auth(next gecko.HandlerFunc) gecko.HandlerFunc {
 		ses, err := s.validarSesionCookie(c)
 		if err != nil {
 			gko.Err(err).Op("Auth").Log()
-			return c.Redir(s.pathLoginPage) // ...sesión inválida
+			return c.RedirFull(s.pathLoginPage) // ...sesión inválida
 		}
 		c.SesionID = ses.SesionID
 		c.Sesion = ses
@@ -185,7 +185,7 @@ func (s *authService) getLogin(c *gecko.Context) error {
 	_, err := s.validarSesionCookie(c)
 	if err == nil {
 		// gko.LogWarnf("Usuario %v ya tiene sesión %v", ses.Usuario, ses.SesionID)
-		return c.Redir(s.pathHomePage) // ...ya tenía sesión
+		return c.RedirFull(s.pathHomePage) // ...ya tenía sesión
 	}
 	return c.Render(200, "app/login", nil)
 }
@@ -194,17 +194,17 @@ func (s *authService) postLogin(c *gecko.Context) error {
 	ses, err := s.validarSesionCookie(c)
 	if err == nil {
 		gko.LogWarnf("Usuario %v ya tenía sesión %v", ses.Usuario, ses.SesionID)
-		return c.Redir(s.pathHomePage) // ...ya tenía sesión
+		return c.RedirFull(s.pathHomePage) // ...ya tenía sesión
 	}
 	usuario, err := s.validarCredenciales(c.FormVal("usuario"), c.FormValue("passwd"))
 	if err != nil {
 		gko.Err(err).Op("postLogin").Log()
-		return c.Redir(s.pathLoginPage)
+		return c.RedirFull(s.pathLoginPage)
 	}
 	ses, err = s.registrarNuevaSesion(usuario, c.RealIP(), c.Request().UserAgent())
 	if err != nil {
 		gko.Err(err).Op("postLogin").Log()
-		return c.Redir(s.pathLoginPage)
+		return c.RedirFull(s.pathLoginPage)
 	}
 	cookie := &http.Cookie{
 		Name:     s.nombreCookie,
@@ -223,19 +223,19 @@ func (s *authService) postLogin(c *gecko.Context) error {
 	}
 	c.SetCookie(cookie)
 	gko.LogInfof("Login '%s' (%s) %s [%s] recordar=%v", ses.SesionID, ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP, !cookie.Expires.IsZero())
-	return c.Redir(s.pathHomePage)
+	return c.RedirFull(s.pathHomePage)
 }
 
 func (s *authService) logout(c *gecko.Context) error {
 	ses, err := s.validarSesionCookie(c)
 	if err != nil {
 		gko.Err(err).Op("logout").Log()
-		return c.Redir(s.pathLoginPage) // ...ya no tenía sesión válida
+		return c.RedirFull(s.pathLoginPage) // ...ya no tenía sesión válida
 	}
 	delete(s.sesiones, ses.SesionID)
 	s.limpiarCookie(c)
 	gko.LogInfof("Logout '%s' (%s) %s [%s]", ses.SesionID, ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP)
-	return c.Redir(s.pathLoginPage)
+	return c.RedirFull(s.pathLoginPage)
 }
 
 // ================================================================ //

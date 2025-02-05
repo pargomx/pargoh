@@ -108,7 +108,7 @@ func (s *servidor) exportarPersonaDocx(apiKey string) gecko.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		return c.Redir("/exports/" + filename)
+		return c.RedirFull("/exports/" + filename)
 	}
 }
 

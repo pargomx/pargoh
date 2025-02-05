@@ -24,6 +24,8 @@ github.com/pargomx/gecko v0.0.0-20241111181133-87a06af76ba7 h1:qZUJbYK+UOqDyot9+
 github.com/pargomx/gecko v0.0.0-20241111181133-87a06af76ba7/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
 github.com/pargomx/gecko v0.0.0-20250107062401-96756b280ffa h1:9qCx2kBl5E4Ij5XhtmJMSBlpBtngSwHfKlj1ooZERfg=
 github.com/pargomx/gecko v0.0.0-20250107062401-96756b280ffa/go.mod h1:smNCz0bpsalO4m25o2c/FtOWHBHSHzhx8sFoGc7p1ik=
+github.com/pargomx/gecko v0.0.0-20250203231434-932fbabe0745 h1:aRXF9q4PdQWjo7gMnP07jlkN3LnTHCxKWNRYp+2qCXA=
+github.com/pargomx/gecko v0.0.0-20250203231434-932fbabe0745/go.mod h1:omwZso+LLse9OVkJqKODdB9pUg874yiWTXzt4QwsTWo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=

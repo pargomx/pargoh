@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"monorepo/dhistorias"
 	"monorepo/sqliteust"
-	"net/http"
 
 	"github.com/pargomx/gecko"
 )
@@ -19,7 +17,7 @@ func (s *servidor) postRegla(c *gecko.Context) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/historias/%v", c.PathInt("historia_id")))
+	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) deleteRegla(c *gecko.Context) error {
@@ -35,7 +33,7 @@ func (s *servidor) deleteRegla(c *gecko.Context) error {
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/historias/%v", c.PathInt("historia_id")))
+	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) patchRegla(c *gecko.Context) error {
@@ -51,7 +49,7 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/historias/%v", c.PathInt("historia_id")))
+	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) marcarRegla(c *gecko.Context) error {
@@ -67,7 +65,7 @@ func (s *servidor) marcarRegla(c *gecko.Context) error {
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/historias/%v", c.PathInt("historia_id")))
+	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
 func (s *servidor) reordenarRegla(c *gecko.Context) error {
@@ -86,5 +84,5 @@ func (s *servidor) reordenarRegla(c *gecko.Context) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/historias/%v", c.FormInt("historia_id")))
+	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
 }
