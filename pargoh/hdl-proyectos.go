@@ -18,6 +18,21 @@ func (s *servidor) listaProyectos(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+
+	// Limitar acceso a proyectos...
+	ses, ok := c.Sesion.(*Sesion)
+	if !ok {
+		return gko.ErrDatoInvalido().Msg("Sesión inválida")
+	}
+	if ses.Usuario != "tulio" {
+		pry, err := s.repo.GetProyecto(ses.Usuario)
+		if err != nil {
+			gko.Err(err).Strf("usuario '%v' no correspone a ningún proyecto", ses.Usuario).ErrNoAutorizado()
+			return c.RedirFull("/logout")
+		}
+		Proyectos = []ust.Proyecto{*pry}
+	}
+
 	res := make([]Pry, len(Proyectos))
 	for i, p := range Proyectos {
 		res[i].Proyecto = p

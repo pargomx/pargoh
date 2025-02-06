@@ -47,16 +47,6 @@ func NewAuthService() *authService {
 	if s.pathLoginPage == s.pathHomePage {
 		gko.LogWarn("La página de inicio de sesión y la de inicio son la misma, peligro de redirección infinita")
 	}
-	if AMBIENTE == "DEV" { // Sesión de prueba para no tener que loguearse en desarrollo.
-		s.vigencia = 30 * 24 * time.Hour
-		s.sesiones["DEV_MJv7kqY44Vnt2D8DbGBRBVqiaxN8bz70"] = Sesion{
-			SesionID:  "DEV_MJv7kqY44Vnt2D8DbGBRBVqiaxN8bz70",
-			Usuario:   "developer",
-			IP:        "::1",
-			UserAgent: "any",
-			ValidFrom: time.Now(),
-		}
-	}
 	return s
 }
 
@@ -102,6 +92,9 @@ func (s *authService) validarCredenciales(usuario, passwrd string) (string, erro
 	if usuario == "tulio" && passwrd == "flores99leetcode" {
 		return usuario, nil
 	}
+	if usuario == "siga_feciar" && passwrd == "diezRelicantes%1" {
+		return usuario, nil
+	}
 	return "", gko.ErrDatoInvalido().Strf("creds_not_found: usuario[%s] passwd(%d)", usuario, lenPasswrd)
 }
 
@@ -116,9 +109,6 @@ func (s *authService) registrarNuevaSesion(usuario, ip, userAgent string) (*Sesi
 		IP:        ip,
 		UserAgent: userAgent,
 		ValidFrom: time.Now(),
-	}
-	if AMBIENTE == "DEV" {
-		ses.SesionID = "DEV_MJv7kqY44Vnt2D8DbGBRBVqiaxN8bz70"
 	}
 	s.sesiones[ses.SesionID] = ses
 	return &ses, nil
