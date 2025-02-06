@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"net/http"
+	"os"
 	"time"
 
-	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkoid"
 )
 
 type Sesion struct {
@@ -18,11 +21,11 @@ type Sesion struct {
 }
 
 type authService struct {
-	nombreCookie  string // Nombre del cookie de sesión.
-	pathLoginPage string // default "/"
-	pathLoginPost string // default "/login"
-	pathHomePage  string
-	pathLogout    string // default "/logout"
+	nombreCookie  string // Nombre del cookie de sesión. Ej. "gksesion"
+	pathLoginPage string // Path público en donde se piden las credenciales. Ej. "/"
+	pathLoginPost string // Path público donde se mandan las credenciales. Ej "/login"
+	pathHomePage  string // Path privado a donde se redirije al usuario autenticado. Ej. "/inicio"
+	pathLogout    string // Path para cerrar sesión. Ej. "/logout"
 
 	vigencia time.Duration     // Vigencia de las sesiones.
 	sesiones map[string]Sesion // Sesiones activas.
@@ -40,6 +43,9 @@ func NewAuthService() *authService {
 	}
 	if s.pathLoginPage == "" {
 		gko.LogWarn("No se ha definido la ruta para la página de inicio de sesión")
+	}
+	if s.pathLoginPage == s.pathHomePage {
+		gko.LogWarn("La página de inicio de sesión y la de inicio son la misma, peligro de redirección infinita")
 	}
 	if AMBIENTE == "DEV" { // Sesión de prueba para no tener que loguearse en desarrollo.
 		s.vigencia = 30 * 24 * time.Hour
@@ -100,7 +106,7 @@ func (s *authService) validarCredenciales(usuario, passwrd string) (string, erro
 }
 
 func (s *authService) registrarNuevaSesion(usuario, ip, userAgent string) (*Sesion, error) {
-	sesionID, err := gonanoid.Generate("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 36)
+	sesionID, err := gkoid.New62(36)
 	if err != nil {
 		return nil, gko.ErrInesperado().Op("generarSesion").Err(err)
 	}
@@ -236,6 +242,38 @@ func (s *authService) logout(c *gecko.Context) error {
 	s.limpiarCookie(c)
 	gko.LogInfof("Logout '%s' (%s) %s [%s]", ses.SesionID, ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP)
 	return c.RedirFull(s.pathLoginPage)
+}
+
+// ================================================================ //
+// ========== PERSISTIR SESIONES ================================== //
+
+// Guarda las sesiones activas en el archivo sesiones.json
+func (s *authService) PersistirSesiones() {
+	op := gko.Op("auth.PersistirSesiones")
+	data, err := json.Marshal(s.sesiones)
+	if err != nil {
+		op.Err(err).Log()
+	}
+	err = os.WriteFile("sesiones.json", data, 0640)
+	if err != nil {
+		op.Err(err).Log()
+	}
+}
+
+// Obtiene las sesiones del archivo sesiones.json
+func (s *authService) RecuperarSesiones() {
+	op := gko.Op("auth.PersistirSesiones")
+	data, err := os.ReadFile("sesiones.json")
+	if errors.Is(err, os.ErrNotExist) {
+		return
+	} else if err != nil {
+		op.Err(err).Log()
+		return
+	}
+	err = json.Unmarshal(data, &s.sesiones)
+	if err != nil {
+		op.Err(err).Log()
+	}
 }
 
 // ================================================================ //

@@ -107,6 +107,7 @@ func main() {
 	s.gecko.TmplBaseLayout = "app/layout"
 
 	s.auth = NewAuthService()
+	s.auth.RecuperarSesiones()
 
 	// ================================================================ //
 
@@ -249,6 +250,7 @@ func main() {
 			if err != nil {
 				fmt.Println("sqliteDB.Close: ", err.Error())
 			}
+			s.auth.PersistirSesiones()
 			fmt.Println("")
 			gko.LogInfof("servidor terminado: %v", sig.String())
 			os.Exit(0)
