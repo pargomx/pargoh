@@ -36,6 +36,9 @@ type configs struct {
 	imagesDir    string // Directorio para guardar imágenes
 	exportDir    string // Directorio para guardar exports
 	unidocApiKey string // API Key para unidoc
+
+	adminUser string
+	adminPass string
 }
 
 type servidor struct {
@@ -64,6 +67,8 @@ func main() {
 	flag.StringVar(&s.cfg.imagesDir, "img", "imagenes", "directorio con las imágenes de historias y proyectos")
 	flag.StringVar(&s.cfg.exportDir, "exp", "exports", "directorio con los archivos exportados")
 	flag.StringVar(&s.cfg.unidocApiKey, "unidoc", "", "api key para exportar docx con unidoc")
+	flag.StringVar(&s.cfg.adminUser, "auser", "", "usuario del administrador")
+	flag.StringVar(&s.cfg.adminPass, "apass", "", "contraseña del administrador")
 
 	flag.Parse()
 	if s.cfg.directorio != "" {
@@ -106,7 +111,7 @@ func main() {
 
 	s.gecko.TmplBaseLayout = "app/layout"
 
-	s.auth = NewAuthService()
+	s.auth = NewAuthService(s.cfg.adminUser, s.cfg.adminPass)
 	s.auth.RecuperarSesiones()
 
 	// ================================================================ //

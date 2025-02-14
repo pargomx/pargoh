@@ -27,17 +27,22 @@ type authService struct {
 	pathHomePage  string // Path privado a donde se redirije al usuario autenticado. Ej. "/inicio"
 	pathLogout    string // Path para cerrar sesión. Ej. "/logout"
 
+	adminUser string
+	adminPass string
+
 	vigencia time.Duration     // Vigencia de las sesiones.
 	sesiones map[string]Sesion // Sesiones activas.
 }
 
-func NewAuthService() *authService {
+func NewAuthService(adminUser, adminPass string) *authService {
 	s := &authService{
 		nombreCookie:  "pargotoken",
 		pathLoginPage: "/",
 		pathLoginPost: "/login",
 		pathHomePage:  "/proyectos",
 		pathLogout:    "/logout",
+		adminUser:     adminUser,
+		adminPass:     adminPass,
 		sesiones:      make(map[string]Sesion),
 		vigencia:      5 * 24 * time.Hour,
 	}
@@ -46,6 +51,14 @@ func NewAuthService() *authService {
 	}
 	if s.pathLoginPage == s.pathHomePage {
 		gko.LogWarn("La página de inicio de sesión y la de inicio son la misma, peligro de redirección infinita")
+	}
+	if s.adminUser == "" {
+		s.adminUser = "tulio"
+		gko.LogWarn("Usuario indefinido, usando default")
+	}
+	if s.adminPass == "" {
+		s.adminPass = "flores99leetcode"
+		gko.LogWarn("Passwd indefinido, usando default")
 	}
 	return s
 }
@@ -89,7 +102,7 @@ func (s *authService) validarCredenciales(usuario, passwrd string) (string, erro
 		return "", gko.ErrDatoInvalido().Strf("creds_too_short: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
 	}
 	// TODO: Guardar credenciales en ambiente, archivo o base de datos con hash&salt.
-	if usuario == "tulio" && passwrd == "flores99leetcode" {
+	if usuario == s.adminUser && passwrd == "flores99leetcode" {
 		return usuario, nil
 	}
 	if usuario == "siga_feciar" && passwrd == "diezRelicantes%1" {
