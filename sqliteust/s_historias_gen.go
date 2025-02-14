@@ -68,14 +68,14 @@ func (s *Repositorio) ExisteHistoria(HistoriaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrHistoriaNotFound).Op(op)
+			return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado").Op(op)
 		}
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
 		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrHistoriaNotFound).Op(op)
+		return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado").Op(op)
 	}
 	return nil
 }
@@ -135,7 +135,7 @@ func (s *Repositorio) scanRowHistoria(row *sql.Row, his *ust.Historia) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Historia de usuario no se encuentra")
+			return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado")
 		}
 		return gko.ErrInesperado().Err(err)
 	}
