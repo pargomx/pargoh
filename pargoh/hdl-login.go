@@ -102,7 +102,7 @@ func (s *authService) validarCredenciales(usuario, passwrd string) (string, erro
 		return "", gko.ErrDatoInvalido().Strf("creds_too_short: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
 	}
 	// TODO: Guardar credenciales en ambiente, archivo o base de datos con hash&salt.
-	if usuario == s.adminUser && passwrd == "flores99leetcode" {
+	if usuario == s.adminUser && passwrd == s.adminPass {
 		return usuario, nil
 	}
 	if usuario == "siga_feciar" && passwrd == "diezRelicantes%1" {

@@ -10,7 +10,7 @@ Restart=always
 RestartSec=30
 
 # File System
-ExecStart=/usr/local/bin/pargoh
+ExecStart=/usr/local/bin/pargoh -auser someone -apass yourpasswdhere
 WorkingDirectory=/opt/pargoh
 ReadOnlyPaths=/
 ReadWritePaths=/opt/pargoh

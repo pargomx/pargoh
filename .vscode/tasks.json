@@ -45,7 +45,7 @@
 
 		{
 			"label": "Start dev", "detail": "Ejecutar en directorio de prueba",
-			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/pargodata",
+			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/pargodata -auser benito -apass terranova1984",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
