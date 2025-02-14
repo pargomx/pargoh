@@ -64,11 +64,11 @@
 	<!--* HISTORIAS -->
 	{{ range $i, $v := .Historias -}}
 	{{ if $i -}}
-	<hr class="my-4 border-t-2 border-cyan-600 opacity-75">
+	<hr class="my-4 mt-16 border-t-2 border-cyan-600 opacity-50">
 	{{ end -}}
 	{{ with .Historia -}}
 	
-	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl whitespace-pre-line group">
+	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl font-bold whitespace-pre-line group">
 		{{- enfatizar .Titulo -}}
 		<a href="/historias/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
 	</h3>
@@ -106,9 +106,9 @@
 {{ end }}
 
 {{- define "historia_doc_desc" -}}
-	<hr class="mt-8 mb-2 border-t border-cyan-600 opacity-50">
+	<hr class="mt-16 mb-2 border-t border-cyan-600 opacity-50">
 	
-	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl whitespace-pre-line group">
+	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-xl font-bold whitespace-pre-line group">
 		{{- enfatizar .Titulo -}}
 		<a href="/historias/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
 	</h3>
