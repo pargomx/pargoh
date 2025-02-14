@@ -1,0 +1,60 @@
+[Unit]
+Description=Pargo - Gestión de historias de usuario
+After=network.target
+
+[Service]
+User=andrew
+Group=andrew
+Type=simple
+Restart=always
+RestartSec=30
+
+# File System
+ExecStart=/usr/local/bin/pargoh
+WorkingDirectory=/opt/pargoh
+ReadOnlyPaths=/
+ReadWritePaths=/opt/pargoh
+ProtectSystem=strict
+UMask=0077
+# Montar en su propio namespace
+PrivateDevices=true
+PrivateTmp=true
+ProtectKernelLogs=true
+ProtectProc=invisible
+PrivateUsers=true
+ProtectHome=true
+
+# TemporaryFileSystem=/var:ro
+# BindReadOnlyPaths=/var/lib/systemd
+
+## Límite de recursos
+LimitNOFILE=1024
+LimitNPROC=50
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+## Hardening System
+RestrictNamespaces=true
+LockPersonality=true
+NoNewPrivileges=true
+ProtectKernelModules=true
+SystemCallArchitectures=native
+ProtectHostname=true
+RestrictRealtime=true
+ProtectControlGroups=true
+ProtectKernelTunables=true
+RestrictSUIDSGID=true
+ProtectClock=true
+
+## Otras
+ProcSubset=pid
+MemoryDenyWriteExecute= true
+KeyringMode=private
+PrivateNetwork=no
+
+## Capabilities and syscalls
+# CapabilityBoundingSet=
+# SystemCallFilter=@system-service
+# SystemCallFilter=~@privileged @resources
+
+[Install]
+WantedBy=multi-user.target

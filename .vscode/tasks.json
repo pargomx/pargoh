@@ -30,8 +30,13 @@
 			"type": "shell", "presentation": { "echo": true, "reveal": "silent", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
 		{
-			"label": "deploy", "detail": "Enviar binario al servidor",
+			"label": "deploy docker", "detail": "Enviar binario al servidor",
 			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=\"$(date '+%Y-%m-%d%n'):$(git log --format=\"%H\" -n 1)\" -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && rsync -avh --progress /tmp/pargoh ${input:remoteHost}:~/bin/ && echo 'Enviado :D' && ssh ${input:remoteHost} 'docker restart pargo'",
+			"type": "shell", "presentation": { "echo": true, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
+		},
+		{
+			"label": "deploy systemd", "detail": "Enviar binario al servidor",
+			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=pargoh:$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && rsync -hv --progress -ut /tmp/pargoh ${input:remoteHost}:/usr/local/bin/ && echo 'Ejecutable enviado ºuº' && ssh ${input:remoteHost} 'echo Reinicio pendiente'",
 			"type": "shell", "presentation": { "echo": true, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 		},
 
