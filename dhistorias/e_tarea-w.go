@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkt"
 )
 
 func AgregarTarea(tarea ust.Tarea, repo Repo) error {
@@ -134,7 +135,7 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 		return op.Msg("La descripción de la tarea debe tener al menos 3 caracteres")
 	}
 	// Primera letra en mayúscula.
-	tarea.Descripcion = strings.ToUpper(tarea.Descripcion[:1]) + tarea.Descripcion[1:]
+	tarea.Descripcion = gkt.PrimeraMayusc(tarea.Descripcion)
 	return nil
 }
 
