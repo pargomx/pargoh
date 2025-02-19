@@ -67,8 +67,8 @@ func main() {
 	flag.StringVar(&s.cfg.imagesDir, "img", "imagenes", "directorio con las imágenes de historias y proyectos")
 	flag.StringVar(&s.cfg.exportDir, "exp", "exports", "directorio con los archivos exportados")
 	flag.StringVar(&s.cfg.unidocApiKey, "unidoc", "", "api key para exportar docx con unidoc")
-	flag.StringVar(&s.cfg.adminUser, "auser", "", "usuario del administrador")
-	flag.StringVar(&s.cfg.adminPass, "apass", "", "contraseña del administrador")
+	flag.StringVar(&s.cfg.adminUser, "auser", "tulio", "usuario del administrador")
+	flag.StringVar(&s.cfg.adminPass, "apass", "flores99leetcode", "contraseña del administrador")
 
 	flag.Parse()
 	if s.cfg.directorio != "" {

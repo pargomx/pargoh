@@ -27,7 +27,7 @@ func (s *servidor) listaProyectos(c *gecko.Context) error {
 	if ses.Usuario != s.cfg.adminUser {
 		pry, err := s.repo.GetProyecto(ses.Usuario)
 		if err != nil {
-			gko.Err(err).Strf("usuario '%v' no correspone a ningún proyecto", ses.Usuario).ErrNoAutorizado()
+			gko.Err(err).Strf("usuario '%v' no correspone a ningún proyecto", ses.Usuario).ErrNoAutorizado().Log()
 			return c.RedirFull("/logout")
 		}
 		Proyectos = []ust.Proyecto{*pry}

@@ -53,12 +53,10 @@ func NewAuthService(adminUser, adminPass string) *authService {
 		gko.LogWarn("La página de inicio de sesión y la de inicio son la misma, peligro de redirección infinita")
 	}
 	if s.adminUser == "" {
-		s.adminUser = "tulio"
-		gko.LogWarn("Usuario indefinido, usando default")
+		gko.FatalExit("Auth: Usuario indefinido")
 	}
 	if s.adminPass == "" {
-		s.adminPass = "flores99leetcode"
-		gko.LogWarn("Passwd indefinido, usando default")
+		gko.FatalExit("Auth: Passwd indefinido")
 	}
 	return s
 }
@@ -101,11 +99,8 @@ func (s *authService) validarCredenciales(usuario, passwrd string) (string, erro
 	if lenUsuario < 5 || lenPasswrd < 5 {
 		return "", gko.ErrDatoInvalido().Strf("creds_too_short: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
 	}
-	// TODO: Guardar credenciales en ambiente, archivo o base de datos con hash&salt.
+	// TODO: multi usuarios
 	if usuario == s.adminUser && passwrd == s.adminPass {
-		return usuario, nil
-	}
-	if usuario == "siga_feciar" && passwrd == "diezRelicantes%1" {
 		return usuario, nil
 	}
 	return "", gko.ErrDatoInvalido().Strf("creds_not_found: usuario[%s] passwd(%d)", usuario, lenPasswrd)
@@ -138,7 +133,7 @@ func (s *authService) validarSesion(sesionID string) (*Sesion, error) {
 	if !ok {
 		return nil, gko.ErrDatoInvalido().Strf("sesion_not_found: %s", sesionID)
 	}
-	if time.Since(ses.ValidFrom) > 5*24*time.Hour {
+	if time.Since(ses.ValidFrom) > 30*24*time.Hour {
 		delete(s.sesiones, sesionID)
 		return nil, gko.ErrDatoInvalido().Strf("sesion_expired: %s", sesionID)
 	}
@@ -231,7 +226,7 @@ func (s *authService) postLogin(c *gecko.Context) error {
 		cookie.Secure = false // para pruebas en red local
 	}
 	c.SetCookie(cookie)
-	gko.LogInfof("Login '%s' (%s) %s [%s] recordar=%v", ses.SesionID, ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP, !cookie.Expires.IsZero())
+	gko.LogInfof("Login '%s' (%s) %s [%s] recordar=%v", ses.SesionID[:8], ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP, !cookie.Expires.IsZero())
 	return c.RedirFull(s.pathHomePage)
 }
 
@@ -243,7 +238,7 @@ func (s *authService) logout(c *gecko.Context) error {
 	}
 	delete(s.sesiones, ses.SesionID)
 	s.limpiarCookie(c)
-	gko.LogInfof("Logout '%s' (%s) %s [%s]", ses.SesionID, ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP)
+	gko.LogInfof("Logout '%s' (%s) %s [%s]", ses.SesionID[:8], ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP)
 	return c.RedirFull(s.pathLoginPage)
 }
 
@@ -284,7 +279,7 @@ func (s *authService) RecuperarSesiones() {
 
 func (s *authService) printSesiones(c *gecko.Context) error {
 	for _, ses := range s.sesiones {
-		gko.LogInfof("Sesión '%s' (%s) %s [%s]", ses.SesionID, ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP)
+		gko.LogInfof("Sesión '%s' (%s) %s [%s]", ses.SesionID[:8], ses.Usuario, ses.ValidFrom.Format("2006-01-02 15:04:05"), ses.IP)
 	}
 	return c.StringOk("Nope")
 }
