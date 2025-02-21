@@ -93,6 +93,38 @@ func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
+// Agregar historia de usuario como padre de la actual.
+func (s *servidor) postPadreParaHistoria(c *gecko.Context) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	repotx := sqliteust.NuevoRepo(tx)
+
+	histActual, err := repotx.GetNodoHistoria(c.PathInt("historia_id"))
+	if err != nil {
+		return gko.Err(err).Err(tx.Rollback())
+	}
+	nuevaHistoria := ust.Historia{
+		HistoriaID: ust.NewRandomID(),
+		Titulo:     c.PromptVal(),
+	}
+	err = dhistorias.AgregarHistoria(histActual.PadreID, nuevaHistoria, repotx)
+	if err != nil {
+		return gko.Err(err).Err(tx.Rollback())
+	}
+	err = dhistorias.MoverHistoria(histActual.HistoriaID, nuevaHistoria.HistoriaID, repotx)
+	if err != nil {
+		return gko.Err(err).Err(tx.Rollback())
+	}
+	err = tx.Commit()
+	if err != nil {
+		return gko.Err(err).Err(tx.Rollback())
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.RedirOtrof("/historias/%v", nuevaHistoria.HistoriaID)
+}
+
 func (s *servidor) updateHistoria(c *gecko.Context) error {
 	err := dhistorias.ActualizarHistoria(
 		c.PathInt("historia_id"),

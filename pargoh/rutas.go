@@ -160,6 +160,7 @@ func main() {
 	s.GET("/historias/{historia_id}", s.getHistoria)
 	s.GET("/historias/{historia_id}/tablero", s.getHistoriaTablero)
 	s.POS("/historias/{historia_id}", s.postHistoriaDeHistoria)
+	s.POS("/historias/{historia_id}/padre", s.postPadreParaHistoria)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.PUT("/historias/{historia_id}", s.updateHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)

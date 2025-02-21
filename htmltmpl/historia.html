@@ -50,6 +50,17 @@
 			</a>
 			<span class="opacity-50">quiero...</span>
 		</h4>
+		<!--* INSERTAR PADRE  -->
+		<div>
+			<button
+				type="button"
+				title="Insertar historia padre"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/padre"
+				hx-prompt="Insertar historia padre con el título..."
+				class="mx-1 rounded-md opacity-75 hover:opacity-100">
+				<i class="fa-solid fa-tree"></i>
+			</button>
+		</div>
 		<!--* PRIORIDAD -->
 		<div>
 			<select
