@@ -33,6 +33,21 @@ func GetHistoria(historiaID int, flags flagGet, repo Repo) (*HistoriaAgregado, e
 		return nil, op.Err(err)
 	}
 
+	// Agregar tiempo transcurrido hasta ahora para tareas activas.
+	for i, tarea := range item.Tareas {
+		if tarea.EnCurso() {
+			itrvs, err := repo.ListIntervalosByTareaID(tarea.TareaID)
+			if err != nil {
+				return nil, op.Err(err)
+			}
+			for _, itrv := range itrvs {
+				if itrv.Fin == "" {
+					item.Tareas[i].SegundosUtilizado += itrv.Segundos()
+				}
+			}
+		}
+	}
+
 	item.Tramos, err = repo.ListTramosByHistoriaID(historiaID)
 	if err != nil {
 		return nil, op.Err(err)

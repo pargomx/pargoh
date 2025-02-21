@@ -99,6 +99,8 @@ func (h *HistoriaCosto) SegundosPresupuesto() int {
 // TODO: revisar error y quizá hacer configurable. También en dhistorias/e_tarea-w.go.
 var locationMexicoCity, _ = time.LoadLocation("America/Mexico_City")
 
+// Segundos transcurridos entre el inicio y el fin del intervalo.
+// Si aún no tiene fin, entonces entre el inicio y la hora actual.
 func (itv Intervalo) Segundos() int {
 	inicio, err := time.ParseInLocation("2006-01-02 15:04:05", itv.Inicio, locationMexicoCity)
 	if err != nil {
