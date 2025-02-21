@@ -168,6 +168,7 @@ func actualizarTiempoReal(tar *ust.Tarea, op *gko.Error, repo Repo) error {
 	return nil
 }
 
+// Retorna historiaID
 func IniciarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("IniciarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
@@ -205,6 +206,7 @@ func IniciarTarea(tareaID int, repo Repo) (int, error) {
 	return tar.HistoriaID, nil
 }
 
+// Retorna historiaID
 func PausarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("PausarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
@@ -248,6 +250,7 @@ func PausarTarea(tareaID int, repo Repo) (int, error) {
 	return tar.HistoriaID, nil
 }
 
+// Retorna historiaID
 func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 	op := gko.Op("FinalizarTarea").Ctx("tareaID", tareaID)
 	tar, err := repo.GetTarea(tareaID)
@@ -255,7 +258,7 @@ func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 		return 0, op.Err(err)
 	}
 
-	// Debe haber un intervalo en curso.
+	// Probablemente haya un intervalo en curso.
 	intervalos, err := repo.ListIntervalosByTareaID(tar.TareaID)
 	if err != nil {
 		return 0, op.Err(err)
@@ -267,15 +270,13 @@ func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 			break
 		}
 	}
-	if interv == nil {
-		return 0, op.Msg("No hay ningún intervalo en curso para esta tarea")
-	}
-
-	// Finalizar intervalo.
-	interv.Fin = time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05")
-	err = repo.UpdateIntervalo(interv.TareaID, interv.Inicio, *interv)
-	if err != nil {
-		return 0, op.Err(err)
+	if interv != nil {
+		// Finalizar intervalo en curso.
+		interv.Fin = time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05")
+		err = repo.UpdateIntervalo(interv.TareaID, interv.Inicio, *interv)
+		if err != nil {
+			return 0, op.Err(err)
+		}
 	}
 
 	// Actualizar tiempo real de tarea y declarar como finalizada.
