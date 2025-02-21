@@ -11,25 +11,35 @@ import (
 	"path/filepath"
 
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkoid"
 )
 
 // Escribe una imagen en un archivo con el formato especificado.
 func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int) error {
+	op := gko.Op("GuardarImagen")
 	img, _, err := image.Decode(input)
 	if err != nil {
-		return gko.ErrNoSoportado().Msg("Imposible decodificar imagen").Err(err)
+		return op.Err(err).ErrNoSoportado().Msg("Imposible decodificar imagen")
 	}
 	if img.Bounds().Max.X > maxPix {
-		return gko.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.X)
+		return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.X)
 	}
 	if img.Bounds().Max.Y > maxPix {
-		return gko.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.Y)
+		return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.Y)
+	}
+
+	// Evitar sobreescribir un archivo existente.
+	_, err = os.Stat(outputPath)
+	if err == nil {
+		return op.ErrYaExiste().Strf("ya existe una imagen en %s y no se va a sobreescribir", outputPath)
+	} else if !os.IsNotExist(err) {
+		return op.Err(err).Str("error verificando existencia del archivo")
 	}
 
 	// Crear nuevo archivo vacío
 	outFile, err := os.OpenFile(outputPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0640)
 	if err != nil {
-		return gko.Err(err).Msg("Crear archivo para imagen").Ctx("path", outputPath)
+		return op.Err(err).Str("crear archivo para imagen").Ctx("path", outputPath)
 	}
 	defer outFile.Close()
 
@@ -42,10 +52,10 @@ func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int
 	case "gif":
 		err = gif.Encode(outFile, img, nil)
 	default:
-		return gko.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
+		return op.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
 	}
 	if err != nil {
-		return gko.Err(err).Msgf("codificar archivo %v", format)
+		return op.Err(err).Strf("codificar archivo %v", format)
 	}
 	return nil
 }
@@ -53,9 +63,10 @@ func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int
 // ================================================================ //
 
 func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio string, MIME string, repo Repo) error {
+	op := gko.Op("SetFotoTramo")
 	Tramo, err := repo.GetTramo(HistoriaID, Posicion)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	extension := ""
 	switch MIME {
@@ -66,10 +77,14 @@ func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio strin
 	case "image/gif":
 		extension = "gif"
 	default:
-		return gko.ErrNoSoportado().Msgf("MIME no soportado: %v", MIME)
+		return op.ErrNoSoportado().Msgf("MIME no soportado: %v", MIME)
 	}
 
-	Filename := fmt.Sprintf("h_%d_%d.%s", HistoriaID, Posicion, extension)
+	uniqueID, err := gkoid.New62(8)
+	if err != nil {
+		return op.Err(err)
+	}
+	Filename := fmt.Sprintf("t_%s.%s", uniqueID, extension)
 	Filepath := filepath.Join(directorio, Filename)
 
 	if Tramo.Imagen != "" { // Mover archivo anterior a _trash
@@ -77,33 +92,34 @@ func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio strin
 	}
 	err = GuardarImagen(foto, extension, Filepath, 3000)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	Tramo.Imagen = Filename
 	err = repo.UpdateTramo(*Tramo)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	gko.LogInfof("Imagen nueva %v", Tramo.Imagen)
 	return nil
 }
 
 func EliminarFotoTramo(HistoriaID int, Posicion int, directorio string, repo Repo) error {
+	op := gko.Op("EliminarFotoTramo")
 	Tramo, err := repo.GetTramo(HistoriaID, Posicion)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	if Tramo.Imagen == "" {
-		return gko.ErrDatoInvalido().Msg("No hay imagen que eliminar")
+		return op.ErrDatoInvalido().Msg("No hay imagen que eliminar")
 	}
 	err = os.Remove(filepath.Join(directorio, Tramo.Imagen))
 	if err != nil {
-		return gko.Err(err).Op("EliminarFotoTramo")
+		return op.Err(err)
 	}
 	Tramo.Imagen = ""
 	err = repo.UpdateTramo(*Tramo)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	gko.LogInfof("Imagen eliminada %v", Tramo.Imagen)
 	return nil
@@ -114,29 +130,34 @@ func EliminarFotoTramo(HistoriaID int, Posicion int, directorio string, repo Rep
 
 // Esta función es la chida.
 func SetImagenProyecto(proyectoID string, format string, input io.Reader, dir string, repo Repo) error {
+	op := gko.Op("SetImagenProyecto")
 	pry, err := repo.GetProyecto(proyectoID)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	if format != "jpeg" && format != "png" && format != "gif" {
-		return gko.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
+		return op.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
 	}
-	Filename := fmt.Sprintf("p_%s.%s", proyectoID, format) // TODO: prefijo único para evitar imágenes en cache.
+	uniqueID, err := gkoid.New62(8)
+	if err != nil {
+		return op.Err(err)
+	}
+	Filename := fmt.Sprintf("p_%s.%s", uniqueID, format)
 	Filepath := filepath.Join(dir, Filename)
 	if pry.Imagen != "" { // Mover archivo anterior en lugar de borrarlo.
 		err = os.Rename(filepath.Join(dir, pry.Imagen), filepath.Join(dir, "trash_"+pry.Imagen))
 		if err != nil {
-			gko.Err(err).Op("SetImagenProyecto.TrashOld").Log()
+			op.Err(err).Op("SetImagenProyecto.TrashOld").Log()
 		}
 	}
 	err = GuardarImagen(input, format, Filepath, 3000)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	pry.Imagen = Filename
 	err = repo.UpdateProyecto(*pry)
 	if err != nil {
-		return err
+		return op.Err(err)
 	}
 	gko.LogInfof("Imagen nueva %v", pry.Imagen)
 	return nil
