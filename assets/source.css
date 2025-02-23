@@ -20,6 +20,26 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+
+  code {
+    @apply bg-slate-700 text-white p-1 rounded-md;
+  }
+
+  table > tbody > tr > td {
+    @apply px-2 py-1
+  }
+  table > thead > tr > th {
+    @apply px-2 py-1
+  }
+
+  select option {
+    @apply text-black bg-cyan-100/50
+  }
+
+  select optgroup {
+    @apply text-white bg-cyan-950/70
+  }
+
 }
 
 @utility form-control {
@@ -38,21 +58,6 @@
 .th-sort-desc::after {
 	content: "\25be";
 	margin-left: 5px;
-}
-
-table > tbody > tr > td {
-	@apply px-2 py-1
-}
-table > thead > tr > th {
-	@apply px-2 py-1
-}
-
-select option {
-	@apply text-black bg-cyan-100/50
-}
-
-select optgroup {
-	@apply text-white bg-cyan-950/70
 }
 
 /* Scrollbar agradable */
