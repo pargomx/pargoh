@@ -2,17 +2,21 @@
 	<a href="/proyectos">
 		Quick tasks
 	</a>
-	<button
-		type="button"
-		hx-post="/tareas"
-		hx-askfor="/tareas"
-		hx-prompt="Nueva tarea rápida (iniciar cronómetro):"
-		class="text-sm float-right hover:cursor-pointer hover:text-cyan-400 transition-colors">
-		Comenzar otra
-	</button>
 </h2>
 
-<main>
+<main class="p-4">
+	<div class="flex justify-center mb-4">
+		<button
+			type="button"
+			hx-post="/tareas"
+			hx-askfor="/tareas"
+			hx-prompt="Nueva tarea rápida (iniciar cronómetro):"
+			class="max-w-96 inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+			<i class="mr-1 fa-solid fa-play"></i>
+			Comenzar quick task
+		</button>
+	</div>
+
 	<ol class="mb-6">
 		{{ range .Tareas }}
 		<li id="{{ .TareaID }}"

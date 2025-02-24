@@ -195,7 +195,7 @@ func (s *servidor) patchIntervalo(c *gecko.Context) error {
 
 // Tareas sin proyecto.
 //
-//	INSERT INTO historias(historia_id, titulo, objetivo, prioridad, completada) VALUES (0001,'QuickTasksParent','Esta historia sirve de padre para las tareas sin proyecto',0,0);
+//	INSERT INTO historias(historia_id, titulo, objetivo, prioridad, completada) VALUES (1,'QuickTasksParent','Esta historia sirve de padre para las tareas sin proyecto',0,0);
 const QUICK_TASK_HISTORIA_ID = 0001
 
 func (s *servidor) postQuickTask(c *gecko.Context) error {
