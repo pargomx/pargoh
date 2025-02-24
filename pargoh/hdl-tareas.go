@@ -188,3 +188,40 @@ func (s *servidor) patchIntervalo(c *gecko.Context) error {
 	// defer s.reloader.brodcastReload(c)
 	return c.RedirOtrof("/historias/%v", historiaID)
 }
+
+// ================================================================ //
+// ========== QUICK TASKS ========================================= //
+
+// Tareas sin proyecto.
+//
+//	INSERT INTO historias(historia_id, titulo, objetivo, prioridad, completada) VALUES (0001,'QuickTasksParent','Esta historia sirve de padre para las tareas sin proyecto',0,0);
+const QUICK_TASK_HISTORIA_ID = 0001
+
+func (s *servidor) postQuickTask(c *gecko.Context) error {
+	tarea := ust.Tarea{
+		TareaID:     ust.NewRandomID(),
+		HistoriaID:  QUICK_TASK_HISTORIA_ID,
+		Descripcion: c.PromptVal(),
+	}
+	err := dhistorias.AgregarTarea(tarea, s.repo)
+	if err != nil {
+		return err
+	}
+	_, err = dhistorias.IniciarTarea(tarea.TareaID, s.repo)
+	if err != nil {
+		return err
+	}
+	return c.RedirFull("/tareas")
+}
+
+func (s *servidor) getQuickTasks(c *gecko.Context) error {
+	tareas, err := s.repo.ListTareasByHistoriaID(QUICK_TASK_HISTORIA_ID)
+	if err != nil {
+		return err
+	}
+	data := map[string]any{
+		"Titulo": "Quick tasks",
+		"Tareas": tareas,
+	}
+	return c.RenderOk("tareas", data)
+}

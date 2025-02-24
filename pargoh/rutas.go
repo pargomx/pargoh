@@ -198,6 +198,10 @@ func main() {
 	s.GET("/intervalos", s.getIntervalos)
 	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
 
+	// Quick tasks
+	s.POS("/tareas", s.postQuickTask)
+	s.GET("/tareas", s.getQuickTasks)
+
 	// Viaje de usuario
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)

@@ -1,12 +1,17 @@
 <h2 class="p-3 text-3xl text-center">
 	Pargo 🐟
+	<a
+		href="/tareas"
+		class="text-sm float-right hover:text-cyan-400 transition-colors">
+		QuickTasks
+	</a>
 </h2>
 
 {{ if .TareasEnCurso -}}
 <div class="flex flex-col gap-1 px-4 mb-4">
 	<h3 class="text-lg text-cyan-600">Tareas en curso</h3>
 	{{ range .TareasEnCurso -}}
-	<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}" class="flex gap-2 transition-colors hover:text-cyan-200">
+	<a href="{{ if eq .HistoriaID 1 }}/tareas{{ else }}/historias/{{ .HistoriaID }}#{{ .TareaID }}{{ end }}" class="flex gap-2 transition-colors hover:text-cyan-200">
 		<span class="inline-block w-6 text-center">
 			<i class="text-slate-400 fa-solid fa-list-check"></i>
 		</span>

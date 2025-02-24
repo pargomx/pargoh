@@ -106,7 +106,7 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 	if tarea.Descripcion == "" {
 		return op.Msg("La tarea debe tener una descripción")
 	}
-	_, err := repo.GetNodoHistoria(tarea.HistoriaID)
+	err := repo.ExisteHistoria(tarea.HistoriaID)
 	if err != nil {
 		return op.Err(err).Ctx("historiaID", tarea.HistoriaID)
 	}

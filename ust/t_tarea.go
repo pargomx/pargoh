@@ -112,6 +112,10 @@ var ListaFiltroImportanciaTarea = []ImportanciaTarea{
 	ImportanciaTareaNecesaria,
 }
 
+func (e ImportanciaTarea) Posibilidades() []ImportanciaTarea {
+	return ListaImportanciaTarea
+}
+
 // Comparar un Importancia con otro.
 func (a ImportanciaTarea) Es(e ImportanciaTarea) bool {
 	return a.ID == e.ID
@@ -325,6 +329,10 @@ var ListaFiltroTipoTarea = []TipoTarea{
 	TipoTareaHandlr,
 	TipoTareaWebUi,
 	TipoTareaBug,
+}
+
+func (e TipoTarea) Posibilidades() []TipoTarea {
+	return ListaTipoTarea
 }
 
 // Comparar un Tipo de tarea con otro.

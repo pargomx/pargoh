@@ -1,0 +1,140 @@
+<h2 class="p-3 text-3xl text-center">
+	<a href="/proyectos">
+		Quick tasks
+	</a>
+	<button
+		type="button"
+		hx-post="/tareas"
+		hx-prompt="Nueva tarea rápida (iniciar cronómetro):"
+		class="text-sm float-right hover:cursor-pointer hover:text-cyan-400 transition-colors">
+		Comenzar otra
+	</button>
+</h2>
+
+<main>
+	<ol class="mb-6" hx-swap="none">
+		{{ range .Tareas }}
+		<li id="{{ .TareaID }}"
+			tipo="sort_regla"
+			class="flex gap-1 p-1 group">
+			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+				⣿
+				<form tipo="sort_form" hx-post="/reordenar-tarea" hx-trigger="reordenarEnd">
+					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
+					<input type="hidden" name="new_pos">
+				</form>
+			</div>
+			<div>
+				<span class="inline-block w-6 text-center">
+					{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
+					{{ else if .EnCurso }}<i class="text-green-600 fa-regular fa-square"></i>
+					{{ else if .EnPausa }}<i class="text-orange-600 fa-regular fa-square"></i>
+					{{ else }}<i class="text-slate-400 fa-regular fa-square"></i>
+					{{ end -}}
+				</span>
+			</div>
+			<p class="">
+				<button
+					hx-post="/tareas/{{ .TareaID }}/importancia"
+					tabindex="-1"
+					class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+					{{- .Importancia.Etiqueta -}}
+				</button>
+
+				{{ if not .Tipo.EsIndefinido -}}
+				<span class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+					{{- .Tipo.Etiqueta -}}
+				</span>
+				{{ end }}
+
+				<span onclick="document.getElementById('edit{{ .TareaID }}').showModal()" class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}">
+					{{ .Descripcion }}
+				</span>
+
+				{{- if .EnCurso -}}
+				<span class="mx-2 opacity-50">
+					<img src="/assets/img/spinner.svg" alt="En progreso" class="inline-block w-8">
+				</span>
+				{{- end -}}
+
+				<span class="float-right sm:hidden">
+					{{- if .SegundosEstimado -}}
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ segundosToString .SegundosEstimado }}">
+						<i class="fa-solid fa-hourglass-start"></i>
+						{{ segundosToString .SegundosEstimado }}
+					</span>
+					{{- end -}}
+					{{- if .SegundosUtilizado -}}
+					<button
+						onclick="showIntervalos('{{ .TareaID }}')"
+						title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
+						class="pl-4 text-sm opacity-75 whitespace-nowrap">
+						<i class="fa-solid fa-stopwatch"></i>
+						{{ segundosToString .SegundosUtilizado }}
+					</button>
+					{{- end -}}
+				</span>
+
+				{{ if and .Impedimentos (not .Finalizada) -}}
+				<br>
+				<i class="text-sm text-orange-300">
+					{{ .Impedimentos }}	
+				</i>
+				{{- end }}
+
+			</p>
+			<div class="items-start hidden gap-2 md:flex">
+				{{ if .NoIniciada -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+					<i class="fa-solid fa-play"></i>
+				</button>
+				{{ else if .EnCurso -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+					<i class="fa-solid fa-pause"></i>
+				</button>
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+					<i class="fa-solid fa-square-check"></i>
+				</button>
+				{{ else if .EnPausa -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+					<i class="fa-solid fa-play"></i>
+				</button>
+				{{ else if .Finalizada -}}
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
+					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+					<i class="fa-solid fa-play"></i>
+				</button>
+				{{ end }}
+			</div>
+			<div class="grow hidden text-right sm:block">
+				{{- if .SegundosUtilizado -}}
+				<button
+					onclick="showIntervalos('{{ .TareaID }}')"
+					title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
+					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					<i class="fa-solid fa-stopwatch"></i>
+					{{ segundosToString .SegundosUtilizado }}
+				</button>
+				{{- end -}}
+				<button
+					hx-patch="/tareas/{{ .TareaID }}/estimado"
+					hx-prompt="Nuevo estimado"
+					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
+					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					<i class="fa-solid fa-hourglass-start"></i>
+					{{ if .SegundosEstimado }}{{ segundosToString .SegundosEstimado }}{{ else }}1h{{ end -}}
+				</button>
+			</div>
+		</li>
+		{{ end }}
+	</ol>
+</main>
+
+
+{{ range .Tareas -}}
+	{{ template "tarea_editar_dialog" . }}
+{{ end }}
