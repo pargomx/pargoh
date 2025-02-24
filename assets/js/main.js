@@ -7,6 +7,25 @@ window.addEventListener('pageshow', (event) => {
 	}
 });
 
+
+// Para solicitar al servidor una respuesta específica.
+document.addEventListener("htmx:configRequest", function (event) {
+	if (event.target.hasAttribute("hg-askfor")) {
+		const askforVal = event.target.getAttribute("hg-askfor");
+		if (askforVal && askforVal.length > 0) {
+			event.detail.headers["Hg-Askfor"] = askforVal;
+		}
+	}
+	// Meh... es más bonito tenerlos todos con el mismo prefijo "hx-"
+	if (event.target.hasAttribute("hx-askfor")) {
+		const askforVal = event.target.getAttribute("hx-askfor");
+		if (askforVal && askforVal.length > 0) {
+			event.detail.headers["Hg-Askfor"] = askforVal;
+		}
+	}
+});
+
+
 // ================================================================ //
 // ========== PLATAFORMA ========================================== //
 function getPlatform() {

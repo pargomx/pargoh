@@ -5,6 +5,7 @@
 	<button
 		type="button"
 		hx-post="/tareas"
+		hx-askfor="/tareas"
 		hx-prompt="Nueva tarea rápida (iniciar cronómetro):"
 		class="text-sm float-right hover:cursor-pointer hover:text-cyan-400 transition-colors">
 		Comenzar otra
@@ -12,18 +13,11 @@
 </h2>
 
 <main>
-	<ol class="mb-6" hx-swap="none">
+	<ol class="mb-6">
 		{{ range .Tareas }}
 		<li id="{{ .TareaID }}"
 			tipo="sort_regla"
 			class="flex gap-1 p-1 group">
-			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
-				⣿
-				<form tipo="sort_form" hx-post="/reordenar-tarea" hx-trigger="reordenarEnd">
-					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-					<input type="hidden" name="new_pos">
-				</form>
-			</div>
 			<div>
 				<span class="inline-block w-6 text-center">
 					{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
@@ -36,6 +30,7 @@
 			<p class="">
 				<button
 					hx-post="/tareas/{{ .TareaID }}/importancia"
+					hx-askfor="/tareas"
 					tabindex="-1"
 					class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 					{{- .Importancia.Etiqueta -}}
@@ -85,26 +80,26 @@
 			</p>
 			<div class="items-start hidden gap-2 md:flex">
 				{{ if .NoIniciada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" hx-askfor="/tareas" title="Iniciar tarea"
 					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .EnCurso -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" hx-askfor="/tareas" title="Pausar tarea"
 					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-pause"></i>
 				</button>
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" hx-askfor="/tareas" title="Marcar como finalizada"
 					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-square-check"></i>
 				</button>
 				{{ else if .EnPausa -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" hx-askfor="/tareas" title="Iniciar tarea"
 					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .Finalizada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
+				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" hx-askfor="/tareas" title="Iniciar tarea"
 					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
 					<i class="fa-solid fa-play"></i>
 				</button>
@@ -122,6 +117,7 @@
 				{{- end -}}
 				<button
 					hx-patch="/tareas/{{ .TareaID }}/estimado"
+					hx-askfor="/tareas"
 					hx-prompt="Nuevo estimado"
 					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
 					class="pl-4 text-sm opacity-75 whitespace-nowrap">
