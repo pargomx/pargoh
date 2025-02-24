@@ -1,6 +1,6 @@
 <h2 class="p-3 text-3xl text-center">
 	<a href="/proyectos">
-		Quick tasks
+		Pargo 🐟
 	</a>
 </h2>
 
@@ -138,3 +138,7 @@
 {{ range .Tareas -}}
 	{{ template "tarea_editar_dialog" . }}
 {{ end }}
+
+{{ template "intervalos_dialog" }}
+
+{{ template "mover_tarea_dialog" "" }}

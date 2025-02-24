@@ -867,6 +867,7 @@
 {{ end }}
 
 <!-- Administrar intervalos -->
+{{ block "intervalos_dialog" . }}
 <dialog id="modalIntervalos" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<div hx-target="this" hx-swap="innerHTML" hx-trigger="cargarIntervalos">
 		Cargando...
@@ -882,6 +883,7 @@
 		contenido.dispatchEvent(new Event("cargarIntervalos"))
 	}
 </script>
+{{ end }}
 
 <!-- ======================================================== -->
 {{ define "ctxMenuHistoria" -}}
@@ -1013,13 +1015,6 @@
 		console.log(`showMoverHistoria(${historiaID})`);
 	}
 
-	function showMoverTarea(tareaID, descripcion) {
-		let mov = document.getElementById('moverTareaDialog');
-		mov.showModal();
-		mov.querySelector('input[name=tarea_id]').value = tareaID;
-		mov.querySelector('p').innerText = descripcion;
-	}
-
 	function showAddReferencia() {
 		let mov = document.getElementById('dialogAddReferencia');
 		mov.showModal();
@@ -1063,6 +1058,8 @@
 	</form>
 </dialog>
 
+{{ block "mover_tarea_dialog" .Agregado.Historia.HistoriaID }}
+{{/* Recibe el historia_id que será origen para nav, sino inicia en root */}}
 <dialog id="moverTareaDialog" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
 		<h2 class="grow text-xl">
@@ -1080,7 +1077,7 @@
 		<p class="mb-2 italic">Nombre de la tarea</p>
 		<input type="hidden" name="tarea_id" required>
 		<div
-			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-get="/nav{{ if . }}/hist/{{ . }}{{ end }}"
 			hx-target="this"
 			hx-swap="innerHTML"
 			hx-trigger="intersect once"
@@ -1097,6 +1094,15 @@
 		</button>
 	</form>
 </dialog>
+<script>
+	function showMoverTarea(tareaID, descripcion) {
+		let mov = document.getElementById('moverTareaDialog');
+		mov.showModal();
+		mov.querySelector('input[name=tarea_id]').value = tareaID;
+		mov.querySelector('p').innerText = descripcion;
+	}
+</script>
+{{ end }}
 
 <dialog id="moverHistoria" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
