@@ -2,10 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"monorepo/assets"
 	"monorepo/dhistorias"
@@ -251,21 +248,13 @@ func main() {
 	// ================================================================ //
 	// ================================================================ //
 
-	// Handle interrupt.
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		for sig := range ch {
-			err = s.db.Close()
-			if err != nil {
-				fmt.Println("sqliteDB.Close: ", err.Error())
-			}
-			s.auth.PersistirSesiones()
-			fmt.Println("")
-			gko.LogInfof("servidor terminado: %v", sig.String())
-			os.Exit(0)
+	s.gecko.CleanupFunc = func() {
+		err = s.db.Close()
+		if err != nil {
+			gko.Op("ShutdownDB").Err(err).Log()
 		}
-	}()
+		s.auth.PersistirSesiones()
+	}
 
 	err = s.gecko.IniciarEnPuerto(s.cfg.puerto)
 	if err != nil {
