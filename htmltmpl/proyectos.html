@@ -54,7 +54,10 @@
 
 <main class="flex flex-col items-center justify-start grow w-full max-w-5xl gap-4 p-2 mx-auto">
 	{{ range .Proyectos -}}
-	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
+	<article id="{{ .ProyectoID }}"
+		hx-get="/proyectos/{{ .ProyectoID }}"
+		hx-push-url="true"
+		class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
 
 		<div class="p-2 rounded-md">
 			<a href="/proyectos/{{ .ProyectoID }}" hx-boost="true" hx-push-url="true">
