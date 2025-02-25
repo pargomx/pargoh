@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"monorepo/dhistorias"
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
@@ -40,7 +41,7 @@ type Proyecto1 struct {
 	Segundos  int
 }
 
-func (s *servidor) getMétricas1(c *gecko.Context) error {
+func (s *servidor) getMétricas2(c *gecko.Context) error {
 	proyectos, err := s.repo.ListProyectos()
 	if err != nil {
 		return err
@@ -68,7 +69,7 @@ func (s *servidor) getMétricas1(c *gecko.Context) error {
 	return c.RenderOk("metricas2", data)
 }
 
-func (s *servidor) getMétricas2(c *gecko.Context) error {
+func (s *servidor) getMétricas(c *gecko.Context) error {
 
 	// Traer todos los días trabajados hasta el presente.
 	ListaDias, err := s.repo.ListDias()
@@ -114,6 +115,9 @@ func (s *servidor) getMétricas2(c *gecko.Context) error {
 			tarea, ok := TareasMap[itv.TareaID]
 			if !ok {
 				return gko.ErrNoEncontrado().Msgf("Tarea %d no encontrada", itv.TareaID)
+			}
+			if tarea.HistoriaID == dhistorias.QUICK_TASK_HISTORIA_ID {
+				continue
 			}
 			historia, ok := HistoriasMap[tarea.HistoriaID]
 			if !ok {

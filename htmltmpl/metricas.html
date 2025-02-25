@@ -103,7 +103,7 @@
 	</p>
 	{{ end }}
 
-	<div id="tablaDias">
+	<div id="tablaDias" class="overflow-x-auto max-h-96">
 		<table class="p-4 border border-separate border-cyan-600">
 			<thead>
 				<tr>
@@ -119,13 +119,13 @@
 				{{ range $idx, $dia := .DiasTrabajo }}
 				<tr>
 					<td>{{ suma $idx 1 }}</td>
-					<td class="bg-cyan-950">{{ .Fecha }}</td>
+					<td class="bg-cyan-950 text-nowrap">{{ .Fecha }}</td>
 					<td class="bg-cyan-950">{{ segundosToString .Segundos }}</td>
 
 					{{ range $proyectoID, $v := .Proyectos -}}
 						{{ $horas := 0.0 }}{{ if eq $proyectoID .Proyecto.ProyectoID }}{{ $horas = .Horas }}{{ end }}
-						<td class="bg-cyan-950">
-							{{ segundosToString .Segundos }} {{ .Proyecto.ProyectoID }} {{ $horas }}h
+						<td class="bg-cyan-950 text-nowrap">
+							{{ .Proyecto.ProyectoID }} {{ segundosToString .Segundos }}
 						</td>
 					{{ end }}
 				</tr>
@@ -156,7 +156,7 @@
 					<a
 						href="/historias/{{ .Historia.HistoriaID }}"
 						class="transition-colors hover:text-cyan-400">
-						Historia: {{ .Historia.Titulo }}
+						{{ enfatizar .Historia.Titulo }}
 					</a>
 				</p>
 				{{ range .Tareas -}}
@@ -166,7 +166,14 @@
 						<a
 							href="/historias/{{ .Tarea.HistoriaID }}#{{ .Tarea.TareaID }}"
 							class="transition-colors hover:text-cyan-400">
-							Tarea: {{ .Tarea.Descripcion }}
+							<span class="inline-block w-6 text-center">
+								{{- if .Tarea.Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
+								{{ else if .Tarea.EnCurso }}<i class="text-green-600 fa-regular fa-square"></i>
+								{{ else if .Tarea.EnPausa }}<i class="text-orange-600 fa-regular fa-square"></i>
+								{{ else }}<i class="text-slate-400 fa-regular fa-square"></i>
+								{{ end -}}
+							</span>
+							 {{ enfatizar .Tarea.Descripcion }}
 						</a>
 					</p>
 				</div>

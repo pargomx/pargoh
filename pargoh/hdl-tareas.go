@@ -193,15 +193,10 @@ func (s *servidor) patchIntervalo(c *gecko.Context) error {
 // ================================================================ //
 // ========== QUICK TASKS ========================================= //
 
-// Tareas sin proyecto.
-//
-//	INSERT INTO historias(historia_id, titulo, objetivo, prioridad, completada) VALUES (1,'QuickTasksParent','Esta historia sirve de padre para las tareas sin proyecto',0,0);
-const QUICK_TASK_HISTORIA_ID = 0001
-
 func (s *servidor) postQuickTask(c *gecko.Context) error {
 	tarea := ust.Tarea{
 		TareaID:     ust.NewRandomID(),
-		HistoriaID:  QUICK_TASK_HISTORIA_ID,
+		HistoriaID:  dhistorias.QUICK_TASK_HISTORIA_ID,
 		Descripcion: c.PromptVal(),
 	}
 	err := dhistorias.AgregarTarea(tarea, s.repo)
@@ -216,7 +211,7 @@ func (s *servidor) postQuickTask(c *gecko.Context) error {
 }
 
 func (s *servidor) getQuickTasks(c *gecko.Context) error {
-	tareas, err := s.repo.ListTareasByHistoriaID(QUICK_TASK_HISTORIA_ID)
+	tareas, err := s.repo.ListTareasByHistoriaID(dhistorias.QUICK_TASK_HISTORIA_ID)
 	if err != nil {
 		return err
 	}

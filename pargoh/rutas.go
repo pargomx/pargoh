@@ -234,7 +234,7 @@ func main() {
 	s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
 
 	// General
-	s.GET("/metricas", s.getMétricas1)
+	s.GET("/metricas", s.getMétricas)
 	s.GET("/metricas2", s.getMétricas2)
 	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
 	s.GET("/materializar-historias", s.materializarHistorias)
