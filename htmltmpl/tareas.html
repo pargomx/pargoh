@@ -134,6 +134,7 @@
 	</ol>
 </main>
 
+<div hx-askfor="/tareas">
 
 {{ range .Tareas -}}
 	{{ template "tarea_editar_dialog" . }}
@@ -142,3 +143,5 @@
 {{ template "intervalos_dialog" }}
 
 {{ template "mover_tarea_dialog" "" }}
+
+</div>

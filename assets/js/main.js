@@ -8,23 +8,6 @@ window.addEventListener('pageshow', (event) => {
 });
 
 
-// Para solicitar al servidor una respuesta específica.
-document.addEventListener("htmx:configRequest", function (event) {
-	if (event.target.hasAttribute("hg-askfor")) {
-		const askforVal = event.target.getAttribute("hg-askfor");
-		if (askforVal && askforVal.length > 0) {
-			event.detail.headers["Hg-Askfor"] = askforVal;
-		}
-	}
-	// Meh... es más bonito tenerlos todos con el mismo prefijo "hx-"
-	if (event.target.hasAttribute("hx-askfor")) {
-		const askforVal = event.target.getAttribute("hx-askfor");
-		if (askforVal && askforVal.length > 0) {
-			event.detail.headers["Hg-Askfor"] = askforVal;
-		}
-	}
-});
-
 
 // ================================================================ //
 // ========== PLATAFORMA ========================================== //
@@ -507,3 +490,99 @@ document.addEventListener('keydown', function(event) {
 		}
     }
 });
+
+
+// ================================================================ //
+// ========== HX-askfor =========================================== //
+
+// Para solicitar al servidor una respuesta específica.
+document.addEventListener("htmx:configRequest", function (event) {
+	const askforVal = getClosestAttributeValue(event.target,"hx-askfor")
+	if (askforVal && askforVal.length > 0) {
+		event.detail.headers["Hg-Askfor"] = askforVal;
+	}
+});
+/**
+ * @param {Element} elt
+ * @param {string} attributeName
+ * @returns {string | null}
+ */
+function getClosestAttributeValue(elt, attributeName) {
+	let closestAttr = null
+	getClosestMatch(elt, function (e) {
+		return !!(closestAttr = getAttributeValueWithDisinheritance(elt, asElement(e), attributeName))
+	})
+	if (closestAttr !== 'unset') {
+		return closestAttr
+	}
+}
+/**
+ * @param {Node} elt
+ * @param {(e:Node) => boolean} condition
+ * @returns {Node | null}
+ */
+function getClosestMatch(elt, condition) {
+	while (elt && !condition(elt)) {
+		elt = parentElt(elt)
+	}
+	return elt || null
+}
+/**
+ * @param {Element} initialElement
+ * @param {Element} ancestor
+ * @param {string} attributeName
+ * @returns {string|null}
+ */
+function getAttributeValueWithDisinheritance(initialElement, ancestor, attributeName) {
+	const attributeValue = getAttributeValue(ancestor, attributeName)
+	const disinherit = getAttributeValue(ancestor, 'hx-disinherit')
+	var inherit = getAttributeValue(ancestor, 'hx-inherit')
+	if (initialElement !== ancestor) {
+		if (htmx.config.disableInheritance) {
+			if (inherit && (inherit === '*' || inherit.split(' ').indexOf(attributeName) >= 0)) {
+				return attributeValue
+			} else {
+				return null
+			}
+		}
+		if (disinherit && (disinherit === '*' || disinherit.split(' ').indexOf(attributeName) >= 0)) {
+			return 'unset'
+		}
+	}
+	return attributeValue
+}
+/**
+ *
+ * @param {Node} elt
+ * @param {string} qualifiedName
+ * @returns {(string | null)}
+ */
+function getAttributeValue(elt, qualifiedName) {
+	return getRawAttribute(elt, qualifiedName) || getRawAttribute(elt, 'data-' + qualifiedName)
+}
+/**
+* @param {Node} elt
+* @param {string} name
+* @returns {(string | null)}
+*/
+function getRawAttribute(elt, name) {
+	return elt instanceof Element && elt.getAttribute(name)
+}
+/**
+ * @param {any} elt
+ * @return {Element|null}
+ */
+function asElement(elt) {
+	return elt instanceof Element ? elt : null
+}
+/**
+   * @param {Node} elt
+   * @returns {Node | null}
+   */
+function parentElt(elt) {
+	const parent = elt.parentElement
+	if (!parent && elt.parentNode instanceof ShadowRoot) return elt.parentNode
+	return parent
+}
+
+// ================================================================ //
