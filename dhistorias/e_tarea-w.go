@@ -111,23 +111,24 @@ func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 		return op.Err(err).Ctx("historiaID", tarea.HistoriaID)
 	}
 	// Helpers para descripción.
-	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "bug:") {
+	comparableDesc := strings.ToLower(tarea.Descripcion)
+	if strings.HasPrefix(comparableDesc, "bug:") {
 		tarea.Tipo = ust.TipoTareaBug
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[4:])
 	}
-	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "ui:") {
+	if strings.HasPrefix(comparableDesc, "ui:") {
 		tarea.Tipo = ust.TipoTareaWebUi
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[3:])
 	}
-	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "db:") {
+	if strings.HasPrefix(comparableDesc, "db:") {
 		tarea.Tipo = ust.TipoTareaDb
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[3:])
 	}
-	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "idea:") {
+	if strings.HasPrefix(comparableDesc, "idea:") {
 		tarea.Importancia = ust.ImportanciaTareaIdea
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[5:])
 	}
-	if strings.HasPrefix(strings.ToLower(tarea.Descripcion), "mejora:") {
+	if strings.HasPrefix(comparableDesc, "mejora:") {
 		tarea.Importancia = ust.ImportanciaTareaMejora
 		tarea.Descripcion = strings.TrimSpace(tarea.Descripcion[7:])
 	}
