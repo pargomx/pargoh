@@ -45,21 +45,21 @@
 
 		{
 			"label": "Start dev", "detail": "Ejecutar en directorio de prueba",
-			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/pargodata -auser benito -apass terranova1984",
+			"command": "pargoh -src=$(realpath .) -dir=${input:pargoData} -auser benito -apass terranova1984",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
 		},
 		{
 			"label": "Start db debug", "detail": "Ejecutar en directorio de prueba con log de DB",
-			"command": "pargoh -src=/home/andrew/proyectos/PARGO/pargoh -dir=/home/andrew/pargodata -logdb",
+			"command": "pargoh -src=$(realpath .) -dir=${input:pargoData} -logdb",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install"]
 		},
 		{
 			"label": "Start prod", "detail": "Ejecutar en directorio de prueba",
-			"command": "pargoh -dir=/home/andrew/pargodata",
+			"command": "pargoh -dir=${input:pargoData}",
 			"type": "shell", "presentation": { "echo": false, "reveal": "always", "focus": false, "panel": "shared", "showReuseMessage": false, "clear": false },
 			"isBackground": true,
 			"dependsOrder": "sequence", "dependsOn": ["install_prod"]
@@ -77,6 +77,10 @@
 		{
 			"id": "remoteHost", "description": "Dirección del remote host",
 			"default": "tabo", "type": "promptString"
+		},
+		{
+			"id": "pargoData", "description": "Ubicación de pargodata para desarrollo",
+			"default": "/home/andrew/pargodata", "type": "promptString"
 		},
 	]
 }
