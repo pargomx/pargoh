@@ -16,6 +16,8 @@ github.com/ncruces/go-strftime v0.1.9 h1:bY0MQC28UADQmHmaF5dgpLmImcShSi2kHU9XLdh
 github.com/ncruces/go-strftime v0.1.9/go.mod h1:Fwc5htZGVVkseilnfgOVb9mKy6w1naJmn9CehxcKcls=
 github.com/pargomx/gecko v0.0.0-20250225054730-e18b705ac5ce h1:R0OIWnLaJg4s+2I7iUkEAxVnz7x4yAKDqwErnil1vyI=
 github.com/pargomx/gecko v0.0.0-20250225054730-e18b705ac5ce/go.mod h1:gXr3AUgPsUfIlJiu9dXKbSt1gz8s0VhLVB78RpMeXZI=
+github.com/pargomx/gecko v0.0.0-20250227222527-e23e242e34d1 h1:rS1rLxrNXOBuPl7JNR5Pzm/Lr6mnRthCxxVjJiAAs+o=
+github.com/pargomx/gecko v0.0.0-20250227222527-e23e242e34d1/go.mod h1:gXr3AUgPsUfIlJiu9dXKbSt1gz8s0VhLVB78RpMeXZI=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/richardlehane/msoleps v1.0.3 h1:aznSZzrwYRl3rLKRT3gUk9am7T/mLNSnJINvN0AQoVM=

@@ -122,6 +122,7 @@ func main() {
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 		s.gecko.FileFS("/htmx.js", "js/htmx.min.js", assets.AssetsFS)
 	}
+	s.gecko.GET("/gecko.js", gecko.GeckoJS)
 
 	// Sesiones
 	s.GET("/", s.auth.getLogin)
