@@ -52,7 +52,10 @@
 </div>
 {{ end }}
 
-<main class="flex flex-col items-center justify-start grow w-full max-w-5xl gap-4 p-2 mx-auto">
+
+<main class="flex flex-col justify-start grow w-full max-w-5xl gap-4 p-2 mx-auto">
+	{{ template "busqueda_input" . }}
+	
 	{{ range .Proyectos -}}
 	<article id="{{ .ProyectoID }}"
 		hx-get="/proyectos/{{ .ProyectoID }}"

@@ -130,6 +130,8 @@ func main() {
 	s.GET("/logout", s.auth.logout)
 	s.GET("/sesiones", s.auth.printSesiones)
 
+	s.GET("/buscar", s.buscar)
+
 	// Proyectos
 	s.GET("/proyectos", s.listaProyectos)
 	s.POS("/proyectos", s.postProyecto)

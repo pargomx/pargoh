@@ -1,0 +1,33 @@
+<h2 class="p-3 text-3xl text-center">
+	<a href="/proyectos">
+		Pargo 🐟
+	</a>
+</h2>
+<main class="flex flex-col grow w-full max-w-2xl gap-4 p-2 mx-auto">
+	{{ block "busqueda_input" . }}
+	<div>
+		<input 
+			name="q"
+			hx-get="/buscar"
+			hx-push-url="true"
+			type="search"
+			autofocus
+			placeholder="Buscar..."
+			class="form-control">
+	</div>
+	{{ end }}
+
+	<h2 class="font-bold text-xl opacity-75">
+		Resultados
+	</h2>
+	
+	{{ range .Resultados -}}
+	<a href="/historias/{{ .HistoriaID }}"
+		hx-boost="true"
+		hx-push-url="true"
+		class="border-cyan-800 hover:bg-cyan-700 transition-colors border rounded-md shadow-md p-2 truncate hover:text-blue-700">
+		{{ .Texto }}
+	</a>
+	{{ end }}
+
+</main>
