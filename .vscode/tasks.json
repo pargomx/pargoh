@@ -64,7 +64,7 @@
 		{
 			"label": "Deploy avem6",
 			"detail": "Enviar binario al servidor con docker",
-			"command": "rsync -avh --progress /tmp/pargoh avem6:~/bin/ && echo '[✔] App enviada a ${input:remoteHost}\n' && ssh avem6 'docker restart pargo' && '[✔] Actualización aplicada'",
+			"command": "rsync -avh --progress /tmp/pargoh avem6:~/bin/ && echo '[✔] App enviada a avem6\n' && ssh avem6 'docker restart pargo' && echo '[✔] Actualización aplicada'",
 			"dependsOn": ["Compilar"], "dependsOrder": "sequence",
 		},
 		{
