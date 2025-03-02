@@ -17,15 +17,39 @@ import (
 // Escribe una imagen en un archivo con el formato especificado.
 func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int) error {
 	op := gko.Op("GuardarImagen")
-	img, _, err := image.Decode(input)
-	if err != nil {
-		return op.Err(err).ErrNoSoportado().Msg("Imposible decodificar imagen")
-	}
-	if img.Bounds().Max.X > maxPix {
-		return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.X)
-	}
-	if img.Bounds().Max.Y > maxPix {
-		return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.Y)
+	var img image.Image
+	var imgGIF *gif.GIF
+	var err error
+
+	// Decodificar y validar dimensiones máximas.
+	if format == "gif" {
+		imgGIF, err = gif.DecodeAll(input) // Puede ser animado
+		if err != nil {
+			return op.Err(err).Str("decodificar GIF")
+		}
+		if len(imgGIF.Image) == 0 {
+			return op.ErrDatoInvalido().Msg("GIF vacío")
+		}
+		if imgGIF.Image[0] == nil {
+			return op.ErrDatoInvalido().Msg("GIF inválido")
+		}
+		if imgGIF.Image[0].Bounds().Max.X > maxPix {
+			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, imgGIF.Image[0].Bounds().Max.X)
+		}
+		if imgGIF.Image[0].Bounds().Max.Y > maxPix {
+			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, imgGIF.Image[0].Bounds().Max.Y)
+		}
+	} else {
+		img, _, err = image.Decode(input)
+		if err != nil {
+			return op.Err(err).ErrNoSoportado().Msg("Imposible decodificar imagen")
+		}
+		if img.Bounds().Max.X > maxPix {
+			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.X)
+		}
+		if img.Bounds().Max.Y > maxPix {
+			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.Y)
+		}
 	}
 
 	// Evitar sobreescribir un archivo existente.
@@ -50,7 +74,7 @@ func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int
 	case "png":
 		err = png.Encode(outFile, img)
 	case "gif":
-		err = gif.Encode(outFile, img, nil)
+		err = gif.EncodeAll(outFile, imgGIF) // Puede ser animado
 	default:
 		return op.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
 	}
