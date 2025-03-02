@@ -3,7 +3,7 @@
 		Pargo 🐟
 	</a>
 </h2>
-<main class="flex flex-col grow w-full max-w-2xl gap-4 p-2 mx-auto">
+<main class="flex flex-col grow w-full max-w-xl gap-4 p-2 mx-auto">
 	{{ block "busqueda_input" . }}
 	<div>
 		<input 
@@ -11,22 +11,36 @@
 			hx-get="/buscar"
 			hx-push-url="true"
 			type="search"
-			autofocus
-			placeholder="Buscar..."
+			placeholder="Buscar historias..."
 			class="form-control">
 	</div>
 	{{ end }}
 
-	<h2 class="font-bold text-xl opacity-75">
-		Resultados
+	<h2 class="opacity-75 flex items-end">
+		<span class="grow font-bold text-xl">
+			Resultados
+		</span>
+		<small class="text-xs font-normal">
+			{{ len .Resultados }} coincidencias para '{{ .Busqueda }}'
+		</small>
 	</h2>
 	
 	{{ range .Resultados -}}
 	<a href="/historias/{{ .HistoriaID }}"
 		hx-boost="true"
 		hx-push-url="true"
-		class="border-cyan-800 hover:bg-cyan-700 transition-colors border rounded-md shadow-md p-2 truncate hover:text-blue-700">
-		{{ .Texto }}
+		class="border-cyan-800 flex hover:bg-cyan-700 transition-colors border rounded-md shadow-md">
+		<span class="p-2 grow truncate">
+			{{ .Subrallado }}
+		</span>
+		<div class="min-w-8 px-2 leading-none text-xs bg-cyan-800 flex items-center justify-center rounded-r-md">
+			{{- if or (eq .Origen "tit") (eq .Origen "obj") (eq .Origen "des") }}H
+			{{- else if or (eq .Origen "tar") (eq .Origen "imp") }}T
+			{{- else if eq .Origen "reg" }}R
+			{{- else if eq .Origen "via" }}V
+			{{- else }}{{ .Origen }}
+			{{- end -}}
+		</div>
 	</a>
 	{{ end }}
 

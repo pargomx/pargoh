@@ -12,7 +12,7 @@ func (s *Repositorio) FullTextSearch(search string) ([]ust.SearchResult, error) 
 		return nil, gko.ErrDatoIndef().Msg("Búsqueda vacía").Op(op)
 	}
 	rows, err := s.db.Query(
-		"SELECT historia_id, otro_id, origen, texto "+
+		"SELECT historia_id, otro_id, origen, snippet(historias_fts, 3, 'ſ', 'ſ', '...', 64) "+
 			"FROM historias_fts WHERE historias_fts MATCH ? ORDER BY rank LIMIT 150",
 		search,
 	)
