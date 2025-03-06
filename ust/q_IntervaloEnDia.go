@@ -1,6 +1,8 @@
 package ust
 
 import (
+	"time"
+
 	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/gkt"
 )
@@ -37,5 +39,6 @@ func (i *IntervaloEnDia) MinutosSince6am() int {
 		gko.LogError(err)
 		return 0
 	}
+	sixAM = sixAM.Add(time.Hour * 3) // WTF!!
 	return int(ini.Sub(sixAM).Minutes())
 }

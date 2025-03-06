@@ -244,14 +244,11 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		}
 	}
 
-	// Últimos 7 días
+	// Calendario trabajado: últimos 7 días
 	Semana := make([]DiaReport, 7)
-	// weekday := int(time.Now().Truncate(time.Hour).Weekday())
 	if len(Dias) >= 7 {
 		Semana = Dias[len(Dias)-7:]
 	}
-	gko.LogDebugf("Dias %v en la semana", len(Semana))
-
 	Proyectos := map[string]ProyectoReport{}
 	for _, dia := range Dias {
 		for _, p := range dia.Proyectos {
@@ -267,6 +264,21 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			}
 		}
 	}
+	// weekday := int(time.Now().Truncate(time.Hour).Weekday())
+
+	type AhoraStruct struct {
+		Time            time.Time
+		MinutosSince6am int
+		DiaSemana       int
+	}
+	Ahora := AhoraStruct{
+		Time: time.Now().Truncate(time.Second), // Todo gkt.TimeNowEnMexico
+	}
+	// Calculate the time difference from the last 6:00am
+	ahoraDate := Ahora.Time.Add(time.Hour * -6)
+	last6am := time.Date(ahoraDate.Year(), ahoraDate.Month(), ahoraDate.Day(), 3, 0, 0, 0, ahoraDate.Location()) // WTF!!!!!!!!!!
+	Ahora.MinutosSince6am = int(Ahora.Time.Sub(last6am).Minutes())
+	Ahora.DiaSemana = int(ahoraDate.Weekday())
 
 	// Viejo recuento de horas por día.
 	DiasTrabajoMapHoras := make(map[string]float64)
@@ -281,6 +293,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		"DiasTrabajo":         Dias,
 		"Proyectos":           Proyectos,
 		"Semana":              Semana,
+		"Ahora":               Ahora,
 	}
 	return c.RenderOk("metricas", data)
 }
