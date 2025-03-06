@@ -60,6 +60,7 @@
 	<article id="{{ .ProyectoID }}"
 		hx-get="/proyectos/{{ .ProyectoID }}"
 		hx-push-url="true"
+		hx-trigger="none"
 		class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg">
 
 		<div class="p-2 rounded-md">
@@ -76,7 +77,7 @@
 					class="rounded-md opacity-75 hover:opacity-100 text-lg">
 					<i class="fa-solid fa-book"></i>
 				</a>
-				<a href="/proyectos/{{ .ProyectoID }}" class="transition-opacity hover:opacity-75">
+				<a href="/proyectos/{{ .ProyectoID }}" class="transition-opacity hover:opacity-75 w-full mr-10">
 					{{ .Titulo }}
 				</a>
 			</h4>
@@ -159,18 +160,37 @@
 		</button>
 	</div>
 	<form class="flex flex-col gap-2 p-2" hx-post="/proyectos">
-		<div>
-			<label for="newprj_01">Título</label>
-			<input id="newprj_01" name="titulo" value="" type="text" class="form-control" required onchange="newprj_02.value=normalizar(this.value.replaceAll(' ',''))">
-		</div>
-		<div>
-			<label for="newprj_02">Clave</label>
-			<input id="newprj_02" name="clave" value="" type="text" class="form-control" required>
-		</div>
-		<div>
-			<label for="newprj_03">Descripción</label>
-			<textarea id="newprj_03" name="descripcion" rows="2" class="form-control"></textarea>
-		</div>
+		<label>
+			Título
+			<input
+				name="titulo"
+				type="text"
+				required
+				onchange="newPryClave.value=normalizar(this.value.replaceAll(' ',''))"
+				class="form-control">
+		</label>
+		<label>
+			Clave
+			<input id="newPryClave"
+				name="clave"
+				type="text"
+				required
+				class="form-control">
+		</label>
+		<label>
+			Descripción
+			<textarea
+				name="descripcion"
+				rows="2"
+				class="form-control"></textarea>
+		</label>
+		<label>
+			Color
+			<input
+				name="color"
+				type="text"
+				class="form-control">
+		</label>
 		<button 
 			type="submit"
 			onclick="this.closest('dialog').close()"
@@ -238,24 +258,62 @@
 			Exportar Markdown
 		</a>
 	</div>
-	<form class="flex flex-col gap-2 p-2" hx-put="/proyectos/{{ .ProyectoID }}" hx-encoding="multipart/form-data">
+	<form
+		hx-put="/proyectos/{{ .ProyectoID }}"
+		hx-encoding="multipart/form-data"
+		class="flex flex-col gap-2 p-2">
+		<label>
+			Título
+			<input
+				name="titulo"
+				value="{{ .Titulo }}"
+				type="text"
+				required
+				class="form-control">
+		</label>
+		<label>
+			Clave
+			<input
+				name="clave"
+				value="{{ .ProyectoID }}"
+				type="text"
+				required
+				class="form-control">
+		</label>
+		<label>
+			Descripción
+			<textarea
+				name="descripcion"
+				rows="1"
+				class="form-control">
+				{{- .Descripcion -}}
+			</textarea>
+		</label>
 		<div>
-			<label for="{{ .ProyectoID }}_01">Título</label>
-			<input id="{{ .ProyectoID }}_01" name="titulo" value="{{ .Titulo }}" type="text" class="form-control" required>
-		</div>
-		<div>
-			<label for="{{ .ProyectoID }}_02">Clave</label>
-			<input id="{{ .ProyectoID }}_02" name="clave" value="{{ .ProyectoID }}" type="text" class="form-control" required>
-		</div>
-		<div>
-			<label for="{{ .ProyectoID }}_03">Descripción</label>
-			<textarea id="{{ .ProyectoID }}_03" name="descripcion" rows="1" class="form-control">{{ .Descripcion }}</textarea>
-		</div>
-		<div>
-			<label for="{{ .ProyectoID }}_04">Imagen</label>
 			<img tipo="img_preview" src="" class="hidden object-cover mx-auto mb-2 rounded-md shadow-lg aspect-square w-60">
-			<input id="{{ .ProyectoID }}_04" type="file" name="imagen" accept="image/png, image/jpeg, image/gif" onchange="showImagen(this)" class="form-control">
 		</div>
+		<label>
+			Imagen
+			<input
+				type="file"
+				name="imagen" accept="image/png, image/jpeg, image/gif" onchange="showImagen(this)" class="form-control">
+		</label>
+		<label>
+			Color
+			<input
+				name="color"
+				value="{{ .Color }}"
+				type="text"
+				class="form-control">
+		</label>
+		<label>
+			Posición
+			<input
+				name="posicion"
+				value="{{ .Posicion }}"
+				type="number"
+				class="form-control">
+		</label>
 		<div class="flex flex-row-reverse pt-4 gap-x-4 gap-y-2">
 			<button
 				type="submit"
@@ -263,14 +321,6 @@
 				class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600">
 				Guardar
 			</button>
-			<!-- <button
-				type="button"
-				hx-delete="/proyectos/{{ .ProyectoID}}"
-				hx-confirm="¿Eliminar proyecto {{ .Titulo }}?"
-				onclick="this.closest('dialog').close()"
-				class="p-2 transition-opacity bg-red-800 rounded-sm shadow-md opacity-75 hover:opacity-100 focus:opacity-100">
-				Eliminar
-			</button> -->
 			<button
 				type="button"
 				hx-delete="/proyectos/{{ .ProyectoID}}/definitivo"
@@ -285,9 +335,11 @@
 </dialog>
 {{ end 	}}
 
+<div hx-askfor="/proyectos">
 {{ range .Proyectos }}
-{{ template "proyecto_form" . }}
+	{{ template "proyecto_form" . }}
 {{ end }}
+</div>
 
 <script>
 	function showProyectoForm(proyectoID) {

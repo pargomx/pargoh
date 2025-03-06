@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkt"
 )
 
 func nuevoProyectoID(clave string) string {
@@ -17,9 +18,12 @@ func nuevoProyectoID(clave string) string {
 func NuevoProyecto(clave string, titulo string, desc string, repo Repo) error {
 	const op string = "app.NuevoProyecto"
 	pro := ust.Proyecto{
-		ProyectoID:  nuevoProyectoID(clave),
-		Titulo:      strings.TrimSpace(titulo),
-		Descripcion: strings.TrimSpace(desc),
+		ProyectoID:    nuevoProyectoID(clave),
+		Titulo:        strings.TrimSpace(titulo),
+		Descripcion:   strings.TrimSpace(desc),
+		Color:         "lightblue",
+		FechaRegistro: gkt.Now().Format(gkt.FormatoFechaHora),
+		Posicion:      1,
 	}
 	if pro.ProyectoID == "" {
 		return gko.ErrDatoIndef().Op(op).Msg("clave de proyecto indefinida")
@@ -34,37 +38,44 @@ func NuevoProyecto(clave string, titulo string, desc string, repo Repo) error {
 	return nil
 }
 
-func ModificarProyecto(proyectoID string, clave string, titulo string, desc string, repo Repo) error {
-	const op string = "app.ModificarProyecto"
+func ModificarProyecto(proyectoID string, nuevo ust.Proyecto, repo Repo) error {
+	op := gko.Op("app.ModificarProyecto")
 	pro, err := repo.GetProyecto(proyectoID)
 	if err != nil {
-		return gko.Err(err)
-	}
-	nuevo := ust.Proyecto{
-		ProyectoID:  nuevoProyectoID(clave),
-		Titulo:      strings.TrimSpace(titulo),
-		Descripcion: strings.TrimSpace(desc),
-	}
-	if nuevo.ProyectoID == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("clave de proyecto indefinida")
-	}
-	if nuevo.Titulo == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("titulo de proyecto indefinido")
+		return op.Err(err)
 	}
 
+	nuevo.ProyectoID = nuevoProyectoID(nuevo.ProyectoID)
+	nuevo.Titulo = gkt.SinEspaciosExtra(nuevo.Titulo)
+	nuevo.Descripcion = gkt.SinEspaciosExtraConSaltos(nuevo.Descripcion)
+	nuevo.Color = gkt.SinEspaciosNinguno(nuevo.Color)
+
+	if nuevo.ProyectoID == "" {
+		return op.ErrDatoIndef().Msg("clave de proyecto indefinida")
+	}
+	if nuevo.Titulo == "" {
+		return op.ErrDatoIndef().Msg("titulo de proyecto indefinido")
+	}
+
+	if pro.ProyectoID != nuevo.ProyectoID {
+		return op.ErrNoSoportado().Msg("no se puede cambiar la clave del proyecto")
+	}
 	if pro.Titulo != nuevo.Titulo {
 		pro.Titulo = nuevo.Titulo
 	}
 	if pro.Descripcion != nuevo.Descripcion {
 		pro.Descripcion = nuevo.Descripcion
 	}
-	if pro.ProyectoID != nuevo.ProyectoID {
-		return gko.ErrNoSoportado().Msg("no se puede cambiar la clave del proyecto")
+	if pro.Color != nuevo.Color {
+		pro.Color = nuevo.Color
+	}
+	if pro.Posicion != nuevo.Posicion {
+		pro.Posicion = nuevo.Posicion
 	}
 
 	err = repo.UpdateProyecto(*pro)
 	if err != nil {
-		return gko.Err(err)
+		return op.Err(err)
 	}
 	return nil
 }
@@ -80,9 +91,16 @@ func ParcharProyecto(proyectoID string, param string, newVal string, repo Repo) 
 	}
 	switch param {
 	case "titulo":
-		Proyecto.Titulo = newVal
+		Proyecto.Titulo = gkt.SinEspaciosExtra(newVal)
 	case "descripcion":
-		Proyecto.Descripcion = newVal
+		Proyecto.Descripcion = gkt.SinEspaciosExtraConSaltos(newVal)
+	case "color":
+		Proyecto.Color = gkt.SinEspaciosNinguno(newVal)
+	case "posicion":
+		Proyecto.Posicion, err = gkt.ToInt(newVal)
+		if err != nil {
+			return op.Err(err)
+		}
 	default:
 		return op.Msgf("Parámetro no soportado: %v", param)
 	}

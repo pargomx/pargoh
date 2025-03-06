@@ -97,11 +97,11 @@
 			<!-- Intervalos -->
 			{{ range $diaIdx, $sem := .Semana -}}
 			{{ $diaNum := suma $diaIdx 1 -}}
-			{{ range .Proyectos -}}
+			{{ range .Proyectos -}}{{ $color := .Proyecto.Color }}
 			{{ range .Historias -}}
 			{{ range .Tareas -}}
 			{{ range .Intervalos -}}
-			<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ div .MinutosSince6am 2 }}" width="52" height="{{ div .Segundos 120 }}" fill="orange"></rect>
+			<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ div .MinutosSince6am 2 }}" width="52" height="{{ div .Segundos 120 }}" fill="{{ $color }}"></rect>
 			{{ end -}}
 			{{ end -}}
 			{{ end -}}

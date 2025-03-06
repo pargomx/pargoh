@@ -56,7 +56,9 @@
 {{ end -}}
 
 {{ with .Proyecto }}
-{{ template "proyecto_form" . }}
+<div hx-askfor="/proyectos/{{ .ProyectoID }}">
+	{{ template "proyecto_form" . }}
+</div>
 {{ end }}
 
 <!--* QUICK EDIT -->

@@ -21,9 +21,9 @@ func (s *Repositorio) InsertProyecto(pro ust.Proyecto) error {
 		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
 	}
 	_, err := s.db.Exec("INSERT INTO proyectos "+
-		"(proyecto_id, titulo, imagen, descripcion) "+
-		"VALUES (?, ?, ?, ?) ",
-		pro.ProyectoID, pro.Titulo, pro.Imagen, pro.Descripcion,
+		"(proyecto_id, posicion, titulo, color, imagen, descripcion, fecha_registro) "+
+		"VALUES (?, ?, ?, ?, ?, ?, ?) ",
+		pro.ProyectoID, pro.Posicion, pro.Titulo, pro.Color, pro.Imagen, pro.Descripcion, pro.FechaRegistro,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir().Err(err).Op(op)
@@ -39,10 +39,13 @@ func (s *Repositorio) InsertProyecto(pro ust.Proyecto) error {
 // con los campos escaneados.
 //
 //	proyecto_id,
+//	posicion,
 //	titulo,
+//	color,
 //	imagen,
-//	descripcion
-const columnasProyecto string = "proyecto_id, titulo, imagen, descripcion"
+//	descripcion,
+//	fecha_registro
+const columnasProyecto string = "proyecto_id, posicion, titulo, color, imagen, descripcion, fecha_registro"
 
 // Origen de los datos de ust.Proyecto
 //
@@ -55,11 +58,11 @@ const fromProyecto string = "FROM proyectos "
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowProyecto(row *sql.Row, pro *ust.Proyecto) error {
 	err := row.Scan(
-		&pro.ProyectoID, &pro.Titulo, &pro.Imagen, &pro.Descripcion,
+		&pro.ProyectoID, &pro.Posicion, &pro.Titulo, &pro.Color, &pro.Imagen, &pro.Descripcion, &pro.FechaRegistro,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Proyecto no se encuentra")
+			return gko.ErrNoEncontrado().Msg("Proyecto no encontrado")
 		}
 		return gko.ErrInesperado().Err(err)
 	}
@@ -103,9 +106,9 @@ func (s *Repositorio) UpdateProyecto(pro ust.Proyecto) error {
 	}
 	_, err := s.db.Exec(
 		"UPDATE proyectos SET "+
-			"proyecto_id=?, titulo=?, imagen=?, descripcion=? "+
+			"proyecto_id=?, posicion=?, titulo=?, color=?, imagen=?, descripcion=?, fecha_registro=? "+
 			"WHERE proyecto_id = ?",
-		pro.ProyectoID, pro.Titulo, pro.Imagen, pro.Descripcion,
+		pro.ProyectoID, pro.Posicion, pro.Titulo, pro.Color, pro.Imagen, pro.Descripcion, pro.FechaRegistro,
 		pro.ProyectoID,
 	)
 	if err != nil {
@@ -126,14 +129,14 @@ func (s *Repositorio) ExisteProyecto(ProyectoID string) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrProyectoNotFound).Op(op)
+			return gko.ErrNoEncontrado().Msg("Proyecto no encontrado").Op(op)
 		}
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
 		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrProyectoNotFound).Op(op)
+		return gko.ErrNoEncontrado().Msg("Proyecto no encontrado").Op(op)
 	}
 	return nil
 }
@@ -172,7 +175,7 @@ func (s *Repositorio) scanRowsProyecto(rows *sql.Rows, op string) ([]ust.Proyect
 	for rows.Next() {
 		pro := ust.Proyecto{}
 		err := rows.Scan(
-			&pro.ProyectoID, &pro.Titulo, &pro.Imagen, &pro.Descripcion,
+			&pro.ProyectoID, &pro.Posicion, &pro.Titulo, &pro.Color, &pro.Imagen, &pro.Descripcion, &pro.FechaRegistro,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado().Err(err).Op(op)
@@ -183,12 +186,13 @@ func (s *Repositorio) scanRowsProyecto(rows *sql.Rows, op string) ([]ust.Proyect
 }
 
 //  ================================================================  //
-//  ========== LIST ================================================  //
+//  ========== LIST  ===============================================  //
 
 func (s *Repositorio) ListProyectos() ([]ust.Proyecto, error) {
 	const op string = "ListProyectos"
 	rows, err := s.db.Query(
-		"SELECT " + columnasProyecto + " " + fromProyecto,
+		"SELECT " + columnasProyecto + " " + fromProyecto +
+			"ORDER BY posicion",
 	)
 	if err != nil {
 		return nil, gko.ErrInesperado().Err(err).Op(op)
