@@ -24,6 +24,8 @@ github.com/pargomx/gecko v0.0.0-20250303061038-97161f45bfed h1:qh8Hm+OXrbJcdgSk9
 github.com/pargomx/gecko v0.0.0-20250303061038-97161f45bfed/go.mod h1:gXr3AUgPsUfIlJiu9dXKbSt1gz8s0VhLVB78RpMeXZI=
 github.com/pargomx/gecko v0.0.0-20250303061535-58a5fe862025 h1:EMVhMLDEXG2BtEPnozXAaGBkOVt+J/RHERvVzuh8lY0=
 github.com/pargomx/gecko v0.0.0-20250303061535-58a5fe862025/go.mod h1:gXr3AUgPsUfIlJiu9dXKbSt1gz8s0VhLVB78RpMeXZI=
+github.com/pargomx/gecko v0.0.0-20250304053801-013903ab564b h1:TbrMBrtcRmzrcJnHs/3OQK36msynk2PLxSOt3SgGmIQ=
+github.com/pargomx/gecko v0.0.0-20250304053801-013903ab564b/go.mod h1:gXr3AUgPsUfIlJiu9dXKbSt1gz8s0VhLVB78RpMeXZI=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94icq4NjY3clb7Lk8O1qJ8BdBEF8z0ibU0rE=
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/richardlehane/msoleps v1.0.3 h1:aznSZzrwYRl3rLKRT3gUk9am7T/mLNSnJINvN0AQoVM=

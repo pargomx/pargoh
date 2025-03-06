@@ -120,7 +120,6 @@ func main() {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 	}
-	s.gecko.GET("/htmx.js", s.gecko.ServirHtmxJS())
 	s.gecko.GET("/htmx.min.js", s.gecko.ServirHtmxMinJS())
 	s.gecko.GET("/gecko.js", s.gecko.ServirGeckoJS())
 
