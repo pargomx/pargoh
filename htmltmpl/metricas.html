@@ -1,5 +1,96 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<div class="flex grow items-center justify-center">
+	<div class="p-2 bg-cyan-700 rounded-md">
+		<svg xmlns="http://www.w3.org/2000/svg" width="480" height="810" class="w-full">
+			<!-- Background -->
+			<rect x="0" y="0" width="480" height="810" fill="white" />
+
+			<!-- Horizontal grid lines (time slots) -->
+			<g stroke="lightgray" stroke-width="1">
+				<line id="lh_0" x1="0" y1="000" x2="480" y2="000" />
+				<line id="lh_1" x1="0" y1="090" x2="480" y2="090" />
+				<line id="lh_2" x1="0" y1="180" x2="480" y2="180" />
+				<line id="lh_3" x1="0" y1="270" x2="480" y2="270" />
+				<line id="lh_4" x1="0" y1="360" x2="480" y2="360" />
+				<line id="lh_5" x1="0" y1="450" x2="480" y2="450" />
+				<line id="lh_6" x1="0" y1="540" x2="480" y2="540" />
+				<line id="lh_7" x1="0" y1="630" x2="480" y2="630" />
+				<line id="lh_8" x1="0" y1="720" x2="480" y2="720" />
+				<line id="lh_9" x1="0" y1="810" x2="480" y2="810" />
+			</g>
+
+			<!-- Vertical grid lines (days) -->
+			<g stroke="gray" stroke-width="1">
+				<line id="lv_1" x1="000" y1="0" x2="000" y2="810" />
+				<line id="lv_1" x1="060" y1="0" x2="060" y2="810" />
+				<line id="lv_2" x1="120" y1="0" x2="120" y2="810" />
+				<line id="lv_3" x1="180" y1="0" x2="180" y2="810" />
+				<line id="lv_4" x1="240" y1="0" x2="240" y2="810" />
+				<line id="lv_5" x1="300" y1="0" x2="300" y2="810" />
+				<line id="lv_6" x1="360" y1="0" x2="360" y2="810" />
+				<line id="lv_7" x1="420" y1="0" x2="420" y2="810" />
+				<line id="lv_8" x1="480" y1="0" x2="480" y2="810" />
+			</g>
+
+			<!-- Day Labels -->
+			<text id="dia_1" x="090" y="22" font-size="18" text-anchor="middle">Lun</text>
+			<text id="dia_2" x="150" y="22" font-size="18" text-anchor="middle">Mar</text>
+			<text id="dia_3" x="210" y="22" font-size="18" text-anchor="middle">Mié</text>
+			<text id="dia_4" x="270" y="22" font-size="18" text-anchor="middle">Jue</text>
+			<text id="dia_5" x="330" y="22" font-size="18" text-anchor="middle">Vie</text>
+			<text id="dia_6" x="390" y="22" font-size="18" text-anchor="middle">Sáb</text>
+			<text id="dia_7" x="450" y="22" font-size="18" text-anchor="middle">Dom</text>
+
+			<!-- Time Labels -->
+			<text id="hra_1" x="30" y="086" font-size="12" text-anchor="middle">06:00am</text>
+			<text id="hra_2" x="30" y="176" font-size="12" text-anchor="middle">09:00am</text>
+			<text id="hra_3" x="30" y="266" font-size="12" text-anchor="middle">12:00pm</text>
+			<text id="hra_4" x="30" y="356" font-size="12" text-anchor="middle">03:00pm</text>
+			<text id="hra_5" x="30" y="446" font-size="12" text-anchor="middle">06:00pm</text>
+			<text id="hra_6" x="30" y="536" font-size="12" text-anchor="middle">09:00pm</text>
+			<text id="hra_7" x="30" y="626" font-size="12" text-anchor="middle">12:00am</text>
+			<text id="hra_8" x="30" y="716" font-size="12" text-anchor="middle">03:00am</text>
+			<text id="hra_9" x="30" y="806" font-size="12" text-anchor="middle">06:00am</text>
+
+			<!-- Intervalos -->
+			<rect x="064" y="100" width="52" height="123" fill="lightblue"></rect>
+			<rect x="124" y="200" width="52" height="113" fill="lightblue"></rect>
+			<rect x="184" y="240" width="52" height="053" fill="lightblue"></rect>
+			<rect x="244" y="300" width="52" height="223" fill="lightblue"></rect>
+			<rect x="304" y="250" width="52" height="423" fill="lightblue"></rect>
+			<rect x="364" y="133" width="52" height="189" fill="lightblue"></rect>
+			<rect x="424" y="037" width="52" height="096" fill="lightblue"></rect>
+			
+			<rect x="064" y="094" width="52" height="045" fill="orange"></rect>
+			<rect x="124" y="682" width="52" height="150" fill="orange"></rect>
+			<rect x="184" y="589" width="52" height="119" fill="orange"></rect>
+			<rect x="244" y="161" width="52" height="047" fill="orange"></rect>
+			<rect x="304" y="711" width="52" height="048" fill="orange"></rect>
+			<rect x="364" y="135" width="52" height="125" fill="orange"></rect>
+			<rect x="424" y="628" width="52" height="137" fill="orange"></rect>
+
+			<rect x="064" y="494" width="52" height="62" fill="red"></rect>
+			<rect x="124" y="556" width="52" height="36" fill="red"></rect>
+			<rect x="184" y="542" width="52" height="61" fill="red"></rect>
+			<rect x="244" y="284" width="52" height="15" fill="red"></rect>
+			<rect x="304" y="105" width="52" height="84" fill="red"></rect>
+			<rect x="364" y="551" width="52" height="38" fill="red"></rect>
+			<rect x="424" y="530" width="52" height="32" fill="red"></rect>
+
+			<rect x="064" y="334" width="52" height="033" fill="green"></rect>
+			<rect x="124" y="427" width="52" height="010" fill="green"></rect>
+			<rect x="184" y="323" width="52" height="139" fill="green"></rect>
+			<rect x="244" y="497" width="52" height="140" fill="green"></rect>
+			<rect x="304" y="335" width="52" height="112" fill="green"></rect>
+			<rect x="364" y="357" width="52" height="078" fill="green"></rect>
+			<rect x="424" y="492" width="52" height="019" fill="green"></rect>
+
+		</svg>
+	</div>
+</div>
+
+{{/*
 <main class="grow w-full p-2">
 
 	<!--? DIAS DE TRABAJO -->
@@ -187,3 +278,4 @@
 	{{ end }}
 
 </main>
+*/}}
