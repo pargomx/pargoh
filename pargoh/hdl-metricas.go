@@ -1,12 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"monorepo/dhistorias"
 	"monorepo/ust"
+	"time"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkt"
 )
 
 type DiaReport struct {
@@ -31,6 +34,69 @@ type TareaReport struct {
 	Tarea      ust.Tarea
 	Segundos   int
 	Intervalos []ust.IntervaloEnDia
+}
+
+func (d *DiaReport) GetDiaSemanaAbrev() string {
+	fecha, err := gkt.ToFecha(d.Fecha)
+	if err != nil {
+		gko.LogError(err)
+		return "ERR"
+	}
+	switch fecha.Format("Mon") {
+	case "Mon":
+		return "Lun"
+	case "Tue":
+		return "Mar"
+	case "Wed":
+		return "Mié"
+	case "Thu":
+		return "Jue"
+	case "Fri":
+		return "Vie"
+	case "Sat":
+		return "Sáb"
+	case "Sun":
+		return "Dom"
+	default:
+		return "Err"
+	}
+}
+
+func (d *DiaReport) GetFechaAbrev() string {
+	fecha, err := gkt.ToFecha(d.Fecha)
+	if err != nil {
+		gko.LogError(err)
+		return "ERR"
+	}
+	dia := fecha.Day()
+	switch fecha.Month() {
+	case time.January:
+		return fmt.Sprintf("%d ene", dia)
+	case time.February:
+		return fmt.Sprintf("%d feb", dia)
+	case time.March:
+		return fmt.Sprintf("%d mar", dia)
+	case time.April:
+		return fmt.Sprintf("%d abr", dia)
+	case time.May:
+		return fmt.Sprintf("%d may", dia)
+	case time.June:
+		return fmt.Sprintf("%d jun", dia)
+	case time.July:
+		return fmt.Sprintf("%d jul", dia)
+	case time.August:
+		return fmt.Sprintf("%d ago", dia)
+	case time.September:
+		return fmt.Sprintf("%d sep", dia)
+	case time.October:
+		return fmt.Sprintf("%d oct", dia)
+	case time.November:
+		return fmt.Sprintf("%d nov", dia)
+	case time.December:
+		return fmt.Sprintf("%d dic", dia)
+	default:
+		return "Error"
+	}
 }
 
 // ================================================================ //
@@ -178,6 +244,14 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		}
 	}
 
+	// Últimos 7 días
+	Semana := make([]DiaReport, 7)
+	// weekday := int(time.Now().Truncate(time.Hour).Weekday())
+	if len(Dias) >= 7 {
+		Semana = Dias[len(Dias)-7:]
+	}
+	gko.LogDebugf("Dias %v en la semana", len(Semana))
+
 	Proyectos := map[string]ProyectoReport{}
 	for _, dia := range Dias {
 		for _, p := range dia.Proyectos {
@@ -206,6 +280,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		"DiasTrabajoMapHoras": DiasTrabajoMapHoras,
 		"DiasTrabajo":         Dias,
 		"Proyectos":           Proyectos,
+		"Semana":              Semana,
 	}
 	return c.RenderOk("metricas", data)
 }
