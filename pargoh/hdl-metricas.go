@@ -243,6 +243,10 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			Dias[i].Proyectos[historia.ProyectoID] = pro
 		}
 	}
+	// El último día puede ser en el futuro y estar vacío
+	if len(Dias) > 1 && Dias[len(Dias)-1].Segundos == 0 {
+		Dias = Dias[:len(Dias)-2]
+	}
 
 	// Calendario trabajado: últimos 7 días
 	Semana := make([]DiaReport, 7)
