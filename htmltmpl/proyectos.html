@@ -1,11 +1,16 @@
-<h2 class="p-3 text-3xl text-center">
-	Pargo 🐟
-	<a
-		href="/tareas"
-		class="text-sm float-right hover:text-cyan-400 transition-colors">
-		QuickTasks
+<header class="flex justify-between items-start">
+	<a href="/metricas" class="pt-4 p-3 text-sm transition-colors hover:text-cyan-400">
+		<i class="fa-solid fa-chart-line"></i>
+		Métricas
 	</a>
-</h2>
+	<h2 class="p-3 text-3xl text-center">
+		Pargo 🐟
+	</h2>
+	<a href="/tareas" class="pt-4 p-3 text-sm transition-colors hover:text-cyan-400">
+		<i class="fa-solid fa-list-check"></i>
+		Tareas
+	</a>
+</header>
 
 {{ if .TareasEnCurso -}}
 <div class="flex flex-col gap-1 px-4 mb-4">
@@ -123,10 +128,6 @@
 </main>
 
 <footer class="flex flex-wrap justify-between gap-4 p-4">
-	<a href="/metricas" class="transition-colors hover:text-cyan-400">
-		Métricas
-		<i class="px-1 text-sm fa-solid fa-chart-line"></i>
-	</a>
 	<p>
 		Hecho con <i class="px-1 text-sm fa-solid fa-heart"></i> por
 		<a href="https://github.com/pargomx" target="_blank" class="transition-colors hover:text-cyan-400">PargoMx</a>

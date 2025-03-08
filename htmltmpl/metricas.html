@@ -1,17 +1,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<h3 class="mt-4 text-xl text-cyan-600 text-center">
-	Tiempo trabajado: últimos 7 días
+<h3 class="mt-4 text-xl text-white text-center">
+	Últimos 7 días de trabajo
 </h3>
-<div class="flex grow items-center justify-center p-4">
-	<div class="p-2 bg-cyan-700 rounded-md">
-		<svg xmlns="http://www.w3.org/2000/svg" width="480" height="810" class="w-full">
-			<!-- Background -->
+<div class="flex grow items-center justify-center p-2">
+
+	<div class="p-2 bg-cyan-900 rounded-md w-full overflow-x-auto max-w-2xl shadow-md">
+		{{/* El gráfico es 480x810. w/h=auto lo hace escalable.
+			Viewbox:y=25,h=810-25 reduce primera fila sin afectar coordenadas.  */ -}}
+		<svg xmlns="http://www.w3.org/2000/svg" width="auto" height="auto" viewbox="0 25 480 785">
+			<!-- Fondo -->
 			<rect x="0" y="0" width="480" height="810" fill="white" />
 
-			<!-- Horizontal grid lines (time slots) -->
+			<!-- Horizontales principales (3 horas) -->
 			<g stroke="lightgray" stroke-width="1">
-				<line id="lh_0" x1="0" y1="000" x2="480" y2="000" />
+				<!-- <line id="lh_0" x1="0" y1="000" x2="480" y2="000" /> -->
 				<line id="lh_1" x1="0" y1="090" x2="480" y2="090" />
 				<line id="lh_2" x1="0" y1="180" x2="480" y2="180" />
 				<line id="lh_3" x1="0" y1="270" x2="480" y2="270" />
@@ -20,9 +23,10 @@
 				<line id="lh_6" x1="0" y1="540" x2="480" y2="540" />
 				<line id="lh_7" x1="0" y1="630" x2="480" y2="630" />
 				<line id="lh_8" x1="0" y1="720" x2="480" y2="720" />
-				<line id="lh_9" x1="0" y1="810" x2="480" y2="810" />
+				<!-- <line id="lh_9" x1="0" y1="810" x2="480" y2="810" /> -->
 			</g>
 
+			<!-- Horizontales secundarias (horas) -->
 			<g stroke="lightgray" stroke-width="1" stroke-dasharray="4">
 				<line id="lha_1" x1="30" y1="120" x2="480" y2="120" />
 				<line id="lha_2" x1="30" y1="210" x2="480" y2="210" />
@@ -43,9 +47,9 @@
 				<line id="lhb_8" x1="30" y1="780" x2="480" y2="780" />
 			</g>
 
-			<!-- Vertical grid lines (days) -->
+			<!-- Verticales (semana) -->
 			<g stroke="gray" stroke-width="1">
-				<line id="lv_1" x1="000" y1="0" x2="000" y2="810" />
+				<!-- <line id="lv_1" x1="000" y1="0" x2="000" y2="810" /> -->
 				<line id="lv_1" x1="060" y1="0" x2="060" y2="810" />
 				<line id="lv_2" x1="120" y1="0" x2="120" y2="810" />
 				<line id="lv_3" x1="180" y1="0" x2="180" y2="810" />
@@ -53,27 +57,28 @@
 				<line id="lv_5" x1="300" y1="0" x2="300" y2="810" />
 				<line id="lv_6" x1="360" y1="0" x2="360" y2="810" />
 				<line id="lv_7" x1="420" y1="0" x2="420" y2="810" />
-				<line id="lv_8" x1="480" y1="0" x2="480" y2="810" />
+				<!-- <line id="lv_8" x1="480" y1="0" x2="480" y2="810" /> -->
 			</g>
 
-			<!-- Day Labels -->
 			{{ if .Semana }}
-			<text id="dia_1" x="090" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 0).GetFechaAbrev }}</text>
-			<text id="dia_2" x="150" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 1).GetFechaAbrev }}</text>
-			<text id="dia_3" x="210" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 2).GetFechaAbrev }}</text>
-			<text id="dia_4" x="270" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 3).GetFechaAbrev }}</text>
-			<text id="dia_5" x="330" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 4).GetFechaAbrev }}</text>
-			<text id="dia_6" x="390" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 5).GetFechaAbrev }}</text>
-			<text id="dia_7" x="450" y="60" font-size="12" text-anchor="middle">{{ (index .Semana 6).GetFechaAbrev }}</text>
-			
-			<text id="dia_1" x="090" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 0).GetDiaSemanaAbrev }}</text>
-			<text id="dia_2" x="150" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 1).GetDiaSemanaAbrev }}</text>
-			<text id="dia_3" x="210" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 2).GetDiaSemanaAbrev }}</text>
-			<text id="dia_4" x="270" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 3).GetDiaSemanaAbrev }}</text>
-			<text id="dia_5" x="330" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 4).GetDiaSemanaAbrev }}</text>
-			<text id="dia_6" x="390" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 5).GetDiaSemanaAbrev }}</text>
-			<text id="dia_7" x="450" y="42" font-size="18" text-anchor="middle">{{ (index .Semana 6).GetDiaSemanaAbrev }}</text>
+			<!-- Etiqueta para la fecha -->
+			<text id="dia_1" x="090" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 0).GetFechaAbrev }}</text>
+			<text id="dia_2" x="150" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 1).GetFechaAbrev }}</text>
+			<text id="dia_3" x="210" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 2).GetFechaAbrev }}</text>
+			<text id="dia_4" x="270" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 3).GetFechaAbrev }}</text>
+			<text id="dia_5" x="330" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 4).GetFechaAbrev }}</text>
+			<text id="dia_6" x="390" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 5).GetFechaAbrev }}</text>
+			<text id="dia_7" x="450" y="75" font-size="12" text-anchor="middle">{{ (index .Semana 6).GetFechaAbrev }}</text>
+			<!-- Etiqueta para el día -->
+			<text id="dia_1" x="090" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 0).GetDiaSemanaAbrev }}</text>
+			<text id="dia_2" x="150" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 1).GetDiaSemanaAbrev }}</text>
+			<text id="dia_3" x="210" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 2).GetDiaSemanaAbrev }}</text>
+			<text id="dia_4" x="270" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 3).GetDiaSemanaAbrev }}</text>
+			<text id="dia_5" x="330" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 4).GetDiaSemanaAbrev }}</text>
+			<text id="dia_6" x="390" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 5).GetDiaSemanaAbrev }}</text>
+			<text id="dia_7" x="450" y="57" font-size="18" text-anchor="middle">{{ (index .Semana 6).GetDiaSemanaAbrev }}</text>
 			{{ else }}
+			<!-- Fallback -->
 			<text id="dia_1" x="090" y="22" font-size="18" text-anchor="middle">Lun</text>
 			<text id="dia_2" x="150" y="22" font-size="18" text-anchor="middle">Mar</text>
 			<text id="dia_3" x="210" y="22" font-size="18" text-anchor="middle">Mié</text>
@@ -83,8 +88,7 @@
 			<text id="dia_7" x="450" y="22" font-size="18" text-anchor="middle">Dom</text>
 			{{ end }}
 
-
-			<!-- Time Labels -->
+			<!-- Etiquetas de hora -->
 			<text id="hra_1" x="30" y="105" font-size="12" text-anchor="middle">06:00am</text>
 			<text id="hra_2" x="30" y="195" font-size="12" text-anchor="middle">09:00am</text>
 			<text id="hra_3" x="30" y="285" font-size="12" text-anchor="middle">12:00pm</text>
@@ -94,7 +98,7 @@
 			<text id="hra_7" x="30" y="645" font-size="12" text-anchor="middle">12:00am</text>
 			<text id="hra_8" x="30" y="735" font-size="12" text-anchor="middle">03:00am</text>
 
-			<!-- Intervalos -->
+			<!-- Intervalos por proyecto -->
 			{{ range $diaIdx, $sem := .Semana -}}
 			{{ $diaNum := suma $diaIdx 1 -}}
 			{{ range .Proyectos -}}{{ $color := .Proyecto.Color }}
@@ -108,19 +112,20 @@
 			{{ end -}}
 			{{ end }}
 
-			<!-- Ahora -->
+			<!-- Marca de la hora actual -->
 			{{ with .Ahora }}
 			<rect x="360" y="{{ div .MinutosSince6am 2 }}" width="60" height="4" fill="green"></rect>
 			{{ end }}
 		</svg>
+		<p class="font-mono text-sm text-center pt-2">
+			{{ .Ahora.Time }}
+		</p>
 	</div>
+
 </div>
 
 <!-- DEBUG INTERVALOS EN GRÁFICO SEMANAL -->
-<code class="text-center">
-	Ahora: {{ .Ahora }}
-</code>
-<table class="font-mono text-right">
+<table class="font-mono text-right hidden">
 	<thead>
 		<th>Fecha</th>
 		<th>Inicio</th>
