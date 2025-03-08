@@ -272,7 +272,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		DiaSemana       int
 	}
 	Ahora := AhoraStruct{
-		Time: time.Now().Truncate(time.Second), // Todo gkt.TimeNowEnMexico
+		Time: gkt.Now().Truncate(time.Second),
 	}
 	// Calculate the time difference from the last 6:00am
 	ahoraDate := Ahora.Time.Add(time.Hour * -6)
