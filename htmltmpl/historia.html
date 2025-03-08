@@ -26,11 +26,11 @@
 </header>
 
 
-<main
+<main class="grow w-full max-w-5xl p-2 mx-auto"
 	hx-get="/historias/{{ .Historia.HistoriaID }}"
 	hx-target="this" hx-select="main" hx-swap="outerHTML"
 	hx-trigger="reloadHistoria"
-	class="grow w-full max-w-5xl p-2 mx-auto">
+	>
 
 	<div class="flex flex-wrap justify-end gap-x-4 gap-y-2">
 		<!--* PERSONA  -->
@@ -87,8 +87,9 @@
 		</div>
 		<div>
 			<input
-				hx-swap="none"
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/estimado"
+				hx-askfor="reloadProgreso"
+				hx-swap="none"
 				type="text"
 				name="value"
 				value="{{ if .Historia.SegundosPresupuesto }}{{ segundosToString .Historia.SegundosPresupuesto }}{{ end }}"
@@ -148,7 +149,6 @@
 	</div>
 
 	<!--* REGLAS DE NEGOCIO -->
-	<!-- <h3 class="mb-2 text-xl text-cyan-600">Reglas</h3> -->
 	<ol id="reglasDeNegocio" tipo="sort_reglas" class="mb-6">
 		{{ range .Reglas -}}
 		<li tipo="sort_regla" class="flex gap-1 p-1 group">
@@ -216,139 +216,149 @@
 	</ol>
 
 	<!--* AVANCE  -->
-	{{ if .SegundosPresupuesto }}
-	<h3 id="progreso" class="mb-4 text-xl text-cyan-600">
-		<a href="#progreso">Progreso</a>
-	</h3>
-	<!-- Tarjetas avance -->
-	<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
-		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ .AvancePorcentual }}%</span>
-			<span class="text-sm text-cyan-200">Avance</span>
+	<div id="progreso"
+		hx-get="/historias/{{ .Historia.HistoriaID }}"
+		hx-target="#progreso"
+		hx-select="#progreso"
+		hx-swap="innerHTML"
+		hx-trigger="reloadProgreso from:body"
+		>
+		<!-- Cargar librería desde antes -->
+		<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+		{{ if .SegundosPresupuesto }}
+		<h3 class="mb-4 text-xl text-cyan-600">
+			<a href="#progreso">Progreso</a>
+		</h3>
+		<!-- Tarjetas avance -->
+		<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
+			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+				<span class="text-3xl font-bold text-white">{{ .AvancePorcentual }}%</span>
+				<span class="text-sm text-cyan-200">Avance</span>
+			</div>
+			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+				<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosPresupuesto }}</span>
+				<span class="text-sm text-cyan-200">Presupuesto</span>
+			</div>
+			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+				<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosEstimado }}</span>
+				<span class="text-sm text-cyan-200">Estimación</span>
+			</div>
+			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
+				<span class="text-3xl font-bold {{ if gt .SegundosUtilizado .SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
+					{{ segundosToString .SegundosUtilizado }}
+				</span>
+				<span class="text-sm text-cyan-200">Utilizado</span>
+			</div>
 		</div>
-		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosPresupuesto }}</span>
-			<span class="text-sm text-cyan-200">Presupuesto</span>
+		<!-- Gráfico avance -->
+		<div class="w-full h-24 px-4 mb-6 bg-transparent">
+			<canvas id="chartAvanceHistoria"></canvas>
 		</div>
-		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosEstimado }}</span>
-			<span class="text-sm text-cyan-200">Estimación</span>
-		</div>
-		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold {{ if gt .SegundosUtilizado .SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
-				{{ segundosToString .SegundosUtilizado }}
-			</span>
-			<span class="text-sm text-cyan-200">Utilizado</span>
-		</div>
-	</div>
-	<!-- Gráfico avance -->
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<div class="w-full h-24 px-4 mb-6 bg-transparent">
-		<canvas id="chartAvanceHistoria"></canvas>
-	</div>
-	<script>
-		new Chart(document.getElementById('chartAvanceHistoria'), {
-			type: 'bar',
-			data: {
-				labels: [''],
-				datasets: [
-					{
-						// MARCA DE TIEMPO ESTIMADO
-						data: [{{ .HorasEstimado }}],
-						label: 'Estimado',
-						categoryPercentage: 1,
-						backgroundColor: 'transparent',
-						borderWidth: {top: 0, right: 2, bottom: 0, left: 0},
-						borderColor: 'gray',
-					},
-					{
-						// MARCA DE EXPECTATIVA SEGÚN AVANCE Y PRESUPUESTO
-						data: [{{ .HorasExpectativaAvancePresupuesto }}],
-						label: 'Avance obtenido',
-						categoryPercentage: 1,
-						backgroundColor: 'transparent',
-						borderWidth: {top: 0, right: 3, bottom: 0, left: 0},
-						borderColor: 'lime',
-					},
-					{
-						// RECUADRO DE PRESUPUESTO
-						data: [{{ .HorasPresupuesto }}],
-						label: 'Presupuesto',
-						categoryPercentage: 1,
-						backgroundColor: 'transparent',
-						borderWidth: {top: 2, right: 5, bottom: 2, left: 0},
-						borderColor: 'lightblue',
-					},
-					{
-						// RELLENO UTILIZADO
-						data: [{{ .HorasUtilizado }}],
-						label: 'Utilizado',
-						backgroundColor: '#155e75',
-						categoryPercentage: 1,
-					},
-				]
-			},
-			options: {
-				indexAxis: 'y',
-				barThickness: 30,
-				elements: {
-					bar: {
-					}
+		<script defer>
+			new Chart(document.getElementById('chartAvanceHistoria'), {
+				type: 'bar',
+				data: {
+					labels: [''],
+					datasets: [
+						{
+							// MARCA DE TIEMPO ESTIMADO
+							data: [{{ .HorasEstimado }}],
+							label: 'Estimado',
+							categoryPercentage: 1,
+							backgroundColor: 'transparent',
+							borderWidth: {top: 0, right: 2, bottom: 0, left: 0},
+							borderColor: 'gray',
+						},
+						{
+							// MARCA DE EXPECTATIVA SEGÚN AVANCE Y PRESUPUESTO
+							data: [{{ .HorasExpectativaAvancePresupuesto }}],
+							label: 'Avance obtenido',
+							categoryPercentage: 1,
+							backgroundColor: 'transparent',
+							borderWidth: {top: 0, right: 3, bottom: 0, left: 0},
+							borderColor: 'lime',
+						},
+						{
+							// RECUADRO DE PRESUPUESTO
+							data: [{{ .HorasPresupuesto }}],
+							label: 'Presupuesto',
+							categoryPercentage: 1,
+							backgroundColor: 'transparent',
+							borderWidth: {top: 2, right: 5, bottom: 2, left: 0},
+							borderColor: 'lightblue',
+						},
+						{
+							// RELLENO UTILIZADO
+							data: [{{ .HorasUtilizado }}],
+							label: 'Utilizado',
+							backgroundColor: '#155e75',
+							categoryPercentage: 1,
+						},
+					]
 				},
-				responsive: true,
-				maintainAspectRatio: false,
-				scales: {
-					y: {
-						stacked: true,
-						ticks: {
-							color: 'white'
-						},
-						grid: {
-							display: false,
-						},
-						border: {
-							color: 'white',
-							width: 2,
-						},
-					},
-					x: {
-						beginAtZero: true,
-						grid: {
-							drawOnChartArea: false,
-							color: 'white',
-							lineWidth: 2,
-						},
-						border: {
-							display: false,
-						},
-						ticks: {
-							color: 'white',
-							callback: function(value, index, ticks) {
-								return this.getLabelForValue(value) + " h";
-							},
-						},
-					}
-				},
-				plugins: {
-					legend: {
-						display: false,
-						position: 'top',
-						labels: {
-							color: 'white',
-							boxWidth: 20,
+				options: {
+					indexAxis: 'y',
+					barThickness: 30,
+					elements: {
+						bar: {
 						}
 					},
-					title: {
-						display: false,
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						y: {
+							stacked: true,
+							ticks: {
+								color: 'white'
+							},
+							grid: {
+								display: false,
+							},
+							border: {
+								color: 'white',
+								width: 2,
+							},
+						},
+						x: {
+							beginAtZero: true,
+							grid: {
+								drawOnChartArea: false,
+								color: 'white',
+								lineWidth: 2,
+							},
+							border: {
+								display: false,
+							},
+							ticks: {
+								color: 'white',
+								callback: function(value, index, ticks) {
+									return this.getLabelForValue(value) + " h";
+								},
+							},
+						}
 					},
-					tooltip: {
-						enabled: false,
-					},
-				}
-			},
-		});
-	</script>
-	{{ end }}
+					plugins: {
+						legend: {
+							display: false,
+							position: 'top',
+							labels: {
+								color: 'white',
+								boxWidth: 20,
+							}
+						},
+						title: {
+							display: false,
+						},
+						tooltip: {
+							enabled: false,
+						},
+					}
+				},
+			});
+		</script>
+		{{ end }}
+	</div>
 
 	<!--* VIAJE DE USUARIO *-->
 	<h3 class="mb-2 text-xl text-cyan-600 group">
@@ -845,10 +855,6 @@
 			>
 		</li>
 	</ol>
-	<!-- Editar tareas -->
-	{{ range .Tareas -}}
-		{{ template "tarea_editar_dialog" . }}
-	{{ end }}
 
 	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
 	<div class="text-center">
@@ -864,6 +870,11 @@
 	{{ end }}
 
 </main>
+{{ end }}
+
+<!-- Editar tareas -->
+{{ range .Tareas -}}
+	{{ template "tarea_editar_dialog" . }}
 {{ end }}
 
 <!-- Administrar intervalos -->

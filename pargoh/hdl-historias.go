@@ -154,7 +154,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.StatusOk("Historia parchada")
+	return c.AskedFor("Historia parchada")
 }
 
 func (s *servidor) priorizarHistoria(c *gecko.Context) error {

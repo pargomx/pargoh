@@ -90,7 +90,7 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 			return err
 		}
 	}
-	return c.AskedFor()
+	return c.AskedFor("Proyecto actualizado")
 }
 
 func (s *servidor) patchProyecto(c *gecko.Context) error {
