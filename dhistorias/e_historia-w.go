@@ -2,10 +2,9 @@ package dhistorias
 
 import (
 	"monorepo/ust"
-	"strconv"
-	"strings"
 
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkt"
 )
 
 const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
@@ -113,25 +112,41 @@ func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) err
 	}
 	switch param {
 	case "titulo":
-		Hist.Titulo = strings.TrimSpace(newVal)
+		Hist.Titulo = gkt.SinEspaciosExtra(newVal)
+
 	case "objetivo":
-		Hist.Objetivo = strings.TrimSpace(newVal)
+		Hist.Objetivo = gkt.SinEspaciosExtra(newVal)
+
 	case "descripcion":
-		Hist.Descripcion = strings.TrimSpace(newVal)
+		Hist.Descripcion = gkt.SinEspaciosExtraConSaltos(newVal)
+
 	case "prioridad":
-		Hist.Prioridad, _ = strconv.Atoi(newVal)
+		Hist.Prioridad, _ = gkt.ToInt(newVal)
 		if !prioridadValida(Hist.Prioridad) {
 			return op.Msg(prioridadInvalidaMsg)
 		}
+
 	case "completada":
-		num, _ := strconv.Atoi(newVal)
+		num, _ := gkt.ToInt(newVal)
 		Hist.Completada = num > 0
-	case "estimado":
-		estimado, err := ust.NuevaDuraciónSegundos(newVal)
-		if err != nil {
-			return op.Err(err)
+
+	case "presupuesto":
+		if newVal == "" {
+			Hist.SegundosPresupuesto = 0
+		} else {
+			horas, err := gkt.ToInt(newVal)
+			if err != nil {
+				return op.Err(err)
+			}
+			if horas < 0 {
+				return op.ErrDatoInvalido().Msg("El presupuesto debe ser positivo")
+			}
+			if horas > 30 {
+				return op.ErrDatoInvalido().Msgf("Establezca un presupuesto menor, %v son demasiadas horas para una sola historia.", horas)
+			}
+			Hist.SegundosPresupuesto = horas * 3600
 		}
-		Hist.SegundosPresupuesto = estimado
+
 	default:
 		gko.LogWarnf("Nada cambió para historia %v", Hist.HistoriaID)
 		return nil

@@ -85,16 +85,18 @@
 				<option value="1" {{- if .Historia.Completada }} selected{{ end }}>✅ Completada</option>
 			</select>
 		</div>
-		<div>
+		<div class="flex items-center gap-1">
 			<input
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/estimado"
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
 				hx-askfor="reloadProgreso"
 				hx-swap="none"
-				type="text"
+				type="number"
 				name="value"
-				value="{{ if .Historia.SegundosPresupuesto }}{{ segundosToString .Historia.SegundosPresupuesto }}{{ end }}"
+				value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
+				min="0"
+				max="30"
 				placeholder="Presupuesto"
-				class="form-control">
+				class="form-control max-w-32"> Hrs.
 		</div>
 	</div>
 
@@ -220,11 +222,11 @@
 		hx-get="/historias/{{ .Historia.HistoriaID }}"
 		hx-target="#progreso"
 		hx-select="#progreso"
-		hx-swap="innerHTML"
+		hx-swap="outerHTML"
 		hx-trigger="reloadProgreso from:body"
 		>
 		<!-- Cargar librería desde antes -->
-		<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 		{{ if .SegundosPresupuesto }}
 		<h3 class="mb-4 text-xl text-cyan-600">
