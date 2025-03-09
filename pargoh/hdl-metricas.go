@@ -205,7 +205,15 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	}
 	LatidosMapDia := make(map[string][]ust.Latido)
 	for _, lati := range Latidos {
-		LatidosMapDia[lati.Timestamp[:10]] = append(LatidosMapDia[lati.Timestamp[:10]], lati)
+		latiTm := lati.Time()
+		fechaLat := ""
+		if latiTm.Hour() < 6 {
+			fechaLat = latiTm.AddDate(0, 0, -1).Format(gkt.FormatoFecha) // antes 6am, contar como el día anterior.
+		} else {
+			fechaLat = latiTm.Format(gkt.FormatoFecha) // después 6am, contar como el día actual.
+		}
+		LatidosMapDia[fechaLat] = append(LatidosMapDia[fechaLat], lati)
+
 	}
 
 	Personas, err := s.repo.ListPersonas()
