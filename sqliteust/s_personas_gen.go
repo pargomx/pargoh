@@ -68,14 +68,14 @@ func (s *Repositorio) ExistePersona(PersonaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrPersonaNotFound).Op(op)
+			return gko.ErrNoEncontrado().Msg("Persona del dominio no encontrado").Op(op)
 		}
 		return gko.ErrInesperado().Err(err).Op(op)
 	}
 	if num > 1 {
 		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrPersonaNotFound).Op(op)
+		return gko.ErrNoEncontrado().Msg("Persona del dominio no encontrado").Op(op)
 	}
 	return nil
 }
@@ -138,7 +138,7 @@ func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Persona del dominio no se encuentra")
+			return gko.ErrNoEncontrado().Msg("Persona del dominio no encontrado")
 		}
 		return gko.ErrInesperado().Err(err)
 	}
@@ -166,4 +166,40 @@ func (s *Repositorio) GetPersona(PersonaID int) (*ust.Persona, error) {
 		return nil, err
 	}
 	return per, nil
+}
+
+//  ================================================================  //
+//  ========== SCAN ================================================  //
+
+// scanRowsPersona escanea cada row en la struct Persona
+// y devuelve un slice con todos los items.
+// Siempre se encarga de llamar rows.Close()
+func (s *Repositorio) scanRowsPersona(rows *sql.Rows, op string) ([]ust.Persona, error) {
+	defer rows.Close()
+	items := []ust.Persona{}
+	for rows.Next() {
+		per := ust.Persona{}
+		err := rows.Scan(
+			&per.PersonaID, &per.ProyectoID, &per.Nombre, &per.Descripcion, &per.SegundosGestion,
+		)
+		if err != nil {
+			return nil, gko.ErrInesperado().Err(err).Op(op)
+		}
+		items = append(items, per)
+	}
+	return items, nil
+}
+
+//  ================================================================  //
+//  ========== LIST ================================================  //
+
+func (s *Repositorio) ListPersonas() ([]ust.Persona, error) {
+	const op string = "ListPersonas"
+	rows, err := s.db.Query(
+		"SELECT " + columnasPersona + " " + fromPersona,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado().Err(err).Op(op)
+	}
+	return s.scanRowsPersona(rows, op)
 }

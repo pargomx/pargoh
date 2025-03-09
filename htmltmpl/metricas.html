@@ -100,16 +100,22 @@
 
 			<!-- Intervalos por proyecto -->
 			{{ range $diaIdx, $sem := .Semana -}}
-			{{ $diaNum := suma $diaIdx 1 -}}
-			{{ range .Proyectos -}}{{ $color := .Proyecto.Color }}
-			{{ range .Historias -}}
-			{{ range .Tareas -}}
-			{{ range .Intervalos -}}
-			<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ div .MinutosSince6am 2 }}" width="52" height="{{ div .Segundos 120 }}" fill="{{ $color }}"></rect>
-			{{ end -}}
-			{{ end -}}
-			{{ end -}}
-			{{ end -}}
+				{{ $diaNum := suma $diaIdx 1 -}}
+				{{ range .Proyectos -}}{{ $color := .Proyecto.Color -}}
+					{{ range .Historias -}}
+						{{ range .Tareas -}}
+							{{ range .Intervalos -}}
+								<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ div .MinutosSince6am 2 }}" width="52" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}"></rect>
+							{{ end -}}
+						{{ end -}}
+					{{ end -}}
+
+					{{ range .Latidos -}}
+						<rect x="{{ suma (mult $diaNum 60) 20 }}" y="{{ div .MinutosSince6am 2 }}" width="10" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}"></rect>
+						<rect x="{{ suma (mult $diaNum 60) 30 }}" y="{{ div .MinutosSince6am 2 }}" width="10" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="white"></rect>
+					{{ end -}}
+
+				{{ end -}}
 			{{ end }}
 
 			<!-- Marca de la hora actual -->

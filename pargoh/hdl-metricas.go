@@ -19,9 +19,11 @@ type DiaReport struct {
 }
 
 type ProyectoReport struct {
-	Proyecto  ust.Proyecto
-	Segundos  int
-	Historias map[int]HistoriaReport
+	Proyecto        ust.Proyecto
+	Segundos        int
+	SegundosGestion int
+	Latidos         []ust.Latido
+	Historias       map[int]HistoriaReport
 }
 
 type HistoriaReport struct {
@@ -169,6 +171,37 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		HistoriasMap[historia.HistoriaID] = historia
 	}
 
+	// Los días van desde las 6:00am hasta 5:59am (México central).
+	ahora := gkt.Now()
+	iniDia := time.Date(ahora.Year(), ahora.Month(), ahora.Day(), 6, 0, 0, 0, gkt.TzMexico)
+	finDia := time.Date(ahora.Year(), ahora.Month(), ahora.Day(), 5, 59, 59, 0, gkt.TzMexico)
+	if ahora.Hour() < 6 {
+		iniDia = iniDia.AddDate(0, 0, -1) // antes 6am, contar desde 6:00am del día anterior.
+	} else {
+		finDia = finDia.AddDate(0, 0, 1) // después 6am, contar hasta 5:59am del día siguiente.
+	}
+
+	Latidos, err := s.repo.ListLatidos(
+		iniDia.AddDate(0, 0, -7).Format(gkt.FormatoFechaHora),
+		finDia.Format(gkt.FormatoFechaHora),
+	)
+	if err != nil {
+		return err
+	}
+	LatidosMapDia := make(map[string][]ust.Latido)
+	for _, lati := range Latidos {
+		LatidosMapDia[lati.Timestamp[:10]] = append(LatidosMapDia[lati.Timestamp[:10]], lati)
+	}
+
+	Personas, err := s.repo.ListPersonas()
+	if err != nil {
+		return err
+	}
+	PersonasMap := make(map[int]ust.Persona, len(Personas))
+	for _, per := range Personas {
+		PersonasMap[per.PersonaID] = per
+	}
+
 	// Popular la estructura de días trabajados.
 	Dias := make([]DiaReport, len(ListaDias))
 	for i, dia := range ListaDias {
@@ -242,6 +275,33 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			pro.Historias[historia.HistoriaID] = his
 			Dias[i].Proyectos[historia.ProyectoID] = pro
 		}
+
+		// TIEMPO DE GESTIÓN
+		for _, lati := range LatidosMapDia[dia] {
+			if Dias[i].Proyectos == nil {
+				Dias[i].Proyectos = make(map[string]ProyectoReport)
+			}
+			per, ok := PersonasMap[lati.PersonaID]
+			if !ok {
+				gko.LogWarnf("getMétricas: persona_id %v no existe en el mapa para latidos en %v", lati.PersonaID, lati.Timestamp)
+				continue
+			}
+			pro, ok := Dias[i].Proyectos[per.ProyectoID]
+			if !ok {
+				proyecto, err := s.repo.GetProyecto(per.ProyectoID)
+				if err != nil {
+					return err
+				}
+				pro = ProyectoReport{
+					Proyecto:        *proyecto,
+					SegundosGestion: lati.Segundos,
+				}
+			} else {
+				pro.SegundosGestion += lati.Segundos
+				pro.Latidos = append(pro.Latidos, lati)
+			}
+			Dias[i].Proyectos[per.ProyectoID] = pro
+		}
 	}
 	// El último día puede ser en el futuro y estar vacío
 	if len(Dias) > 1 && Dias[len(Dias)-1].Segundos == 0 {
@@ -268,7 +328,6 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			}
 		}
 	}
-	// weekday := int(time.Now().Truncate(time.Hour).Weekday())
 
 	type AhoraStruct struct {
 		Time            time.Time

@@ -1,6 +1,11 @@
 package ust
 
-import "errors"
+import (
+	"time"
+
+	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkt"
+)
 
 // Latido corresponde a un elemento de la tabla 'latidos'.
 type Latido struct {
@@ -9,12 +14,13 @@ type Latido struct {
 	Segundos  int    // `latidos.segundos`
 }
 
-var (
-	ErrLatidoNotFound      error = errors.New("el latido gestión no se encuentra")
-	ErrLatidoAlreadyExists error = errors.New("el latido gestión ya existe")
-)
-
-func (lat *Latido) Validar() error {
-
-	return nil
+// Cantidad de minutos transcurridos desde las 6am del día de trabajo.
+func (i *Latido) MinutosSince6am() int {
+	ini, err := gkt.ToFechaHora(i.Timestamp)
+	if err != nil {
+		gko.LogError(err)
+		return 0
+	}
+	sixAM := time.Date(ini.Year(), ini.Month(), ini.Day(), 6, 0, 0, 0, gkt.TzMexico)
+	return int(ini.Sub(sixAM).Minutes())
 }
