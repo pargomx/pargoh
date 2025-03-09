@@ -172,13 +172,28 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	}
 
 	// Los días van desde las 6:00am hasta 5:59am (México central).
-	ahora := gkt.Now()
+	ahora := gkt.Now().Truncate(time.Second)
 	iniDia := time.Date(ahora.Year(), ahora.Month(), ahora.Day(), 6, 0, 0, 0, gkt.TzMexico)
 	finDia := time.Date(ahora.Year(), ahora.Month(), ahora.Day(), 5, 59, 59, 0, gkt.TzMexico)
 	if ahora.Hour() < 6 {
 		iniDia = iniDia.AddDate(0, 0, -1) // antes 6am, contar desde 6:00am del día anterior.
 	} else {
 		finDia = finDia.AddDate(0, 0, 1) // después 6am, contar hasta 5:59am del día siguiente.
+	}
+
+	type AhoraStruct struct {
+		Time            time.Time // Hora actual
+		IniDia          time.Time // 6:00am
+		FinDia          time.Time // 5:59am
+		MinutosSince6am int
+		DiaSemana       int
+	}
+	Ahora := AhoraStruct{
+		Time:            ahora,
+		MinutosSince6am: int(ahora.Sub(iniDia).Minutes()),
+		DiaSemana:       int(ahora.Weekday()),
+		IniDia:          iniDia,
+		FinDia:          finDia,
 	}
 
 	Latidos, err := s.repo.ListLatidos(
@@ -200,6 +215,11 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	PersonasMap := make(map[int]ust.Persona, len(Personas))
 	for _, per := range Personas {
 		PersonasMap[per.PersonaID] = per
+	}
+
+	// Quitar día actual y tomar como día anterior si aún no son las 6am.
+	if len(ListaDias) > 1 && ListaDias[len(ListaDias)-1] != iniDia.Format(gkt.FormatoFecha) {
+		ListaDias = ListaDias[:len(ListaDias)-1]
 	}
 
 	// Popular la estructura de días trabajados.
@@ -304,9 +324,9 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		}
 	}
 	// El último día puede ser en el futuro y estar vacío
-	if len(Dias) > 1 && Dias[len(Dias)-1].Segundos == 0 {
-		Dias = Dias[:len(Dias)-2]
-	}
+	// if len(Dias) > 1 && Dias[len(Dias)-1].Segundos == 0 {
+	// 	Dias = Dias[:len(Dias)-2]
+	// }
 
 	// Calendario trabajado: últimos 7 días
 	Semana := make([]DiaReport, 7)
@@ -328,20 +348,6 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			}
 		}
 	}
-
-	type AhoraStruct struct {
-		Time            time.Time
-		MinutosSince6am int
-		DiaSemana       int
-	}
-	Ahora := AhoraStruct{
-		Time: gkt.Now().Truncate(time.Second),
-	}
-	// Calculate the time difference from the last 6:00am
-	ahoraDate := Ahora.Time.Add(time.Hour * -6)
-	last6am := time.Date(ahoraDate.Year(), ahoraDate.Month(), ahoraDate.Day(), 3, 0, 0, 0, ahoraDate.Location()) // WTF!!!!!!!!!!
-	Ahora.MinutosSince6am = int(Ahora.Time.Sub(last6am).Minutes())
-	Ahora.DiaSemana = int(ahoraDate.Weekday())
 
 	// Viejo recuento de horas por día.
 	DiasTrabajoMapHoras := make(map[string]float64)

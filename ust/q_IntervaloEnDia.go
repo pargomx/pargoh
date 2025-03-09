@@ -1,12 +1,5 @@
 package ust
 
-import (
-	"time"
-
-	"github.com/pargomx/gecko/gko"
-	"github.com/pargomx/gecko/gkt"
-)
-
 // IntervaloEnDia corresponde a una consulta de solo lectura.
 type IntervaloEnDia struct {
 	//  `his.proyecto_id`
@@ -29,16 +22,5 @@ type IntervaloEnDia struct {
 
 // Cantidad de minutos transcurridos desde las 6am del día de trabajo.
 func (i *IntervaloEnDia) MinutosSince6am() int {
-	ini, err := gkt.ToFechaHora(i.Inicio)
-	if err != nil {
-		gko.LogError(err)
-		return 0
-	}
-	sixAM, err := gkt.ToFecha(i.Fecha)
-	if err != nil {
-		gko.LogError(err)
-		return 0
-	}
-	sixAM = sixAM.Add(time.Hour * 3) // WTF!!
-	return int(ini.Sub(sixAM).Minutes())
+	return MinutosSince6am(i.Inicio)
 }

@@ -105,14 +105,14 @@
 					{{ range .Historias -}}
 						{{ range .Tareas -}}
 							{{ range .Intervalos -}}
-								<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ div .MinutosSince6am 2 }}" width="52" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}"></rect>
+								<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="52" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}"></rect>
 							{{ end -}}
 						{{ end -}}
 					{{ end -}}
 
 					{{ range .Latidos -}}
-						<rect x="{{ suma (mult $diaNum 60) 20 }}" y="{{ div .MinutosSince6am 2 }}" width="10" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}"></rect>
-						<rect x="{{ suma (mult $diaNum 60) 30 }}" y="{{ div .MinutosSince6am 2 }}" width="10" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="white"></rect>
+						<rect x="{{ suma (mult $diaNum 60) 20 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="10" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}"></rect>
+						<rect x="{{ suma (mult $diaNum 60) 30 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="10" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="white"></rect>
 					{{ end -}}
 
 				{{ end -}}
@@ -120,7 +120,7 @@
 
 			<!-- Marca de la hora actual -->
 			{{ with .Ahora }}
-			<rect x="420" y="{{ div .MinutosSince6am 2 }}" width="60" height="4" fill="green"></rect>
+			<rect x="420" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="60" height="4" fill="green"></rect>
 			{{ end }}
 		</svg>
 		<p class="font-mono text-sm text-center pt-2">
