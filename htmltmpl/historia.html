@@ -128,7 +128,7 @@
 			title="Título de la historia"
 			placeholder="Hacer algo de valor..."
 			rows="1"
-			enterkeyhint="done"
+			enterkeyhint="enter"
 			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400">
 			{{- .Historia.Titulo -}}
 		</textarea>
@@ -144,7 +144,7 @@
 			title="Objetivo empático de la historia"
 			placeholder="Porque me sirve para..."
 			rows="1"
-			enterkeyhint="done"
+			enterkeyhint="enter"
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600">
 			{{- .Historia.Objetivo -}}
 		</textarea>
@@ -182,7 +182,7 @@
 				hx-select="#reglasDeNegocio"
 				name="texto"
 				rows="1"
-				enterkeyhint="done"
+				enterkeyhint="enter"
 				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
 				{{- .Texto -}}
 			</textarea>
@@ -211,7 +211,7 @@
 				hx-trigger="keyup[key=='Enter']"
 				name="texto"
 				rows="1"
-				enterkeyhint="done"
+				enterkeyhint="enter"
 				placeholder="Agregar regla"
 				class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</li>
@@ -381,7 +381,7 @@
 			title="Descripción de la historia"
 			placeholder="Descripción para el usuario en infinitivo..."
 			rows="1"
-			enterkeyhint="done"
+			enterkeyhint="enter"
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600">
 			{{- .Historia.Descripcion -}}
 		</textarea>
@@ -409,7 +409,7 @@
 					hx-target="main" hx-select="main" hx-swap="outerHTML"
 					name="texto"
 					rows="1"
-					enterkeyhint="done"
+					enterkeyhint="enter"
 					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
 					{{- .Texto -}}
 				</textarea>
@@ -458,7 +458,7 @@
 				hx-trigger="keyup[key=='Enter']"
 				name="texto"
 				rows="1"
-				enterkeyhint="done"
+				enterkeyhint="enter"
 				placeholder="Agregar un tramo al viaje"
 				class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 		</li>
@@ -628,7 +628,7 @@
 					hx-trigger="keyup[key=='Enter']"
 					name="titulo" 
 					rows="1"
-					enterkeyhint="done"
+					enterkeyhint="enter"
 					placeholder="Agregar historia"
 					class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
 			</div>

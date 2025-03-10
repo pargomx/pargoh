@@ -254,10 +254,10 @@ const observer = new IntersectionObserver((entries, observer) => {
 	});
 }, { threshold: 0 });
 
-// Guardar con Enter; new line con Ctrl+Enter; cancelar con Esc;
+// Guardar con Enter; new line con Shift+Enter; cancelar con Esc;
 function hdlTextAreaEnter(event) {
 	if (event.key === 'Enter') {
-		if (event.ctrlKey) {
+		if (event.shiftKey) {
 			let textarea = event.target
 			if (textarea.selectionStart || textarea.selectionStart == '0') {
 				var startPos = textarea.selectionStart;
@@ -276,8 +276,8 @@ function hdlTextAreaEnter(event) {
 		} else {
 			event.preventDefault();
 			event.target.blur();
-			// console.log("textarea_focus")
 			event.target.focus(); // para que htmx sepa qué elemento enfocar after swap.
+			// console.log("textarea_focus")
 		}
 	} else if (event.key === 'Escape') {
 		event.target.value = event.target.defaultValue; // restaurar valor original
