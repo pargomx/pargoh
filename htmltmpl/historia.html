@@ -917,13 +917,14 @@
 	</div>
 	{{ end }}
 
+	<!-- Editar tareas -->
+	{{ range $.Agregado.Tareas -}}
+		{{ template "tarea_editar_dialog" . }}
+	{{ end }}
+	
 </main>
 {{ end }}
 
-<!-- Editar tareas -->
-{{ range .Agregado.Tareas -}}
-	{{ template "tarea_editar_dialog" . }}
-{{ end }}
 
 <!-- Administrar intervalos -->
 {{ block "intervalos_dialog" . }}

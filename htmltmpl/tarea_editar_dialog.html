@@ -12,22 +12,33 @@
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
-	<form hx-patch="/tareas/{{ .TareaID }}" class="flex flex-col gap-2 p-2">
+	<form class="flex flex-col gap-2 p-2"
+		hx-patch="/tareas/{{ .TareaID }}"
+		>
 		<div class="pt-2">
 			{{ if .NoIniciada -}}
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+			<button
+				type="button"
+				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				title="Iniciar tarea"
 				class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
 				<i class="mr-1 fa-solid fa-play"></i>
 				Iniciar
 			</button>
 			{{ else if .EnCurso -}}
 			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
+				<button
+					type="button"
+					hx-post="/tareas/{{ .TareaID }}/pausar"
+					title="Pausar tarea"
 					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
 					<i class="mr-1 fa-solid fa-pause"></i>
 					Pausar
 				</button>
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
+				<button
+					type="button"
+					hx-post="/tareas/{{ .TareaID }}/terminar"
+					title="Marcar como finalizada"
 					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
 					<i class="mr-1 fa-solid fa-square-check"></i>
 					Finalizar
@@ -35,19 +46,28 @@
 			</div>
 			{{ else if .EnPausa -}}
 			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
+				<button
+					type="button"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					title="Iniciar tarea"
 					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
 					<i class="mr-1 fa-solid fa-play"></i>
 					Continuar
 				</button>
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
+				<button
+					type="button"
+					hx-post="/tareas/{{ .TareaID }}/terminar"
+					title="Marcar como finalizada"
 					class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
 					<i class="mr-1 fa-solid fa-square-check"></i>
 					Finalizar
 				</button>
 			</div>
 			{{ else if .Finalizada -}}
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
+			<button
+				type="button"
+				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				title="Iniciar tarea"
 				class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
 				<i class="mr-1 fa-solid fa-play"></i>
 				Volver a iniciar
