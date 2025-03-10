@@ -244,8 +244,12 @@ func main() {
 	s.GET("/reload", s.brodcastReload)
 	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
 
-	// LOG SQLITE
+	// Mantenimiento
 	s.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })
+	s.GET("/clear", func(c *gecko.Context) error {
+		c.Response().Header().Set("Clear-Site-Data", `"cache", "cache", "clientHints", "storage", "executionContexts"`)
+		return c.StringOk("Datos del sitio limpiados. Ok.")
+	})
 
 	// ================================================================ //
 	// ================================================================ //
