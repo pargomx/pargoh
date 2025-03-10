@@ -677,6 +677,52 @@
 		{{ end }}
 	</ul>
 
+	<!--* IMPLEMENTACIÓN -->
+	<div id="implementacion">
+		<h3 class="text-xl text-cyan-600 mb-2">
+			<a href="#implementacion">Implementación</a>
+			{{ if .Historia.Notas -}}
+			<button
+				type="button"
+				onclick="editNotasImplementacion(this)"
+				title="Editar notas"
+				class="mx-2 text-base hover:text-cyan-300 float-right">
+				<i class="fa-solid fa-pencil"></i>
+			</button>
+			{{ end -}}
+		</h3>
+		{{ if .Historia.Notas -}}
+		<p id="notasImplView" class="px-2 py-1 mb-1 whitespace-pre-line">
+			{{- enfatizar .Historia.Notas -}}
+		</p>
+		{{ end -}}
+		<div id="notasImplEdit" class="{{ if .Historia.Notas -}}hidden{{ end }}">
+			<textarea
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/notas"
+				hx-swap="none"
+				hx-trigger="change, keyup changed delay:60s"
+				name="value"
+				title="Detalles de implementación"
+				placeholder="Notas de implementación..."
+				rows="1"
+				enterkeyhint="enter"
+				class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600">
+				{{- .Historia.Notas -}}
+			</textarea>
+		</div>
+		<script>
+			function editNotasImplementacion(btn) {
+				const editNotasDiv = document.getElementById('notasImplEdit')
+				editNotasDiv.classList.remove('hidden');
+				document.getElementById('notasImplView').classList.add('hidden');
+				btn.classList.add('hidden');
+				const textarea = editNotasDiv.querySelector('textarea');
+				textarea.focus();
+				textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+			}
+		</script>
+	</div>
+
 	<!--* TAREAS -->
 	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
 		<h3 id="tareas" class="grow text-xl">
@@ -858,7 +904,7 @@
 		</li>
 	</ol>
 
-	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
+	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Historia.Notas) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
 	<div class="text-center">
 		<button
 			type="button"

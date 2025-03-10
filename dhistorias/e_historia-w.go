@@ -115,10 +115,13 @@ func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) err
 		Hist.Titulo = gkt.SinEspaciosExtra(newVal)
 
 	case "objetivo":
-		Hist.Objetivo = gkt.SinEspaciosExtra(newVal)
+		Hist.Objetivo = gkt.SinEspaciosExtraConSaltos(newVal)
 
 	case "descripcion":
 		Hist.Descripcion = gkt.SinEspaciosExtraConSaltos(newVal)
+
+	case "notas":
+		Hist.Notas = gkt.SinEspaciosExtraConSaltos(newVal)
 
 	case "prioridad":
 		Hist.Prioridad, _ = gkt.ToInt(newVal)
