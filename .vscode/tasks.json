@@ -28,6 +28,11 @@
 		},
 
 		{
+			"label": "Gkfmt",
+			"detail": "Dar formato al archivo HTML",
+			"command": "gkfmt -i ${file}",
+		},
+		{
 			"label": "Tailwind once",
 			"detail": "Compilar estilos CSS una vez.",
 			"command": "tailwindcss -i ./assets/source.css -o ./assets/css/estilo.css",
