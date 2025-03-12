@@ -633,7 +633,11 @@
 	<h3 class="mb-2 text-xl text-cyan-600">
 		Descendientes
 	</h3>
-	<ul id="descendientesList" tipo="sort_descendientes" class="mb-6">
+	<ul id="descendientesList" tipo="sort_descendientes" class="mb-6"
+		hx-select="#descendientesList"
+		hx-target="#descendientesList"
+		hx-select-oob="#descendientesMenus"
+		>
 		{{ range .Descendientes }}
 		<li tipo="sort_descendiente" class="">
 			<div class="flex gap-1 p-1 group">
@@ -641,8 +645,6 @@
 					⣿
 					<form tipo="sort_form"
 						hx-post="/reordenar-historia"
-						hx-select="#descendientesList"
-						hx-target="#descendientesList"
 						hx-trigger="reordenarEnd"
 						>
 						<input
@@ -739,8 +741,6 @@
 				</span>
 				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 					hx-post="/historias/{{ .Historia.HistoriaID }}"
-					hx-select="#descendientesList"
-					hx-target="#descendientesList"
 					hx-trigger="keyup[key=='Enter']"
 					enterkeyhint="enter"
 					name="titulo"
@@ -751,13 +751,20 @@
 		</li>
 	</ul>
 
-	<!-- Poner ctxMenu fuera de sortable para que no cuente doble el newIndex -->
-	{{ range .Descendientes -}}
-	{{ template "ctxMenuHistoria" . -}}
-	{{ range .Descendientes -}}
-	{{ template "ctxMenuHistoria" . -}}
-	{{ end }}
-	{{ end }}
+	<!-- Menú contextextual de descendientes -->
+	<div id="descendientesMenus"
+		hx-askfor="/historias/{{ .Historia.HistoriaID }}"
+		hx-select="#descendientesList"
+		hx-target="#descendientesList"
+		hx-select-oob="#descendientesMenus"
+		>
+		{{ range .Descendientes -}}
+			{{ template "ctxMenuHistoria" . -}}
+			{{ range .Descendientes -}}
+				{{ template "ctxMenuHistoria" . -}}
+			{{ end }}
+		{{ end }}
+	</div>
 
 	<!--* RELACIONADAS *-->
 	<h3 class="mb-2 text-xl text-cyan-600 group">
@@ -887,6 +894,7 @@
 	<ol id="tareasList" class="mb-6"
 		hx-select="#tareasList"
 		hx-target="#tareasList"
+		hx-select-oob="#tareasDialogs"
 		hx-swap="innerHTML"
 		>
 		{{ range .Tareas }}
@@ -1093,13 +1101,20 @@
 	</div>
 	{{ end }}
 	
-	<!-- Editar tareas -->
-	{{ range $.Agregado.Tareas -}}
-	{{ template "tarea_editar_dialog" . }}
-	{{ end }}
 
 </main>
 {{ end }}
+
+<!-- Editar tareas -->
+<div id="tareasDialogs"
+	hx-select="#tareasList"
+	hx-target="#tareasList"
+	hx-select-oob="#tareasDialogs"
+	>
+	{{ range $.Agregado.Tareas -}}
+	{{ template "tarea_editar_dialog" . }}
+	{{ end }}
+</div>
 
 <!-- Administrar intervalos -->
 {{ block "intervalos_dialog" . }}
@@ -1131,7 +1146,9 @@
 
 <!-- ======================================================== -->
 {{ define "ctxMenuHistoria" -}}
-<dialog id="ctxMenuHistoria{{ .HistoriaID }}" tipo="ctxMenuHistoria" class="absolute p-0 m-0 text-slate-300 bg-cyan-900 border border-slate-300 rounded-sm shadow-md">
+<dialog id="ctxMenuHistoria{{ .HistoriaID }}" tipo="ctxMenuHistoria" class="absolute p-0 m-0 text-slate-300 bg-cyan-900 border border-slate-300 rounded-sm shadow-md"
+	onclick="this.close()"
+	>
 	<form class="grid grid-cols-2 gap-1 p-2 text-sm">
 
 		<div class="col-span-2 px-1 text-xs opacity-50">

@@ -22,6 +22,7 @@
 			<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 				hx-post="/tareas/{{ .TareaID }}/iniciar"
 				type="button"
+				onclick="this.closest('dialog').close()"
 				title="Iniciar tarea"
 				>
 				<i class="mr-1 fa-solid fa-play"></i>
@@ -32,6 +33,7 @@
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 					hx-post="/tareas/{{ .TareaID }}/pausar"
 					type="button"
+					onclick="this.closest('dialog').close()"
 					title="Pausar tarea"
 					>
 					<i class="mr-1 fa-solid fa-pause"></i>
@@ -40,6 +42,7 @@
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 					hx-post="/tareas/{{ .TareaID }}/terminar"
 					type="button"
+					onclick="this.closest('dialog').close()"
 					title="Marcar como finalizada"
 					>
 					<i class="mr-1 fa-solid fa-square-check"></i>
@@ -51,6 +54,7 @@
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 					hx-post="/tareas/{{ .TareaID }}/iniciar"
 					type="button"
+					onclick="this.closest('dialog').close()"
 					title="Iniciar tarea"
 					>
 					<i class="mr-1 fa-solid fa-play"></i>
@@ -59,6 +63,7 @@
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 					hx-post="/tareas/{{ .TareaID }}/terminar"
 					type="button"
+					onclick="this.closest('dialog').close()"
 					title="Marcar como finalizada"
 					>
 					<i class="mr-1 fa-solid fa-square-check"></i>
@@ -69,6 +74,7 @@
 			<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 				hx-post="/tareas/{{ .TareaID }}/iniciar"
 				type="button"
+				onclick="this.closest('dialog').close()"
 				title="Iniciar tarea"
 				>
 				<i class="mr-1 fa-solid fa-play"></i>
@@ -76,24 +82,22 @@
 			</button>
 			{{ end }}
 		</div>
-		<div>
-			<label for="upd{{ .TareaID }}_04">
-				Descripción
-			</label>
-			<textarea id="upd{{ .TareaID }}_04" class="form-control"
+
+		<label>
+			Descripción
+			<textarea class="form-control"
 				name="descripcion"
-				onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { clickSubmit(this.form) }"
+				onkeyup="if (event.key == 'Enter' && !event.shiftKey) { clickSubmit(this.form) }"
 				placeholder="La tarea consiste en..."
 				rows="2"
 				>
 				{{- .Descripcion -}}
 			</textarea>
-		</div>
-		<div>
-			<label for="upd{{ .TareaID }}_03">
-				Tipo de tarea
-			</label>
-			<select id="upd{{ .TareaID }}_03" class="form-control"
+		</label>
+
+		<label>
+			Tipo de tarea
+			<select class="form-control"
 				name="tipo"
 				>
 				{{ $tipo := .Tipo }}
@@ -103,35 +107,32 @@
 				</option>
 				{{ end }}
 			</select>
-		</div>
-		<div>
-			<label for="upd{{ .TareaID }}_05">
-				Impedimentos
-			</label>
-			<textarea id="upd{{ .TareaID }}_05" class="form-control"
+		</label>
+
+		<label>
+			Impedimentos
+			<textarea class="form-control"
 				name="impedimentos"
-				onkeyup="if (event.key == 'Enter' && !event.ctrlKey) { clickSubmit(this.form) }"
+				onkeyup="if (event.key == 'Enter' && !event.shiftKey) { clickSubmit(this.form) }"
 				placeholder="Consideraciones o detalles por resolver"
 				>
 				{{- .Impedimentos -}}
 			</textarea>
-		</div>
-		<div>
-			<label for="upd{{ .TareaID }}_06">
-				Tiempo estimado (min)
-			</label>
-			<input id="upd{{ .TareaID }}_06" class="form-control"
+		</label>
+
+		<label>
+			Tiempo estimado (min)
+			<input class="form-control"
 				type="text"
 				name="segundos_estimado"
 				placeholder="mm ó hh:mm"
 				value="{{ if .SegundosEstimado }}{{ div .SegundosEstimado 60 }}{{ end }}"
 				>
-		</div>
-		<div>
-			<label for="upd{{ .TareaID }}_07">
-				Importancia
-			</label>
-			<select id="upd{{ .TareaID }}_07" class="form-control"
+		</label>
+
+		<label>
+			Importancia
+			<select class="form-control"
 				name="importancia"
 				>
 				<option value="IDEA" {{ if .Importancia.EsIdea }}selected{{ end }}>
@@ -144,7 +145,7 @@
 					Necesaria
 				</option>
 			</select>
-		</div>
+		</label>
 
 		<input
 			type="hidden"

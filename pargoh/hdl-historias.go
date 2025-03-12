@@ -64,7 +64,7 @@ func (s *servidor) postHistoriaDePersona(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/personas/%v", c.PathInt("persona_id"))
+	return c.AskedForFallback("/personas/%v", c.PathInt("persona_id"))
 }
 
 func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
@@ -90,7 +90,7 @@ func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.AskedForFallback("/historias/%v", c.PathInt("historia_id"))
 }
 
 // Agregar historia de usuario como padre de la actual.
@@ -122,7 +122,7 @@ func (s *servidor) postPadreParaHistoria(c *gecko.Context) error {
 		return gko.Err(err).Err(tx.Rollback())
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", nuevaHistoria.HistoriaID)
+	return c.AskedForFallback("/historias/%v", nuevaHistoria.HistoriaID)
 }
 
 func (s *servidor) updateHistoria(c *gecko.Context) error {
@@ -140,7 +140,7 @@ func (s *servidor) updateHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusOk("Historia actualizada")
+	return c.AskedFor("Historia actualizada")
 }
 
 func (s *servidor) patchHistoria(c *gecko.Context) error {
@@ -162,7 +162,7 @@ func (s *servidor) priorizarHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusOk("Historia priorizada")
+	return c.AskedFor("Historia priorizada")
 }
 
 func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
@@ -170,7 +170,7 @@ func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	return c.AskedFor("Historia priorizada")
 }
 
 func (s *servidor) marcarHistoria(c *gecko.Context) error {
@@ -178,7 +178,7 @@ func (s *servidor) marcarHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.StatusOk("Historia marcada")
+	return c.AskedFor("Historia marcada")
 }
 
 func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
@@ -186,7 +186,7 @@ func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.RefreshHTMX()
+	return c.AskedFor("Historia marcada")
 }
 
 func (s *servidor) deleteHistoria(c *gecko.Context) error {
@@ -198,6 +198,7 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
+	// TODO: AskedFor
 	if padre.EsHistoria() {
 		return c.RedirOtrof("/historias/%v", padreID)
 	} else if padre.EsPersona() {
