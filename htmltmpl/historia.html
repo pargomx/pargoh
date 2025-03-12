@@ -447,7 +447,7 @@
 			{{- .Historia.Descripcion -}}
 		</textarea>
 	</div>
-	<ol tipo="sort_tramos" class="mb-6">
+	<ol id="viajeList" tipo="sort_tramos" class="mb-6">
 		{{ range .Tramos -}}
 		<li tipo="sort_tramo" class="flex flex-col items-start">
 			<div class="flex w-full gap-1 p-1 group">
@@ -455,6 +455,8 @@
 					⣿
 					<form tipo="sort_form"
 						hx-post="/reordenar-tramo"
+						hx-select="#viajeList"
+						hx-target="#viajeList"
 						hx-trigger="reordenarEnd"
 						>
 						<input
@@ -480,9 +482,8 @@
 				</div>
 				<textarea id="input_Tramo{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
-					hx-select="main"
-					hx-swap="outerHTML"
-					hx-target="main"
+					hx-select="#viajeList"
+					hx-target="#viajeList"
 					enterkeyhint="enter"
 					name="texto"
 					rows="1"
@@ -531,9 +532,8 @@
 			</div>
 			<textarea id="input_AddTramo" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
-				hx-select="main"
-				hx-swap="outerHTML"
-				hx-target="main"
+				hx-select="#viajeList"
+				hx-target="#viajeList"
 				hx-trigger="keyup[key=='Enter']"
 				enterkeyhint="enter"
 				name="texto"
@@ -581,6 +581,8 @@
 				<form id="formSubirImagen" class="py-2 text-center"
 					hx-encoding="multipart/form-data"
 					hx-post="/imagenes"
+					hx-select="#viajeList"
+					hx-target="#viajeList"
 					>
 					<input
 						type="hidden"
@@ -602,6 +604,7 @@
 					<button tipo="btn_subir_imagen" class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600"
 						type="submit"
 						form="formSubirImagen"
+						onclick="this.closest('dialog').close()"
 						>
 						Guardar
 					</button>
@@ -612,6 +615,8 @@
 					</button>
 					<button tipo="eliminar_img" class="px-6 py-2 font-semibold text-red-400 transition-colors rounded-sm shadow-md hover:bg-red-500 hover:text-white"
 						hx-confirm="¿Eliminar esta imagen?"
+						hx-select="#viajeList"
+						hx-target="#viajeList"
 						hx-trigger="click"
 						type="button"
 						onclick="this.closest('dialog').close()"
@@ -628,7 +633,7 @@
 	<h3 class="mb-2 text-xl text-cyan-600">
 		Descendientes
 	</h3>
-	<ul tipo="sort_descendientes" class="mb-6">
+	<ul id="descendientesList" tipo="sort_descendientes" class="mb-6">
 		{{ range .Descendientes }}
 		<li tipo="sort_descendiente" class="">
 			<div class="flex gap-1 p-1 group">
@@ -636,6 +641,8 @@
 					⣿
 					<form tipo="sort_form"
 						hx-post="/reordenar-historia"
+						hx-select="#descendientesList"
+						hx-target="#descendientesList"
 						hx-trigger="reordenarEnd"
 						>
 						<input
@@ -677,11 +684,7 @@
 						{{- enfatizar .Titulo -}}
 					</a>
 					<span class="float-right text-sm opacity-75">
-						<!-- {{ segundosToString .SegundosUtilizadoMust }}
-						{{ segundosToString .Tareas.SegundosUtilizado }} /
-						{{ segundosToString .Tareas.SegundosEstimado }} -->
-						{{ segundosToString .SegundosPresupuesto }}
-						[{{ .AvancePorcentual }}%]
+						{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
 					</span>
 				</div>
 			</div>
@@ -716,11 +719,7 @@
 							{{- enfatizar .Titulo -}}
 						</a>
 						<span class="float-right text-xs opacity-50">
-							<!-- {{ segundosToString .SegundosUtilizadoMust }}
-							{{ segundosToString .Tareas.SegundosUtilizado }} /
-							{{ segundosToString .Tareas.SegundosEstimado }} -->
-							{{ segundosToString .SegundosPresupuesto }}
-							[{{ .AvancePorcentual }}%]
+							{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
 						</span>
 					</div>
 				</li>
@@ -740,9 +739,8 @@
 				</span>
 				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 					hx-post="/historias/{{ .Historia.HistoriaID }}"
-					hx-select="main"
-					hx-swap="outerHTML"
-					hx-target="main"
+					hx-select="#descendientesList"
+					hx-target="#descendientesList"
 					hx-trigger="keyup[key=='Enter']"
 					enterkeyhint="enter"
 					name="titulo"
@@ -772,7 +770,7 @@
 			<i class="fa-solid fa-square-plus"></i>
 		</button>
 	</h3>
-	<ul class="mb-6">
+	<ul id="relacionadasList" class="mb-6">
 		{{ range .Relacionadas -}}
 		<li class="flex gap-1 p-1 group">
 			<div class="pr-2 md:pl-4">
@@ -787,9 +785,8 @@
 			</div>
 			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
 				hx-delete="/historias/{{ $.Agregado.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
-				hx-select="main"
-				hx-swap="outerHTML"
-				hx-target="main"
+				hx-select="#relacionadasList"
+				hx-target="#relacionadasList"
 				type="button"
 				title="Quitar historia relacionada"
 				>
@@ -814,6 +811,15 @@
 				<i class="fa-solid fa-pencil"></i>
 			</button>
 			{{ end -}}
+			<button id="viewNotasBtn" class="mx-2 text-base hover:text-cyan-300 float-right hidden"
+				type="button"
+				hx-get="/historias/{{ .Historia.HistoriaID }}"
+				hx-select="#implementacion"
+				hx-target="#implementacion"
+				title="Ver con formato"
+				>
+				<i class="fa-solid fa-eye"></i>
+			</button>
 		</h3>
 		{{ if .Historia.Notas -}}
 		<p id="notasImplView" class="px-2 py-1 mb-1 whitespace-pre-line">
@@ -830,6 +836,7 @@
 				placeholder="Notas de implementación..."
 				rows="1"
 				title="Detalles de implementación"
+				onchange="let btn = document.getElementById('viewNotasBtn'); if(this.value.trim() !== '') { btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); }"
 				>
 				{{- .Historia.Notas -}}
 			</textarea>
@@ -843,6 +850,7 @@
 				const textarea = editNotasDiv.querySelector('textarea');
 				textarea.focus();
 				textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+				document.getElementById('viewNotasBtn').classList.remove('hidden');
 			}
 		</script>
 	</div>
@@ -876,9 +884,13 @@
 		</span>
 		{{- end -}}
 	</div>
-	<ol class="mb-6">
+	<ol id="tareasList" class="mb-6"
+		hx-select="#tareasList"
+		hx-target="#tareasList"
+		hx-swap="innerHTML"
+		>
 		{{ range .Tareas }}
-		<li id="{{ .TareaID }}" tipo="sort_regla" class="flex gap-1 p-1 group">
+		<li id="{{ .TareaID }}" tipo="sort_tarea" class="flex gap-1 p-1 group">
 			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
 				<form tipo="sort_form"
@@ -1050,9 +1062,6 @@
 				hx-include="closest li"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
-				hx-select="main"
-				hx-swap="outerHTML"
-				hx-target="main"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				type="text"
@@ -1062,9 +1071,6 @@
 			<input class="inline-block text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 				hx-include="closest li"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
-				hx-select="main"
-				hx-swap="outerHTML"
-				hx-target="main"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				type="text"
@@ -1098,7 +1104,7 @@
 <!-- Administrar intervalos -->
 {{ block "intervalos_dialog" . }}
 <dialog id="modalIntervalos" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
-	<div
+	<div id="intervalosList"
 		hx-swap="innerHTML"
 		hx-target="this"
 		hx-trigger="cargarIntervalos"
@@ -1108,13 +1114,18 @@
 </dialog>
 <script>
 	function showIntervalos(tareaID) {
-		let dialog = document.getElementById("modalIntervalos")
-		dialog.showModal()
-		let contenido = dialog.querySelector("div") 
-		contenido.setAttribute("hx-get", "/tareas/" + tareaID)
-		htmx.process(contenido)
-		contenido.dispatchEvent(new Event("cargarIntervalos"))
+		document.getElementById("modalIntervalos").showModal()
+		let intervalosList = document.getElementById("intervalosList")
+		intervalosList.setAttribute("hx-get", "/tareas/" + tareaID)
+		htmx.process(intervalosList)
+		intervalosList.dispatchEvent(new Event("cargarIntervalos"))
 	}
+	// Reload intervalos after swap.
+	document.getElementById("tareasList").addEventListener("htmx:afterSwap", (event) => {
+		if (document.getElementById("modalIntervalos").open) {
+			document.getElementById('intervalosList').dispatchEvent(new Event('cargarIntervalos'));
+		}
+	})
 </script>
 {{ end }}
 
@@ -1734,3 +1745,4 @@
 
 	});
 </script>
+

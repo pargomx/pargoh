@@ -120,7 +120,6 @@ func (s *servidor) iniciarTarea(c *gecko.Context) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-
 	return c.AskedForFallback("/historias/%v", historiaID)
 }
 func (s *servidor) pausarTarea(c *gecko.Context) error {
