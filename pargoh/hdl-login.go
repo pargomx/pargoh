@@ -44,7 +44,7 @@ func NewAuthService(adminUser, adminPass string) *authService {
 		adminUser:     adminUser,
 		adminPass:     adminPass,
 		sesiones:      make(map[string]Sesion),
-		vigencia:      5 * 24 * time.Hour,
+		vigencia:      30 * 24 * time.Hour,
 	}
 	if s.pathLoginPage == "" {
 		gko.LogWarn("No se ha definido la ruta para la página de inicio de sesión")
