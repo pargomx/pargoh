@@ -6,12 +6,12 @@
 
 <main class="p-4">
 	<div class="flex justify-center mb-4">
-		<button
-			type="button"
-			hx-post="/tareas"
+		<button class="max-w-96 inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
 			hx-askfor="/tareas"
+			hx-post="/tareas"
 			hx-prompt="Nueva tarea rápida (iniciar cronómetro):"
-			class="max-w-96 inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700">
+			type="button"
+			>
 			<i class="mr-1 fa-solid fa-play"></i>
 			Comenzar quick task
 		</button>
@@ -19,24 +19,26 @@
 
 	<ol class="mb-6">
 		{{ range .Tareas }}
-		<li id="{{ .TareaID }}"
-			tipo="sort_regla"
-			class="flex gap-1 p-1 group">
+		<li id="{{ .TareaID }}" tipo="sort_regla" class="flex gap-1 p-1 group">
 			<div>
 				<span class="inline-block w-6 text-center">
-					{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
-					{{ else if .EnCurso }}<i class="text-green-600 fa-regular fa-square"></i>
-					{{ else if .EnPausa }}<i class="text-orange-600 fa-regular fa-square"></i>
-					{{ else }}<i class="text-slate-400 fa-regular fa-square"></i>
+					{{- if .Finalizada }}
+					<i class="text-green-600 fa-regular fa-square-check"></i>
+					{{ else if .EnCurso }}
+					<i class="text-green-600 fa-regular fa-square"></i>
+					{{ else if .EnPausa }}
+					<i class="text-orange-600 fa-regular fa-square"></i>
+					{{ else }}
+					<i class="text-slate-400 fa-regular fa-square"></i>
 					{{ end -}}
 				</span>
 			</div>
 			<p class="">
-				<button
-					hx-post="/tareas/{{ .TareaID }}/importancia"
+				<button class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md"
 					hx-askfor="/tareas"
+					hx-post="/tareas/{{ .TareaID }}/importancia"
 					tabindex="-1"
-					class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+					>
 					{{- .Importancia.Etiqueta -}}
 				</button>
 
@@ -45,29 +47,36 @@
 					{{- .Tipo.Etiqueta -}}
 				</span>
 				{{ end }}
-
-				<span onclick="document.getElementById('edit{{ .TareaID }}').showModal()" class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}">
+				
+				<span class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}"
+					onclick="document.getElementById('edit{{ .TareaID }}').showModal()"
+					>
 					{{ .Descripcion }}
 				</span>
 
 				{{- if .EnCurso -}}
 				<span class="mx-2 opacity-50">
-					<img src="/assets/img/spinner.svg" alt="En progreso" class="inline-block w-8">
+					<img class="inline-block w-8"
+						alt="En progreso"
+						src="/assets/img/spinner.svg"
+						>
 				</span>
 				{{- end -}}
-
+				
 				<span class="float-right sm:hidden">
 					{{- if .SegundosEstimado -}}
-					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ segundosToString .SegundosEstimado }}">
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap"
+						title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
+						>
 						<i class="fa-solid fa-hourglass-start"></i>
 						{{ segundosToString .SegundosEstimado }}
 					</span>
 					{{- end -}}
 					{{- if .SegundosUtilizado -}}
-					<button
+					<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 						onclick="showIntervalos('{{ .TareaID }}')"
 						title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
-						class="pl-4 text-sm opacity-75 whitespace-nowrap">
+						>
 						<i class="fa-solid fa-stopwatch"></i>
 						{{ segundosToString .SegundosUtilizado }}
 					</button>
@@ -77,54 +86,74 @@
 				{{ if and .Impedimentos (not .Finalizada) -}}
 				<br>
 				<i class="text-sm text-orange-300">
-					{{ .Impedimentos }}	
+					{{ .Impedimentos }}
 				</i>
 				{{- end }}
-
+				
 			</p>
 			<div class="items-start hidden gap-2 md:flex">
 				{{ if .NoIniciada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" hx-askfor="/tareas" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-askfor="/tareas"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					type="button"
+					title="Iniciar tarea"
+					>
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .EnCurso -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" hx-askfor="/tareas" title="Pausar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-askfor="/tareas"
+					hx-post="/tareas/{{ .TareaID }}/pausar"
+					type="button"
+					title="Pausar tarea"
+					>
 					<i class="fa-solid fa-pause"></i>
 				</button>
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" hx-askfor="/tareas" title="Marcar como finalizada"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-askfor="/tareas"
+					hx-post="/tareas/{{ .TareaID }}/terminar"
+					type="button"
+					title="Marcar como finalizada"
+					>
 					<i class="fa-solid fa-square-check"></i>
 				</button>
 				{{ else if .EnPausa -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" hx-askfor="/tareas" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-askfor="/tareas"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					type="button"
+					title="Iniciar tarea"
+					>
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .Finalizada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" hx-askfor="/tareas" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-askfor="/tareas"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					type="button"
+					title="Iniciar tarea"
+					>
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ end }}
 			</div>
 			<div class="grow hidden text-right sm:block">
 				{{- if .SegundosUtilizado -}}
-				<button
+				<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 					onclick="showIntervalos('{{ .TareaID }}')"
 					title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
-					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					>
 					<i class="fa-solid fa-stopwatch"></i>
 					{{ segundosToString .SegundosUtilizado }}
 				</button>
 				{{- end -}}
-				<button
-					hx-patch="/tareas/{{ .TareaID }}/estimado"
+				<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 					hx-askfor="/tareas"
+					hx-patch="/tareas/{{ .TareaID }}/estimado"
 					hx-prompt="Nuevo estimado"
 					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
-					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					>
 					<i class="fa-solid fa-hourglass-start"></i>
 					{{ if .SegundosEstimado }}{{ segundosToString .SegundosEstimado }}{{ else }}1h{{ end -}}
 				</button>
@@ -135,13 +164,10 @@
 </main>
 
 <div hx-askfor="/tareas">
-
-{{ range .Tareas -}}
+	{{ range .Tareas -}}
 	{{ template "tarea_editar_dialog" . }}
-{{ end }}
-
-{{ template "intervalos_dialog" }}
-
-{{ template "mover_tarea_dialog" "" }}
-
+	{{ end }}
+	{{ template "intervalos_dialog" }}
+	{{ template "mover_tarea_dialog" "" }}
 </div>
+

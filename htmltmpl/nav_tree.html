@@ -2,9 +2,9 @@
 {{ define "nav_root" }}
 {{ range .Proyectos -}}
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/proy/{{ .ProyectoID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Proyecto
 		</span>
@@ -16,11 +16,15 @@
 
 <!--* NAVEGAR DESDE PROYECTO -->
 {{ define "nav_proy" }}
-<input type="hidden" class="form-control" name="target_proyecto_id" value="{{ .Proyecto.ProyectoID }}">
+<input class="form-control"
+	type="hidden"
+	name="target_proyecto_id"
+	value="{{ .Proyecto.ProyectoID }}"
+	>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Root
 		</span>
@@ -28,20 +32,21 @@
 	</a>
 </div>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/proy/{{ .Proyecto.ProyectoID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
-			Proyecto <!-- Selected -->
+			Proyecto
+			<!-- Selected -->
 		</span>
 		{{ .Proyecto.Titulo }}
 	</a>
 </div>
 {{ range .Personas -}}
 <div class="pl-4">
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/pers/{{ .PersonaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Persona
 		</span>
@@ -53,11 +58,15 @@
 
 <!--* NAVEGAR DESDE PERSONA -->
 {{ define "nav_pers" }}
-<input type="hidden" class="form-control" name="target_persona_id" value="{{ .Persona.PersonaID }}">
+<input class="form-control"
+	type="hidden"
+	name="target_persona_id"
+	value="{{ .Persona.PersonaID }}"
+	>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Root
 		</span>
@@ -65,9 +74,9 @@
 	</a>
 </div>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/proy/{{ .Proyecto.ProyectoID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Proyecto
 		</span>
@@ -75,20 +84,21 @@
 	</a>
 </div>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/pers/{{ .Persona.PersonaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
-			Persona <!-- Selected -->
+			Persona
+			<!-- Selected -->
 		</span>
 		{{ .Persona.Nombre }}
 	</a>
 </div>
 {{ range .Historias -}}
 <div class="pl-4">
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/hist/{{ .HistoriaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Historia
 		</span>
@@ -101,11 +111,15 @@
 <!--* NAVEGAR DESDE HISTORIA -->
 {{ define "nav_hist" }}
 {{ with .Agregado -}}
-<input type="hidden" class="form-control" name="target_historia_id" value="{{ .Historia.HistoriaID }}">
+<input class="form-control"
+	type="hidden"
+	name="target_historia_id"
+	value="{{ .Historia.HistoriaID }}"
+	>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Root
 		</span>
@@ -113,9 +127,9 @@
 	</a>
 </div>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/proy/{{ .Proyecto.ProyectoID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Proyecto
 		</span>
@@ -123,9 +137,9 @@
 	</a>
 </div>
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/pers/{{ .Persona.PersonaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Persona
 		</span>
@@ -134,9 +148,9 @@
 </div>
 {{ range $i, $v := .Ancestros -}}
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/hist/{{ .HistoriaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Ancestro
 		</span>
@@ -145,20 +159,21 @@
 </div>
 {{ end }}
 <div>
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-slate-600 rounded-md">
-			Historia <!-- Selected -->
+			Historia
+			<!-- Selected -->
 		</span>
 		{{ .Historia.Titulo }}
 	</a>
 </div>
 {{ range .Descendientes -}}
 <div class="pl-4">
-	<a
+	<a class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600"
 		hx-get="/nav/hist/{{ .HistoriaID }}"
-		class="inline-block w-full truncate transition-colors cursor-pointer hover:text-cyan-600">
+		>
 		<span class="px-2 py-1 mr-2 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
 			Descendiente
 		</span>

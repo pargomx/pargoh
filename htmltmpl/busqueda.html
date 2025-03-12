@@ -6,16 +6,16 @@
 <main class="flex flex-col grow w-full max-w-xl gap-4 p-2 mx-auto">
 	{{ block "busqueda_input" . }}
 	<div>
-		<input 
-			name="q"
+		<input class="form-control"
 			hx-get="/buscar"
 			hx-push-url="true"
 			type="search"
+			name="q"
 			placeholder="Buscar historias..."
-			class="form-control">
+			>
 	</div>
 	{{ end }}
-
+	
 	<h2 class="opacity-75 flex items-end">
 		<span class="grow font-bold text-xl">
 			Resultados
@@ -24,12 +24,13 @@
 			{{ len .Resultados }} coincidencias para '{{ .Busqueda }}'
 		</small>
 	</h2>
-	
+
 	{{ range .Resultados -}}
-	<a href="/historias/{{ .HistoriaID }}"
+	<a class="border-cyan-800 flex hover:bg-cyan-700 transition-colors border rounded-md shadow-md"
 		hx-boost="true"
 		hx-push-url="true"
-		class="border-cyan-800 flex hover:bg-cyan-700 transition-colors border rounded-md shadow-md">
+		href="/historias/{{ .HistoriaID }}"
+		>
 		<span class="p-2 grow truncate">
 			{{ .Subrallado }}
 		</span>
@@ -43,5 +44,5 @@
 		</div>
 	</a>
 	{{ end }}
-
+	
 </main>

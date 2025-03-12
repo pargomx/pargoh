@@ -3,104 +3,264 @@
 <header class="p-2 space-y-1">
 	{{ with .Persona -}}
 	<h3>
-		<a href="/personas/{{ .PersonaID }}" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">1.<i class="fa-solid fa-person"></i></a>
-		<span class="opacity-50">Como</span>
-		<a href="/personas/{{ .PersonaID }}" class="text-xl lowercase">{{ .Nombre }}</a>
-		<span class="opacity-50">quiero...</span>
+		<a class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"
+			href="/personas/{{ .PersonaID }}"
+			>
+			1.
+			<i class="fa-solid fa-person"></i>
+		</a>
+		<span class="opacity-50">
+			Como
+		</span>
+		<a class="text-xl lowercase"
+			href="/personas/{{ .PersonaID }}"
+			>
+			{{ .Nombre }}
+		</a>
+		<span class="opacity-50">
+			quiero...
+		</span>
+	</h3>
+	{{ end -}}
+	{{ range .Ancestros -}}
+	<h3>
+		<a class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"
+			href="/historias/{{ .HistoriaID }}/tablero"
+			>
+			{{ .Nivel }}.{{ .Posicion }}
+		</a>
+		<a class=""
+			href="/historias/{{ .PadreID }}/tablero#{{ .HistoriaID }}"
+			>
+			{{ .Titulo }}
+		</a>
+		<span class="opacity-50">
+			...
+		</span>
+		{{ if .NumTareas }}
+		<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
+			href="/historias/{{ .HistoriaID }}"
+			>
+			{{ .NumTareas }} tar.
+		</a>
+		{{ end }}
+	</h3>
+	{{ end -}}
+	{{ with .Historia -}}
+	<h3>
+		<a class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"
+			href="/historias/{{ .HistoriaID }}/tablero"
+			>
+			{{ .Nivel }}.{{ .Posicion }}
+		</a>
+		<a class=""
+			href="/historias/{{ .HistoriaID }}/tablero#{{ .HistoriaID }}"
+			>
+			{{ .Titulo }}
+		</a>
+		<span class="opacity-50">
+			...
+		</span>
+		{{ if .NumTareas }}
+		<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
+			href="/historias/{{ .HistoriaID }}"
+			>
+			{{ .NumTareas }} tar.
+		</a>
+		{{ end }}
 	</h3>
 	{{ end -}}
 	
-	{{ range .Ancestros -}}
-	<h3>
-		<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
-		<a href="/historias/{{ .PadreID }}/tablero#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
-		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
-	</h3>
-	{{ end -}}
-
-	{{ with .Historia -}}
-	<h3>
-		<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">{{ .Nivel }}.{{ .Posicion }}</a>
-		<a href="/historias/{{ .HistoriaID }}/tablero#{{ .HistoriaID }}" class="">{{ .Titulo }}</a><span class="opacity-50">...</span>
-		{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }} tar.</a>{{ end }}
-	</h3>
-	{{ end -}}
-
 </header>
 
-<main tipo="carriles_container" hx-get="/historias/{{ .Historia.HistoriaID }}/tablero" hx-trigger="historiasActualizadas" hx-target="this" hx-swap="innerHTML" hx-select="[tipo='carriles_container'] > *" class="flex items-start grow gap-4 p-2 overflow-x-auto">
+<main tipo="carriles_container" class="flex items-start grow gap-4 p-2 overflow-x-auto"
+	hx-get="/historias/{{ .Historia.HistoriaID }}/tablero"
+	hx-select="[tipo='carriles_container'] > *"
+	hx-swap="innerHTML"
+	hx-target="this"
+	hx-trigger="historiasActualizadas"
+	>
 	{{ range .Descendientes }}
-	<article tipo="carril" id="{{ .Historia.HistoriaID }}" class="relative flex flex-col max-h-full p-1 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96">
-		{{ with .Historia }}
+	<article id="{{ .HistoriaID }}" tipo="carril" class="relative flex flex-col max-h-full p-1 bg-cyan-900 rounded-md shadow-lg min-w-64 max-w-96">
 		<header tipo="carril_header" class="p-1">
-			<span tipo="carril_handle" class="mr-1 cursor-pointer">⣿</span>
+			<span tipo="carril_handle" class="mr-1 cursor-pointer">
+				⣿
+			</span>
 			{{ if .Completada }}✅{{ end }}
-			<span tipo="carril_titulo" class="font-medium text-center">{{ .Titulo }}</span>
+			<span tipo="carril_titulo" class="font-medium text-center">
+				{{ .Titulo }}
+			</span>
 			<span class="float-right text-sm">
 				{{ if .EsPrioridadWont }}{{ end }}
 				{{ if .EsPrioridadCould }}😶‍🌫️{{ end }}
 				{{ if .EsPrioridadShould }}🤔{{ end }}
 				{{ if .EsPrioridadMust }}🤩{{ end }}
 			</span>
-			{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }}&nbsp;tar.</a>{{ end }}
-			<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Posicion }}</span>
-			<!-- <button tipo="carril_edit" type="button" onclick="showEditCarril({{ .HistoriaID }})" class="float-right text-sm"><i class="px-2 py-1 fa fa-pen"></i></button> -->
-			<!-- <input tipo="carril_edit" name="titulo" value="{{ .Titulo }}" hx-target="#titulo{{ .HistoriaID }}" hx-put="/historias/{{ .HistoriaID }}" type="text" class="hidden form-control"> -->
-			<!-- <a tipo="carril_expand" href="/historias/{{ .HistoriaID }}/tablero" class="float-right text-sm"><i class="px-2 py-1 fa fa-eye"></i></a> -->
+			{{ if .NumTareas }}
+			<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
+				href="/historias/{{ .HistoriaID }}"
+				>
+				{{ .NumTareas }}&nbsp;tar.
+			</a>
+			{{ end }}
+			<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">
+				{{ .Posicion }}
+			</span>
 		</header>
-		{{ end }}
 		
 		<div tipo="carril_items_container" class="flex flex-col grow gap-3 p-1 overflow-x-hidden overflow-y-auto">
-			{{ range .Descendientes -}}{{ with .Historia }}
-			<div tipo="carril_item" id="{{ .HistoriaID }}" gk-padre="{{ .PadreID }}" class="relative p-3 bg-slate-800 rounded-md shadow-lg">
+			{{ range .Descendientes -}}
+			<div id="{{ .HistoriaID }}" tipo="carril_item" class="relative p-3 bg-slate-800 rounded-md shadow-lg"
+				gk-padre="{{ .PadreID }}"
+				>
 				<!-- <span tipo="carril_item_handle" class="mr-1 cursor-pointer">⣿</span> -->
-				{{ if .Completada }}✅{{ end }}
-				<span tipo="carril_item_titulo" class="text-center">{{ .Titulo }}</span>
+				{{ if .Completada }}
+				✅{{ end }}
+				<span tipo="carril_item_titulo" class="text-center">
+					{{ .Titulo }}
+				</span>
 				<span class="float-right">
 					{{ if .EsPrioridadWont }}{{ end }}
 					{{ if .EsPrioridadCould }}😶‍🌫️{{ end }}
 					{{ if .EsPrioridadShould }}🤔{{ end }}
 					{{ if .EsPrioridadMust }}🤩{{ end }}
 				</span>
-				{{ if .NumHistorias }}<a href="/historias/{{ .HistoriaID }}/tablero" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumHistorias }}&nbsp;his.</a>{{ end }}
-				{{ if .NumTareas }}<a href="/historias/{{ .HistoriaID }}" class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md">{{ .NumTareas }}&nbsp;tar.</a>{{ end }}
-				<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">{{ .Posicion }}</span>
+				{{ if .NumHistorias }}
+				<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
+					href="/historias/{{ .HistoriaID }}/tablero"
+					>
+					{{ .NumHistorias }}&nbsp;his.
+				</a>
+				{{ end }}
+				{{ if .NumTareas }}
+				<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
+					href="/historias/{{ .HistoriaID }}"
+					>
+					{{ .NumTareas }}&nbsp;tar.
+				</a>
+				{{ end }}
+				<span class="absolute top-0 right-0 px-1 text-xs bg-black opacity-40 rounded-tr-md rounded-bl-md">
+					{{ .Posicion }}
+				</span>
 			</div>
-			{{ end }}{{ end }}
+			{{ end }}
 		</div>
 
 		<footer class="p-1 pt-2">
-			<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100">
+			<input class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100"
+				hx-post="/historias/{{ .HistoriaID }}"
+				hx-target="#msgStack"
+				type="text"
+				name="titulo"
+				placeholder="Agregar historia..."
+				>
 		</footer>
 	</article>
 	{{ end }}
-
-	<input name="titulo" type="text" hx-target="#msgStack" hx-post="/historias/{{ .Historia.HistoriaID }}" placeholder="Agregar historia..." class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100">
+	
+	<input class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100"
+		hx-post="/historias/{{ .Historia.HistoriaID }}"
+		hx-target="#msgStack"
+		type="text"
+		name="titulo"
+		placeholder="Agregar historia..."
+		>
 </main>
 {{ end }}
 
-<div id="ctxMenu" tipo="ctxMenu" gk-historia="" class="absolute hidden p-2 text-black bg-cyan-50 rounded-sm shadow-md">
+<div id="ctxMenu" tipo="ctxMenu" class="absolute hidden p-2 text-black bg-cyan-50 rounded-sm shadow-md"
+	gk-historia=""
+	>
 	<div class="grid grid-cols-2 gap-1 text-sm">
-		<div class="col-span-2 text-xs opacity-50">Acciones</div>
-		<button type="button" onclick="expandirHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">✂️ Abrir</button>
-		<button type="button" onclick="moverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🚙 Mover</button>
-		<button type="button" onclick="tareasHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">📋 Tareas</button>
-		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
-		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🤩 Must</button>
-		<button type="button" onclick="priorizarHistoria(2)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🤔 Should</button>
-		<button type="button" onclick="priorizarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">😶‍🌫️ Would</button>
-		<button type="button" onclick="priorizarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🚫 Won't</button>
-		<div class="col-span-2 text-xs opacity-50">Estatus</div>
-		<button type="button" onclick="marcarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">✅ Okey</button>
-		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🔻 Falta</button>
-		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">❌ Eliminar</button>
+		<div class="col-span-2 text-xs opacity-50">
+			Acciones
+		</div>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="expandirHistoria()"
+			>
+			✂️ Abrir
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="moverHistoria()"
+			>
+			🚙 Mover
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="tareasHistoria()"
+			>
+			📋 Tareas
+		</button>
+		<div class="col-span-2 text-xs opacity-50">
+			Prioridad
+		</div>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(3)"
+			>
+			🤩 Must
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(2)"
+			>
+			🤔 Should
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(1)"
+			>
+			😶‍🌫️ Would
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(0)"
+			>
+			🚫 Won't
+		</button>
+		<div class="col-span-2 text-xs opacity-50">
+			Estatus
+		</div>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="marcarHistoria(1)"
+			>
+			✅ Okey
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="marcarHistoria(0)"
+			>
+			🔻 Falta
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="eliminarHistoria()"
+			>
+			❌ Eliminar
+		</button>
 	</div>
 </div>
 
-<dialog id="dialogHistoria" class="m-auto p-3 rounded-lg" hx-swap="innerHTML" hx-get="" hx-trigger="loadHistoriaForm" hx-target="this">
+<dialog id="dialogHistoria" class="m-auto p-3 rounded-lg"
+	hx-get=""
+	hx-swap="innerHTML"
+	hx-target="this"
+	hx-trigger="loadHistoriaForm"
+	>
 	<header class="flex flex-wrap items-center gap-3 pb-2">
-		<h2 class="grow w-full text-xl text-center sm:w-auto sm:text-left">Modificar</h2>
-		<button type="button" class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg" onclick="this.closest('dialog').close()" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+		<h2 class="grow w-full text-xl text-center sm:w-auto sm:text-left">
+			Modificar
+		</h2>
+		<button class="w-10 py-1 text-xl text-slate-200 bg-slate-600 rounded-lg"
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			>
+			<i class="fa-solid fa-xmark"></i>
+		</button>
 	</header>
 	<div>
 		Cargando...

@@ -1,11 +1,11 @@
 {{ with .Agregado -}}
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img
+		<img class="w-24 rounded-md"
+			alt="Portada del proyecto"
 			data-proyecto-id="{{ .Proyecto.ProyectoID }}"
 			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
-			alt="Portada del proyecto"
-			class="w-24 rounded-md">
+			>
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
@@ -13,90 +13,116 @@
 				{{ enfatizar .Proyecto.Titulo }}
 			</a>
 		</h2>
-		<h3
+		<h3 class="flex items-center gap-1 py-1"
 			data-persona-id="{{ .Persona.PersonaID }}"
-			class="flex items-center gap-1 py-1">
-			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
-			<span class="text-xl">{{ .Persona.Nombre }}</span>
+			>
+			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">
+				<i class="fa-solid fa-person"></i>
+			</span>
+			<span class="text-xl">
+				{{ .Persona.Nombre }}
+			</span>
 		</h3>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
+			href="/"
+			>
+			<i class="fa-solid fa-xmark"></i>
+		</a>
 	</span>
 </header>
 
-
 <main class="grow w-full max-w-5xl p-2 mx-auto"
 	hx-get="/historias/{{ .Historia.HistoriaID }}"
-	hx-target="this" hx-select="main" hx-swap="outerHTML"
+	hx-select="main"
+	hx-swap="outerHTML"
+	hx-target="this"
 	hx-trigger="reloadHistoria"
 	>
 
 	<div class="flex flex-wrap justify-end gap-x-4 gap-y-2">
 		<!--* PERSONA  -->
 		<h4 class="grow">
-			<a
+			<a class="mx-1 rounded-md opacity-75 hover:opacity-100"
 				href="/personas/{{ .Persona.PersonaID }}/doc#{{ .Historia.HistoriaID }}"
 				title="Documentación"
-				class="mx-1 rounded-md opacity-75 hover:opacity-100">
+				>
 				<i class="fa-solid fa-book"></i>
 			</a>
-			<span class="opacity-50">Como</span>
-			<a 
+			<span class="opacity-50">
+				Como
+			</span>
+			<a class="text-lg lowercase transition-colors hover:text-cyan-600"
 				href="/personas/{{ .Persona.PersonaID }}"
 				{{ if not .Ancestros }}tipo="ancestro_directo"{{ end }}
-				class="text-lg lowercase transition-colors hover:text-cyan-600">
+				>
 				{{- .Persona.Nombre -}}
 			</a>
-			<span class="opacity-50">quiero...</span>
+			<span class="opacity-50">
+				quiero...
+			</span>
 		</h4>
 		<!--* INSERTAR PADRE  -->
 		<div>
-			<button
-				type="button"
-				title="Insertar historia padre"
+			<button class="mx-1 rounded-md opacity-75 hover:opacity-100"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/padre"
 				hx-prompt="Insertar historia padre con el título..."
-				class="mx-1 rounded-md opacity-75 hover:opacity-100">
+				type="button"
+				title="Insertar historia padre"
+				>
 				<i class="fa-solid fa-tree"></i>
 			</button>
 		</div>
 		<!--* PRIORIDAD -->
 		<div>
-			<select
+			<select class="form-control"
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/prioridad"
 				hx-swap="none"
 				name="value"
-				class="form-control">
-				<option value="0" {{ if .Historia.EsPrioridadWont }}selected{{ end }}>🚫 Won't</option>
-				<option value="1" {{ if .Historia.EsPrioridadCould }}selected{{ end }}>😶‍🌫️ Could</option>
-				<option value="2" {{ if .Historia.EsPrioridadShould }}selected{{ end }}>🤔 Should</option>
-				<option value="3" {{ if .Historia.EsPrioridadMust }}selected{{ end }}>🤩 Must</option>
+				>
+				<option value="0" {{ if .Historia.EsPrioridadWont }}selected{{ end }}>
+					🚫 Won't
+				</option>
+				<option value="1" {{ if .Historia.EsPrioridadCould }}selected{{ end }}>
+					😶‍🌫️ Could
+				</option>
+				<option value="2" {{ if .Historia.EsPrioridadShould }}selected{{ end }}>
+					🤔 Should
+				</option>
+				<option value="3" {{ if .Historia.EsPrioridadMust }}selected{{ end }}>
+					🤩 Must
+				</option>
 			</select>
 		</div>
 		<!--* COMPLETADA -->
 		<div>
-			<select
+			<select class="form-control"
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/completada"
 				hx-swap="none"
 				name="value"
-				class="form-control">
-				<option value="0">Pendiente</option>
-				<option value="1" {{- if .Historia.Completada }} selected{{ end }}>✅ Completada</option>
+				>
+				<option value="0">
+					Pendiente
+				</option>
+				<option value="1" {{- if .Historia.Completada }}selected{{ end }}>
+					✅ Completada
+				</option>
 			</select>
 		</div>
 		<div class="flex items-center gap-1">
-			<input
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
+			<input class="form-control max-w-32"
 				hx-askfor="reloadProgreso"
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
 				hx-swap="none"
 				type="number"
-				name="value"
-				value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
-				min="0"
 				max="30"
+				min="0"
+				name="value"
 				placeholder="Presupuesto"
-				class="form-control max-w-32"> Hrs.
+				value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
+				>
+			Hrs.
 		</div>
 	</div>
 
@@ -106,46 +132,48 @@
 		{{ range $i, $v := .Ancestros }}
 		<ul class="pl-2 list-disc">
 			<li class="pt-1">
-				<a href="/historias/{{ .HistoriaID }}" title="Ir al ancestro"
+				<a class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400"
+					href="/historias/{{ .HistoriaID }}"
+					title="Ir al ancestro"
 					{{ if eq (suma $i 1) (len $.Agregado.Ancestros) }}tipo="ancestro_directo"{{ end }}
-					class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400">
+					>
 					{{- enfatizar .Titulo -}}...
 				</a>
-		{{ end }}
-		{{ range .Ancestros -}}
+				{{ end }}
+				{{ range .Ancestros -}}
 			</li>
 		</ul>
 		{{ end }}
 	</div>
 	{{ end }}
-
+	
 	<!--* TÍTULO -->
 	<div class="mt-2 mb-1">
-		<textarea
+		<textarea class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400"
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/titulo"
 			hx-swap="none"
+			enterkeyhint="enter"
 			name="value"
-			title="Título de la historia"
 			placeholder="Hacer algo de valor..."
 			rows="1"
-			enterkeyhint="enter"
-			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400">
+			title="Título de la historia"
+			>
 			{{- .Historia.Titulo -}}
 		</textarea>
 	</div>
 
 	<!--* CONTEXTO -->
 	<div class="mb-4">
-		<textarea
+		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/objetivo"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
+			enterkeyhint="enter"
 			name="value"
-			title="Objetivo empático de la historia"
 			placeholder="Porque me sirve para..."
 			rows="1"
-			enterkeyhint="enter"
-			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600">
+			title="Objetivo empático de la historia"
+			>
 			{{- .Historia.Objetivo -}}
 		</textarea>
 	</div>
@@ -154,19 +182,36 @@
 	<ol id="reglasDeNegocio" tipo="sort_reglas" class="mb-6">
 		{{ range .Reglas -}}
 		<li tipo="sort_regla" class="flex gap-1 p-1 group">
-			<div tipo="sort_handle" title="Posición {{ .Posicion }}" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100"
+				title="Posición {{ .Posicion }}"
+				>
 				⣿
-				<form tipo="sort_form" hx-post="/reordenar-regla" hx-trigger="reordenarEnd">
-					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-					<input type="hidden" name="old_pos" value="{{ .Posicion }}">
-					<input type="hidden" name="new_pos">
+				<form tipo="sort_form"
+					hx-post="/reordenar-regla"
+					hx-trigger="reordenarEnd"
+					>
+					<input
+						type="hidden"
+						name="historia_id"
+						value="{{ .HistoriaID }}"
+						>
+					<input
+						type="hidden"
+						name="old_pos"
+						value="{{ .Posicion }}"
+						>
+					<input
+						type="hidden"
+						name="new_pos"
+						>
 				</form>
 			</div>
-			<button type="button"
+			<button class="pr-2"
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}/marcar"
-				hx-target="#reglasDeNegocio"
 				hx-select="#reglasDeNegocio"
-				class="pr-2">
+				hx-target="#reglasDeNegocio"
+				type="button"
+				>
 				{{ if and .Implementada .Probada }}
 				<i class="text-sm text-green-500 fa-solid fa-arrow-right"></i>
 				{{ else if .Implementada }}
@@ -175,54 +220,54 @@
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 				{{ end }}
 			</button>
-			<textarea
-				id="input_Regla{{ .Posicion }}"
+			<textarea id="input_Regla{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="#reglasDeNegocio"
 				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
+				enterkeyhint="enter"
 				name="texto"
 				rows="1"
-				enterkeyhint="enter"
-				class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
+				>
 				{{- .Texto -}}
 			</textarea>
-			<button
-				type="button"
-				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-target="#reglasDeNegocio"
-				hx-select="#reglasDeNegocio"
+			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
 				hx-confirm="¿Eliminar regla? {{ .Texto }}"
+				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
+				type="button"
 				title="Quitar regla"
-				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
+				>
 				<i class="fa-solid fa-trash"></i>
 			</button>
 		</li>
 		{{ end }}
 		<li class="flex items-center gap-1 p-1">
-			<div class="hidden opacity-0 md:block">⣿</div>
+			<div class="hidden opacity-0 md:block">
+				⣿
+			</div>
 			<div class="pr-2">
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 			</div>
-			<textarea
-				id="input_AddRegla"
+			<textarea id="input_AddRegla" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
-				hx-target="#reglasDeNegocio"
 				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
 				hx-trigger="keyup[key=='Enter']"
-				name="texto"
-				rows="1"
 				enterkeyhint="enter"
+				name="texto"
 				placeholder="Agregar regla"
-				class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+				rows="1"
+				></textarea>
 		</li>
 	</ol>
 
 	<!--* AVANCE  -->
 	<div id="progreso"
 		hx-get="/historias/{{ .Historia.HistoriaID }}"
-		hx-target="#progreso"
 		hx-select="#progreso"
 		hx-swap="outerHTML"
+		hx-target="#progreso"
 		hx-trigger="reloadProgreso from:body"
 		>
 		<!-- Cargar librería desde antes -->
@@ -230,27 +275,43 @@
 
 		{{ if .SegundosPresupuesto }}
 		<h3 class="mb-4 text-xl text-cyan-600">
-			<a href="#progreso">Progreso</a>
+			<a href="#progreso">
+				Progreso
+			</a>
 		</h3>
 		<!-- Tarjetas avance -->
 		<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
 			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-				<span class="text-3xl font-bold text-white">{{ .AvancePorcentual }}%</span>
-				<span class="text-sm text-cyan-200">Avance</span>
+				<span class="text-3xl font-bold text-white">
+					{{ .AvancePorcentual }}%
+				</span>
+				<span class="text-sm text-cyan-200">
+					Avance
+				</span>
 			</div>
 			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-				<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosPresupuesto }}</span>
-				<span class="text-sm text-cyan-200">Presupuesto</span>
+				<span class="text-3xl font-bold text-white">
+					{{ segundosToString .SegundosPresupuesto }}
+				</span>
+				<span class="text-sm text-cyan-200">
+					Presupuesto
+				</span>
 			</div>
 			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-				<span class="text-3xl font-bold text-white">{{ segundosToString .SegundosEstimado }}</span>
-				<span class="text-sm text-cyan-200">Estimación</span>
+				<span class="text-3xl font-bold text-white">
+					{{ segundosToString .SegundosEstimado }}
+				</span>
+				<span class="text-sm text-cyan-200">
+					Estimación
+				</span>
 			</div>
 			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
 				<span class="text-3xl font-bold {{ if gt .SegundosUtilizado (suma .SegundosPresupuesto 3600) }} text-red-400 {{ else if gt .SegundosUtilizado .SegundosPresupuesto }} text-orange-400 {{ else }} text-white {{ end }}">
 					{{ segundosToString .SegundosUtilizado }}
 				</span>
-				<span class="text-sm text-cyan-200">Utilizado</span>
+				<span class="text-sm text-cyan-200">
+					Utilizado
+				</span>
 			</div>
 		</div>
 		<!-- Gráfico avance -->
@@ -365,24 +426,24 @@
 	<!--* VIAJE DE USUARIO *-->
 	<h3 class="mb-2 text-xl text-cyan-600 group">
 		Viaje de usuario
-		<a
+		<a class="mx-1 text-base opacity-0 group-hover:opacity-100 focus:opacity-100"
 			href="/personas/{{ .Persona.PersonaID }}/doc#{{ .Historia.HistoriaID }}"
 			title="Ver en documentación"
-			class="mx-1 text-base opacity-0 group-hover:opacity-100 focus:opacity-100">
+			>
 			<i class="fa-solid fa-book"></i>
 		</a>
 	</h3>
 	<div class="mb-2">
-		<textarea
+		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
 			hx-patch="/historias/{{ .Historia.HistoriaID }}/descripcion"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
+			enterkeyhint="enter"
 			name="value"
-			title="Descripción de la historia"
 			placeholder="Descripción para el usuario en infinitivo..."
 			rows="1"
-			enterkeyhint="enter"
-			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600">
+			title="Descripción de la historia"
+			>
 			{{- .Historia.Descripcion -}}
 		</textarea>
 	</div>
@@ -392,10 +453,24 @@
 			<div class="flex w-full gap-1 p-1 group">
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 					⣿
-					<form tipo="sort_form" hx-post="/reordenar-tramo" hx-trigger="reordenarEnd">
-						<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-						<input type="hidden" name="old_pos" value="{{ .Posicion }}">
-						<input type="hidden" name="new_pos">
+					<form tipo="sort_form"
+						hx-post="/reordenar-tramo"
+						hx-trigger="reordenarEnd"
+						>
+						<input
+							type="hidden"
+							name="historia_id"
+							value="{{ .HistoriaID }}"
+							>
+						<input
+							type="hidden"
+							name="old_pos"
+							value="{{ .Posicion }}"
+							>
+						<input
+							type="hidden"
+							name="new_pos"
+							>
 					</form>
 				</div>
 				<div>
@@ -403,41 +478,42 @@
 						{{ .Posicion }}
 					</span>
 				</div>
-				<textarea
-					id="input_Tramo{{ .Posicion }}"
+				<textarea id="input_Tramo{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
-					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					hx-select="main"
+					hx-swap="outerHTML"
+					hx-target="main"
+					enterkeyhint="enter"
 					name="texto"
 					rows="1"
-					enterkeyhint="enter"
-					class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400">
+					>
 					{{- .Texto -}}
 				</textarea>
 				<div class="flex gap-2">
 					{{ if not .Imagen -}}
-					<button
+					<button class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80"
 						type="button"
 						onclick="showTramoImgModal(this.closest('li'))"
 						title="Definir imagen"
-						class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80">
+						>
 						<i class="fa-solid fa-image"></i>
 					</button>
 					{{ end }}
-					<button
+					<button class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80"
 						type="button"
 						onclick="showMoverTramo('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}')"
 						title="Mover tarea"
-						class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80">
+						>
 						<i class="fa-solid fa-person-walking"></i>
 					</button>
 				</div>
 			</div>
 			{{ if .Imagen -}}
 			<div class="relative mb-2 ml-12 border border-cyan-800 rounded-md shadow-lg">
-				<img
-					src="/imagenes/{{ .Imagen }}"
+				<img class="rounded-md cursor-pointer max-w-40 max-h-40"
 					onclick="showTramoImgModal(this.closest('li'))"
-					class="rounded-md cursor-pointer max-w-40 max-h-40">
+					src="/imagenes/{{ .Imagen }}"
+					>
 			</div>
 			{{ end }}
 		</li>
@@ -445,92 +521,102 @@
 		
 		<!-- Agregar tramo... -->
 		<li class="flex items-center gap-1 p-1">
-			<div class="hidden opacity-0 md:block">⣿</div>
+			<div class="hidden opacity-0 md:block">
+				⣿
+			</div>
 			<div>
 				<span class="px-2 py-1 mr-1 font-mono text-xs rounded-md opacity-50 bg-black/50 whitespace-nowrap">
 					{{ suma (len .Tramos) 1 }}
 				</span>
 			</div>
-			<textarea
-				id="input_AddTramo"
+			<textarea id="input_AddTramo" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-select="main"
+				hx-swap="outerHTML"
+				hx-target="main"
 				hx-trigger="keyup[key=='Enter']"
-				name="texto"
-				rows="1"
 				enterkeyhint="enter"
+				name="texto"
 				placeholder="Agregar un tramo al viaje"
-				class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+				rows="1"
+				></textarea>
 		</li>
 	</ol>
 
 	<!--* IMAGEN DEL TRAMO -->
 	<dialog id="TramoImgModal" class="w-full max-w-3xl m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
-		<div class="flex flex-col max-w-3xl max-h-[90vh]"><!-- Para hacer scrollable manteniendo header -->
+		<div class="flex flex-col max-w-3xl max-h-[90vh]">
+			<!-- Para hacer scrollable manteniendo header -->
 			<header class="flex items-center gap-2 p-2 bg-cyan-800">
 				<h2 class="grow text-xl">
 					Viaje de usuario
 				</h2>
-				<button
+				<button class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75"
 					type="button"
 					title="Anterior"
-					class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75">
+					>
 					<i class="fa-solid fa-arrow-left"></i>
 				</button>
-				<button
+				<button class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75"
 					type="button"
 					title="Siguiente"
-					class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75">
+					>
 					<i class="fa-solid fa-arrow-right"></i>
 				</button>
-				<button
+				<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 					type="button"
-					onclick="this.closest('dialog').close()" 
+					onclick="this.closest('dialog').close()"
 					title="Cerrar"
-					class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+					>
 					<i class="fa-solid fa-xmark"></i>
 				</button>
 			</header>
 			<div class="flex flex-col grow gap-2 p-2 overflow-y-auto">
-				<p><!-- Datos puestos con JS --></p>
-				<img src="" class="mx-auto border border-cyan-800 rounded-md shadow-lg">
-				<form 
-					id="formSubirImagen"
-					hx-post="/imagenes"
+				<p>
+					<!-- Datos puestos con JS -->
+				</p>
+				<img class="mx-auto border border-cyan-800 rounded-md shadow-lg"
+					src=""
+					>
+				<form id="formSubirImagen" class="py-2 text-center"
 					hx-encoding="multipart/form-data"
-					class="py-2 text-center">
-					<input type="hidden" name="historia_id">
-					<input type="hidden" name="posicion">
+					hx-post="/imagenes"
+					>
 					<input
+						type="hidden"
+						name="historia_id"
+						>
+					<input
+						type="hidden"
+						name="posicion"
+						>
+					<input class="form-control"
 						type="file"
-						name="imagen"
 						accept="image/png, image/jpeg, image/gif"
-						required
+						name="imagen"
 						onchange="showTramoImagePreview(this)"
-						class="form-control">
+						required
+						>
 				</form>
 				<div class="flex flex-row-reverse flex-wrap justify-center gap-x-4 gap-y-2">
-					<button
+					<button tipo="btn_subir_imagen" class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600"
 						type="submit"
 						form="formSubirImagen"
-						tipo="btn_subir_imagen"
-						class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600">
+						>
 						Guardar
 					</button>
-					<button
-						tipo="cancelar"
-						onclick="this.closest('dialog').close()" 
-						class="inline-block px-6 py-2 text-slate-100 transition-colors bg-gray-600 rounded-sm shadow-md hover:bg-gray-500">
+					<button tipo="cancelar" class="inline-block px-6 py-2 text-slate-100 transition-colors bg-gray-600 rounded-sm shadow-md hover:bg-gray-500"
+						onclick="this.closest('dialog').close()"
+						>
 						Cancelar
 					</button>
-					<button
-						tipo="eliminar_img"
-						type="button"
-						onclick="this.closest('dialog').close()" 
+					<button tipo="eliminar_img" class="px-6 py-2 font-semibold text-red-400 transition-colors rounded-sm shadow-md hover:bg-red-500 hover:text-white"
 						hx-confirm="¿Eliminar esta imagen?"
 						hx-trigger="click"
+						type="button"
+						onclick="this.closest('dialog').close()"
 						title="Quitar imagen"
-						class="px-6 py-2 font-semibold text-red-400 transition-colors rounded-sm shadow-md hover:bg-red-500 hover:text-white">
+						>
 						Quitar imagen
 					</button>
 				</div>
@@ -539,34 +625,56 @@
 	</dialog>
 
 	<!--* DESCENDIENTES *-->
-	<h3 class="mb-2 text-xl text-cyan-600">Descendientes</h3>
+	<h3 class="mb-2 text-xl text-cyan-600">
+		Descendientes
+	</h3>
 	<ul tipo="sort_descendientes" class="mb-6">
 		{{ range .Descendientes }}
 		<li tipo="sort_descendiente" class="">
 			<div class="flex gap-1 p-1 group">
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 					⣿
-					<form tipo="sort_form" hx-post="/reordenar-historia" hx-trigger="reordenarEnd">
-						<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-						<input type="hidden" name="old_pos" value="{{ .Posicion }}">
-						<input type="hidden" name="new_pos">
+					<form tipo="sort_form"
+						hx-post="/reordenar-historia"
+						hx-trigger="reordenarEnd"
+						>
+						<input
+							type="hidden"
+							name="historia_id"
+							value="{{ .HistoriaID }}"
+							>
+						<input
+							type="hidden"
+							name="old_pos"
+							value="{{ .Posicion }}"
+							>
+						<input
+							type="hidden"
+							name="new_pos"
+							>
 					</form>
 				</div>
-				<button
-					tipo="descendiente_bullet"
+				<button tipo="descendiente_bullet" class="inline-block w-5 text-center"
 					type="button"
 					onclick="showMenuHistoria({{ .HistoriaID }})"
-					class="inline-block w-5 text-center">
-					{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-					{{- else if .EsPrioridadMust }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-					{{- else if .EsPrioridadShould }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-					{{- else if .EsPrioridadCould }}<i class="text-orange-200 fa-solid fa-minus"></i>
-					{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
+					>
+					{{- if .Completada }}
+					<i class="text-green-600 fa-solid fa-circle-check"></i>
+					{{- else if .EsPrioridadMust }}
+					<i class="text-orange-600 fa-solid fa-angles-up"></i>
+					{{- else if .EsPrioridadShould }}
+					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+					{{- else if .EsPrioridadCould }}
+					<i class="text-orange-200 fa-solid fa-minus"></i>
+					{{- else }}
+					<i class="text-slate-400 fa-solid fa-ban"></i>
 					{{- end }}
 				</button>
 				<div class="grow">
-					<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
-						{{- enfatizar .Titulo -}} 
+					<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
+						href="/historias/{{ .HistoriaID }}"
+						>
+						{{- enfatizar .Titulo -}}
 					</a>
 					<span class="float-right text-sm opacity-75">
 						<!-- {{ segundosToString .SegundosUtilizadoMust }}
@@ -584,21 +692,27 @@
 				{{ range .Descendientes }}
 				<li class="flex gap-1 p-1 group">
 					<div class="pl-8">
-						<button
-							tipo="descendiente_bullet"
+						<button tipo="descendiente_bullet" class="inline-block w-5 text-center"
 							type="button"
 							onclick="showMenuHistoria({{ .HistoriaID }})"
-							class="inline-block w-5 text-center">
-							{{- if .Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-							{{- else if .EsPrioridadMust }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-							{{- else if .EsPrioridadShould }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-							{{- else if .EsPrioridadCould }}<i class="text-orange-200 fa-solid fa-minus"></i>
-							{{- else }}<i class="text-slate-400 fa-solid fa-ban"></i>
+							>
+							{{- if .Completada }}
+							<i class="text-green-600 fa-solid fa-circle-check"></i>
+							{{- else if .EsPrioridadMust }}
+							<i class="text-orange-600 fa-solid fa-angles-up"></i>
+							{{- else if .EsPrioridadShould }}
+							<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+							{{- else if .EsPrioridadCould }}
+							<i class="text-orange-200 fa-solid fa-minus"></i>
+							{{- else }}
+							<i class="text-slate-400 fa-solid fa-ban"></i>
 							{{- end }}
 						</button>
 					</div>
 					<div class="grow">
-						<a href="/historias/{{ .HistoriaID }}" class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+						<a class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300"
+							href="/historias/{{ .HistoriaID }}"
+							>
 							{{- enfatizar .Titulo -}}
 						</a>
 						<span class="float-right text-xs opacity-50">
@@ -612,45 +726,49 @@
 				</li>
 				{{ end }}
 			</ul>
-		{{ end }}
+			{{ end }}
 		</li>
 		{{ end }}
 		
 		<li class="">
 			<div class="flex gap-1 p-1 group">
-				<div class="hidden opacity-0 md:block">⣿</div>
+				<div class="hidden opacity-0 md:block">
+					⣿
+				</div>
 				<span class="inline-block w-5 text-center">
 					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 				</span>
-				<textarea
+				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 					hx-post="/historias/{{ .Historia.HistoriaID }}"
-					hx-target="main" hx-select="main" hx-swap="outerHTML"
+					hx-select="main"
+					hx-swap="outerHTML"
+					hx-target="main"
 					hx-trigger="keyup[key=='Enter']"
-					name="titulo" 
-					rows="1"
 					enterkeyhint="enter"
+					name="titulo"
 					placeholder="Agregar historia"
-					class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+					rows="1"
+					></textarea>
 			</div>
 		</li>
 	</ul>
 
 	<!-- Poner ctxMenu fuera de sortable para que no cuente doble el newIndex -->
 	{{ range .Descendientes -}}
-		{{ template "ctxMenuHistoria" . -}}
-		{{ range .Descendientes -}}
-			{{ template "ctxMenuHistoria" . -}}
-		{{ end }}
+	{{ template "ctxMenuHistoria" . -}}
+	{{ range .Descendientes -}}
+	{{ template "ctxMenuHistoria" . -}}
+	{{ end }}
 	{{ end }}
 
 	<!--* RELACIONADAS *-->
 	<h3 class="mb-2 text-xl text-cyan-600 group">
 		Relacionadas
-		<button
+		<button class="ml-2 text-base transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-cyan-300"
 			type="button"
 			onclick="showAddReferencia()"
 			title="Agregar historia relacionada"
-			class="ml-2 text-base transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-cyan-300">
+			>
 			<i class="fa-solid fa-square-plus"></i>
 		</button>
 	</h3>
@@ -661,16 +779,20 @@
 				<i class="text-xs text-slate-400 fa-solid fa-circle"></i>
 			</div>
 			<div class="grow">
-				<a href="/historias/{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
-					{{- enfatizar .Titulo -}} 
+				<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
+					href="/historias/{{ .HistoriaID }}"
+					>
+					{{- enfatizar .Titulo -}}
 				</a>
 			</div>
-			<button
-				type="button"
+			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
 				hx-delete="/historias/{{ $.Agregado.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-select="main"
+				hx-swap="outerHTML"
+				hx-target="main"
+				type="button"
 				title="Quitar historia relacionada"
-				class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600">
+				>
 				<i class="fa-solid fa-trash"></i>
 			</button>
 		</li>
@@ -680,13 +802,15 @@
 	<!--* IMPLEMENTACIÓN -->
 	<div id="implementacion">
 		<h3 class="text-xl text-cyan-600 mb-2">
-			<a href="#implementacion">Implementación</a>
+			<a href="#implementacion">
+				Implementación
+			</a>
 			{{ if .Historia.Notas -}}
-			<button
+			<button class="mx-2 text-base hover:text-cyan-300 float-right"
 				type="button"
 				onclick="editNotasImplementacion(this)"
 				title="Editar notas"
-				class="mx-2 text-base hover:text-cyan-300 float-right">
+				>
 				<i class="fa-solid fa-pencil"></i>
 			</button>
 			{{ end -}}
@@ -697,16 +821,16 @@
 		</p>
 		{{ end -}}
 		<div id="notasImplEdit" class="{{ if .Historia.Notas -}}hidden{{ end }}">
-			<textarea
+			<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/notas"
 				hx-swap="none"
 				hx-trigger="change, keyup changed delay:60s"
+				enterkeyhint="enter"
 				name="value"
-				title="Detalles de implementación"
 				placeholder="Notas de implementación..."
 				rows="1"
-				enterkeyhint="enter"
-				class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600">
+				title="Detalles de implementación"
+				>
 				{{- .Historia.Notas -}}
 			</textarea>
 		</div>
@@ -726,52 +850,71 @@
 	<!--* TAREAS -->
 	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
 		<h3 id="tareas" class="grow text-xl">
-			<a href="#tareas">Tareas</a>
+			<a href="#tareas">
+				Tareas
+			</a>
 		</h3>
 		<span class="text-sm opacity-75">
-			<i class="fa-solid fa-list-check"></i> Progreso
+			<i class="fa-solid fa-list-check"></i>
+			Progreso
 			{{ .Tareas.AvancePorcentual }}%
 		</span>
 		{{- if .Tareas.SegundosUtilizado -}}
-		<span class="text-sm opacity-75" title="Tiempo transcurrido {{ segundosToString .Tareas.SegundosUtilizado }}">
-			<i class="fa-solid fa-stopwatch"></i> Transcurrido
+		<span class="text-sm opacity-75"
+			title="Tiempo transcurrido {{ segundosToString .Tareas.SegundosUtilizado }}"
+			>
+			<i class="fa-solid fa-stopwatch"></i>
+			Transcurrido
 			{{ segundosToString .Tareas.SegundosUtilizado }}
 		</span>
 		{{- end -}}
 		{{- if .Tareas.SegundosEstimado -}}
 		<span class="text-sm opacity-75">
-			<i class="fa-solid fa-hourglass-start"></i> Estimado
+			<i class="fa-solid fa-hourglass-start"></i>
+			Estimado
 			{{ segundosToString .Tareas.SegundosEstimado }}
 		</span>
 		{{- end -}}
 	</div>
 	<ol class="mb-6">
 		{{ range .Tareas }}
-		<li id="{{ .TareaID }}"
-			tipo="sort_regla"
-			class="flex gap-1 p-1 group">
+		<li id="{{ .TareaID }}" tipo="sort_regla" class="flex gap-1 p-1 group">
 			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
-				<form tipo="sort_form" hx-post="/reordenar-tarea" hx-trigger="reordenarEnd">
-					<input type="hidden" name="historia_id" value="{{ .HistoriaID }}">
-					<input type="hidden" name="new_pos">
+				<form tipo="sort_form"
+					hx-post="/reordenar-tarea"
+					hx-trigger="reordenarEnd"
+					>
+					<input
+						type="hidden"
+						name="historia_id"
+						value="{{ .HistoriaID }}"
+						>
+					<input
+						type="hidden"
+						name="new_pos"
+						>
 				</form>
 			</div>
 			<div>
 				<span class="inline-block w-6 text-center">
-					{{- if .Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>
-					{{ else if .EnCurso }}<i class="text-green-600 fa-regular fa-square"></i>
-					{{ else if .EnPausa }}<i class="text-orange-600 fa-regular fa-square"></i>
-					{{ else }}<i class="text-slate-400 fa-regular fa-square"></i>
+					{{- if .Finalizada }}
+					<i class="text-green-600 fa-regular fa-square-check"></i>
+					{{ else if .EnCurso }}
+					<i class="text-green-600 fa-regular fa-square"></i>
+					{{ else if .EnPausa }}
+					<i class="text-orange-600 fa-regular fa-square"></i>
+					{{ else }}
+					<i class="text-slate-400 fa-regular fa-square"></i>
 					{{ end -}}
 				</span>
 			</div>
 			<p class="">
-				<button
+				<button class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md"
 					hx-post="/tareas/{{ .TareaID }}/importancia"
-					title="{{ $.Agregado.Tareas.ValorPorcentual .TareaID }}% del trabajo"
 					tabindex="-1"
-					class="px-2 py-1 text-xs font-semibold leading-none text-cyan-600 bg-cyan-950 rounded-md">
+					title="{{ $.Agregado.Tareas.ValorPorcentual .TareaID }}% del trabajo"
+					>
 					{{- .Importancia.Etiqueta -}}
 				</button>
 
@@ -780,29 +923,36 @@
 					{{- .Tipo.Etiqueta -}}
 				</span>
 				{{ end }}
-
-				<span onclick="document.getElementById('edit{{ .TareaID }}').showModal()" class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}">
+				
+				<span class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}"
+					onclick="document.getElementById('edit{{ .TareaID }}').showModal()"
+					>
 					{{ .Descripcion }}
 				</span>
 
 				{{- if .EnCurso -}}
 				<span class="mx-2 opacity-50">
-					<img src="/assets/img/spinner.svg" alt="En progreso" class="inline-block w-8">
+					<img class="inline-block w-8"
+						alt="En progreso"
+						src="/assets/img/spinner.svg"
+						>
 				</span>
 				{{- end -}}
-
+				
 				<span class="float-right sm:hidden">
 					{{- if .SegundosEstimado -}}
-					<span class="pl-4 text-sm opacity-75 whitespace-nowrap" title="Tiempo estimado {{ segundosToString .SegundosEstimado }}">
+					<span class="pl-4 text-sm opacity-75 whitespace-nowrap"
+						title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
+						>
 						<i class="fa-solid fa-hourglass-start"></i>
 						{{ segundosToString .SegundosEstimado }}
 					</span>
 					{{- end -}}
 					{{- if .SegundosUtilizado -}}
-					<button
+					<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 						onclick="showIntervalos('{{ .TareaID }}')"
 						title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
-						class="pl-4 text-sm opacity-75 whitespace-nowrap">
+						>
 						<i class="fa-solid fa-stopwatch"></i>
 						{{ segundosToString .SegundosUtilizado }}
 					</button>
@@ -812,10 +962,10 @@
 				{{ if and .Impedimentos (not .Finalizada) -}}
 				<br>
 				<i class="text-sm text-orange-300">
-					{{ .Impedimentos }}	
+					{{ .Impedimentos }}
 				</i>
 				{{- end }}
-
+				
 				<!-- <span class="px-2 py-1 text-xs font-semibold leading-none text-white bg-cyan-950 rounded-md opacity-50">
 					e:{{ .SegundosEstimado }}
 					r:{{ .SegundosUtilizado }}
@@ -826,46 +976,61 @@
 			</p>
 			<div class="items-start hidden gap-2 md:flex">
 				{{ if .NoIniciada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					type="button"
+					title="Iniciar tarea"
+					>
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .EnCurso -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" title="Pausar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-post="/tareas/{{ .TareaID }}/pausar"
+					type="button"
+					title="Pausar tarea"
+					>
 					<i class="fa-solid fa-pause"></i>
 				</button>
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" title="Marcar como finalizada"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-post="/tareas/{{ .TareaID }}/terminar"
+					type="button"
+					title="Marcar como finalizada"
+					>
 					<i class="fa-solid fa-square-check"></i>
 				</button>
 				{{ else if .EnPausa -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					type="button"
+					title="Iniciar tarea"
+					>
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ else if .Finalizada -}}
-				<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar"title="Iniciar tarea"
-					class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100">
+				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
+					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					type="button"
+					title="Iniciar tarea"
+					>
 					<i class="fa-solid fa-play"></i>
 				</button>
 				{{ end }}
 			</div>
 			<div class="grow hidden text-right sm:block">
 				{{- if .SegundosUtilizado -}}
-				<button
+				<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 					onclick="showIntervalos('{{ .TareaID }}')"
 					title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
-					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					>
 					<i class="fa-solid fa-stopwatch"></i>
 					{{ segundosToString .SegundosUtilizado }}
 				</button>
 				{{- end -}}
-				<button
+				<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 					hx-patch="/tareas/{{ .TareaID }}/estimado"
 					hx-prompt="Nuevo estimado"
 					title="Tiempo estimado {{ segundosToString .SegundosEstimado }}"
-					class="pl-4 text-sm opacity-75 whitespace-nowrap">
+					>
 					<i class="fa-solid fa-hourglass-start"></i>
 					{{ if .SegundosEstimado }}{{ segundosToString .SegundosEstimado }}{{ else }}1h{{ end -}}
 				</button>
@@ -873,63 +1038,71 @@
 		</li>
 		{{ end }}
 		<li class="flex items-center gap-1 p-1">
-			<div class="hidden opacity-0 md:block">⣿</div>
+			<div class="hidden opacity-0 md:block">
+				⣿
+			</div>
 			<div>
 				<span class="inline-block w-6 text-center">
 					<i class="text-slate-400 fa-regular fa-square"></i>
 				</span>
 			</div>
-			<input type="text"
-				id="input_AddTarea"
-				name="descripcion" 
-				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
-				hx-trigger="keyup[key=='Enter']"
-				hx-validate="true"
+			<input id="input_AddTarea" class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
+				hx-include="closest li"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
-				hx-include="closest li"
-				placeholder="Agregar tarea"
-				class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
-			>
-			<input type="text"
-				name="segundos_estimado"
 				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
-				hx-target="main" hx-select="main" hx-swap="outerHTML"
+				hx-select="main"
+				hx-swap="outerHTML"
+				hx-target="main"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
+				type="text"
+				name="descripcion"
+				placeholder="Agregar tarea"
+				>
+			<input class="inline-block text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 				hx-include="closest li"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
+				hx-select="main"
+				hx-swap="outerHTML"
+				hx-target="main"
+				hx-trigger="keyup[key=='Enter']"
+				hx-validate="true"
+				type="text"
+				name="segundos_estimado"
 				placeholder="⏱ Estimado"
-				class="inline-block text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
-			>
+				>
 		</li>
 	</ol>
 
 	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Historia.Notas) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
 	<div class="text-center">
-		<button
-			type="button"
-			hx-delete="/historias/{{ .Historia.HistoriaID }}"
+		<button class="px-4 py-2 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
 			hx-confirm="¿Eliminar historia vacía?"
-			class="px-4 py-2 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100">
+			hx-delete="/historias/{{ .Historia.HistoriaID }}"
+			type="button"
+			>
 			<i class="mr-2 fa-solid fa-trash"></i>
 			Eliminar historia
 		</button>
 	</div>
 	{{ end }}
-
+	
 	<!-- Editar tareas -->
 	{{ range $.Agregado.Tareas -}}
-		{{ template "tarea_editar_dialog" . }}
+	{{ template "tarea_editar_dialog" . }}
 	{{ end }}
-	
+
 </main>
 {{ end }}
-
 
 <!-- Administrar intervalos -->
 {{ block "intervalos_dialog" . }}
 <dialog id="modalIntervalos" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
-	<div hx-target="this" hx-swap="innerHTML" hx-trigger="cargarIntervalos">
+	<div
+		hx-swap="innerHTML"
+		hx-target="this"
+		hx-trigger="cargarIntervalos"
+		>
 		Cargando...
 	</div>
 </dialog>
@@ -947,90 +1120,95 @@
 
 <!-- ======================================================== -->
 {{ define "ctxMenuHistoria" -}}
-	<dialog id="ctxMenuHistoria{{ .HistoriaID }}" tipo="ctxMenuHistoria"
-		class="absolute p-0 m-0 text-slate-300 bg-cyan-900 border border-slate-300 rounded-sm shadow-md">
-		<form class="grid grid-cols-2 gap-1 p-2 text-sm">
+<dialog id="ctxMenuHistoria{{ .HistoriaID }}" tipo="ctxMenuHistoria" class="absolute p-0 m-0 text-slate-300 bg-cyan-900 border border-slate-300 rounded-sm shadow-md">
+	<form class="grid grid-cols-2 gap-1 p-2 text-sm">
 
-			<div class="col-span-2 px-1 text-xs opacity-50">Prioridad</div>
-			<button
-				type="button"
-				hx-post="/historias/{{ .HistoriaID }}/priorizar/3" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadMust }}font-bold{{ end }}">
-				<span class="inline-block w-5 text-center">
-					<i class="text-orange-600 fa-solid fa-angles-up"></i>
-				</span>
-				Must
-			</button>
-			<button
-				type="button"
-				hx-post="/historias/{{ .HistoriaID }}/priorizar/2" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadShould }}font-bold{{ end }}">
-				<span class="inline-block w-5 text-center">
-					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-				</span>
-				Should
-			</button>
-			<button
-				type="button"
-				hx-post="/historias/{{ .HistoriaID }}/priorizar/1" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadCould }}font-bold{{ end }}">
-				<span class="inline-block w-5 text-center">
-					<i class="text-orange-200 fa-solid fa-minus"></i>
-				</span>
-				Would
-			</button>
-			<button
-				type="button"
-				hx-post="/historias/{{ .HistoriaID }}/priorizar/0" 
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadWont }}font-bold{{ end }}">
-				<span class="inline-block w-5 text-center">
-					<i class="text-slate-400 fa-solid fa-ban"></i>
-				</span>
-				Won't
-			</button>
+		<div class="col-span-2 px-1 text-xs opacity-50">
+			Prioridad
+		</div>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadMust }}font-bold{{ end }}"
+			hx-post="/historias/{{ .HistoriaID }}/priorizar/3"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-orange-600 fa-solid fa-angles-up"></i>
+			</span>
+			Must
+		</button>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadShould }}font-bold{{ end }}"
+			hx-post="/historias/{{ .HistoriaID }}/priorizar/2"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+			</span>
+			Should
+		</button>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadCould }}font-bold{{ end }}"
+			hx-post="/historias/{{ .HistoriaID }}/priorizar/1"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-orange-200 fa-solid fa-minus"></i>
+			</span>
+			Would
+		</button>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadWont }}font-bold{{ end }}"
+			hx-post="/historias/{{ .HistoriaID }}/priorizar/0"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-slate-400 fa-solid fa-ban"></i>
+			</span>
+			Won't
+		</button>
 
-			<div class="col-span-2 px-1 text-xs opacity-50">Estatus</div>
-			<button
-				type="button"
-				hx-post="/historias/{{ .HistoriaID }}/marcar/1"
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .Completada }}font-bold{{ end }}">
-				<span class="inline-block w-5 text-center">
-					<i class="text-green-600 fa-solid fa-circle-check"></i>
-				</span>
-				Lista
-			</button>
-			<button
-				type="button"
-				hx-post="/historias/{{ .HistoriaID }}/marcar/0"
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if not .Completada }}font-bold{{ end }}">
-				<span class="inline-block w-5 text-center">
-					<i class="text-orange-600 fa-regular fa-circle"></i>
-				</span>
-				Falta
-			</button>
+		<div class="col-span-2 px-1 text-xs opacity-50">
+			Estatus
+		</div>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .Completada }}font-bold{{ end }}"
+			hx-post="/historias/{{ .HistoriaID }}/marcar/1"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-green-600 fa-solid fa-circle-check"></i>
+			</span>
+			Lista
+		</button>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if not .Completada }}font-bold{{ end }}"
+			hx-post="/historias/{{ .HistoriaID }}/marcar/0"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-orange-600 fa-regular fa-circle"></i>
+			</span>
+			Falta
+		</button>
 
-			<div class="col-span-2 px-1 text-xs opacity-50">Acciones</div>
-			<button
-				type="button"
-				onclick="showMoverHistoria('{{ .HistoriaID }}', '{{ .Titulo }}')"
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700">
-				<span class="inline-block w-5 text-center">
-					<i class="text-cyan-500 fa-solid fa-person-walking"></i>
-				</span>
-				Mover
-			</button>
-			<button
-				type="button"
-				hx-delete="/historias/{{ .HistoriaID }}"
-				hx-confirm="¿Eliminar historia? {{ .Titulo }}"
-				class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700">
-				<span class="inline-block w-5 text-center">
-					<i class="text-red-500 fa-solid fa-trash"></i>
-				</span>
-				Eliminar
-			</button>
-		</form>
-	</dialog>
+		<div class="col-span-2 px-1 text-xs opacity-50">
+			Acciones
+		</div>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700"
+			type="button"
+			onclick="showMoverHistoria('{{ .HistoriaID }}', '{{ .Titulo }}')"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-cyan-500 fa-solid fa-person-walking"></i>
+			</span>
+			Mover
+		</button>
+		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700"
+			hx-confirm="¿Eliminar historia? {{ .Titulo }}"
+			hx-delete="/historias/{{ .HistoriaID }}"
+			type="button"
+			>
+			<span class="inline-block w-5 text-center">
+				<i class="text-red-500 fa-solid fa-trash"></i>
+			</span>
+			Eliminar
+		</button>
+	</form>
+</dialog>
 {{ end -}}
 <script>
 	document.querySelectorAll("dialog[tipo='ctxMenuHistoria']").forEach((menu) => {
@@ -1087,32 +1265,44 @@
 		<h2 class="grow text-xl">
 			Mover tramo
 		</h2>
-		<button
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 			type="button"
 			onclick="this.closest('dialog').close()"
 			title="Cerrar"
-			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			>
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2">
-		<p class="mb-2 italic">Nombre de la tramo</p>
-		<input type="hidden" name="historia_id" required>
-		<input type="hidden" name="posicion" required>
-		<div
-			id="navTreeTramo"
+		<p class="mb-2 italic">
+			Nombre de la tramo
+		</p>
+		<input
+			type="hidden"
+			name="historia_id"
+			required
+			>
+		<input
+			type="hidden"
+			name="posicion"
+			required
+			>
+		<div id="navTreeTramo" class="flex flex-col gap-1 sm:w-96"
 			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
-			hx-target="#navTreeTramo" hx-swap="innerHTML"
+			hx-swap="innerHTML"
+			hx-target="#navTreeTramo"
 			hx-trigger="navTreeTramoShown"
-			class="flex flex-col gap-1 sm:w-96">
+			>
 			<!-- nav_tree -->
 		</div>
-		<button
+		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
 			hx-post="/mover/tramo"
-			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			hx-select="main"
+			hx-swap="outerHTML"
+			hx-target="main"
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			>
 			Mover
 		</button>
 	</form>
@@ -1125,31 +1315,39 @@
 		<h2 class="grow text-xl">
 			Mover tarea
 		</h2>
-		<button
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 			type="button"
 			onclick="this.closest('dialog').close()"
 			title="Cerrar"
-			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			>
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2">
-		<p class="mb-2 italic">Nombre de la tarea</p>
-		<input type="hidden" name="tarea_id" required>
-		<div
+		<p class="mb-2 italic">
+			Nombre de la tarea
+		</p>
+		<input
+			type="hidden"
+			name="tarea_id"
+			required
+			>
+		<div class="flex flex-col gap-1 sm:w-96"
 			hx-get="/nav{{ if . }}/hist/{{ . }}{{ end }}"
-			hx-target="this"
 			hx-swap="innerHTML"
+			hx-target="this"
 			hx-trigger="intersect once"
-			class="flex flex-col gap-1 sm:w-96">
+			>
 			<!-- nav_tree -->
 		</div>
-		<button
+		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
 			hx-post="/mover/tarea"
-			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			hx-select="main"
+			hx-swap="outerHTML"
+			hx-target="main"
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			>
 			Mover
 		</button>
 	</form>
@@ -1169,31 +1367,39 @@
 		<h2 class="grow text-xl">
 			Mover historia
 		</h2>
-		<button
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 			type="button"
 			onclick="this.closest('dialog').close()"
 			title="Cerrar"
-			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			>
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2">
-		<p class="mb-2 italic text-orange-400">Historia a mover</p>
-		<input type="hidden" name="historia_id" required>
-		<div
-			id="navTreeHistoria"
+		<p class="mb-2 italic text-orange-400">
+			Historia a mover
+		</p>
+		<input
+			type="hidden"
+			name="historia_id"
+			required
+			>
+		<div id="navTreeHistoria" class="flex flex-col gap-1 sm:w-96"
 			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
-			hx-target="#navTreeHistoria" hx-swap="innerHTML"
+			hx-swap="innerHTML"
+			hx-target="#navTreeHistoria"
 			hx-trigger="navTreeHistoriaShown"
-			class="flex flex-col gap-1 sm:w-96">
+			>
 			<!-- nav_tree -->
 		</div>
-		<button
+		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
 			hx-post="/mover/historia"
-			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			hx-select="main"
+			hx-swap="outerHTML"
+			hx-target="main"
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			>
 			Mover
 		</button>
 	</form>
@@ -1204,34 +1410,35 @@
 		<h2 class="grow text-xl">
 			Agregar referencia a historia relacionada
 		</h2>
-		<button
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 			type="button"
 			onclick="this.closest('dialog').close()"
 			title="Cerrar"
-			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			>
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2">
-		<div
-			id="navAddReferencia"
+		<div id="navAddReferencia" class="flex flex-col gap-1 sm:w-96"
 			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
-			hx-target="#navAddReferencia" hx-swap="innerHTML"
+			hx-swap="innerHTML"
+			hx-target="#navAddReferencia"
 			hx-trigger="navAddReferenciaShown"
-			class="flex flex-col gap-1 sm:w-96">
+			>
 			<!-- nav_tree -->
 		</div>
-		<button
+		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
 			hx-post="/historias/{{ .Agregado.Historia.HistoriaID }}/referencias"
-			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			hx-select="main"
+			hx-swap="outerHTML"
+			hx-target="main"
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			>
 			Agregar
 		</button>
 	</form>
 </dialog>
-
 
 <div id="msgStack" class="hidden">
 	<!-- Mensajes respuesta del servidor -->
@@ -1409,7 +1616,6 @@
 		}
 	}
 </script>
-
 
 <script>	
 	// Recargar historia cuando se recibe la respuesta del servidor en msgStack.

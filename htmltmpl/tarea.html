@@ -2,33 +2,41 @@
 	<h2 class="grow text-xl">
 		Intervalos de trabajo
 	</h2>
-	<button
+	<button class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75"
 		type="button"
 		onclick="let tbl = this.closest('dialog').querySelector('table'); tbl.querySelectorAll('input').forEach(i => i.classList.remove('hidden')); tbl.querySelectorAll('span').forEach(i => i.classList.add('hidden')); this.classList.add('hidden');"
 		title="Editar tiempos"
-		class="inline-block float-right px-2 text-lg rounded-md hover:opacity-75">
+		>
 		<i class="fa-solid fa-pencil"></i>
 	</button>
-	<button
+	<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 		type="button"
 		onclick="this.closest('dialog').close()"
 		title="Cerrar"
-		class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+		>
 		<i class="fa-solid fa-xmark"></i>
 	</button>
 </header>
 <div class="flex flex-col gap-2 p-2">
-	<h3>{{ .Tarea.Descripcion }}</h3>
+	<h3>
+		{{ .Tarea.Descripcion }}
+	</h3>
 	<table class="min-w-full divide-y divide-gray-200">
 		<thead class="">
 			<tr>
-				<th scope="col" class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase">
+				<th class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase"
+					scope="col"
+					>
 					Inicio
 				</th>
-				<th scope="col" class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase">
+				<th class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase"
+					scope="col"
+					>
 					Final
 				</th>
-				<th scope="col" class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase">
+				<th class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase"
+					scope="col"
+					>
 					Duración
 				</th>
 			</tr>
@@ -37,26 +45,32 @@
 			{{ range .Intervalos -}}
 			<tr class="font-mono text-sm text-slate-300">
 				<td class="px-4 py-2 whitespace-nowrap">
-					<input
-						type="datetime"
+					<input class="hidden form-control"
 						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
-						hx-target="main" hx-select="main" hx-swap="outerHTML"
+						hx-select="main"
+						hx-swap="outerHTML"
+						hx-target="main"
+						type="datetime"
 						name="inicio"
 						value="{{ .Inicio }}"
-						class="hidden form-control"
-					/>
-					<span>{{ .Inicio }}</span>
+						>
+					<span>
+						{{ .Inicio }}
+					</span>
 				</td>
 				<td class="px-4 py-2 whitespace-nowrap">
-					<input
-						type="datetime"
+					<input class="hidden form-control"
 						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
-						hx-target="main" hx-select="main" hx-swap="outerHTML"
+						hx-select="main"
+						hx-swap="outerHTML"
+						hx-target="main"
+						type="datetime"
 						name="fin"
 						value="{{ .Fin }}"
-						class="hidden form-control"
-					/>
-					<span>{{ .Fin }}</span>
+						>
+					<span>
+						{{ .Fin }}
+					</span>
 				</td>
 				<td class="px-4 py-2 whitespace-nowrap">
 					{{ segundosToString .Segundos }}

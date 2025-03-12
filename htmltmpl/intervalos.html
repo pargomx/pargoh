@@ -1,21 +1,27 @@
-<main class="grow overflow-y-auto">
+<main class="grow overflow-y-auto p-4">
 	<div class="flex flex-col items-stretch max-w-5xl gap-4 pb-2 mx-auto">
 
 		{{ if .Abiertos }}
-		<h3 class="text-xl">Tareas en progreso:</h3>
+		<h3 class="text-xl">
+			Tareas en progreso:
+		</h3>
 		{{ range .Abiertos }}
-		<div class="flex items-center gap-4 p-3 bg-cyan-900 rounded-md shadow-lg">
+		<div class="flex items-center gap-4 p-3 bg-cyan-950 rounded-md shadow-lg">
 
 			{{ if .Finalizada }}✅{{ end }}
 			{{ if .EnCurso }}⏳{{ end }}
 			{{ if .EnPausa }}⏸️{{ end }}
-
-			<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}" class="grow">
+			
+			<a class="grow"
+				href="/historias/{{ .HistoriaID }}#{{ .TareaID }}"
+				>
 				{{ .Titulo }}:
 				<span class="px-2 py-1 mr-1 text-xs bg-black bg-opacity-40 rounded-md">
 					{{- .Tipo.Etiqueta -}}
 				</span>
-				<i>{{ .Descripcion }}</i>
+				<i>
+					{{ .Descripcion }}
+				</i>
 				<br>
 				<span class="text-sm opacity-75">
 					Comenzó: {{ .Inicio }} {{ .Fin }}
@@ -23,22 +29,37 @@
 			</a>
 
 			{{ if .NoIniciada -}}
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			<button class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
+				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				type="button"
+				>
 				Iniciar
 			</button>
 			{{ else if .EnCurso -}}
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/pausar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			<button class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
+				hx-post="/tareas/{{ .TareaID }}/pausar"
+				type="button"
+				>
 				Pausar
 			</button>
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/terminar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			<button class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
+				hx-post="/tareas/{{ .TareaID }}/terminar"
+				type="button"
+				>
 				Terminar
 			</button>
 			{{ else if .EnPausa -}}
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar" class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			<button class="inline-block px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
+				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				type="button"
+				>
 				Continuar
 			</button>
 			{{ else if .Finalizada -}}
-			<button type="button" hx-post="/tareas/{{ .TareaID }}/iniciar">
+			<button
+				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				type="button"
+				>
 				Reiniciar
 			</button>
 			{{ end }}
@@ -46,17 +67,23 @@
 		{{ end }}
 		{{ end }}
 		
-		<h3 class="text-xl">Sesiones de trabajo recientes:</h3>
-		
+		<h3 class="text-xl">
+			Sesiones de trabajo recientes:
+		</h3>
+
 		{{ range .Recientes }}
 		<div class="flex items-center gap-4 p-3 bg-cyan-900 rounded-md shadow-lg">
 
-			<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}" class="grow">
+			<a class="grow"
+				href="/historias/{{ .HistoriaID }}#{{ .TareaID }}"
+				>
 				{{ .Titulo }}:
 				<span class="px-2 py-1 mr-1 text-xs bg-black bg-opacity-40 rounded-md">
 					{{- .Tipo.Etiqueta -}}
 				</span>
-				<i>{{ .Descripcion }}</i>
+				<i>
+					{{ .Descripcion }}
+				</i>
 				<br>
 				<span class="text-sm opacity-75">
 					{{ .Inicio }} - {{ .Fin }}
@@ -70,6 +97,6 @@
 			</span>
 		</div>
 		{{ end }}
-
+		
 	</div>
 </main>

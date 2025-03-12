@@ -2,11 +2,11 @@
 
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img
+		<img class="w-24 rounded-md"
+			alt="Portada del proyecto"
 			data-proyecto-id="{{ .Proyecto.ProyectoID }}"
 			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
-			alt="Portada del proyecto"
-			class="w-24 rounded-md">
+			>
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
@@ -14,15 +14,23 @@
 				{{ .Proyecto.Titulo }}
 			</a>
 		</h2>
-		<h3
+		<h3 class="flex items-center gap-1 py-1"
 			data-persona-id="{{ .Persona.PersonaID }}"
-			class="flex items-center gap-1 py-1">
-			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
-			<span class="text-xl">{{ .Persona.Nombre }}</span>
+			>
+			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">
+				<i class="fa-solid fa-person"></i>
+			</span>
+			<span class="text-xl">
+				{{ .Persona.Nombre }}
+			</span>
 		</h3>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
+			href="/"
+			>
+			<i class="fa-solid fa-xmark"></i>
+		</a>
 	</span>
 </header>
 
@@ -34,23 +42,85 @@
 		<table class="px-1 text-center border-separate table-auto border-spacing-y-1">
 			<thead class="bg-cyan-950">
 				<tr class="text-center opacity-75">
-					<th title="Posición">#</th>
-					<th title="Prioridad">Pri</th>
-					<th title="Completada">OK</th>
-					<th title="Presupuesto">Presup</th>
+					<th title="Posición">
+						#
+					</th>
+					<th title="Prioridad">
+						Pri
+					</th>
+					<th title="Completada">
+						OK
+					</th>
+					<th title="Presupuesto">
+						Presup
+					</th>
 
-					<th title="Agg.Tareas.SegundosEstimado" class="bg-cyan-900">Estimado<br>individual</th>
-					<th title="Agg.Tareas.SegundosUtilizado" class="bg-cyan-900">Transcurr.<br>individual</th>
-					<th title="Agg.Tareas.ValorPonderado" class="bg-cyan-900">Valor<br>pond.</th>
-					<th title="Agg.Tareas.AvancePonderado" class="bg-cyan-900">Avan<br>pond.</th>
-					<th title="Agg.Tareas.AvancePorcentual" class="bg-cyan-900">Avance<br>individual</th>
-					
-					<th title="Rec.SegundosEstimadoMust">Estimado<br>recursivo</th>
-					<th title="Rec.SegundosUtilizadoMust">Transcurr.<br>recursivo</th>
-					<th title="Rec.ValorPonderado">Valor<br>pond.</th>
-					<th title="Rec.AvancePonderado">Avan<br>pond.</th>
-					<th title="Rec.AvancePorcentual">Avance<br>recursivo</th>
-					<th title="Rec.SegundosAvanceTeorico">Avance<br>teórico</th>
+					<th class="bg-cyan-900"
+						title="Agg.Tareas.SegundosEstimado"
+						>
+						Estimado
+						<br>
+						individual
+					</th>
+					<th class="bg-cyan-900"
+						title="Agg.Tareas.SegundosUtilizado"
+						>
+						Transcurr.
+						<br>
+						individual
+					</th>
+					<th class="bg-cyan-900"
+						title="Agg.Tareas.ValorPonderado"
+						>
+						Valor
+						<br>
+						pond.
+					</th>
+					<th class="bg-cyan-900"
+						title="Agg.Tareas.AvancePonderado"
+						>
+						Avan
+						<br>
+						pond.
+					</th>
+					<th class="bg-cyan-900"
+						title="Agg.Tareas.AvancePorcentual"
+						>
+						Avance
+						<br>
+						individual
+					</th>
+
+					<th title="Rec.SegundosEstimadoMust">
+						Estimado
+						<br>
+						recursivo
+					</th>
+					<th title="Rec.SegundosUtilizadoMust">
+						Transcurr.
+						<br>
+						recursivo
+					</th>
+					<th title="Rec.ValorPonderado">
+						Valor
+						<br>
+						pond.
+					</th>
+					<th title="Rec.AvancePonderado">
+						Avan
+						<br>
+						pond.
+					</th>
+					<th title="Rec.AvancePorcentual">
+						Avance
+						<br>
+						recursivo
+					</th>
+					<th title="Rec.SegundosAvanceTeorico">
+						Avance
+						<br>
+						teórico
+					</th>
 
 				</tr>
 			</thead>
@@ -59,26 +129,59 @@
 				<tr class="text-center bg-cyan-950/50 hover:bg-cyan-950/75 text-nowrap">
 					<!-- Tabla historias -->
 					<td>
-						<a href="/historias/{{ .Rec.HistoriaID }}" title="{{ .Rec.Titulo }}" class="px-4 hover:text-cyan-600">
+						<a class="px-4 hover:text-cyan-600"
+							href="/historias/{{ .Rec.HistoriaID }}"
+							title="{{ .Rec.Titulo }}"
+							>
 							{{ .Rec.Posicion }}
 						</a>
 					</td>
-					<td>{{ .Rec.Prioridad }}</td>
-					<td>{{ if .Rec.Completada }}1{{ else }}-{{ end }}</td>
-					<td>{{ segundosToString .Rec.SegundosPresupuesto }}</td>
+					<td>
+						{{ .Rec.Prioridad }}
+					</td>
+					<td>
+						{{ if .Rec.Completada }}1{{ else }}-{{ end }}
+					</td>
+					<td>
+						{{ segundosToString .Rec.SegundosPresupuesto }}
+					</td>
 
-					<td class="bg-cyan-950/60">{{ segundosToString .Agg.Tareas.SegundosEstimado }}</td>
-					<td class="bg-cyan-950/60">{{ segundosToString .Agg.Tareas.SegundosUtilizado }}</td>
-					<td class="bg-cyan-950/60">{{ .Agg.Tareas.ValorPonderado }}</td>
-					<td class="bg-cyan-950/60">{{ .Agg.Tareas.AvancePonderado }}</td>
-					<td class="bg-cyan-950/60"><b class="opacity-75">{{ .Agg.Tareas.AvancePorcentual }}%</b></td>
-					
-					<td>{{ segundosToString .Rec.SegundosEstimadoMust }}</td>
-					<td>{{ segundosToString .Rec.SegundosUtilizadoMust }}</td>
-					<td>{{ .Rec.ValorPonderado }}</td>
-					<td>{{ .Rec.AvancePonderado }}</td>
-					<td>{{ .Rec.AvancePorcentual }}%</td>
-					<td>{{ segundosToString .Rec.SegundosAvanceTeorico }}</td>
+					<td class="bg-cyan-950/60">
+						{{ segundosToString .Agg.Tareas.SegundosEstimado }}
+					</td>
+					<td class="bg-cyan-950/60">
+						{{ segundosToString .Agg.Tareas.SegundosUtilizado }}
+					</td>
+					<td class="bg-cyan-950/60">
+						{{ .Agg.Tareas.ValorPonderado }}
+					</td>
+					<td class="bg-cyan-950/60">
+						{{ .Agg.Tareas.AvancePonderado }}
+					</td>
+					<td class="bg-cyan-950/60">
+						<b class="opacity-75">
+							{{ .Agg.Tareas.AvancePorcentual }}%
+						</b>
+					</td>
+
+					<td>
+						{{ segundosToString .Rec.SegundosEstimadoMust }}
+					</td>
+					<td>
+						{{ segundosToString .Rec.SegundosUtilizadoMust }}
+					</td>
+					<td>
+						{{ .Rec.ValorPonderado }}
+					</td>
+					<td>
+						{{ .Rec.AvancePonderado }}
+					</td>
+					<td>
+						{{ .Rec.AvancePorcentual }}%
+					</td>
+					<td>
+						{{ segundosToString .Rec.SegundosAvanceTeorico }}
+					</td>
 
 				</tr>
 				{{ end }}

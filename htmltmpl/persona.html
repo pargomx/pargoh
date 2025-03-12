@@ -2,35 +2,49 @@
 
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
-		<img
+		<img class="w-24 rounded-md"
+			alt="Portada del proyecto"
 			data-proyecto-id="{{ .Proyecto.ProyectoID }}"
 			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
-			alt="Portada del proyecto"
-			class="w-24 rounded-md">
+			>
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
-			<a tipo="ancestro_directo" href="/proyectos/{{ .Proyecto.ProyectoID }}">
+			<a tipo="ancestro_directo"
+				href="/proyectos/{{ .Proyecto.ProyectoID }}"
+				>
 				{{ .Proyecto.Titulo }}
 			</a>
 		</h2>
-		<h3
+		<h3 class="flex items-center gap-1 py-1"
 			data-persona-id="{{ .Persona.PersonaID }}"
-			class="flex items-center gap-1 py-1">
-			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"><i class="fa-solid fa-person"></i></span>
-			<span class="text-xl">{{ .Persona.Nombre }}</span>
+			>
+			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">
+				<i class="fa-solid fa-person"></i>
+			</span>
+			<span class="text-xl">
+				{{ .Persona.Nombre }}
+			</span>
 		</h3>
 	</div>
 	<span class="absolute right-2 top-2">
-		<a href="/" class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark"></i></a>
+		<a class="px-2 py-1 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
+			href="/"
+			>
+			<i class="fa-solid fa-xmark"></i>
+		</a>
 	</span>
 </header>
 
 {{ if .TareasEnCurso -}}
 <div class="flex flex-col gap-1 px-2 mt-2">
-	<h3 class="text-xl text-cyan-600">Tareas en curso</h3>
+	<h3 class="text-xl text-cyan-600">
+		Tareas en curso
+	</h3>
 	{{ range .TareasEnCurso -}}
-	<a href="/historias/{{ .HistoriaID }}#{{ .TareaID }}" class="flex gap-2 transition-colors hover:text-cyan-200">
+	<a class="flex gap-2 transition-colors hover:text-cyan-200"
+		href="/historias/{{ .HistoriaID }}#{{ .TareaID }}"
+		>
 		<span class="inline-block w-6 text-center">
 			<i class="text-slate-400 fa-solid fa-list-check"></i>
 		</span>
@@ -38,7 +52,10 @@
 			{{ .Descripcion }}
 		</span>
 		<span class="px-2 opacity-50">
-			<img src="/assets/img/spinner.svg" alt="En progreso" class="inline-block w-8">
+			<img class="inline-block w-8"
+				alt="En progreso"
+				src="/assets/img/spinner.svg"
+				>
 		</span>
 	</a>
 	{{ end }}
@@ -46,7 +63,11 @@
 {{ end -}}
 
 <main class="grow w-full max-w-5xl p-2 mx-auto">
-	<h3 class="mb-2 text-xl text-cyan-600" title="Personaje">Como...</h3>
+	<h3 class="mb-2 text-xl text-cyan-600"
+		title="Personaje"
+		>
+		Como...
+	</h3>
 	<div class="mt-4 mb-2 text-center text-7xl">
 		<i class="fa-solid fa-user"></i>
 	</div>
@@ -54,63 +75,78 @@
 		{{ .Persona.Nombre }}
 	</h4>
 	<div class="mb-4">
-		<textarea
-			id="personaDesc"
+		<textarea id="personaDesc" class="w-full px-2 py-1 text-sm font-medium text-center transition-opacity bg-transparent border-b border-cyan-800 opacity-75 outline-hidden focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600"
 			hx-patch="/personas/{{ .Persona.PersonaID }}/descripcion"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:30s"
 			name="value"
+			placeholder="Descripción del personaje..."
 			rows="1"
-			placeholder="Descripción del personaje..." 
-			class="w-full px-2 py-1 text-sm font-medium text-center transition-opacity bg-transparent border-b border-cyan-800 opacity-75 outline-hidden focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600">
+			>
 			{{- .Persona.Descripcion -}}
 		</textarea>
 	</div>
 
-	<h3 class="mb-4 text-xl text-cyan-600" title="Historias de usuario">Quiero...
-		<button
+	<h3 class="mb-4 text-xl text-cyan-600"
+		title="Historias de usuario"
+		>
+		Quiero...
+		<button class="float-right px-3 transition-opacity opacity-75 hover:opacity-100"
 			onclick="document.getElementById('input_AddHistoria').focus()"
 			title="Agregar historia"
-			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
+			>
 			<i class="fa-solid fa-square-plus"></i>
 		</button>
-		<a
+		<a class="float-right px-3 transition-opacity opacity-75 hover:opacity-100"
 			href="/personas/{{ .Persona.PersonaID }}/doc"
 			title="Documentación de las historias"
-			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
+			>
 			<i class="fa-solid fa-book"></i>
 		</a>
-		<button
+		<button class="float-right px-3 transition-opacity opacity-75 hover:opacity-100"
 			hx-post="/personas/{{ .Persona.PersonaID }}/docx"
 			hx-prompt="Unidoc API Key"
 			hx-swap="none"
 			title="Generar documento docx"
-			class="float-right px-3 transition-opacity opacity-75 hover:opacity-100">
+			>
 			<i class="fa-solid fa-file-word"></i>
 		</button>
 	</h3>
-	<div
-		tipo="sort_historias" 
-		hx-get="/personas/{{ .Persona.PersonaID }}" 
-		hx-trigger="historiasActualizadas" 
-		hx-target="this" hx-swap="innerHTML" 
-		hx-select="[tipo='sort_historias'] > *" 
-		class="flex flex-col items-stretch gap-4 pb-2">
+	<div tipo="sort_historias" class="flex flex-col items-stretch gap-4 pb-2"
+		hx-get="/personas/{{ .Persona.PersonaID }}"
+		hx-select="[tipo='sort_historias'] > *"
+		hx-swap="innerHTML"
+		hx-target="this"
+		hx-trigger="historiasActualizadas"
+		>
 
 		{{ range .Historias -}}
-		<article
-			tipo="sort_historia"
-			id="{{ .Historia.HistoriaID }}"
-			class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if .Historia.EsPrioridadMust }} border-cyan-800 {{ else if .Historia.EsPrioridadShould }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if .Historia.EsPrioridadCould }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
+		<article id="{{ .Historia.HistoriaID }}" tipo="sort_historia" class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if .Historia.EsPrioridadMust }} border-cyan-800 {{ else if .Historia.EsPrioridadShould }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if .Historia.EsPrioridadCould }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
 			<span tipo="sort_handle" class="p-3 cursor-pointer">
 				<i class="fa-solid fa-grip-vertical"></i>
-				<form tipo="sort_form" hx-post="/reordenar-historia" hx-trigger="reordenarEnd">
-					<input type="hidden" name="historia_id" value="{{ .Historia.HistoriaID }}">
-					<input type="hidden" name="old_pos" value="{{ .Historia.Posicion }}">
-					<input type="hidden" name="new_pos">
+				<form tipo="sort_form"
+					hx-post="/reordenar-historia"
+					hx-trigger="reordenarEnd"
+					>
+					<input
+						type="hidden"
+						name="historia_id"
+						value="{{ .Historia.HistoriaID }}"
+						>
+					<input
+						type="hidden"
+						name="old_pos"
+						value="{{ .Historia.Posicion }}"
+						>
+					<input
+						type="hidden"
+						name="new_pos"
+						>
 				</form>
 			</span>
-			<a href="/historias/{{ .Historia.HistoriaID }}" class="grow py-2">
+			<a class="grow py-2"
+				href="/historias/{{ .Historia.HistoriaID }}"
+				>
 				{{ enfatizar .Historia.Titulo }}
 			</a>
 			<span class="float-right text-sm opacity-75">
@@ -118,27 +154,30 @@
 				{{ .AvancePorcentual }}%
 			</span>
 			<span class="p-3">
-				{{ if .Historia.Completada }}<i class="text-green-600 fa-solid fa-circle-check"></i>
-				{{- else if .Historia.EsPrioridadMust }}<i class="text-orange-600 fa-solid fa-angles-up"></i>
-				{{- else if .Historia.EsPrioridadShould }}<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-				{{- else if .Historia.EsPrioridadCould }}<i class="text-orange-200 fa-solid fa-minus"></i>
+				{{ if .Historia.Completada }}
+				<i class="text-green-600 fa-solid fa-circle-check"></i>
+				{{- else if .Historia.EsPrioridadMust }}
+				<i class="text-orange-600 fa-solid fa-angles-up"></i>
+				{{- else if .Historia.EsPrioridadShould }}
+				<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+				{{- else if .Historia.EsPrioridadCould }}
+				<i class="text-orange-200 fa-solid fa-minus"></i>
 				{{- end }}
 			</span>
 		</article>
 		{{ end -}}
-
+		
 		<!-- Agregar historia -->
 		<div>
-			<textarea
-				id="input_AddHistoria"
+			<textarea id="input_AddHistoria" class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 				hx-post="/personas/{{ .Persona.PersonaID }}"
 				hx-target="#msgStack"
 				hx-trigger="keyup[key=='Enter']"
-				name="titulo" 
-				rows="1"
 				enterkeyhint="enter"
+				name="titulo"
 				placeholder="Agregar historia..."
-				class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"></textarea>
+				rows="1"
+				></textarea>
 		</div>
 	</div>
 
@@ -155,30 +194,48 @@
 
 	<!--? COSTO DE LAS HISTORIAS -->
 	{{ if .Historias -}}
-	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Costo y progreso</h3>
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
+		Costo y progreso
+	</h3>
 	<!-- Tarjetas avance -->
 	<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString .Historias.SegundosPresupuesto }}</span>
-			<span class="text-sm text-cyan-200">Presupuesto</span>
+			<span class="text-3xl font-bold text-white">
+				{{ segundosToString .Historias.SegundosPresupuesto }}
+			</span>
+			<span class="text-sm text-cyan-200">
+				Presupuesto
+			</span>
 		</div>
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString .Historias.SegundosEstimado }}</span>
-			<span class="text-sm text-cyan-200">Estimación</span>
+			<span class="text-3xl font-bold text-white">
+				{{ segundosToString .Historias.SegundosEstimado }}
+			</span>
+			<span class="text-sm text-cyan-200">
+				Estimación
+			</span>
 		</div>
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
 			<span class="text-3xl font-bold {{ if gt .Historias.SegundosUtilizado .Historias.SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
 				{{ segundosToString .Historias.SegundosUtilizado }}
 			</span>
-			<span class="text-sm text-cyan-200">Utilizado</span>
+			<span class="text-sm text-cyan-200">
+				Utilizado
+			</span>
 		</div>
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold text-white">{{ segundosToString $.Persona.SegundosGestion }}</span>
-			<span class="text-sm text-cyan-200">Gestión</span>
+			<span class="text-3xl font-bold text-white">
+				{{ segundosToString $.Persona.SegundosGestion }}
+			</span>
+			<span class="text-sm text-cyan-200">
+				Gestión
+			</span>
 		</div>
 	</div>
 	<!-- Gráfico avance -->
-	<div class="px-4 mb-4" style="background-color: transparent;">
+	<div class="px-4 mb-4"
+		style="background-color: transparent;"
+		>
 		<canvas id="chartHistoriasCosto"></canvas>
 	</div>
 	<script>
@@ -321,16 +378,25 @@
 
 	<!--? DIAS DE TRABAJO -->
 	{{ if .DiasTrabajo -}}
-	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
+		Tiempo invertido
+	</h3>
 	<p>
 		{{ with .PersonaCosto -}}
-		Estimado total: {{ .SegundosEstimado }} <br>
+		Estimado total: {{ .SegundosEstimado }}
+		<br>
 		Invertido total: {{ .SegundosUtilizado }}
 		{{ end }}
 	</p>
 
 	{{ range .PersonaCosto.Historias }}
-	<p>{{ .Nivel }}.{{ .Posicion }}: <span class="bg-cyan-900 rounded-sm">{{ .SegundosUtilizadoMust }} {{ .SegundosUtilizado }} s</span> {{ .Titulo }} [{{ .HistoriaID }}]</p>
+	<p>
+		{{ .Nivel }}.{{ .Posicion }}:
+		<span class="bg-cyan-900 rounded-sm">
+			{{ .SegundosUtilizadoMust }} {{ .SegundosUtilizado }} s
+		</span>
+		{{ .Titulo }} [{{ .HistoriaID }}]
+	</p>
 	{{ end }}
 	
 	<div class="p-4 mb-4">
@@ -352,10 +418,13 @@
 
 	<!--? DIAS DE TRABAJO OLD -->
 	{{ if .DiasTrabajoMapHoras -}}
-	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Tiempo invertido</h3>
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
+		Tiempo invertido
+	</h3>
 	<p>
 		{{ with .PersonaCosto -}}
-		Estimado total: {{ .SegundosEstimado }} <br>
+		Estimado total: {{ .SegundosEstimado }}
+		<br>
 		Invertido total: {{ .SegundosUtilizado }}
 		{{ end }}
 	</p>
@@ -378,7 +447,9 @@
 
 	<!--? PROGRESO EN EL PROYECTO -->
 	{{ with .PersonaCosto -}}
-	<h3 class="mt-4 mb-4 text-xl text-cyan-600">Avance del proyecto</h3>
+	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
+		Avance del proyecto
+	</h3>
 	<div class="p-4 mb-4 max-w-96">
 		<canvas id="chartHistoriasCompletadas"></canvas>
 	</div>
@@ -395,57 +466,152 @@
 		});
 	</script>
 
-	<h3 class="mb-4 text-xl text-cyan-600">Todas las historias</h3>
+	<h3 class="mb-4 text-xl text-cyan-600">
+		Todas las historias
+	</h3>
 	<table>
-        <thead>
-            <tr>
-                <th>HistoriaID</th>
-                <th>PadreID</th>
-                <th>Nivel</th>
-                <th>Posicion</th>
-                <th>Titulo</th>
-                <th>Prioridad</th>
-                <th>Completada</th>
-				<th>SegundosPresupuesto</th>
-				<th>SegundosUtilizado</th>
-                <th>TiempoReal</th>
-            </tr>
-        </thead>
-        <tbody>
+		<thead>
+			<tr>
+				<th>
+					HistoriaID
+				</th>
+				<th>
+					PadreID
+				</th>
+				<th>
+					Nivel
+				</th>
+				<th>
+					Posicion
+				</th>
+				<th>
+					Titulo
+				</th>
+				<th>
+					Prioridad
+				</th>
+				<th>
+					Completada
+				</th>
+				<th>
+					SegundosPresupuesto
+				</th>
+				<th>
+					SegundosUtilizado
+				</th>
+				<th>
+					TiempoReal
+				</th>
+			</tr>
+		</thead>
+		<tbody>
 			{{ range .Historias -}}
-            <tr>
-                <td>{{ .HistoriaID }}</td>
-                <td>{{ .PadreID }}</td>
-                <td>{{ .Nivel }}</td>
-                <td>{{ .Posicion }}</td>
-                <td>{{ .Titulo }}</td>
-                <td>{{ .Prioridad }}</td>
-                <td>{{ .Completada }}</td>
-				<td>{{ .SegundosPresupuesto }}</td>
-				<td>{{ .SegundosUtilizado }}</td>
-                <td>{{ .SegundosUtilizadoMust }}</td>
-            </tr>
-            {{ end }}
-        </tbody>
-    </table>
+			<tr>
+				<td>
+					{{ .HistoriaID }}
+				</td>
+				<td>
+					{{ .PadreID }}
+				</td>
+				<td>
+					{{ .Nivel }}
+				</td>
+				<td>
+					{{ .Posicion }}
+				</td>
+				<td>
+					{{ .Titulo }}
+				</td>
+				<td>
+					{{ .Prioridad }}
+				</td>
+				<td>
+					{{ .Completada }}
+				</td>
+				<td>
+					{{ .SegundosPresupuesto }}
+				</td>
+				<td>
+					{{ .SegundosUtilizado }}
+				</td>
+				<td>
+					{{ .SegundosUtilizadoMust }}
+				</td>
+			</tr>
+			{{ end }}
+		</tbody>
+	</table>
 	{{ end }}
-
+	
 </main>
 
-<div id="ctxMenu" tipo="ctxMenu" gk-historia="" class="absolute hidden p-2 text-black bg-cyan-50 rounded-sm shadow-md">
+<div id="ctxMenu" tipo="ctxMenu" class="absolute hidden p-2 text-black bg-cyan-50 rounded-sm shadow-md"
+	gk-historia=""
+	>
 	<div class="grid grid-cols-2 gap-1 text-sm">
-		<div class="col-span-2 text-xs opacity-50">Acciones</div>
-		<button type="button" onclick="tableroHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">📋 Tablero</button>
-		<button type="button" onclick="showMoverHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🚙 Mover</button>
-		<button type="button" onclick="eliminarHistoria()" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">❌ Eliminar</button>
-		<div class="col-span-2 text-xs opacity-50">Prioridad</div>
-		<button type="button" onclick="priorizarHistoria(3)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🤩 Must</button>
-		<button type="button" onclick="priorizarHistoria(2)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🤔 Should</button>
-		<button type="button" onclick="priorizarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">😶‍🌫️ Would</button>
-		<button type="button" onclick="priorizarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🚫 Won't</button>
-		<div class="col-span-2 text-xs opacity-50">Estatus</div>
-		<button type="button" onclick="marcarHistoria(1)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">✅ Okey</button>
-		<button type="button" onclick="marcarHistoria(0)" class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300">🔻 Falta</button>
+		<div class="col-span-2 text-xs opacity-50">
+			Acciones
+		</div>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="tableroHistoria()"
+			>
+			📋 Tablero
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="showMoverHistoria()"
+			>
+			🚙 Mover
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="eliminarHistoria()"
+			>
+			❌ Eliminar
+		</button>
+		<div class="col-span-2 text-xs opacity-50">
+			Prioridad
+		</div>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(3)"
+			>
+			🤩 Must
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(2)"
+			>
+			🤔 Should
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(1)"
+			>
+			😶‍🌫️ Would
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="priorizarHistoria(0)"
+			>
+			🚫 Won't
+		</button>
+		<div class="col-span-2 text-xs opacity-50">
+			Estatus
+		</div>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="marcarHistoria(1)"
+			>
+			✅ Okey
+		</button>
+		<button class="block w-full py-1 pl-2 pr-4 text-left rounded-sm hover:bg-gray-300"
+			type="button"
+			onclick="marcarHistoria(0)"
+			>
+			🔻 Falta
+		</button>
 	</div>
 </div>
 
@@ -458,31 +624,39 @@
 		<h2 class="grow text-xl">
 			Mover historia
 		</h2>
-		<button
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
 			type="button"
 			onclick="this.closest('dialog').close()"
 			title="Cerrar"
-			class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75">
+			>
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2">
-		<p class="mb-2 italic text-orange-400">Historia a mover</p>
-		<input type="hidden" name="historia_id" required>
-		<div
-			id="navTreeHistoria"
+		<p class="mb-2 italic text-orange-400">
+			Historia a mover
+		</p>
+		<input
+			type="hidden"
+			name="historia_id"
+			required
+			>
+		<div id="navTreeHistoria" class="flex flex-col gap-1 sm:w-96"
 			hx-get="/nav/pers/{{ .Persona.PersonaID }}"
-			hx-target="#navTreeHistoria" hx-swap="innerHTML"
+			hx-swap="innerHTML"
+			hx-target="#navTreeHistoria"
 			hx-trigger="navTreeHistoriaShown"
-			class="flex flex-col gap-1 sm:w-96">
+			>
 			<!-- nav_tree -->
 		</div>
-		<button
+		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
 			hx-post="/mover/historia"
-			hx-target="main" hx-select="main" hx-swap="outerHTML"
+			hx-select="main"
+			hx-swap="outerHTML"
+			hx-target="main"
 			type="submit"
 			onclick="this.closest('dialog').close()"
-			class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600">
+			>
 			Mover
 		</button>
 	</form>
