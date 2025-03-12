@@ -457,6 +457,9 @@
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
+  }
   .w-full {
     width: 100%;
   }
@@ -704,9 +707,6 @@
   .bg-black\/25 {
     background-color: color-mix(in oklab, var(--color-black) 25%, transparent);
   }
-  .bg-black\/40 {
-    background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
-  }
   .bg-black\/50 {
     background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
   }
@@ -754,6 +754,9 @@
   }
   .bg-transparent {
     background-color: transparent;
+  }
+  .bg-white\/75 {
+    background-color: color-mix(in oklab, var(--color-white) 75%, transparent);
   }
   .bg-gradient-to-b {
     --tw-gradient-position: to bottom in oklab;
@@ -812,9 +815,6 @@
   .py-4 {
     padding-block: calc(var(--spacing) * 4);
   }
-  .py-8 {
-    padding-block: calc(var(--spacing) * 8);
-  }
   .pt-1 {
     padding-top: calc(var(--spacing) * 1);
   }
@@ -835,9 +835,6 @@
   }
   .pb-2 {
     padding-bottom: calc(var(--spacing) * 2);
-  }
-  .pb-4 {
-    padding-bottom: calc(var(--spacing) * 4);
   }
   .pl-2 {
     padding-left: calc(var(--spacing) * 2);
@@ -1112,6 +1109,31 @@
       color: var(--color-slate-600);
     }
   }
+  .after\:absolute {
+    &::after {
+      content: var(--tw-content);
+      position: absolute;
+    }
+  }
+  .after\:top-2 {
+    &::after {
+      content: var(--tw-content);
+      top: calc(var(--spacing) * 2);
+    }
+  }
+  .after\:right-2 {
+    &::after {
+      content: var(--tw-content);
+      right: calc(var(--spacing) * 2);
+    }
+  }
+  .after\:content-\[\'\\00D7\'\] {
+    &::after {
+      content: var(--tw-content);
+      --tw-content: '\00D7';
+      content: var(--tw-content);
+    }
+  }
   .invalid\:border-red-500 {
     &:invalid {
       border-color: var(--color-red-500);
@@ -1120,6 +1142,13 @@
   .read-only\:border-transparent {
     &:read-only {
       border-color: transparent;
+    }
+  }
+  .hover\:cursor-pointer {
+    &:hover {
+      @media (hover: hover) {
+        cursor: pointer;
+      }
     }
   }
   .hover\:border-transparent {
@@ -1625,5 +1654,10 @@
 }
 @property --tw-drop-shadow {
   syntax: "*";
+  inherits: false;
+}
+@property --tw-content {
+  syntax: "*";
+  initial-value: "";
   inherits: false;
 }

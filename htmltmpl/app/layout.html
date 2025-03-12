@@ -13,7 +13,7 @@
 		<script src="/htmx.min.js"></script>
 		<script src="/gecko.js"></script>
 		<script src="/assets/js/Sortable.min.js"></script>
-		<script defer src="/assets/js/main.js?v=01"></script>
+		<script defer src="/assets/js/main.js?t=01"></script>
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]" hx-ext="gecko">
@@ -34,8 +34,39 @@
 			.htmx-request.my-indicator{ display: flex; }
 			.htmx-request .my-indicator{ display: flex; }
 		</style>
-		<div id="cargando" class="absolute top-0 flex items-start justify-center w-full h-screen py-4 rounded-md my-indicator">
+		<div id="cargando" class="fixed top-0 flex items-start justify-center w-full h-screen py-4 rounded-md my-indicator">
 			<img src="/assets/img/spinner.svg" alt="Cargando..." class="w-8">
 		</div>
+
+	<!-- Toast -->
+	<div id="toastContainer" class="fixed top-0 right-0 flex flex-col gap-2 w-64 px-4 py-2 text-black">
+		<template id="toastTemplate">
+			<div class="relative bg-white/75 rounded-md shadow-md px-3 py-2 after:content-['\00D7'] after:absolute after:top-2 after:right-2 hover:cursor-pointer hover:bg-gray-300">
+				<span class="toast-message text-sm"></span>
+			</div>
+		</template>
+	</div>
+	<script>
+		const toastContainer = document.getElementById('toastContainer');
+		function showToast(msg) {
+			// Preparar nuevo toast.
+			const toastTemplate = document.getElementById('toastTemplate').content.cloneNode(true);
+			toastTemplate.querySelector('.toast-message').textContent = msg;
+			const toast = toastTemplate.querySelector('div');
+			// Quitar con click
+			toast.addEventListener('click', () => {
+				toastContainer.removeChild(toast);
+			});
+			// Mostrar al usuario
+			toastContainer.appendChild(toast);
+			// Quitar automáticamente
+			setTimeout(() => {
+				if (toastContainer.contains(toast)) {
+					toastContainer.removeChild(toast);
+				}
+			}, 6000);
+		}
+	</script>
+
 	</body>
 </html>
