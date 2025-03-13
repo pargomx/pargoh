@@ -39,13 +39,14 @@
 		</div>
 
 	<!-- Toast -->
-	<div id="toastContainer" class="fixed top-0 right-0 flex flex-col gap-2 w-64 px-4 py-2 text-black">
-		<template id="toastTemplate">
-			<div class="relative bg-white/75 rounded-md shadow-md px-3 py-2 after:content-['\00D7'] after:absolute after:top-2 after:right-2 hover:cursor-pointer hover:bg-gray-300">
-				<span class="toast-message text-sm"></span>
-			</div>
-		</template>
-	</div>
+	<template id="toastTemplate">
+		<div class="relative bg-white/75 rounded-md shadow-md px-3 py-2 pointer-events-auto after:content-['\00D7'] after:absolute after:top-2 after:right-2 hover:cursor-pointer hover:bg-gray-300">
+			<span class="toast-message text-sm"></span>
+		</div>
+	</template>
+	<dialog id="toastDialog" class="fixed mx-auto top-0 right-0 bg-transparent pointer-events-none">
+		<div id="toastContainer" class="flex flex-col gap-2 w-64 text-black pt-4"></div>
+	</dialog>
 	<style>
 		@keyframes fade-out {
 			100% { opacity: 0; }
@@ -53,14 +54,22 @@
 		}
 	</style>
 	<script>
+		const toastDialog = document.getElementById('toastDialog');
 		const toastContainer = document.getElementById('toastContainer');
 		const fadeOutAnimation = 'fade-out 6000ms forwards'
 		function removeToast(toast) {
 			if (toastContainer.contains(toast)) {
 				toastContainer.removeChild(toast);
 			}
+			if (toastContainer.children.length === 0) {
+				toastDialog.close();
+			}
 		}
 		function showToast(msg) {
+			if (!toastDialog.open) {
+				console.log('opening toastDialog')
+				toastDialog.show() // No hay manera de mostrar encima de otro dialog.showModal()? D:
+			}
 			const toastTemplate = document.getElementById('toastTemplate').content.cloneNode(true)
 			const toast = toastTemplate.querySelector('div')
 			toast.querySelector('.toast-message').textContent = msg
