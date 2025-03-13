@@ -17,11 +17,11 @@
 		<i class="fa-solid fa-xmark"></i>
 	</button>
 </header>
-<div class="flex flex-col gap-2 p-2">
-	<h3>
+<div class="flex flex-col gap-2 p-2 overflow-auto">
+	<h3 class="w-[var(--container-xl)]">
 		{{ .Tarea.Descripcion }}
 	</h3>
-	<table class="min-w-full divide-y divide-gray-200">
+	<table class="max-w-xl divide-y divide-gray-200">
 		<thead class="">
 			<tr>
 				<th class="px-4 py-2 text-xs font-medium tracking-wider text-left uppercase"
@@ -44,29 +44,31 @@
 		<tbody class="divide-y divide-gray-200">
 			{{ range .Intervalos -}}
 			<tr class="font-mono text-sm text-slate-300">
-				<td class="px-4 py-2 whitespace-nowrap">
-					<input class="hidden form-control"
+				<td class="whitespace-nowrap">
+					<input class="hidden form-control text-sm w-48"
 						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
 						hx-select="#tareasList"
 						hx-target="#tareasList"
 						type="datetime"
+						inputmode="numeric"
 						name="inicio"
 						value="{{ .Inicio }}"
 						>
-					<span>
+					<span class="px-3 py-2">
 						{{ .Inicio }}
 					</span>
 				</td>
-				<td class="px-4 py-2 whitespace-nowrap">
-					<input class="hidden form-control"
+				<td class="whitespace-nowrap">
+					<input class="hidden form-control text-sm w-48"
 						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
 						hx-select="#tareasList"
 						hx-target="#tareasList"
 						type="datetime"
+						inputmode="numeric"
 						name="fin"
 						value="{{ .Fin }}"
 						>
-					<span>
+					<span class="px-3 py-2">
 						{{ .Fin }}
 					</span>
 				</td>

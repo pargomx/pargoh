@@ -454,11 +454,17 @@
   .w-32 {
     width: calc(var(--spacing) * 32);
   }
+  .w-48 {
+    width: calc(var(--spacing) * 48);
+  }
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
   .w-64 {
     width: calc(var(--spacing) * 64);
+  }
+  .w-\[var\(--container-xl\)\] {
+    width: var(--container-xl);
   }
   .w-full {
     width: 100%;
@@ -495,9 +501,6 @@
   }
   .min-w-64 {
     min-width: calc(var(--spacing) * 64);
-  }
-  .min-w-full {
-    min-width: 100%;
   }
   .grow {
     flex-grow: 1;
