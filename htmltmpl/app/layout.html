@@ -46,25 +46,39 @@
 			</div>
 		</template>
 	</div>
+	<style>
+		@keyframes fade-out {
+			100% { opacity: 0; }
+			0%   { opacity: 1; }
+		}
+	</style>
 	<script>
 		const toastContainer = document.getElementById('toastContainer');
-		function showToast(msg) {
-			// Preparar nuevo toast.
-			const toastTemplate = document.getElementById('toastTemplate').content.cloneNode(true);
-			toastTemplate.querySelector('.toast-message').textContent = msg;
-			const toast = toastTemplate.querySelector('div');
-			// Quitar con click
-			toast.addEventListener('click', () => {
+		const fadeOutAnimation = 'fade-out 6000ms forwards'
+		function removeToast(toast) {
+			if (toastContainer.contains(toast)) {
 				toastContainer.removeChild(toast);
-			});
-			// Mostrar al usuario
-			toastContainer.insertBefore(toast, toastContainer.firstChild);
-			// Quitar automáticamente
-			setTimeout(() => {
-				if (toastContainer.contains(toast)) {
-					toastContainer.removeChild(toast);
-				}
-			}, 6000);
+			}
+		}
+		function showToast(msg) {
+			const toastTemplate = document.getElementById('toastTemplate').content.cloneNode(true)
+			const toast = toastTemplate.querySelector('div')
+			toast.querySelector('.toast-message').textContent = msg
+			toastContainer.insertBefore(toast, toastContainer.firstChild)
+
+			toast.addEventListener('click', () => { removeToast(toast) })
+			let rmTimout = setTimeout(() => { removeToast(toast) }, 5000)
+			toast.style.animation = fadeOutAnimation
+
+			toast.addEventListener('mouseenter', () => {
+				clearTimeout(rmTimout)
+				toast.style.animation = ''
+			})
+
+			toast.addEventListener('mouseleave', () => {
+				rmTimout = setTimeout(() => { removeToast(toast) }, 5000)
+				toast.style.animation = fadeOutAnimation
+			})
 		}
 	</script>
 
