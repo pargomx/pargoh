@@ -265,7 +265,6 @@ function hdlTextAreaEnter(event) {
 				textarea.value = textarea.value.substring(0, startPos)
 					+ '\n'
 					+ textarea.value.substring(endPos, textarea.value.length);
-				// console.log("textarea_edit: ", startPos, endPos);
 				textarea.selectionStart = startPos+1;
 				textarea.selectionEnd = endPos+1;
 			} else {
@@ -277,7 +276,6 @@ function hdlTextAreaEnter(event) {
 			event.preventDefault();
 			event.target.blur();
 			event.target.focus(); // para que htmx sepa qué elemento enfocar after swap.
-			// console.log("textarea_focus")
 		}
 	} else if (event.key === 'Escape') {
 		event.target.value = event.target.defaultValue; // restaurar valor original
@@ -490,3 +488,125 @@ document.addEventListener('keydown', function(event) {
 		}
     }
 });
+
+// ================================================================ //
+// ========== DATE TIME INIPUT ==================================== //
+
+const regIsDigit = /^[0-9]$/;
+const regIsDatetime = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/;
+function isDigit(str) { return regIsDigit.test(str); }
+function isDatetime(str) { return regIsDatetime.test(str); }
+
+/**
+ * Reemplazar un digito a la vez para solo tener que usar
+ * números al introducir fecha y hora.
+ * 
+ * Uso: hx-trigger="keyup[key=='Enter']"
+ *		onkeydown="facilitarInputDatetime(event)"
+ * 
+ * @param {KeyboardEvent} event The keyboard event object.
+ */
+function facilitarInputDatetime(event) {
+	const key = event.key; // The key that was pressed
+	const inputField = event.target; // The input field element
+	const value = inputField.value; // The current value of the input field
+	let start = inputField.selectionStart; // The cursor position
+
+	if (!isDatetime(value)) {
+		// showToast("Formato de fecha incorrecto")
+		return
+	}
+	// showToast("'"+key+"'")
+	
+	// Sustituir número en la posición actual.
+	if (isDigit(key)) {
+		event.preventDefault();
+
+		// Ensure cursor is within a numeric character
+		if (start < value.length && isDigit(value[start])) {
+			// Replace the digit at the cursor position
+			const newValue = value.substring(0, start) + key + value.substring(start + 1);
+			inputField.value = newValue;
+			inputField.selectionStart = start + 1;
+			inputField.selectionEnd = start + 1;
+
+			// If the next char is not a number, jump to the next number
+			if (start + 1 < newValue.length && !isDigit(newValue[start + 1])) {
+				let nextNumStart = start + 1;
+				while (
+					nextNumStart < newValue.length &&
+					!isDigit(newValue[nextNumStart])
+				) {
+					nextNumStart++;
+				}
+				inputField.selectionStart = nextNumStart;
+				inputField.selectionEnd = nextNumStart;
+			}
+		} else {
+			// If not on a number, move to the next number or do nothing
+			let nextNumStart = start;
+			while (nextNumStart < value.length && !isDigit(value[nextNumStart])) {
+				nextNumStart++;
+			}
+			inputField.selectionStart = nextNumStart;
+			inputField.selectionEnd = nextNumStart;
+		}
+	
+	// Jump to next number
+	} else if (key === ' ' || key === 'ArrowRight') {
+		event.preventDefault();
+		let nextNumStart = start +1;
+		while (nextNumStart < value.length && !isDigit(value[nextNumStart])) {
+			nextNumStart++;
+		}
+		nextNumStart = nextNumStart > value.length ? value.length : nextNumStart
+		inputField.selectionStart = nextNumStart;
+		inputField.selectionEnd = nextNumStart;
+	
+	// Jump to previous number
+	} else if (key === 'ArrowLeft') {
+		event.preventDefault();
+		let prevNumPos = start - 1;
+		while (prevNumPos >= 0 && !isDigit(value[prevNumPos])) {
+			prevNumPos--;
+		}
+		prevNumPos = prevNumPos < 0 ? 0 : prevNumPos
+		inputField.selectionStart = prevNumPos;
+		inputField.selectionEnd = prevNumPos;
+
+	// Replace previous number with "0"
+	} else if (key === 'Backspace') {
+		event.preventDefault();
+		let prevNumPos = start - 1;
+		while (prevNumPos >= 0 && !isDigit(value[prevNumPos])) {
+			prevNumPos--;
+		}
+		if (prevNumPos >= 0) {
+			const newValue = value.substring(0, prevNumPos) + '0' + value.substring(prevNumPos + 1);
+			inputField.value = newValue;
+			inputField.selectionStart = prevNumPos; // Move cursor back to replaced digit
+			inputField.selectionEnd = prevNumPos;
+		}
+
+	// Replace the current number with "0"
+	} else if (key === 'Delete') {
+		event.preventDefault();
+		if (start < value.length && isDigit(value[start])) {
+			const newValue = value.substring(0, start) + '0' + value.substring(start + 1);
+			inputField.value = newValue;
+			inputField.selectionStart = start + 1;
+			inputField.selectionEnd = start + 1;
+
+			// If the next char is not a number, jump to the next number
+			if (start + 1 < newValue.length && !isDigit(newValue[start + 1])) {
+				let nextNumStart = start + 1;
+				while (nextNumStart < newValue.length && !isDigit(newValue[nextNumStart])) {
+					nextNumStart++;
+				}
+				inputField.selectionStart = nextNumStart;
+				inputField.selectionEnd = nextNumStart;
+			}
+		}
+
+	}
+}

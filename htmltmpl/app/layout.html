@@ -13,7 +13,7 @@
 		<script src="/htmx.min.js"></script>
 		<script src="/gecko.js"></script>
 		<script src="/assets/js/Sortable.min.js"></script>
-		<script defer src="/assets/js/main.js?t=01"></script>
+		<script defer src="/assets/js/main.js?t=02"></script>
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]" hx-ext="gecko">
@@ -58,7 +58,7 @@
 				toastContainer.removeChild(toast);
 			});
 			// Mostrar al usuario
-			toastContainer.appendChild(toast);
+			toastContainer.insertBefore(toast, toastContainer.firstChild);
 			// Quitar automáticamente
 			setTimeout(() => {
 				if (toastContainer.contains(toast)) {
