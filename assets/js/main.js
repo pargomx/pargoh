@@ -254,24 +254,29 @@ const observer = new IntersectionObserver((entries, observer) => {
 	});
 }, { threshold: 0 });
 
+
+// Agregar un salto de línea en la posición actual del cursor.
+function addNewLineAtCursor(textarea) {
+	if (textarea.selectionStart || textarea.selectionStart == '0') {
+		var startPos = textarea.selectionStart;
+		var endPos = textarea.selectionEnd;
+		textarea.value = textarea.value.substring(0, startPos)
+			+ '\n'
+			+ textarea.value.substring(endPos, textarea.value.length);
+		textarea.selectionStart = startPos+1;
+		textarea.selectionEnd = endPos+1;
+	} else {
+		textarea.value += '\n';
+	}
+}
+
 // Guardar con Enter; new line con Shift+Enter; cancelar con Esc;
-function hdlTextAreaEnter(event) {
+function hdlTextAreaKeyDown(event) {
 	if (event.key === 'Enter') {
 		if (event.shiftKey) {
-			let textarea = event.target
-			if (textarea.selectionStart || textarea.selectionStart == '0') {
-				var startPos = textarea.selectionStart;
-				var endPos = textarea.selectionEnd;
-				textarea.value = textarea.value.substring(0, startPos)
-					+ '\n'
-					+ textarea.value.substring(endPos, textarea.value.length);
-				textarea.selectionStart = startPos+1;
-				textarea.selectionEnd = endPos+1;
-			} else {
-				textarea.value += '\n';
-			}
-			autosizeTextarea(textarea);
 			event.preventDefault();
+			addNewLineAtCursor(event.target);
+			autosizeTextarea(event.target);
 		} else {
 			event.preventDefault();
 			event.target.blur();
@@ -282,6 +287,18 @@ function hdlTextAreaEnter(event) {
 		event.target.blur();
 	}
 }
+
+// En Chrome con Gboard no se envía event.shiftKey en el keyDown event. Esto es
+// un hack para permitir introducir saltos de línea desde android mediante la
+// introducción compuesta de la palabra "break", con swipe por ejemplo.
+function hdlTextAreaBeforeInput(event) {
+	if (event.data === 'Break' || event.data === 'break') {
+		event.preventDefault();
+		addNewLineAtCursor(event.target);
+		autosizeTextarea(event.target);
+	}
+}
+
 
 // ================================================================ //
 // ========== INICIALIZAR CONTENIDO =============================== //
@@ -304,7 +321,8 @@ htmx.onLoad(function(content) {
 	for (let i = 0; i < textareas.length; i++) {
 		autosizeTextarea(textareas[i])
 		observer.observe(textareas[i]);
-		textareas[i].addEventListener('keydown', hdlTextAreaEnter);
+		textareas[i].addEventListener('keydown', hdlTextAreaKeyDown);
+		textareas[i].addEventListener('beforeinput', hdlTextAreaBeforeInput);
 		// textareas[i].setAttribute("autocomplete", "off")
 		// textareas[i].setAttribute("spellcheck", "true")
 		// textareas[i].setAttribute("autocorrect", "on")
