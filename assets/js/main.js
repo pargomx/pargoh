@@ -220,40 +220,73 @@ document.querySelectorAll('table').forEach(tbl => {
 // ================================================================ //
 // ========== TEXTAREAS =========================================== //
 
-// Autosize: puede tener cualquier border-width, max-height o rows.
-function autosizeTextarea(textarea) {
-	let style = window.getComputedStyle(textarea); // obtener y considerar border para evitar scrollbars.
-    let bTop = parseFloat(style.getPropertyValue('border-top-width'));
-    let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
-    let borderPx = Math.ceil(bTop + bBottom);
-	textarea.style.height = (textarea.scrollHeight + borderPx) + "px";
-	textarea.classList.add('resize-none');
-	textarea.addEventListener("input", function() {
-		// Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
-		let scrollTopRestore = null;
-		if (document.getElementById('contenido')) {
-			scrollTopRestore = document.getElementById('contenido').scrollTop;
-		}
-		// this.style.height = 'auto'; // para evitar saltos al entrar texto en textareas muy grandes.
-		this.style.height = (this.scrollHeight + borderPx) + "px";
-		if (scrollTopRestore) {
-			contenido.scrollTop = scrollTopRestore;
-		}
-	}, false);
+// Preparar todas las textareas al cargar el contenido especificado.
+function prepararTextareasEn(contenido) {
+	const textareas = contenido.getElementsByTagName("textarea");
+	for (let i = 0; i < textareas.length; i++) {
+		// Ajustar al contenido manualmente, en espera de soporte para field-sizing.
+		textareas[i].classList.add('resize-none');
+		autosizeTextarea(textareas[i]);
+		observer.observe(textareas[i]);
+		textareas[i].addEventListener("input", handleTextareaInputWithoutJumps);
+
+		// Usar [Enter] para enviar y [Shift+Enter] para nueva línea.
+		textareas[i].addEventListener('keydown', hdlTextAreaKeyDown);
+		textareas[i].addEventListener('beforeinput', hdlTextAreaBeforeInput);
+		
+		// textareas[i].setAttribute("autocomplete", "off")
+		// textareas[i].setAttribute("spellcheck", "true")
+		// textareas[i].setAttribute("autocorrect", "on")
+		// textareas[i].setAttribute("autocapitalize", "on")
+	}
 }
 
-// Aplicar autosize cuando el textarea se hace visible, no solo al cargar la página.
-// Nesesario para textareas ocultos dentro de modales <dialog>.
+// Aplicar autosize cuando el textarea se hace visible, no solo al cargar contenido.
+// Nesesario para textareas que comienzan ocultos, como dentro de modales <dialog>
+// ya que al inicio no se puede obtener su altura (están ocultos).
 const observer = new IntersectionObserver((entries, observer) => {
 	entries.forEach(entry => {
 		if (entry.isIntersecting) {
-			// console.log('Textarea is visible');
 			autosizeTextarea(entry.target);
 			observer.unobserve(entry.target);
 		}
 	});
 }, { threshold: 0 });
 
+// ================================================================ //
+
+// Autosize: obtener y considerar altura del border para evitar scrollbars.
+function getTextareaBorderHeight(textarea) {
+	let style = window.getComputedStyle(textarea);
+    let bTop = parseFloat(style.getPropertyValue('border-top-width'));
+    let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
+    let borderPx = Math.ceil(bTop + bBottom); // si hay error siempre hacer más grande.
+	return borderPx
+}
+
+// Autosize: puede tener cualquier border-width, max-height o rows.
+function autosizeTextarea(textarea) {
+	if (!(textarea instanceof HTMLTextAreaElement)) {
+		console.warn(`autosizeTextarea: elemento no es un textarea`, textarea)
+		return
+	}
+	const borderPx = getTextareaBorderHeight(textarea)
+	textarea.style.height = (textarea.scrollHeight + borderPx) + "px";
+}
+
+// Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
+function handleTextareaInputWithoutJumps(event) {
+	autosizeTextarea(event.target)
+	let scrollTopRestore = null;
+	if (document.getElementById('contenido')) {
+		scrollTopRestore = document.getElementById('contenido').scrollTop;
+	}
+	if (scrollTopRestore) {
+		contenido.scrollTop = scrollTopRestore;
+	}
+}
+
+// ================================================================ //
 
 // Agregar un salto de línea en la posición actual del cursor.
 function addNewLineAtCursor(textarea) {
@@ -292,7 +325,7 @@ function hdlTextAreaKeyDown(event) {
 // un hack para permitir introducir saltos de línea desde android mediante la
 // introducción compuesta de la palabra "break", con swipe por ejemplo.
 function hdlTextAreaBeforeInput(event) {
-	if (event.data === 'Break' || event.data === 'break') {
+	if (event.data && event.data.trim().toLowerCase() === 'break') {
 		event.preventDefault();
 		addNewLineAtCursor(event.target);
 		autosizeTextarea(event.target);
@@ -306,7 +339,6 @@ function hdlTextAreaBeforeInput(event) {
 // Evento htmx:load para inicializar cosas después de cargar contenido.
 // https://htmx.org/api/#onLoad
 htmx.onLoad(function(content) {
-
 	// console.log("htmx:onLoad", content);
 
 	// Los input tienen autocomplete="off" a menos que se especifique lo contrario.
@@ -316,32 +348,19 @@ htmx.onLoad(function(content) {
 		}
 	});
 
-	// Los textarea se ajustan automáticamente a su contenido.
-	const textareas = content.getElementsByTagName("textarea");
-	for (let i = 0; i < textareas.length; i++) {
-		autosizeTextarea(textareas[i])
-		observer.observe(textareas[i]);
-		textareas[i].addEventListener('keydown', hdlTextAreaKeyDown);
-		textareas[i].addEventListener('beforeinput', hdlTextAreaBeforeInput);
-		// textareas[i].setAttribute("autocomplete", "off")
-		// textareas[i].setAttribute("spellcheck", "true")
-		// textareas[i].setAttribute("autocorrect", "on")
-		// textareas[i].setAttribute("autocapitalize", "on")
-	}
-
+	prepararTextareasEn(content)
 	
-	// Si se declara una función "onLoad" en el contenido, se ejecuta.
-	if (typeof onLoad === 'function') { 
-		onLoad(content);
-	}
-	
-	// Restablecer scroll position después de autosize textarea.
-	// ya que HTMX al hacer el scrollIntoView sin tener en cuenta el autosize
-	// hace que se mueva todo.
+	// Restablecer scroll position después de autosizeTextarea, ya que HTMX
+	// provoca layout shift al hacer scrollIntoView sin considerar autosize.
 	var contenido = document.getElementById('contenido');
 	if (contenido && contenido.dataset.scrollPosition) {
 		contenido.scrollTop = contenido.dataset.scrollPosition;
 		// console.log("Restored scroll: " + contenido.dataset.scrollPosition)
+	}
+
+	// Si se declara una función "onLoad" en el contenido, se ejecuta.
+	if (typeof onLoad === 'function') { 
+		onLoad(content);
 	}
 })
 
