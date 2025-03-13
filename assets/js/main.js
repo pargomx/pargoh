@@ -260,7 +260,7 @@ function getTextareaBorderHeight(textarea) {
 	let style = window.getComputedStyle(textarea);
     let bTop = parseFloat(style.getPropertyValue('border-top-width'));
     let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
-    let borderPx = Math.ceil(bTop + bBottom); // si hay error siempre hacer más grande.
+    let borderPx = Math.ceil(bTop + bBottom); // nunca quedarse cortos en px
 	return borderPx
 }
 
@@ -270,8 +270,14 @@ function autosizeTextarea(textarea) {
 		console.warn(`autosizeTextarea: elemento no es un textarea`, textarea)
 		return
 	}
-	const borderPx = getTextareaBorderHeight(textarea)
-	textarea.style.height = (textarea.scrollHeight + borderPx) + "px";
+	// En chrome android dentro de dialogs el textarea.scrollHeight incrementa
+	// 1px con cada caracter introducido. Ignorar esos incrementos minúsculos.
+	const oldH = parseInt(textarea.style.height) || 0;
+	const newH = textarea.scrollHeight + getTextareaBorderHeight(textarea)
+	if (Math.abs(oldH - newH) <= 2) {
+		return
+	}
+	textarea.style.height = newH + "px";
 }
 
 // Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
