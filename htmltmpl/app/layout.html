@@ -11,14 +11,14 @@
 		<link rel="stylesheet" type="text/css" href="/assets/css/fontawesome.min.css">
 
 		<script src="/htmx.min.js"></script>
-		<script src="/gecko.js"></script>
-		<script src="/assets/js/Sortable.min.js"></script>
+		<script defer src="/gecko.js"></script>
 		<script defer src="/assets/js/main.js?t=02"></script>
+		<script defer src="/assets/js/Sortable.min.js"></script>
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]" hx-ext="gecko">
-		<div class="flex flex-col overflow-y-auto h-dvh"
-		id="contenido" 
+		<div class="flex flex-col overflow-y-auto h-dvh opacity-0 pointer-events-none"
+		id="contenido"
 		hx-target="#contenido"
 		hx-swap="innerHTML show:no-scroll"
 		hx-push-url="false"

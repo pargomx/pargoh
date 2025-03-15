@@ -1,11 +1,144 @@
+// ================================================================ //
+// ========== Global state ======================================== //
+
+// Aplicar autosize cuando el textarea se hace visible, no solo al cargar contenido.
+// Nesesario para textareas que comienzan ocultos, como dentro de modales <dialog>
+// ya que al inicio no se puede obtener su altura (están ocultos).
+const observer = new IntersectionObserver((entries, observer) => {
+	entries.forEach(entry => {
+		if (entry.isIntersecting) {
+			autosizeTextarea(entry.target);
+			observer.unobserve(entry.target);
+		}
+	});
+}, { threshold: 0 });
+
+
+// ================================================================ //
+// ========== INICIALIZAR PÁGINA ================================== //
+
+// Ejecutar tan pronto como sea posible.
+function inicializarPagina() {
+	//? console.log("DOMContentLoaded", performance.now());
+
+	document.body.addEventListener('htmx:load', (event) => {
+		//? console.log("htmx:load", performance.now());
+	})
+
+	// Restablecer scroll position después de autosizeTextarea, ya que HTMX
+	// provoca layout shift al hacer scrollIntoView sin considerar autosize.
+	var contenido = document.getElementById('contenido');
+	if (contenido && contenido.dataset.scrollPosition) {
+		contenido.scrollTop = contenido.dataset.scrollPosition;
+		//? console.log("Restored scroll: " + contenido.dataset.scrollPosition)
+	}
+	
+	prepararTextareasEn(document.body)
+	restoreScrollPosition()
+
+	// Handle HTMX errors
+	htmx.on("htmx:responseError", function(event) {
+		alert(`Error ${event.detail.xhr.response}`)
+	});
+	htmx.on("htmx:sendError", function(event) {
+		alert(`Error de red: no se puede conectar con el servidor.`)
+	});
+	htmx.on("htmx:timeout", function(event) {
+		alert(`Error: se agotó el tiempo de espera para la respuesta del servidor.`)
+	});
+
+	// Los input tienen autocomplete="off" a menos que se especifique lo contrario.
+	document.querySelectorAll('input').forEach(input => {
+		if (input.getAttribute("autocomplete") == null) {
+			input.setAttribute("autocomplete", "off")
+		}
+	});
+
+}
+
+// Después de interpretar el html y ejecutar deferred scripts.
+// No esperar la carga de imágenes ni estilos.
+// Ejecutar siempre, aún cuando no se alcance el DOMContentLoaded.
+if (document.readyState === "loading") {
+	document.addEventListener("DOMContentLoaded", inicializarPagina);
+} else {
+	inicializarPagina();
+}
+
+// Cuando se carguen todos los recursos incluyendo imágenes y estilos.
+window.addEventListener("load", (event) => {
+	//? console.log("Load event", performance.now());
+
+});
+
+// Evento htmx:load para inicializar después de cargar contenido.
+// Es lanzado en el body.
+// https://htmx.org/api/#onLoad
+htmx.onLoad((content) => {
+	//? console.log("htmx.onLoad", performance.now(), content);
+	// Esperar a que se haga el restoreScrollPosition para no mostrar
+	// al usuario el movimiento y que el contenido haga flash.
+	contenido.classList.remove('opacity-0', 'pointer-events-none')
+});
+
+// ================================================================ //
 
 // Force reload when BFCache activates despite Cache-Control: no-store.
 window.addEventListener('pageshow', (event) => {
 	if (event.persisted) {
-		console.log("persisted aborted")
+		//? console.log("persisted aborted")
 		location.reload();
 	}
 });
+
+// Restore scroll position al cargar sin HTMX.
+function restoreScrollPosition() {
+	var contenido = document.getElementById('contenido');
+    if (contenido) {
+        var currentUrl = window.location.href;
+        // Get the stored data
+        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
+        // Find the scroll position for the current URL
+        var scrollItem = scrollData.find(item => item.url === currentUrl);
+        // Do de scroll
+		if (scrollItem) {
+            contenido.scrollTop = scrollItem.scrollTop;
+			//? console.log("scrolled "+scrollItem.scrollTop + " for "+ scrollItem.url)
+        }
+	}
+}
+
+// Guardar scroll position antes de swap.
+document.addEventListener('htmx:beforeSwap', function(evt) {
+    var contenido = document.getElementById('contenido');
+    if (contenido) {
+		contenido.dataset.scrollPosition = contenido.scrollTop;
+		//? console.log("Saved scroll: " + contenido.scrollTop)
+    }
+});
+
+// Guardar scroll position antes de navegar a otra página.
+window.addEventListener('beforeunload', function() {
+    var contenido = document.getElementById('contenido');
+    if (contenido) {
+        var scrollTop = contenido.scrollTop;
+        var currentUrl = window.location.href;
+        // Get the stored data
+        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
+        // Remove the current URL if it already exists in the array
+        scrollData = scrollData.filter(item => item.url !== currentUrl);
+        // Add the current URL and scroll position to the beginning of the array
+        scrollData.unshift({ url: currentUrl, scrollTop: scrollTop });
+        // Keep only the last 5 entries
+        if (scrollData.length > 5) {
+            scrollData.pop();
+        }
+        // Save the updated data back to localStorage
+        localStorage.setItem('scrollData', JSON.stringify(scrollData));
+    }
+});
+
+
 
 
 
@@ -54,167 +187,22 @@ document.addEventListener("keyup", function(e) {
 }, false);
 
 
-// ================================================================ //
-// ================================================================ //
-
-
-function delay(time) {
-	return new Promise(resolve => setTimeout(resolve, time));
-}
-
-function quitar(element) {
-	console.log("quitando")
-	setTimeout(() => {
-		console.log("bye")
-		element.remove();
-	}, 200);
-}
-
-window.onload = () => {
-	// console.log("page is fully loaded");
-	
-	htmx.on("htmx:responseError", function(event) {
-		alert(`Error ${event.detail.xhr.response}`)
-	});
-	htmx.on("htmx:sendError", function(event) {
-		alert(`Error de red: no se puede conectar con el servidor.`)
-	});
-	htmx.on("htmx:timeout", function(event) {
-		alert(`Error: se agotó el tiempo de espera para la respuesta del servidor.`)
-	});
-};
-
-
-
-
-/**
- * 
- * @param {string} str string para quitar acentos, espacios, trim, diacríticos.
- * @returns string
- */
-// normalizar quita acentos, espacios adicionales y mayúsculas.
-function normalizar(str) {
-	return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ')
-}
-
-
-// Filtrar entidades por nombre
-// 
-// Uso:
-// <input type="search" class="" oninput="filtrarArticles(this.value)" placeholder="Buscar entidad...">
-//
-function filtrarArticles(qryText) {
-	let cards = document.getElementsByTagName("article")
-	if (cards.length < 1) {
-		console.log("no hay article para filtrar")
-		return
+function clickSubmit(form) {
+	if (form.tagName !== "FORM") {
+		form = form.closest("form");
 	}
-	qryText = normalizar(qryText)
-	for (let card of cards) {
-		if ( qryText.length < 2 ) {
-			card.classList.remove("hidden")
-			continue
+	form.querySelector('button[type="submit"]').click();
+}
+
+// Navegar en el árbol de historias con CTRL + UP
+document.addEventListener('keydown', function(event) {
+    if ((event.altKey || event.ctrlKey) && event.key === 'ArrowUp') {
+        event.preventDefault();
+		let ancestroDirectoLink = document.querySelector('a[tipo="ancestro_directo"]');
+		if (ancestroDirectoLink) {
+			ancestroDirectoLink.click();
 		}
-		let cardText = normalizar(card.getElementsByTagName("h2")[0].textContent)
-		if ( cardText.includes(qryText) ) {
-			card.classList.remove("hidden")
-		} else {
-			card.classList.add("hidden")
-		}
-	}
-}
-
-
-function filtrarRows(qryText, tableID) {
-	let rows = document.getElementById(tableID).getElementsByTagName("tbody")[0].getElementsByTagName("tr")
-	if (rows.length < 1) {
-		return
-	}
-	qryText = normalizar(qryText)
-	for (let row of rows) {
-		if ( qryText.length < 2 ) {
-			row.classList.remove("hidden")
-			continue
-		}
-		let rowText = normalizar(row.textContent)
-		if ( rowText.includes(qryText) ) {
-			row.classList.remove("hidden")
-		} else {
-			row.classList.add("hidden")
-		}
-	}
-}
-
-// Mostar checkboxes para seleccionar varias entidades.
-function showCheckboxs() {
-	let chbxs = document.getElementsByClassName("filtro_chkbox")
-	for (let cb of chbxs) {
-		cb.classList.remove("hidden")
-	}
-	document.getElementById("showCheckboxsBtn").classList.add("hidden")
-	document.getElementById("applyCheckboxsBtn").classList.remove("hidden")
-}
-
-
-/**
- * Ordena una tabla alfabéticamente por una columna.
- * Fuente: https://youtu.be/8SL_hM1a0yo
- * TODO: Ordenar campos numéricos correctamente.
- * TODO: Poner campos vacíos al final.
- * 
- * @param {string} tblID El id de la tabla que se va a ordenar
- * @param {number} colIdx El index de la columna por la que ordenar
- */
-function sortTableByIdAndColumn(tblID, colIdx) {
-	const table = document.getElementById(tblID)
-	if (table === null) {
-		console.warn("sortable: la tabla ", tblID, " no existe")
-		return
-	}
-	const tbody = table.tBodies[0]
-	const rows = Array.from(tbody.querySelectorAll("tr"))
-
-	let ordenASC = true
-	if (table.querySelector(`th:nth-child(${ colIdx + 1 })`).classList.contains("th-sort-asc")) {
-		ordenASC = false
-	}
-	
-	const sortedRows = rows.sort((a, b) => {
-		aColText = normalizar(a.querySelector(`td:nth-child(${ colIdx + 1 })`).textContent)
-		bColText = normalizar(b.querySelector(`td:nth-child(${ colIdx + 1 })`).textContent)
-		// console.log(bColText + " - " + aColText)
-		
-		// Opción A: usando matemáticas solamente.
-		// const direccion = ordenASC ? 1 : -1
-		// return aColText > bColText ? (1 * direccion) : (-1 * direccion)
-
-		// Opción B: usando localCompare para ordenar números correctamente.
-		if (ordenASC) {
-			return aColText.localeCompare(bColText, undefined, { numeric: true, sensitivity: 'base' });
-		} else {
-			return bColText.localeCompare(aColText, undefined, { numeric: true, sensitivity: 'base' });
-		}
-	})
-
-	while (tbody.firstChild) {
-		tbody.removeChild(tbody.firstChild)
-	}
-	tbody.append(...sortedRows)
-
-	// Agregar clase en la celda del encabezado
-	table.querySelectorAll("th").forEach(th => th.classList.remove("th-sort-asc", "th-sort-desc"))
-	table.querySelector(`th:nth-child(${ colIdx + 1 })`).classList.toggle("th-sort-asc", ordenASC)
-	table.querySelector(`th:nth-child(${ colIdx + 1 })`).classList.toggle("th-sort-desc", !ordenASC)
-}
-
-// Que todas las tablas se puedan ordenar por las columnas que tengan el atributo "sortable" en sus <th>.
-document.querySelectorAll('table').forEach(tbl => {
-	if (tbl.id == "") {
-		return
-	}	
-	for(let col of tbl.querySelectorAll("th[sortable]").entries()) {
-		col[1].addEventListener("click", () => sortTableByIdAndColumn(tbl.id, col[0]) )
-	}
+    }
 });
 
 // ================================================================ //
@@ -239,19 +227,9 @@ function prepararTextareasEn(contenido) {
 		// textareas[i].setAttribute("autocorrect", "on")
 		// textareas[i].setAttribute("autocapitalize", "on")
 	}
+	//? console.log("TextAreasReady ", performance.now())
 }
 
-// Aplicar autosize cuando el textarea se hace visible, no solo al cargar contenido.
-// Nesesario para textareas que comienzan ocultos, como dentro de modales <dialog>
-// ya que al inicio no se puede obtener su altura (están ocultos).
-const observer = new IntersectionObserver((entries, observer) => {
-	entries.forEach(entry => {
-		if (entry.isIntersecting) {
-			autosizeTextarea(entry.target);
-			observer.unobserve(entry.target);
-		}
-	});
-}, { threshold: 0 });
 
 // ================================================================ //
 
@@ -338,84 +316,6 @@ function hdlTextAreaBeforeInput(event) {
 	}
 }
 
-
-// ================================================================ //
-// ========== INICIALIZAR CONTENIDO =============================== //
-
-// Evento htmx:load para inicializar cosas después de cargar contenido.
-// https://htmx.org/api/#onLoad
-htmx.onLoad(function(content) {
-	// console.log("htmx:onLoad", content);
-
-	// Los input tienen autocomplete="off" a menos que se especifique lo contrario.
-	content.querySelectorAll('input').forEach(input => {
-		if (input.getAttribute("autocomplete") == null) {
-			input.setAttribute("autocomplete", "off")
-		}
-	});
-
-	prepararTextareasEn(content)
-	
-	// Restablecer scroll position después de autosizeTextarea, ya que HTMX
-	// provoca layout shift al hacer scrollIntoView sin considerar autosize.
-	var contenido = document.getElementById('contenido');
-	if (contenido && contenido.dataset.scrollPosition) {
-		contenido.scrollTop = contenido.dataset.scrollPosition;
-		// console.log("Restored scroll: " + contenido.dataset.scrollPosition)
-	}
-
-	// Si se declara una función "onLoad" en el contenido, se ejecuta.
-	if (typeof onLoad === 'function') { 
-		onLoad(content);
-	}
-})
-
-// Guardar scroll position antes de swap.
-document.addEventListener('htmx:beforeSwap', function(evt) {
-    var contenido = document.getElementById('contenido');
-    if (contenido) {
-      contenido.dataset.scrollPosition = contenido.scrollTop;
-	//   console.log("Saved scroll: " + contenido.scrollTop)
-    }
-});
-
-// Guardar scroll position antes de navegar a otra página.
-window.addEventListener('beforeunload', function() {
-    var contenido = document.getElementById('contenido');
-    if (contenido) {
-        var scrollTop = contenido.scrollTop;
-        var currentUrl = window.location.href;
-        // Get the stored data
-        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
-        // Remove the current URL if it already exists in the array
-        scrollData = scrollData.filter(item => item.url !== currentUrl);
-        // Add the current URL and scroll position to the beginning of the array
-        scrollData.unshift({ url: currentUrl, scrollTop: scrollTop });
-        // Keep only the last 5 entries
-        if (scrollData.length > 5) {
-            scrollData.pop();
-        }
-        // Save the updated data back to localStorage
-        localStorage.setItem('scrollData', JSON.stringify(scrollData));
-    }
-});
-
-// Restore scroll position al cargar sin HTMX.
-window.addEventListener('load', function() {
-    var contenido = document.getElementById('contenido');
-    if (contenido) {
-        var currentUrl = window.location.href;
-        // Get the stored data
-        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
-        // Find the scroll position for the current URL
-        var scrollItem = scrollData.find(item => item.url === currentUrl);
-        // Do de scroll
-		if (scrollItem) {
-            contenido.scrollTop = scrollItem.scrollTop;
-			// console.log("scrolled "+scrollItem.scrollTop + " for "+ scrollItem.url)
-        }
-    }
-});
 
 // ================================================================ //
 // ========== TimeTracker para gestión de proyecto ================ //
@@ -510,27 +410,19 @@ document.ontouchstart = handleUserInteraction;
 // document.onscroll = resetInteractionTimer; // meh...
 // document.onmousemove = resetInteractionTimer; // demasiado sensible
 
-// ================================================================ //
 
-function clickSubmit(form) {
-	if (form.tagName !== "FORM") {
-		form = form.closest("form");
-	}
-	form.querySelector('button[type="submit"]').click();
+// ================================================================ //
+// ========== INPUT HELPERS ======================================= //
+
+/**
+ * 
+ * @param {string} str string para quitar acentos, espacios, trim, diacríticos.
+ * @returns string
+ */
+// normalizar quita acentos, espacios adicionales y mayúsculas.
+function normalizar(str) {
+	return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ')
 }
-
-// ================================================================ //
-
-// Navegar en el árbol de historias con CTRL + UP
-document.addEventListener('keydown', function(event) {
-    if ((event.altKey || event.ctrlKey) && event.key === 'ArrowUp') {
-        event.preventDefault();
-		let ancestroDirectoLink = document.querySelector('a[tipo="ancestro_directo"]');
-		if (ancestroDirectoLink) {
-			ancestroDirectoLink.click();
-		}
-    }
-});
 
 // ================================================================ //
 // ========== DATE TIME INIPUT ==================================== //
