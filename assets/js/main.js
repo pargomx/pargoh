@@ -37,13 +37,13 @@ function inicializarPagina() {
 	restoreScrollPosition()
 
 	// Handle HTMX errors
-	htmx.on("htmx:responseError", function(event) {
+	document.body.addEventListener('htmx:responseError', function(event) {
 		alert(`Error ${event.detail.xhr.response}`)
 	});
-	htmx.on("htmx:sendError", function(event) {
+	document.body.addEventListener('htmx:sendError', function(event) {
 		alert(`Error de red: no se puede conectar con el servidor.`)
 	});
-	htmx.on("htmx:timeout", function(event) {
+	document.body.addEventListener('htmx:timeout', function(event) {
 		alert(`Error: se agotó el tiempo de espera para la respuesta del servidor.`)
 	});
 
@@ -74,7 +74,7 @@ window.addEventListener("load", (event) => {
 // Evento htmx:load para inicializar después de cargar contenido.
 // Es lanzado en el body.
 // https://htmx.org/api/#onLoad
-htmx.onLoad((content) => {
+document.body.addEventListener('htmx:load', (event) => {
 	//? console.log("htmx.onLoad", performance.now(), content);
 	// Esperar a que se haga el restoreScrollPosition para no mostrar
 	// al usuario el movimiento y que el contenido haga flash.

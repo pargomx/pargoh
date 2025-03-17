@@ -1703,7 +1703,8 @@
 
 	// ================================================================ //
 	// ================================================================ //
-	htmx.onLoad(function(content) {
+	document.body.addEventListener('htmx:load', (event) => {
+		console.log("htmx:load", performance.now(), event.detail.elt);
 
 		// initContextMenu(content);
 

@@ -766,7 +766,10 @@
 	// ================================================================ //
 	// ========== Inicializar ========================================= //
 	
-	htmx.onLoad(function(content) {
+	document.body.addEventListener('htmx:load', (event) => {
+		console.log("htmx:load", performance.now(), event.detail.elt);
+		let content = event.detail.elt;
+
 		content.querySelectorAll("[tipo='sort_historia']").forEach(element => {
 			setupMenuContextual(element, element.id) // al cargar toda la página
 		});
