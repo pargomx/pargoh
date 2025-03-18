@@ -10,6 +10,39 @@
 		<link rel="stylesheet" type="text/css" href="/assets/css/estilo.css">
 		<link rel="stylesheet" type="text/css" href="/assets/css/fontawesome.min.css">
 
+		<script>
+			// Debug performance
+			let tInicio = performance.now()
+			let tAnterior = performance.now()
+			function getTiempoTotal() {
+				let tTotal = performance.now() - tInicio
+				tTotal = Math.round(tTotal * 100) / 100
+				return tTotal
+			}
+			function getTiempoParcial() {
+				let tParcial = performance.now() - tAnterior
+				tParcial = Math.round(tParcial * 100) / 100
+				return tParcial
+			}
+			function logTimeSince(msg) {
+				// console.log(`${msg} at ${getTiempoTotal()}ms`)
+				// tAnterior = performance.now()
+			}
+			function logTimeTotal(msg, elm) {
+				// if (elm){
+				// 	console.log(`${msg} at ${getTiempoTotal()}ms`, elm)
+				// } else {
+				// 	console.log(`${msg} at ${getTiempoTotal()}ms`)
+				// }
+			}
+			function logTimeHasta(msg, elm) {
+				// if (elm){
+				// 	console.log(`${msg} in ${getTiempoParcial()}ms`, elm)
+				// } else {
+				// 	console.log(`${msg} in ${getTiempoParcial()}ms`)
+				// }
+			}
+		</script>
 		<script defer src="/htmx.js"></script>
 		<script defer src="/gecko.js"></script>
 		<script defer src="/assets/js/main.js?t=02"></script>
@@ -17,7 +50,7 @@
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]" hx-ext="gecko">
-		<div class="flex flex-col overflow-y-auto h-dvh opacity-0 pointer-events-none"
+		<div class="flex flex-col overflow-y-auto h-dvh opacity-0 pointer-events-none transition-opacity"
 		id="contenido"
 		hx-target="#contenido"
 		hx-swap="innerHTML show:no-scroll"
@@ -91,5 +124,8 @@
 		}
 	</script>
 
+	<script>
+		logTimeTotal("document parsed")
+	</script>
 	</body>
 </html>

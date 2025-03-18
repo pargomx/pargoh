@@ -1,427 +1,67 @@
-// ================================================================ //
-// ========== Global state ======================================== //
+// Ejecutado con defer luego de html pero antes de DOMContentLoaded.
+// logTimeTotal("main.js started")
 
-// Aplicar autosize cuando el textarea se hace visible, no solo al cargar contenido.
-// Nesesario para textareas que comienzan ocultos, como dentro de modales <dialog>
-// ya que al inicio no se puede obtener su altura (están ocultos).
-const observer = new IntersectionObserver((entries, observer) => {
-	entries.forEach(entry => {
-		if (entry.isIntersecting) {
-			autosizeTextarea(entry.target);
-			observer.unobserve(entry.target);
-		}
-	});
-}, { threshold: 0 });
-
+/**
+ * Elemento con el contenido dentro de layout.html
+ * Guarda scrollPosition.
+ */
+let contenido = document.getElementById('contenido');
 
 // ================================================================ //
-// ========== INICIALIZAR PÁGINA ================================== //
+// ========== SHORTCUTS GLOBALES ================================== //
 
-// Ejecutar tan pronto como sea posible.
-function inicializarPagina() {
-	//? console.log("DOMContentLoaded", performance.now());
-
-	document.body.addEventListener('htmx:load', (event) => {
-		//? console.log("htmx:load", performance.now());
-	})
-
-	// Restablecer scroll position después de autosizeTextarea, ya que HTMX
-	// provoca layout shift al hacer scrollIntoView sin considerar autosize.
-	var contenido = document.getElementById('contenido');
-	if (contenido && contenido.dataset.scrollPosition) {
-		contenido.scrollTop = contenido.dataset.scrollPosition;
-		//? console.log("Restored scroll: " + contenido.dataset.scrollPosition)
-	}
-	
-	prepararTextareasEn(document.body)
-	restoreScrollPosition()
-
-	// Handle HTMX errors
-	document.body.addEventListener('htmx:responseError', function(event) {
-		alert(`Error ${event.detail.xhr.response}`)
-	});
-	document.body.addEventListener('htmx:sendError', function(event) {
-		alert(`Error de red: no se puede conectar con el servidor.`)
-	});
-	document.body.addEventListener('htmx:timeout', function(event) {
-		alert(`Error: se agotó el tiempo de espera para la respuesta del servidor.`)
-	});
-
-	// Los input tienen autocomplete="off" a menos que se especifique lo contrario.
-	document.querySelectorAll('input').forEach(input => {
-		if (input.getAttribute("autocomplete") == null) {
-			input.setAttribute("autocomplete", "off")
-		}
-	});
-
-}
-
-// Después de interpretar el html y ejecutar deferred scripts.
-// No esperar la carga de imágenes ni estilos.
-// Ejecutar siempre, aún cuando no se alcance el DOMContentLoaded.
-if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", inicializarPagina);
-} else {
-	inicializarPagina();
-}
-
-// Cuando se carguen todos los recursos incluyendo imágenes y estilos.
-window.addEventListener("load", (event) => {
-	//? console.log("Load event", performance.now());
-
-});
-
-// Evento htmx:load para inicializar después de cargar contenido.
-// Es lanzado en el body.
-// https://htmx.org/api/#onLoad
-document.body.addEventListener('htmx:load', (event) => {
-	//? console.log("htmx.onLoad", performance.now(), content);
-	// Esperar a que se haga el restoreScrollPosition para no mostrar
-	// al usuario el movimiento y que el contenido haga flash.
-	contenido.classList.remove('opacity-0', 'pointer-events-none')
-});
-
-// ================================================================ //
-
-// Force reload when BFCache activates despite Cache-Control: no-store.
-window.addEventListener('pageshow', (event) => {
-	if (event.persisted) {
-		//? console.log("persisted aborted")
-		location.reload();
-	}
-});
-
-// Restore scroll position al cargar sin HTMX.
-function restoreScrollPosition() {
-	var contenido = document.getElementById('contenido');
-    if (contenido) {
-        var currentUrl = window.location.href;
-        // Get the stored data
-        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
-        // Find the scroll position for the current URL
-        var scrollItem = scrollData.find(item => item.url === currentUrl);
-        // Do de scroll
-		if (scrollItem) {
-            contenido.scrollTop = scrollItem.scrollTop;
-			//? console.log("scrolled "+scrollItem.scrollTop + " for "+ scrollItem.url)
-        }
-	}
-}
-
-// Guardar scroll position antes de swap.
-document.addEventListener('htmx:beforeSwap', function(evt) {
-    var contenido = document.getElementById('contenido');
-    if (contenido) {
-		contenido.dataset.scrollPosition = contenido.scrollTop;
-		//? console.log("Saved scroll: " + contenido.scrollTop)
-    }
-});
-
-// Guardar scroll position antes de navegar a otra página.
-window.addEventListener('beforeunload', function() {
-    var contenido = document.getElementById('contenido');
-    if (contenido) {
-        var scrollTop = contenido.scrollTop;
-        var currentUrl = window.location.href;
-        // Get the stored data
-        var scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
-        // Remove the current URL if it already exists in the array
-        scrollData = scrollData.filter(item => item.url !== currentUrl);
-        // Add the current URL and scroll position to the beginning of the array
-        scrollData.unshift({ url: currentUrl, scrollTop: scrollTop });
-        // Keep only the last 5 entries
-        if (scrollData.length > 5) {
-            scrollData.pop();
-        }
-        // Save the updated data back to localStorage
-        localStorage.setItem('scrollData', JSON.stringify(scrollData));
-    }
-});
-
-
-
-
-
-// ================================================================ //
-// ========== PLATAFORMA ========================================== //
-function getPlatform() {
-    // Modern way of detecting
-    if (typeof navigator.userAgentData !== 'undefined' && navigator.userAgentData != null) {
-        return navigator.userAgentData.platform;
-    }
-    // Deprecated fallback
-    if (typeof navigator.platform !== 'undefined') {
-        if (typeof navigator.userAgent !== 'undefined' && /android/.test(navigator.userAgent.toLowerCase())) {
-            // android device’s navigator.platform is often set as 'linux', so let’s use userAgent for them
-            return 'android';
-        }
-        return navigator.platform;
-    }
-    return 'unknown';
-}
-// let platform = getPlatform().toLowerCase();
-let esMac = /mac/.test(getPlatform().toLowerCase()); // Mac desktop
-// let esIOS = ['iphone', 'ipad', 'ipod'].indexOf(platform) >= 0; // Mac iOs
-// let esApple = esMac || esIOS; // Apple device (desktop or iOS)
-// let esWindows = /win/.test(platform); // Windows
-// let esAndroid = /android/.test(platform); // Android
-// let esLinux = /linux/.test(platform); // Linux
-
-
-
-// ================================================================ //
-// ========== SHORTCUTS =========================================== //
-
-// Guardar con "CTRL + S" y hx-trigger="submit,cmdGuardar"
-// Se debe prevenir default en keydown pero lanzar el evento
-// en keyup para solo lanzarlo una vez.
-document.addEventListener("keydown", function(e) {
-	if ((esMac ? e.metaKey : e.ctrlKey) && e.code === 'KeyS') {
-		e.preventDefault();
-	}
-}, false);
-document.addEventListener("keyup", function(e) {
-	if ((esMac ? e.metaKey : e.ctrlKey) && e.code === 'KeyS' ) {
-		e.target.dispatchEvent(new Event("cmdGuardar", { bubbles: true }))
-	}
-}, false);
-
-
-function clickSubmit(form) {
-	if (form.tagName !== "FORM") {
-		form = form.closest("form");
-	}
-	form.querySelector('button[type="submit"]').click();
-}
-
-// Navegar en el árbol de historias con CTRL + UP
-document.addEventListener('keydown', function(event) {
-    if ((event.altKey || event.ctrlKey) && event.key === 'ArrowUp') {
+/**
+ * Navegar hacia arriba en el árbol de historias con CTRL + UP.
+ * @param {KeyboardEvent} event keydown
+ */
+function handleShortcutAncestro(event) {
+	if ((event.altKey || event.ctrlKey) && event.key === 'ArrowUp') {
         event.preventDefault();
 		let ancestroDirectoLink = document.querySelector('a[tipo="ancestro_directo"]');
 		if (ancestroDirectoLink) {
 			ancestroDirectoLink.click();
 		}
     }
-});
-
-// ================================================================ //
-// ========== TEXTAREAS =========================================== //
-
-// Preparar todas las textareas al cargar el contenido especificado.
-function prepararTextareasEn(contenido) {
-	const textareas = contenido.getElementsByTagName("textarea");
-	for (let i = 0; i < textareas.length; i++) {
-		// Ajustar al contenido manualmente, en espera de soporte para field-sizing.
-		textareas[i].classList.add('resize-none');
-		autosizeTextarea(textareas[i]);
-		observer.observe(textareas[i]);
-		textareas[i].addEventListener("input", handleTextareaInputWithoutJumps);
-
-		// Usar [Enter] para enviar y [Shift+Enter] para nueva línea.
-		textareas[i].addEventListener('keydown', hdlTextAreaKeyDown);
-		textareas[i].addEventListener('beforeinput', hdlTextAreaBeforeInput);
-		
-		// textareas[i].setAttribute("autocomplete", "off")
-		// textareas[i].setAttribute("spellcheck", "true")
-		// textareas[i].setAttribute("autocorrect", "on")
-		// textareas[i].setAttribute("autocapitalize", "on")
-	}
-	//? console.log("TextAreasReady ", performance.now())
 }
-
-
-// ================================================================ //
-
-// Autosize: obtener y considerar altura del border para evitar scrollbars.
-function getTextareaBorderHeight(textarea) {
-	let style = window.getComputedStyle(textarea);
-    let bTop = parseFloat(style.getPropertyValue('border-top-width'));
-    let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
-    let borderPx = Math.ceil(bTop + bBottom); // nunca quedarse cortos en px
-	return borderPx
-}
-
-// Autosize: puede tener cualquier border-width, max-height o rows.
-function autosizeTextarea(textarea) {
-	if (!(textarea instanceof HTMLTextAreaElement)) {
-		console.warn(`autosizeTextarea: elemento no es un textarea`, textarea)
-		return
-	}
-	// En chrome android dentro de dialogs el textarea.scrollHeight incrementa
-	// 1px con cada caracter introducido. Ignorar esos incrementos minúsculos.
-	const oldH = parseInt(textarea.style.height) || 0;
-	const newH = textarea.scrollHeight + getTextareaBorderHeight(textarea)
-	if (Math.abs(oldH - newH) <= 2) {
-		return
-	}
-	textarea.style.height = newH + "px";
-}
-
-// Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
-function handleTextareaInputWithoutJumps(event) {
-	autosizeTextarea(event.target)
-	let scrollTopRestore = null;
-	if (document.getElementById('contenido')) {
-		scrollTopRestore = document.getElementById('contenido').scrollTop;
-	}
-	if (scrollTopRestore) {
-		contenido.scrollTop = scrollTopRestore;
-	}
-}
-
-// ================================================================ //
-
-// Agregar un salto de línea en la posición actual del cursor.
-function addNewLineAtCursor(textarea) {
-	if (textarea.selectionStart || textarea.selectionStart == '0') {
-		var startPos = textarea.selectionStart;
-		var endPos = textarea.selectionEnd;
-		textarea.value = textarea.value.substring(0, startPos)
-			+ '\n'
-			+ textarea.value.substring(endPos, textarea.value.length);
-		textarea.selectionStart = startPos+1;
-		textarea.selectionEnd = endPos+1;
-	} else {
-		textarea.value += '\n';
-	}
-}
-
-// Guardar con Enter; new line con Shift+Enter; cancelar con Esc;
-function hdlTextAreaKeyDown(event) {
-	if (event.key === 'Enter') {
-		if (event.shiftKey) {
-			event.preventDefault();
-			addNewLineAtCursor(event.target);
-			autosizeTextarea(event.target);
-		} else {
-			event.preventDefault();
-			event.target.blur();
-			event.target.focus(); // para que htmx sepa qué elemento enfocar after swap.
-		}
-	} else if (event.key === 'Escape') {
-		event.target.value = event.target.defaultValue; // restaurar valor original
-		event.target.blur();
-	}
-}
-
-// En Chrome con Gboard no se envía event.shiftKey en el keyDown event. Esto es
-// un hack para permitir introducir saltos de línea desde android mediante la
-// introducción compuesta de la palabra "break", con swipe por ejemplo.
-function hdlTextAreaBeforeInput(event) {
-	if (event.data && event.data.trim().toLowerCase() === 'break') {
-		event.preventDefault();
-		addNewLineAtCursor(event.target);
-		autosizeTextarea(event.target);
-	}
-}
-
-
-// ================================================================ //
-// ========== TimeTracker para gestión de proyecto ================ //
-
-const segundosParaInactividad = 20;
-const segundosParaEnviarHeartbeat = 5;
-let segundosContados = 0;
-let timePersonaID = "0";
-let timeCounterIntvl = null;
-let interactionTimeout;
-
-// Mostrar cuántos segundos se han contado.
-function setCounterDisplay(text) {
-	// window.document.title = text;
-	document.querySelector("footer small").innerText = text;
-}
-
-// Enviar un pulso al servidor cada x segundos.
-function sendHeartbeat() {
-	// Enviar segundos al servidor
-	fetch(`/personas/${timePersonaID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
-	    if (!response.ok) {
-			// TODO: no dar error al usuario, pero guardar en localStorage y enviar cuando se pueda.
-	        throw new Error('Network response was not ok');
-	    }
-	})
-	// Cuenta local para mostrar al usuario.
-	segundosContados += segundosParaEnviarHeartbeat;
-    // localStorage.setItem('timeActive', segundosContados);
-	// setCounterDisplay(`🌿 ${segundosContados}s ${timePersonaID}`);
-}
-
-// Contar el tiempo que se trabaja en un personaje. Idempotente.
-function startHeartbeat(razon) {
-	if (!document.querySelector("[data-persona-id]")) {
-		timePersonaID = 0;
-		return // Solo contar cuando se trabaja con un personaje.
-	}
-	if (timeCounterIntvl) {
-		// console.log(razon + " [already started]");
-		return // Idempotente si ya está contando.
-	}
-	// console.log(razon);
-	timePersonaID = document.querySelector("[data-persona-id]").getAttribute("data-persona-id");
-	// segundosContados = parseInt(localStorage.getItem('timeActive')) || segundosContados
-	timeCounterIntvl = setInterval(sendHeartbeat, segundosParaEnviarHeartbeat * 1000);
-	// setCounterDisplay(`🌿 Start: ${segundosContados}s ${timePersonaID}`);
-}
-
-// Pausar el contador de tiempo.
-function stopHeartbeat(razon) {
-	if (!timeCounterIntvl) {
-		// console.log(razon + " [already stopped]");
-		return // Idempotente si ya está detenido.
-    }
-	// console.log(razon);
-	clearInterval(timeCounterIntvl);
-	timeCounterIntvl = null;
-	// localStorage.setItem('timeActive', segundosContados); // inecesario?
-	// setCounterDisplay(`⏸️ Cuenta detenida ${segundosContados}s ${timePersonaID}`);
-}
-
-// Detectar cuando la pestaña está enfocada o si deja de estarlo.
-function handleVisibilityChange() {
-    if (document.visibilityState === 'visible' && document.hasFocus()) {
-        startHeartbeat("🌳 Pestaña enfocada"); // Cubierto por UserInteraction.
-    } else {
-        stopHeartbeat("⚠️ Pestaña desenfocada");
-		clearTimeout(interactionTimeout); // Detener el contador de inactividad.
-    }
-}
-window.addEventListener('focus', handleVisibilityChange);
-window.addEventListener('blur', handleVisibilityChange);
-document.addEventListener('visibilitychange', handleVisibilityChange);
-
-if (document.visibilityState === 'visible' && document.hasFocus()) {
-    startHeartbeat("🌳 Already focused and visible when script loaded");
-}
-
-// Detectar cuando el usuario interactúa con la página.
-function handleUserInteraction() {
-	clearTimeout(interactionTimeout);
-	interactionTimeout = setTimeout(() => {
-		stopHeartbeat("⚠️ Inactividad detectada por " + segundosParaInactividad + " segundos");
-    }, segundosParaInactividad * 1000);
-	startHeartbeat("🌳 Actividad detectada");
-}
-document.onkeyup = handleUserInteraction;
-document.onclick = handleUserInteraction;
-document.ontouchstart = handleUserInteraction;
-// window.onload = handleUserInteraction; // cubierto por VisibilityChange.
-// document.onscroll = resetInteractionTimer; // meh...
-// document.onmousemove = resetInteractionTimer; // demasiado sensible
-
 
 // ================================================================ //
 // ========== INPUT HELPERS ======================================= //
 
 /**
- * 
+ * Eliminar acentos, diacríticos, espacios adicionales y mayúsculas de un texto.
  * @param {string} str string para quitar acentos, espacios, trim, diacríticos.
  * @returns string
  */
-// normalizar quita acentos, espacios adicionales y mayúsculas.
 function normalizar(str) {
 	return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim().replace(/\s+/g, ' ')
+}
+
+/**
+ * Hacer click en botón de submit del formulario.
+ * @param {HTMLElement} element Formulario o elemento dentro de un formulario.
+ */
+function clickSubmit(element) {
+	if (element.tagName !== "FORM") {
+		element = element.closest("form");
+	}
+	const submitButton = element.querySelector('button[type="submit"]');
+	if (submitButton) {
+		submitButton.click();
+	}
+}
+
+/**
+ * Preparar todos los inputs que estén dentro del elemento dado.
+ * 
+ * Set autocomplete="off" a menos que se especifique lo contrario.
+ * @param {HTMLElement} element
+ */
+function prepararInputsEn(element) {
+	element.querySelectorAll('input').forEach(input => {
+		if (input.getAttribute("autocomplete") == null) {
+			input.setAttribute("autocomplete", "off")
+		}
+	});
 }
 
 // ================================================================ //
@@ -545,3 +185,398 @@ function facilitarInputDatetime(event) {
 
 	}
 }
+
+// ================================================================ //
+// ========== TEXTAREAS =========================================== //
+
+/**
+ * Agregar un salto de línea en la posición actual del cursor.
+ * @param {HTMLTextAreaElement} textarea 
+ */
+function textareaAddNewLineAtCursor(textarea) {
+	if (textarea.selectionStart || textarea.selectionStart == 0) {
+		let startPos = textarea.selectionStart;
+		let endPos = textarea.selectionEnd;
+		textarea.value = textarea.value.substring(0, startPos)
+			+ '\n'
+			+ textarea.value.substring(endPos, textarea.value.length);
+		textarea.selectionStart = startPos+1;
+		textarea.selectionEnd = endPos+1;
+	} else {
+		textarea.value += '\n';
+	}
+}
+
+/**
+ * Guardar con Enter; new line con Shift+Enter; cancelar con Esc;
+ * @param {KeyboardEvent} event KeyDown
+ */
+function textareaHandleKeyDown(event) {
+	let textarea = event.target
+	if (!(textarea instanceof HTMLTextAreaElement)) {
+		return
+	}
+	if (event.key === 'Enter') {
+		event.preventDefault()
+		if (event.shiftKey) {
+			textareaAddNewLineAtCursor(textarea)
+			textareaAutosize(textarea)
+		} else {
+			textarea.blur()  // trigger change para enviar con htmx.
+			textarea.focus() // para que htmx sepa qué elemento enfocar after swap.
+		}
+	} else if (event.key === 'Escape') {
+		textarea.value = textarea.defaultValue // restaurar valor original
+		textarea.blur()
+	}
+}
+
+/**
+ * En Chrome con Gboard no se envía event.shiftKey en el keyDown event. Esto es
+ * un hack para permitir introducir saltos de línea desde android mediante la
+ * introducción compuesta de la palabra "break", con swipe por ejemplo.
+ * @param {InputEvent} event 
+ */
+function textareaHandleBeforeInput(event) {
+	let textarea = event.target
+	if (!(textarea instanceof HTMLTextAreaElement)) {
+		return
+	}
+	if (event.data && event.data.trim().toLowerCase() === 'break') {
+		event.preventDefault();
+		textareaAddNewLineAtCursor(textarea);
+		textareaAutosize(textarea);
+	}
+}
+
+// ================================================================ //
+
+/**
+ * Autosize: adaptar altura del cuadro de texto al contenido.
+ * Toma en cuenta cualquier border-width, max-height o rows.
+ * @param {HTMLTextAreaElement} textarea 
+ */
+function textareaAutosize(textarea) {
+	if (!(textarea instanceof HTMLTextAreaElement)) {
+		console.warn(`autosizeTextarea: elemento no es un textarea`, textarea)
+		return
+	}
+	const oldH = parseInt(textarea.style.height) || 0;
+	const newH = textarea.scrollHeight + textareaGetBorderHeight(textarea)
+	// En chrome android dentro de dialogs el textarea.scrollHeight incrementa
+	// 1px con cada caracter introducido. Ignorar esos incrementos minúsculos.
+	if (Math.abs(oldH - newH) <= 2) {
+		return
+	}
+	textarea.style.height = newH + "px";
+}
+
+/**
+ * Obtener altura del border para evitar scrollbars en autosizeTextarea.
+ * @param {HTMLTextAreaElement} textarea 
+ */
+function textareaGetBorderHeight(textarea) {
+	let style = window.getComputedStyle(textarea);
+    let bTop = parseFloat(style.getPropertyValue('border-top-width'));
+    let bBottom = parseFloat(style.getPropertyValue('border-bottom-width'));
+    let borderPx = Math.ceil(bTop + bBottom); // nunca quedarse cortos en px
+	return borderPx
+}
+
+/**
+ * Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
+ * @param {InputEvent} event 
+ */
+function textareaHandleInputSinScrollJumps(event) {
+	textareaAutosize(event.target)
+	
+	// TODO: NO RECUERDO CUÁL ERA LA DIFERENCIA :V
+	// console.log("scrollTop1", contenido.scrollTop)
+	// let scrollTop = contenido.scrollTop;
+	// console.log("scrollTop3", document.getElementById('contenido').scrollTop)
+	// console.log("scrollTop2", contenido.scrollTop)
+	// contenido.scrollTop = scrollTop
+
+	// let scrollTopRestore = null;
+	// if (contenido) {
+	// 	scrollTopRestore = contenido.scrollTop;
+	// }
+	// if (scrollTopRestore) {
+	// 	contenido.scrollTop = scrollTopRestore;
+	// }
+	// console.log("scrollTop2", contenido.scrollTop)
+}
+
+/**
+ * Aplicar autosize cuando el textarea se hace visible, no solo al cargar contenido.
+ * Nesesario para textareas que comienzan ocultos, como dentro de modales <dialog>
+ * ya que al inicio no se puede obtener su altura porque están ocultos.
+ */
+const textareasObserver = new IntersectionObserver((entries, observer) => {
+	entries.forEach(entry => {
+		if (entry.isIntersecting) {
+			textareaAutosize(entry.target);
+			observer.unobserve(entry.target);
+		}
+	});
+}, { threshold: 0 });
+
+// ================================================================ //
+
+/**
+ * Preparar todas las textareas que estén dentro del elemento dado.
+ * @param {HTMLElement} element
+ */
+function prepararTextareasEn(element) {
+	const textareas = element.getElementsByTagName("textarea");
+	if (textareas.length == 0){
+		return
+	}
+	for (let i = 0; i < textareas.length; i++) {
+		// Ajustar al contenido manualmente, en espera de soporte para field-sizing.
+		textareas[i].classList.add('resize-none');
+		textareaAutosize(textareas[i]);
+		textareasObserver.observe(textareas[i]);
+		textareas[i].addEventListener("input", textareaHandleInputSinScrollJumps);
+
+		// Usar [Enter] para enviar y [Shift+Enter] para nueva línea.
+		textareas[i].addEventListener('keydown', textareaHandleKeyDown);
+		textareas[i].addEventListener('beforeinput', textareaHandleBeforeInput);
+		
+		// textareas[i].setAttribute("autocomplete", "off")
+		// textareas[i].setAttribute("spellcheck", "true")
+		// textareas[i].setAttribute("autocorrect", "on")
+		// textareas[i].setAttribute("autocapitalize", "on")
+	}
+	if (textareas.length == 1){
+		logTimeHasta(`textarea preparada`, textareas[0])
+	} else {
+		logTimeHasta(`textareas preparadas`, [...textareas])
+	}
+}
+
+// ================================================================ //
+// ========== SCROLL POSITION ===================================== //
+
+/**
+ * Guardar scroll position antes de navegar a otra página con o sin HTMX.
+ * 
+ * body - htmx:beforeSwap | window - beforeunload
+ */
+function guardarScrollPosition() {
+    if (!contenido) {
+		return
+	}
+	let scrollTop = contenido.scrollTop;
+	contenido.dataset.scrollPosition = scrollTop; // para htmx:beforeSwap
+	let scrollData = JSON.parse(localStorage.getItem('scrollData')) || []; // Para navegador nativo
+	let currentURL = window.location.href;
+	scrollData = scrollData.filter(item => item.url !== currentURL); // Quitar si ya existe en el arreglo
+	scrollData.unshift({ url: currentURL, scrollTop: scrollTop }); // Agregar al inicio del arreglo
+	if (scrollData.length > 5) {
+		scrollData.pop(); // Recordar hasta 5 páginas
+	}
+	localStorage.setItem('scrollData', JSON.stringify(scrollData));
+}
+
+/**
+ * Restaurar scroll position al navegar con o sin HTMX.
+ * Invocar después de textareaAutosize.
+ */
+function restoreScrollPosition() {
+    // No restablecer si no es una página de aplicación normal.
+	if (!contenido) {
+		return
+	}
+	// Si el atributo scrollPosition existe significa que se navegó con HTMX.
+	if (contenido.dataset.scrollPosition) {
+		if (contenido.dataset.scrollPosition == contenido.scrollTop){
+			return
+		}
+		logTimeHasta(`scrollRestored (htmx) from ${contenido.scrollTop} to ${contenido.dataset.scrollPosition}`)
+		contenido.scrollTop = contenido.dataset.scrollPosition;
+		return
+	}
+	// De lo contrario se navegó a otra página y se busca en localStorage.
+	let currentURL = window.location.href;
+	let scrollData = JSON.parse(localStorage.getItem('scrollData')) || [];
+	let savedPos = scrollData.find(item => item.url === currentURL);
+	if (savedPos) {
+		logTimeHasta(`scrollRestored (native) from ${contenido.scrollTop} to ${savedPos.scrollTop}`)
+		contenido.scrollTop = savedPos.scrollTop;
+	}
+}
+
+// Esperar a que se haga el restoreScrollPosition para no mostrar
+// al usuario el movimiento y que el contenido haga flash.
+function mostrarContenidoListo() {
+	if (!contenido) {
+		return
+	}
+	contenido.classList.remove('opacity-0', 'pointer-events-none')
+}
+
+/**
+ * Resalta con un border el fragmento de la URL para ubicarlo fácilmente.
+ */
+function resaltarFragmento() {
+	if (window.location.hash) {
+		let elemento = document.getElementById(window.location.hash.substr(1));
+		if (elemento != null) {
+			elemento.classList.add("border-indigo-600");
+			elemento.classList.add("border-2");
+			elemento.scrollIntoView();
+		}
+	}
+}
+
+// ================================================================ //
+// ========== TimeTracker para gestión de proyecto ================ //
+
+const segundosParaInactividad = 20;
+const segundosParaEnviarHeartbeat = 5;
+let segundosContados = 0;
+let timePersonaID = "0";
+let timeCounterIntvl = null;
+let interactionTimeout;
+
+// Enviar un pulso de actividad al servidor.
+function sendHeartbeat() {
+	fetch(`/personas/${timePersonaID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
+	    if (!response.ok) {
+			// TODO: no dar error al usuario, pero guardar en localStorage y enviar cuando se pueda.
+			// localStorage.setItem('timeActive', segundosContados);
+	        throw new Error('Network response was not ok');
+	    }
+	})
+	segundosContados += segundosParaEnviarHeartbeat; // Cuenta local para mostrar al usuario.
+}
+
+// Continuar contando el tiempo que se trabaja en un personaje.
+function startHeartbeat(razon) {
+	if (!document.querySelector("[data-persona-id]")) {
+		timePersonaID = 0;
+		return // Solo contar cuando se trabaja con un personaje.
+	}
+	if (timeCounterIntvl) {
+		return // Puede ya estar contando.
+	}
+	timePersonaID = document.querySelector("[data-persona-id]").getAttribute("data-persona-id");
+	timeCounterIntvl = setInterval(sendHeartbeat, segundosParaEnviarHeartbeat * 1000);
+}
+
+// Pausar el contador de tiempo.
+function stopHeartbeat(razon) {
+	if (!timeCounterIntvl) {
+		return // Puede ya estar detenido.
+    }
+	clearInterval(timeCounterIntvl);
+	timeCounterIntvl = null;
+}
+
+// Reiniciar timeout de inactividad cuando el usuario interactúa con la página.
+// Si se pasa de los segundosParaInactividad entonces se detiene el heartbeat.
+function keepHeartbeatAfterUserInteraction() {
+	clearTimeout(interactionTimeout);
+	interactionTimeout = setTimeout(() => {
+		stopHeartbeat("⚠️ Inactividad " + segundosParaInactividad + " segundos");
+    }, segundosParaInactividad * 1000);
+	startHeartbeat("🌳 Actividad detectada");
+}
+
+// Detectar cuando la pestaña se enfoca y se desenfoca para pausar inmediatamente.
+function handleVisibilityChange() {
+    if (document.visibilityState === 'visible' && document.hasFocus()) {
+        startHeartbeat("🌳 Pestaña enfocada"); // Cubierto por keepHeartbeatAfterUserInteraction.
+    } else {
+        stopHeartbeat("⚠️ Pestaña desenfocada");
+		clearTimeout(interactionTimeout); // Detener el contador de inactividad.
+    }
+}
+
+
+document.addEventListener('keyup', keepHeartbeatAfterUserInteraction);
+document.addEventListener('click', keepHeartbeatAfterUserInteraction);
+document.addEventListener('touchstart', keepHeartbeatAfterUserInteraction);
+// window.onload = keepHeartbeatAfterUserInteraction; // cubierto por handleVisibilityChange.
+// document.onscroll = keepHeartbeatAfterUserInteraction; // meh...
+// document.onmousemove = keepHeartbeatAfterUserInteraction; // demasiado sensible
+window.addEventListener('focus', handleVisibilityChange);
+window.addEventListener('blur', handleVisibilityChange);
+document.addEventListener('visibilitychange', handleVisibilityChange);
+
+// Iniciar heartbeat al ejecutar script.
+if (document.visibilityState === 'visible' && document.hasFocus()) {
+    startHeartbeat("🌳 Already focused and visible when script loaded");
+}
+
+// ================================================================ //
+// ========== Eventos HTMX ======================================== //
+
+document.body.addEventListener('htmx:responseError', function(event) {
+	alert(`Error ${event.detail.xhr.response}`)
+});
+
+document.body.addEventListener('htmx:sendError', function(event) {
+	alert(`Error de red: no se puede conectar con el servidor.`)
+});
+
+document.body.addEventListener('htmx:timeout', function(event) {
+	alert(`Error: se agotó el tiempo de espera para la respuesta del servidor.`)
+});
+
+// Debug perfomrance
+document.body.addEventListener('htmx:configRequest', function(event) {
+	logTimeSince('htmx:configRequest')
+});
+
+// Guardar scroll position antes de swap.
+document.body.addEventListener('htmx:beforeSwap', function() {
+	guardarScrollPosition()
+});
+
+/**
+ * Para que HTMX no repita el setup de los elementos en la primera
+ * carga de la página, sino que lo haga cuando se hace un swap.
+ */
+let primeraCarga = true
+
+// Cuando htmx termina de cargar contenido (event.detail.elt)
+document.body.addEventListener('htmx:load', (event) => {
+	if (primeraCarga) {
+		return // No inicializar doble
+	}
+	logTimeHasta("htmx:load (main.js)", event.detail.elt)
+	prepararInputsEn(event.detail.elt)
+	prepararTextareasEn(event.detail.elt)
+	restoreScrollPosition()
+});
+
+// ================================================================ //
+// ========== INICIALIZAR PÁGINA ================================== //
+
+document.addEventListener('keydown', handleShortcutAncestro);
+
+window.addEventListener('beforeunload', guardarScrollPosition);
+
+prepararInputsEn(document.body)
+prepararTextareasEn(document.body)
+restoreScrollPosition()
+
+// Cuando se termine la carga de recursos incluyendo imágenes y estilos.
+window.addEventListener("load", (event) => {
+	logTimeTotal("window:load (main.js)")
+	mostrarContenidoListo()
+	primeraCarga = false
+});
+
+// El navegador puede ignorar "Cache-Control: no-store" y activar
+// el BFCache al navegar adelante o atrás. Forzar la recarga lo evita.
+window.addEventListener('pageshow', (event) => {
+	if (event.persisted) {
+		//? console.log("show page persisted in BFCache aborted")
+		location.reload();
+	}
+});
+
+logTimeTotal("main.js finished")
