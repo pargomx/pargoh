@@ -116,11 +116,12 @@ func main() {
 	if s.cfg.sourceDir != "" {
 		s.gecko.StaticAbs("/assets", s.cfg.sourceDir+"/assets")
 		s.gecko.FileAbs("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico")
+		s.gecko.GET("/htmx.js", s.gecko.ServirHtmxJS())
 	} else {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
+		s.gecko.GET("/htmx.js", s.gecko.ServirHtmxMinJS())
 	}
-	s.gecko.GET("/htmx.min.js", s.gecko.ServirHtmxMinJS())
 	s.gecko.GET("/gecko.js", s.gecko.ServirGeckoJS())
 
 	// Sesiones
