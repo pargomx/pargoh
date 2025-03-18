@@ -1420,9 +1420,14 @@
     border-color: var(--color-gray-200, currentColor);
   }
   code {
+    margin-block: calc(var(--spacing) * 1);
+    max-width: 100%;
+    overflow-x: auto;
     border-radius: var(--radius-md);
     background-color: var(--color-slate-700);
     padding: calc(var(--spacing) * 1);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
     color: var(--color-white);
   }
   table > tbody > tr > td {
