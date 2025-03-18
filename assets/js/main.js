@@ -284,27 +284,26 @@ function textareaGetBorderHeight(textarea) {
 }
 
 /**
- * Hacky way de no saltar en textareas muy grandes al editar y al pegar texto.
+ * Hacky way de no saltar al cursor en textareas muy grandes al pegar mucho texto,
+ * sino que mantener la posición que se tenía antes de pegar.
  * @param {InputEvent} event 
  */
 function textareaHandleInputSinScrollJumps(event) {
+	if (!contenido) {
+		return
+	}
+	if (event.data && event.data.length < 500) { // Solo para inputs grandes.
+		return
+	}
+	let oldScrollTop = contenido.scrollTop; // guardar posición antes de pegar.
 	textareaAutosize(event.target)
-	
-	// TODO: NO RECUERDO CUÁL ERA LA DIFERENCIA :V
-	// console.log("scrollTop1", contenido.scrollTop)
-	// let scrollTop = contenido.scrollTop;
-	// console.log("scrollTop3", document.getElementById('contenido').scrollTop)
-	// console.log("scrollTop2", contenido.scrollTop)
-	// contenido.scrollTop = scrollTop
-
-	// let scrollTopRestore = null;
-	// if (contenido) {
-	// 	scrollTopRestore = contenido.scrollTop;
-	// }
-	// if (scrollTopRestore) {
-	// 	contenido.scrollTop = scrollTopRestore;
-	// }
-	// console.log("scrollTop2", contenido.scrollTop)
+	requestAnimationFrame(()=>{ // Esperar a que se renderize la nueva posición
+		requestAnimationFrame(()=>{ // Doble por el event loop.
+			if (oldScrollTop) {
+				contenido.scrollTop = oldScrollTop;
+			}
+		});
+	});
 }
 
 /**
