@@ -50,30 +50,18 @@
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]" hx-ext="gecko">
-		<div class="flex flex-col overflow-y-auto h-dvh opacity-0 pointer-events-none transition-opacity"
-		id="contenido"
-		hx-target="#contenido"
-		hx-swap="innerHTML show:no-scroll"
-		hx-push-url="false"
-		hx-history="false"
-		hx-indicator="#cargando"
-		>
+		<div id="contenido" class="flex flex-col overflow-y-auto h-dvh opacity-0 pointer-events-none transition-opacity"
+			hx-target="#contenido"
+			hx-swap="innerHTML show:no-scroll"
+			hx-push-url="false"
+			hx-history="false"
+			>
 			{{ with $.Contenido }}{{ . }}{{ else }}No content{{ end }}
 		</div>
 
-		<!-- htmx-indicator -->
-		<!-- <style>
-			.my-indicator{ display: none; }
-			.htmx-request.my-indicator{ display: flex; }
-			.htmx-request .my-indicator{ display: flex; }
-		</style>
-		<div id="cargando" class="fixed top-0 flex items-start justify-center w-full h-screen py-4 rounded-md my-indicator">
-			<img src="/assets/img/spinner.svg" alt="Cargando..." class="w-8">
-		</div> -->
-
-		<!-- Spinner Loading Bar Indicator -->
+		<!-- Loading Bar Indicator -->
 		<style>
-			@keyframes animLoadingBar {
+			@keyframes loadingBarAnim {
 				0% {
 					transform: translateX(-100%);
 				}
@@ -81,34 +69,60 @@
 					transform: translateX(100%);
 				}
 			}
-			.loadingbar-animation {
-				animation: animLoadingBar 1s cubic-bezier(0.1,0.5,0.9,0.5) infinite;
+			.loading-bar-animation {
+				animation: loadingBarAnim 1s cubic-bezier(0.1,0.5,0.9,0.5) infinite;
 			}
-			.loadingbar{
+			.loading-bar{
 				width: 100%;
 				height: 4px;
-				/* opacity: 0; */
 				pointer-events: none;
 			}
-			.htmx-request.loadingbar{
-				opacity: 75%;
-			}
-			.htmx-request .loadingbar{
-				opacity: 75%;
-			}
 		</style>
-		<div id="cargando" class="fixed top-0 left-0 right-0 h-1 transition-opacity duration-300 loadingbar">
-			<div class="h-full w-full flex loadingbar-animation">
+		<div id="loadingBarDiv" class="fixed top-0 left-0 right-0 loading-bar">
+			<div class="h-full w-full flex loading-bar-animation">
 				<div class="h-full w-full bg-gradient-to-bl from-blue-500 from-10% to-transparent to-50%"></div>
 				<div class="h-full w-8 bg-gradient-to-b from-blue-500 from-10% to-transparent"></div>
 				<div class="h-full w-full bg-gradient-to-br from-blue-500 from-10% to-transparent to-50%"></div>
 			</div>
 		</div>
-
 		<script>
-			document.addEventListener('DOMContentLoaded', (event) => {
-				// htmx:beforeRequest y htmx:afterRequest
+			class LoadingBar {
+				constructor(element) {
+					this.element = element;
+					this.counter = 0;
+				}
+				show() {
+					console.log("LoadingBar shown")
+					this.counter++;
+					this.element.classList.remove('hidden');
+					// Cuando se llama show() antes de que se termine aimación hará que se quede sin mostrar.
+				}
+				hide() {
+					if (this.counter > 0) {
+						this.counter--;
+					}
+					if (this.counter < 0) {
+						this.counter = 0; // por si se llama demasiado a hide().
+					}
+					if (this.counter === 0) {
+						console.log("LB        hidden")
+						this.element.addEventListener('animationiteration', () => {
+							this.element.classList.add('hidden');
+						}, { once: true });
+					}
+				}
+			}
+			const loadingBar = new LoadingBar(document.getElementById('loadingBarDiv'));
+			window.addEventListener("load", (event) => {
+				loadingBar.hide()
 			});
+			document.body.addEventListener('htmx:beforeRequest', (event) => {
+				loadingBar.show()
+			});
+			document.body.addEventListener('htmx:afterRequest', (event) => {
+				loadingBar.hide()
+			});
+
 		</script>
 
 	<!-- Toast -->
