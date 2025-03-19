@@ -90,12 +90,23 @@
 				constructor(element) {
 					this.element = element;
 					this.counter = 0;
+					this.showTimeout = null;
 				}
 				show() {
-					console.log("LoadingBar shown")
 					this.counter++;
-					this.element.classList.remove('hidden');
-					// Cuando se llama show() antes de que se termine aimación hará que se quede sin mostrar.
+					// console.log("LoadingBar requests++", this.counter)
+					if (this.showTimeout) {
+						return // ya se va a mostrar
+					}
+					if (this.counter > 1) {
+						return // ya se mostró
+					}
+					// console.log("LoadingBar will show...")
+					this.showTimeout = setTimeout(() => {
+						// console.log("LoadingBar shown")
+						this.element.classList.remove('hidden');
+						this.showTimeout = null;
+					}, 400);
 				}
 				hide() {
 					if (this.counter > 0) {
@@ -104,17 +115,30 @@
 					if (this.counter < 0) {
 						this.counter = 0; // por si se llama demasiado a hide().
 					}
-					if (this.counter === 0) {
-						console.log("LB        hidden")
-						this.element.addEventListener('animationiteration', () => {
-							this.element.classList.add('hidden');
-						}, { once: true });
+					// console.log("LoadingBar requests--", this.counter)
+					if (this.counter !== 0) {
+						return // no ocultar si aún hay alguien que no ha llamado hide().
 					}
+					if (this.showTimeout) { // cancelar show aún no se ha terminado el timeout para mostrarlo.
+						// console.log("LoadingBar cancel show")
+						clearTimeout(this.showTimeout);
+						this.showTimeout = null;
+						return
+					}
+					// console.log("LoadingBar will hide...")
+					// Ocultar después de ciclo de animación
+					this.element.addEventListener('animationiteration', () => {
+						// console.log("LoadingBar hidden")
+						this.element.classList.add('hidden');
+					}, { once: true });
 				}
 			}
 			const loadingBar = new LoadingBar(document.getElementById('loadingBarDiv'));
 			window.addEventListener("load", (event) => {
 				loadingBar.hide()
+			});
+			window.addEventListener("beforeunload", (event) => {
+				loadingBar.show()
 			});
 			document.body.addEventListener('htmx:beforeRequest', (event) => {
 				loadingBar.show()
