@@ -776,21 +776,20 @@
 		if (content.getAttribute("tipo") == "sort_historia") {
 			setupMenuContextual(content, content.id) // al cargar individualmente cada historia
 		}
+
+		var sortableHistorias = new Sortable(document.querySelector("[tipo='sort_historias']"), {
+			group: "sort_historias", animation: 150, swapThreshold: 0.50,
+			draggable: "[tipo='sort_historia']",
+			handle: "[tipo='sort_handle']",
+			ghostClass: "opacity-50",
+			onEnd: function (event) {
+				if (event.oldIndex == event.newIndex){ return }
+				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
+			},
+		});
+
 	});
 
-	// ================================================================ //
-	// ========== Reordenar =========================================== //
-
-	var sortableHistorias = new Sortable(document.querySelector("[tipo='sort_historias']"), {
-		group: "sort_historias", animation: 150, swapThreshold: 0.50,
-		draggable: "[tipo='sort_historia']",
-		handle: "[tipo='sort_handle']",
-		ghostClass: "opacity-50",
-		onEnd: function (event) {
-			if (event.oldIndex == event.newIndex){ return }
-			event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
-			event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
-		},
-	});
 
 </script>

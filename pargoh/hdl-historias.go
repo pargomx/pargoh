@@ -18,10 +18,10 @@ func (s *servidor) getHistoria(c *gecko.Context) error {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":   Historia.Historia.Titulo,
-		"Agregado": Historia,
-
-		"ListaTipoTarea": ust.ListaTipoTarea,
+		"Titulo":          Historia.Historia.Titulo,
+		"Agregado":        Historia,
+		"ScriptsHistoria": true,
+		"ListaTipoTarea":  ust.ListaTipoTarea,
 	}
 	return c.RenderOk("historia", data)
 }

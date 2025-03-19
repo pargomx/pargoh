@@ -43,9 +43,21 @@
 				// }
 			}
 		</script>
-		<script defer src="/htmx.js"></script>
-		<script defer src="/gecko.js"></script>
-		<script defer src="/assets/js/main.js?t=02"></script>
+
+		<link rel="preload" href="/assets/js/main.js" as="script">
+		{{ if $.ScriptsHistoria -}}
+		<link rel="preload" href="/assets/js/historia.js" as="script">
+		<link rel="preload" href="/assets/js/chart.js" as="script">
+		{{- end }}
+		<link rel="preload" href="/assets/js/htmx.js" as="script">
+
+		<script defer src="/assets/js/main.js"></script>
+		{{ if $.ScriptsHistoria -}}
+		<script defer src="/assets/js/historia.js"></script>
+		<script defer src="/assets/js/chart.js"></script>
+		{{- end }}
+		<script defer src="/assets/js/htmx.js"></script>
+		<script defer src="/assets/js/gecko.js"></script>
 		<script defer src="/assets/js/Sortable.min.js"></script>
 	</head>
 	
