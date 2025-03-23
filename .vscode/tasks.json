@@ -15,7 +15,7 @@
 		{
 			"label": "Ejecutar",
 			"detail": "Ejecutar aplicación en ambiente de desarrollo.",
-			"command": "pargoh -src=$(realpath .) -dir=$(realpath ~/pargodata) -auser benito -apass terranova1984",
+			"command": "pargoh -src=$(realpath .) -dir=$(realpath ~/pargodata) -auser benito -apass terranova1984 -wdelay=2000 -rdelay=500",
 			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
 			"isBackground": true,
 		},

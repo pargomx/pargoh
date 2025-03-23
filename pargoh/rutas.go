@@ -28,7 +28,6 @@ type configs struct {
 	puerto       int    // Puerto TCP del servidor
 	directorio   string // Default: directorio actual
 	databasePath string // Default: _pargo/pargo.sqlite
-	logDB        bool   // Log de consultas a la base de datos
 	sourceDir    string // Directorio raíz para leer assets y plantillas (shadow embed)
 	imagesDir    string // Directorio para guardar imágenes
 	exportDir    string // Directorio para guardar exports
@@ -36,6 +35,13 @@ type configs struct {
 
 	adminUser string
 	adminPass string
+	debug     debugConfig
+}
+
+type debugConfig struct {
+	logDB      bool // Log de consultas a la base de datos
+	writeDelay int  // ms de delay para solicitudes POST, PUT, PATCH, DELETE
+	readDelay  int  // ms de delay para solicitudes GET
 }
 
 type servidor struct {
@@ -59,13 +65,15 @@ func main() {
 	flag.StringVar(&s.cfg.directorio, "dir", "", "directorio raíz de la aplicación")
 	flag.StringVar(&s.cfg.databasePath, "db", "historias.db", "ubicación de la db sqlite")
 	flag.IntVar(&s.cfg.puerto, "p", 5050, "el servidor escuchará en este puerto")
-	flag.BoolVar(&s.cfg.logDB, "logdb", false, "log de consultas a la base de datos")
 	flag.StringVar(&s.cfg.sourceDir, "src", "", "directorio con assets y htmltmpl para no usar embeded")
 	flag.StringVar(&s.cfg.imagesDir, "img", "imagenes", "directorio con las imágenes de historias y proyectos")
 	flag.StringVar(&s.cfg.exportDir, "exp", "exports", "directorio con los archivos exportados")
 	flag.StringVar(&s.cfg.unidocApiKey, "unidoc", "", "api key para exportar docx con unidoc")
 	flag.StringVar(&s.cfg.adminUser, "auser", "tulio", "usuario del administrador")
 	flag.StringVar(&s.cfg.adminPass, "apass", "flores99leetcode", "contraseña del administrador")
+	flag.BoolVar(&s.cfg.debug.logDB, "logdb", false, "log de consultas a la base de datos")
+	flag.IntVar(&s.cfg.debug.writeDelay, "wdelay", 300, "ms de delay para solicitudes POST, PUT, PATCH, DELETE")
+	flag.IntVar(&s.cfg.debug.readDelay, "rdelay", 300, "ms de delay para solicitudes GET")
 
 	flag.Parse()
 	if s.cfg.directorio != "" {
@@ -82,7 +90,7 @@ func main() {
 	if err != nil {
 		gko.FatalError(err)
 	}
-	if s.cfg.logDB {
+	if s.cfg.debug.logDB {
 		s.db.ToggleLog()
 	}
 	s.repo = sqliteust.NuevoRepo(s.db)
