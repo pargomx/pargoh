@@ -767,16 +767,16 @@
 	// ========== Inicializar ========================================= //
 	
 	document.body.addEventListener('htmx:load', (event) => {
-		console.log("htmx:load", performance.now(), event.detail.elt);
 		let content = event.detail.elt;
-
 		content.querySelectorAll("[tipo='sort_historia']").forEach(element => {
 			setupMenuContextual(element, element.id) // al cargar toda la página
 		});
 		if (content.getAttribute("tipo") == "sort_historia") {
 			setupMenuContextual(content, content.id) // al cargar individualmente cada historia
 		}
-
+	});
+	
+	document.addEventListener('DOMContentLoaded', (event) => {
 		var sortableHistorias = new Sortable(document.querySelector("[tipo='sort_historias']"), {
 			group: "sort_historias", animation: 150, swapThreshold: 0.50,
 			draggable: "[tipo='sort_historia']",
@@ -788,8 +788,5 @@
 				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
 			},
 		});
-
 	});
-
-
 </script>

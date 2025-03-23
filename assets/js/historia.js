@@ -384,9 +384,13 @@ document.body.addEventListener('htmx:configRequest', function(event) {
 // ========== INICIALIZAR ========================================= //
 
 window.addEventListener('paste', handlePasteImagen)
-initSortableReglas()
-initSortableTramos()
-initSortableDescendientes()
+
+document.addEventListener('DOMContentLoaded', (event) => {
+	initSortableReglas()
+	initSortableTramos()
+	initSortableDescendientes()
+});
+
 
 document.body.addEventListener('htmx:load', (event) => {
 	if (primeraCarga) {

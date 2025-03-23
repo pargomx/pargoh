@@ -338,16 +338,18 @@
 		})
 	}
 	
-	var sortablePersonas = new Sortable(document.querySelector("[tipo='sort_personas']"), {
-		animation: 150, swapThreshold: 0.50,
-		draggable: "[tipo='sort_persona']",
-		handle: "[tipo='sort_handle']",
-		ghostClass: "opacity-50",
-		onEnd: function (event) {
-			if (event.oldIndex == event.newIndex){ return }
-			event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
-			event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
-		},
+	document.addEventListener('htmx:load', (event) => {
+		var sortablePersonas = new Sortable(document.querySelector("[tipo='sort_personas']"), {
+			animation: 150, swapThreshold: 0.50,
+			draggable: "[tipo='sort_persona']",
+			handle: "[tipo='sort_handle']",
+			ghostClass: "opacity-50",
+			onEnd: function (event) {
+				if (event.oldIndex == event.newIndex){ return }
+				event.item.querySelector("input[name='new_pos']").value = event.newIndex + 1;
+				event.item.querySelector("form[tipo='sort_form']").dispatchEvent(new Event("reordenarEnd"));
+			},
+		});
 	});
 
 </script>
