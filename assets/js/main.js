@@ -412,7 +412,7 @@ function mostrarContenidoListo() {
 	if (!contenido) {
 		return
 	}
-	contenido.classList.remove('opacity-0', 'pointer-events-none')
+	contenido.classList.remove('opacity-0', 'opacity-50', 'pointer-events-none')
 }
 
 /**

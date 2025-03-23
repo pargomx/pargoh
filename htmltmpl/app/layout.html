@@ -62,15 +62,7 @@
 	</head>
 	
 	<body class="h-full text-white bg-[#091a20]" hx-ext="gecko">
-		<div id="contenido" class="flex flex-col overflow-y-auto h-dvh opacity-0 pointer-events-none transition-opacity"
-			hx-target="#contenido"
-			hx-swap="innerHTML show:no-scroll"
-			hx-push-url="false"
-			hx-history="false"
-			>
-			{{ with $.Contenido }}{{ . }}{{ else }}No content{{ end }}
-		</div>
-
+		
 		<!-- Loading Bar Indicator -->
 		<style>
 			@keyframes loadingBarAnim {
@@ -106,6 +98,7 @@
 				}
 				show() {
 					this.counter++;
+					document.getElementById('contenido').classList.add('opacity-50');
 					// console.log("LoadingBar requests++", this.counter)
 					if (this.showTimeout) {
 						return // ya se va a mostrar
@@ -131,6 +124,7 @@
 					if (this.counter !== 0) {
 						return // no ocultar si aún hay alguien que no ha llamado hide().
 					}
+					document.getElementById('contenido').classList.remove('opacity-50');
 					if (this.showTimeout) { // cancelar show aún no se ha terminado el timeout para mostrarlo.
 						// console.log("LoadingBar cancel show")
 						clearTimeout(this.showTimeout);
@@ -160,6 +154,16 @@
 			});
 
 		</script>
+
+		<!-- CONTENIDO PRINCIPAL -->
+		<div id="contenido" class="flex flex-col overflow-y-auto h-dvh opacity-50 pointer-events-none transition-opacity"
+			hx-target="#contenido"
+			hx-swap="innerHTML show:no-scroll"
+			hx-push-url="false"
+			hx-history="false"
+			>
+			{{ with $.Contenido }}{{ . }}{{ else }}No content{{ end }}
+		</div>
 
 	<!-- Toast -->
 	<template id="toastTemplate">
