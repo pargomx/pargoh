@@ -272,11 +272,11 @@
 	<div id="progreso"
 		hx-get="/historias/{{ .Historia.HistoriaID }}"
 		hx-select="#progreso"
-		hx-swap="outerHTML"
 		hx-target="#progreso"
+		hx-swap="outerHTML"
 		hx-trigger="reloadProgreso from:body"
 		>
-		{{ if .SegundosPresupuesto }}
+		{{ if or .SegundosPresupuesto .SegundosEstimado .SegundosUtilizado }}
 		<h3 class="mb-4 text-xl text-cyan-600">
 			<a href="#progreso">
 				Progreso
@@ -400,7 +400,7 @@
 					<text id="lUtilizado"
 						x="{{ $px.Utilizado }}"
 						y="48"
-						{{ if and (gt $px.Utilizado 400) (gt (resta $px.Utilizado $px.Estimado) 100) -}}
+						{{ if and (gt $px.Utilizado 400) (or (gt $px.Utilizado 900) (gt (resta $px.Utilizado $px.Estimado) 100)) -}}
 						text-anchor="end" style="transform: translate(-6px, 0);"
 						{{ else -}}
 						text-anchor="start" style="transform: translate(6px, 0);"
@@ -411,7 +411,7 @@
 					<text id="lEstimado"
 						x="{{ $px.Estimado }}"
 						y="68"
-						{{ if and (gt $px.Estimado 100) (gt $px.Utilizado $px.Estimado) -}}
+						{{ if and (gt $px.Estimado 100) (or (gt $px.Estimado 900) (gt $px.Utilizado $px.Estimado)) -}}
 						text-anchor="end" style="transform: translate(-6px, 0);"
 						{{ else -}}
 						text-anchor="start" style="transform: translate(6px, 0);"
@@ -1030,7 +1030,7 @@
 	<ol id="tareasList" class="mb-6"
 		hx-select="#tareasList"
 		hx-target="#tareasList"
-		hx-select-oob="#tareasDialogs"
+		hx-select-oob="#tareasDialogs, #progreso"
 		hx-swap="innerHTML"
 		>
 		{{ range .Tareas }}
@@ -1245,7 +1245,7 @@
 <div id="tareasDialogs"
 	hx-select="#tareasList"
 	hx-target="#tareasList"
-	hx-select-oob="#tareasDialogs"
+	hx-select-oob="#tareasDialogs, #progreso"
 	>
 	{{ range $.Agregado.Tareas -}}
 	{{ template "tarea_editar_dialog" . }}
