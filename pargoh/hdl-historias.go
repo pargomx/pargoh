@@ -21,6 +21,7 @@ func (s *servidor) getHistoria(c *gecko.Context) error {
 		"Titulo":          Historia.Historia.Titulo,
 		"Agregado":        Historia,
 		"ScriptsHistoria": true,
+		"OldGrafico":      c.QueryBool("old"),
 		"ListaTipoTarea":  ust.ListaTipoTarea,
 	}
 	return c.RenderOk("historia", data)

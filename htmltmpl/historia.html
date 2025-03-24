@@ -318,6 +318,147 @@
 			</div>
 		</div>
 		<!-- Gráfico avance -->
+		{{ if not $.OldGrafico }}
+		<div class="mb-4">
+			{{ $px := .AvanceRelativoMil -}}
+			<svg xmlns="http://www.w3.org/2000/svg" viewbox="-10 -10 1020 115" style="background-color: transparent;">
+				<style>
+					#tEtiquetas {
+						font-weight: 600;
+						font-size: 1rem;
+						fill: lightgray;
+					}
+					#tSeparadores {
+						font-size: 1rem;
+					}
+					#rUtilizado {
+						fill: var(--color-cyan-800);
+					}
+					#rExpectativa {
+						stroke: var(--color-green-600);
+					}
+				</style>
+				{{ if $px.Utilizado -}}
+				<rect id="rUtilizado"
+					x="0"
+					y="0"
+					width="{{ $px.Utilizado }}"
+					height="80"
+					fill="darkcyan"
+					rx="12" ry="12"
+					>
+					<title>Utilizado</title>
+				</rect>
+				{{ end -}}
+				{{ if $px.Estimado -}}
+				<line id="rEstimado"
+					x1="{{ $px.Estimado }}"
+					y1="0"
+					x2="{{ $px.Estimado }}"
+					y2="80"
+					stroke-width="4"
+					stroke-dasharray="6"
+					stroke="lightgray"
+				/>
+				{{ end -}}
+				<rect id="rPresupuesto"
+					x="0"
+					y="0"
+					width="{{ $px.Presupuesto }}"
+					height="80"
+					fill="transparent"
+					stroke="lightgray"
+					stroke-width="4"
+					rx="12" ry="12"
+					>
+					<title>Presupuesto</title>
+				</rect>
+				{{ if and $px.Expectativa (lt .AvancePorcentual 99.0) }}
+				<line id="rExpectativa"
+					x1="{{ $px.Expectativa }}"
+					y1="10"
+					x2="{{ $px.Expectativa }}"
+					y2="70"
+					stroke-width="4"
+					stroke="green"
+				/>
+				{{ else if (ge .AvancePorcentual 99.0)}}
+				<rect id="rExpectativa"
+					x="0"
+					y="0"
+					width="{{ $px.Expectativa }}"
+					height="80"
+					fill="transparent"
+					stroke="green"
+					stroke-width="4"
+					rx="12" ry="12"
+					>
+					<title>Presupuesto</title>
+				</rect>
+				{{ end -}}
+				<g id="tEtiquetas">
+					<text id="lUtilizado"
+						x="{{ $px.Utilizado }}"
+						y="48"
+						{{ if and (gt $px.Utilizado 400) (gt (resta $px.Utilizado $px.Estimado) 100) -}}
+						text-anchor="end" style="transform: translate(-6px, 0);"
+						{{ else -}}
+						text-anchor="start" style="transform: translate(6px, 0);"
+						{{ end -}}
+						>
+						{{ segundosToString .SegundosUtilizado }}
+					</text>
+					<text id="lEstimado"
+						x="{{ $px.Estimado }}"
+						y="68"
+						{{ if and (gt $px.Estimado 100) (gt $px.Utilizado $px.Estimado) -}}
+						text-anchor="end" style="transform: translate(-6px, 0);"
+						{{ else -}}
+						text-anchor="start" style="transform: translate(6px, 0);"
+						{{ end -}}
+						>
+						{{ segundosToString .SegundosEstimado }}
+					</text>
+					<text id="lExpectativa"
+						x="{{ $px.Expectativa }}"
+						y="24"
+						{{ if gt $px.Expectativa 800 -}}
+						text-anchor="end" style="transform: translate(-6px, 0);"
+						{{ else -}}
+						text-anchor="start" style="transform: translate(6px, 0);"
+						{{ end -}}
+						>
+						{{ .AvancePorcentual }}%
+					</text>
+				</g>
+				<g id="tSeparadores">
+					{{ range $px.Separadores -}}
+					{{ if not .EsUltimo -}}
+					<line
+						x1="{{ .Posicion }}"
+						y1="80"
+						x2="{{ .Posicion }}"
+						y2="100"
+						stroke="lightgray"
+						stroke-width="2"
+					/>
+					{{ end }}
+					<text
+						x="{{ resta .Posicion 5 }}"
+						y="100"
+						text-anchor="end"
+						fill="lightgray"
+						{{ if .EsPresupuesto -}}
+						style="font-weight: 600;"
+						{{ end -}}
+						>
+						{{ .Hora }}h
+					</text>
+					{{ end }}
+				</g>
+			</svg>
+		</div>
+		{{ else }}
 		<div class="w-full h-24 px-4 mb-6 bg-transparent">
 			<canvas id="chartAvanceHistoria"></canvas>
 		</div>
@@ -426,6 +567,7 @@
 		}
 		document.addEventListener("DOMContentLoaded", showChartAvance);
 		</script>
+		{{ end }}
 		{{ end }}
 	</div>
 
