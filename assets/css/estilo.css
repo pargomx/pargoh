@@ -394,6 +394,9 @@
   .h-1 {
     height: calc(var(--spacing) * 1);
   }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
   .h-24 {
     height: calc(var(--spacing) * 24);
   }
@@ -402,9 +405,6 @@
   }
   .h-full {
     height: 100%;
-  }
-  .h-screen {
-    height: 100vh;
   }
   .max-h-40 {
     max-height: calc(var(--spacing) * 40);
@@ -532,6 +532,9 @@
   }
   .cursor-pointer {
     cursor: pointer;
+  }
+  .resize {
+    resize: both;
   }
   .resize-none {
     resize: none;
@@ -1109,10 +1112,6 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
-  .duration-300 {
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-  }
   .group-hover\:opacity-10 {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
@@ -1400,6 +1399,12 @@
   .sm\:text-left {
     @media (width >= 40rem) {
       text-align: left;
+    }
+  }
+  .sm\:text-lg {
+    @media (width >= 40rem) {
+      font-size: var(--text-lg);
+      line-height: var(--tw-leading, var(--text-lg--line-height));
     }
   }
   .md\:block {
@@ -1695,10 +1700,6 @@
   inherits: false;
 }
 @property --tw-drop-shadow {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-duration {
   syntax: "*";
   inherits: false;
 }

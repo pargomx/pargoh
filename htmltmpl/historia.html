@@ -319,17 +319,13 @@
 		</div>
 		<!-- Gráfico avance -->
 		{{ if not $.OldGrafico }}
-		<div class="mb-4">
+		<div class="mb-4 text-2xl sm:text-lg">
 			{{ $px := .AvanceRelativoMil -}}
 			<svg xmlns="http://www.w3.org/2000/svg" viewbox="-10 -10 1020 115" style="background-color: transparent;">
 				<style>
 					#tEtiquetas {
 						font-weight: 600;
-						font-size: 1rem;
 						fill: lightgray;
-					}
-					#tSeparadores {
-						font-size: 1rem;
 					}
 					#rUtilizado {
 						fill: var(--color-cyan-800);
@@ -438,14 +434,14 @@
 						x1="{{ .Posicion }}"
 						y1="80"
 						x2="{{ .Posicion }}"
-						y2="100"
+						y2="108"
 						stroke="lightgray"
 						stroke-width="2"
 					/>
 					{{ end }}
 					<text
 						x="{{ resta .Posicion 5 }}"
-						y="100"
+						y="105"
 						text-anchor="end"
 						fill="lightgray"
 						{{ if .EsPresupuesto -}}
