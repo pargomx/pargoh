@@ -14,6 +14,10 @@ func (s *servidor) continuar(c *gecko.Context) error {
 	return c.Render(200, "app/continuar", !s.noContinuar)
 }
 
+func (s *servidor) offline(c *gecko.Context) error {
+	return c.RenderOk("app/offline", nil)
+}
+
 func (s *servidor) materializarHistorias(c *gecko.Context) error {
 	err := dhistorias.MaterializarAncestrosDeHistorias(s.repo)
 	if err != nil {
