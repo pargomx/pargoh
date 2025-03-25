@@ -1,7 +1,5 @@
 package dhistorias
 
-import "github.com/pargomx/gecko/gko"
-
 // Para gráfico SVG de avance.
 type avanceEscalado struct {
 	Presupuesto int
@@ -34,10 +32,8 @@ func (h *HistoriaAgregado) AvanceRelativoMil() avanceEscalado {
 
 	// Separadores por hora
 	horas := maximo / 3600
-	gko.LogInfo("Horas ", horas, " max ", maximo)
 	if maximo%3600 > 150 { // si se pasa más de 150 segundos, redondear hacia siguiente hora
 		horas = (maximo / 3600) + 1
-		gko.LogInfo("Redondeo ", horas)
 	}
 	horasPresupuesto := h.SegundosPresupuesto() / 3600
 	for hora := range horas + 1 {
