@@ -139,6 +139,8 @@ func main() {
 
 	s.GET("/buscar", s.buscar)
 
+	s.GET("/continuar", func(c *gecko.Context) error { return c.RenderOk("app/continuar", nil) })
+
 	// Proyectos
 	s.GET("/proyectos", s.listaProyectos)
 	s.POS("/proyectos", s.postProyecto)

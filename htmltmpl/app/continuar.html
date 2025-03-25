@@ -1,0 +1,19 @@
+<p class="p-4 text-center">
+	Para continuar donde lo dejaste guarda <a href="/continuar">/continuar</a> como marcador.
+	<br><br>
+	<a id="whereLeftOf" href=""></a>
+</p>
+<script>
+	// Si hay memoria de la última página visitada redirigir a ella.
+	const lastURL = localStorage.getItem('lastURL');
+	if (lastURL) {
+		const link = document.getElementById('whereLeftOf')
+		link.href = lastURL
+		link.innerText = lastURL
+
+		if (lastURL !== "/continuar") {
+			localStorage.removeItem('lastURL');
+			window.location.href = lastURL;
+		}
+	}
+</script>

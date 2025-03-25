@@ -406,6 +406,18 @@ function restoreScrollPosition() {
 	}
 }
 
+// ================================================================ //
+
+// Recordar URL actual para restablecer luego desde "/continuar"
+function recordarCurrentURL() {
+	const url = new URL(window.location.href);
+	const absoluteURL = url.pathname + url.search + url.hash;
+	if (absoluteURL !== "/continuar") {
+		localStorage.setItem('lastURL', absoluteURL);
+	}
+}
+
+
 // Esperar a que se haga el restoreScrollPosition para no mostrar
 // al usuario el movimiento y que el contenido haga flash.
 function mostrarContenidoListo() {
@@ -534,6 +546,9 @@ document.body.addEventListener('htmx:beforeSwap', function() {
 	guardarScrollPosition()
 });
 
+// ================================================================ //
+// ========== INICIALIZAR PÁGINA ================================== //
+
 /**
  * Para que HTMX no repita el setup de los elementos en la primera
  * carga de la página, sino que lo haga cuando se hace un swap.
@@ -549,10 +564,9 @@ document.body.addEventListener('htmx:load', (event) => {
 	prepararInputsEn(event.detail.elt)
 	prepararTextareasEn(event.detail.elt)
 	restoreScrollPosition()
+	recordarCurrentURL() // TODO: afterRequest para no ejecutar más de una vez cuando hay varios swap?
 });
 
-// ================================================================ //
-// ========== INICIALIZAR PÁGINA ================================== //
 
 document.addEventListener('keydown', handleShortcutAncestro);
 
@@ -561,6 +575,7 @@ window.addEventListener('beforeunload', guardarScrollPosition);
 prepararInputsEn(document.body)
 prepararTextareasEn(document.body)
 restoreScrollPosition()
+recordarCurrentURL()
 
 // Cuando se termine la carga de recursos incluyendo imágenes y estilos.
 window.addEventListener("load", (event) => {

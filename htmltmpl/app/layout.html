@@ -44,14 +44,14 @@
 			}
 		</script>
 
-		<link rel="preload" href="/assets/js/main.js" as="script">
+		<link rel="preload" href="/assets/js/main.js?v=03" as="script">
 		{{ if $.ScriptsHistoria -}}
 		<link rel="preload" href="/assets/js/historia.js" as="script">
 		<link rel="preload" href="/assets/js/chart.js" as="script">
 		{{- end }}
 		<link rel="preload" href="/assets/js/htmx.js" as="script">
 
-		<script defer src="/assets/js/main.js"></script>
+		<script defer src="/assets/js/main.js?v=03"></script>
 		{{ if $.ScriptsHistoria -}}
 		<script defer src="/assets/js/historia.js"></script>
 		<script defer src="/assets/js/chart.js"></script>
@@ -194,9 +194,9 @@
 		}
 		function showToast(msg) {
 			if (!toastDialog.open) {
-				console.log('opening toastDialog')
 				toastDialog.show() // No hay manera de mostrar encima de otro dialog.showModal()? D:
 			}
+			toastDialog.blur() // se enfoca cuando aparece antes de alguna interacción en la página.
 			const toastTemplate = document.getElementById('toastTemplate').content.cloneNode(true)
 			const toast = toastTemplate.querySelector('div')
 			toast.querySelector('.toast-message').textContent = msg
