@@ -14,7 +14,14 @@
 	"tasks": [
 		{
 			"label": "Ejecutar",
-			"detail": "Ejecutar aplicación en ambiente de desarrollo.",
+			"detail": "Ejecutar aplicación en ambiente de desarrollo",
+			"command": "pargoh -src=$(realpath .) -dir=$(realpath ~/pargodata) -auser benito -apass terranova1984",
+			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
+			"isBackground": true,
+		},
+		{
+			"label": "Ejecutar delay",
+			"detail": "Ejecutar aplicación con delay para responder",
 			"command": "pargoh -src=$(realpath .) -dir=$(realpath ~/pargodata) -auser benito -apass terranova1984 -wdelay=2000 -rdelay=500",
 			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
 			"isBackground": true,
@@ -34,30 +41,30 @@
 		},
 		{
 			"label": "Tailwind once",
-			"detail": "Compilar estilos CSS una vez.",
+			"detail": "Compilar estilos CSS una vez",
 			"command": "tailwindcss -i ./assets/source.css -o ./assets/css/estilo.css",
 		},
 		{
 			"label": "Tailwind watch",
-			"detail": "Compilar estilos CSS y observar cambios.",
+			"detail": "Compilar estilos CSS y observar cambios",
 			"command": "tailwindcss -w -i ./assets/source.css -o ./assets/css/estilo.css",
 			"isBackground": true,
 		},
 		{
 			"label": "PargoCode",
-			"detail": "Generación de código mediante interfaz web.",
+			"detail": "Generación de código mediante interfaz web",
 			"command": "sleep 1 && pargocode",
 			"isBackground": true,
 		},
 		{
 			"label": "Instalar dev",
-			"detail": "Instalar app versión desarrollo.",
+			"detail": "Instalar app versión desarrollo",
 			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=DEV\" ./pargoh && echo '[✔] App instalada'",
 			"hide": true,
 		},
 		{
 			"label": "Instalar prod",
-			"detail": "Instalar app versión producción.",
+			"detail": "Instalar app versión producción",
 			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=PROD\" ./pargoh && echo '[✔] App instalada'",
 		},
 		{
