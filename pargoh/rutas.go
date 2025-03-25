@@ -54,6 +54,8 @@ type servidor struct {
 	reloader reloader // websocket.go
 
 	timeTracker *dhistorias.GestionTimeTracker
+
+	noContinuar bool // feature flag
 }
 
 func main() {
@@ -139,7 +141,7 @@ func main() {
 
 	s.GET("/buscar", s.buscar)
 
-	s.GET("/continuar", func(c *gecko.Context) error { return c.RenderOk("app/continuar", nil) })
+	s.GET("/continuar", s.continuar)
 
 	// Proyectos
 	s.GET("/proyectos", s.listaProyectos)

@@ -6,6 +6,18 @@ import (
 	"github.com/pargomx/gecko"
 )
 
+func (s *servidor) continuar(c *gecko.Context) error {
+	if c.QueryBool("set") {
+		s.noContinuar = !s.noContinuar
+		return c.RedirFull("/continuar")
+	}
+	if s.noContinuar {
+		return c.StringOk("Guarda esta página como marcador")
+	} else {
+		return c.RenderOk("app/continuar", nil)
+	}
+}
+
 func (s *servidor) materializarHistorias(c *gecko.Context) error {
 	err := dhistorias.MaterializarAncestrosDeHistorias(s.repo)
 	if err != nil {
