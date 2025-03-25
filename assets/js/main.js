@@ -525,7 +525,7 @@ if (document.visibilityState === 'visible' && document.hasFocus()) {
 // ========== Eventos HTMX ======================================== //
 
 document.body.addEventListener('htmx:responseError', function(event) {
-	alert(`Error ${event.detail.xhr.response}`)
+	showToast(`Error ${event.detail.xhr.response}`)
 });
 
 document.body.addEventListener('htmx:sendError', function(event) {

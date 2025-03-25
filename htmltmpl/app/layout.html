@@ -183,7 +183,8 @@
 	<script>
 		const toastDialog = document.getElementById('toastDialog');
 		const toastContainer = document.getElementById('toastContainer');
-		const fadeOutAnimation = 'fade-out 6000ms forwards'
+		const fadeOutAnimation = 'fade-out 6s 3s forwards';
+		const destroyDelay = 8000 // ms
 		function removeToast(toast) {
 			if (toastContainer.contains(toast)) {
 				toastContainer.removeChild(toast);
@@ -192,18 +193,17 @@
 				toastDialog.close();
 			}
 		}
-		function showToast(msg) {
+		function showToast(msg) { // No hay manera de mostrar encima de otro dialog.showModal()? D:
 			if (!toastDialog.open) {
-				toastDialog.show() // No hay manera de mostrar encima de otro dialog.showModal()? D:
+				toastDialog.open = true // manualmente porque .show() hace focus al dialog.
 			}
-			toastDialog.blur() // se enfoca cuando aparece antes de alguna interacción en la página.
 			const toastTemplate = document.getElementById('toastTemplate').content.cloneNode(true)
 			const toast = toastTemplate.querySelector('div')
 			toast.querySelector('.toast-message').textContent = msg
 			toastContainer.insertBefore(toast, toastContainer.firstChild)
 
 			toast.addEventListener('click', () => { removeToast(toast) })
-			let rmTimout = setTimeout(() => { removeToast(toast) }, 5000)
+			let rmTimout = setTimeout(() => { removeToast(toast) }, destroyDelay)
 			toast.style.animation = fadeOutAnimation
 
 			toast.addEventListener('mouseenter', () => {
@@ -212,7 +212,7 @@
 			})
 
 			toast.addEventListener('mouseleave', () => {
-				rmTimout = setTimeout(() => { removeToast(toast) }, 5000)
+				rmTimout = setTimeout(() => { removeToast(toast) }, destroyDelay)
 				toast.style.animation = fadeOutAnimation
 			})
 		}
