@@ -357,6 +357,35 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		}
 	}
 
+	// TABLA DE DÍA TRABAJADO CONTRA PROYECTOS
+	ProyectosSimple, err := s.repo.ListProyectos()
+	if err != nil {
+		return err
+	}
+	type DiaRow struct {
+		Fecha         string
+		SegundosLista []int
+		SegundosTotal int
+	}
+	DiasRow := []DiaRow{}
+	for _, dia := range Dias {
+		row := DiaRow{
+			Fecha:         dia.Fecha,
+			SegundosLista: make([]int, len(ProyectosSimple)),
+		}
+		for _, p := range dia.Proyectos {
+			segs := p.Segundos + p.SegundosGestion
+			for idx, ps := range ProyectosSimple {
+				if ps.ProyectoID == p.Proyecto.ProyectoID {
+					row.SegundosLista[idx] = segs
+					row.SegundosTotal += segs
+					break
+				}
+			}
+		}
+		DiasRow = append(DiasRow, row)
+	}
+
 	// Viejo recuento de horas por día.
 	DiasTrabajoMapHoras := make(map[string]float64)
 	for _, dia := range Intervalos {
@@ -368,6 +397,8 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 
 		"DiasTrabajoMapHoras": DiasTrabajoMapHoras,
 		"DiasTrabajo":         Dias,
+		"DiasRow":             DiasRow,
+		"ProyectosSimple":     ProyectosSimple,
 		"Proyectos":           Proyectos,
 		"Semana":              Semana,
 		"Ahora":               Ahora,

@@ -323,23 +323,19 @@
 					<th>#</th>
 					<th>Fecha</th>
 					<th>Total</th>
-					{{ range $.Proyectos }}
-					<th>{{ .Proyecto.Titulo }}</th>
+					{{ range $.ProyectosSimple -}}
+					<th>{{ .ProyectoID }}</th>
 					{{ end }}
 				</tr>
 			</thead>
 			<tbody class="">
-				{{ range $idx, $dia := .DiasTrabajo }}
+				{{ range $idx, $dia := .DiasRow }}
 				<tr>
 					<td>{{ suma $idx 1 }}</td>
 					<td class="bg-cyan-950 text-nowrap">{{ .Fecha }}</td>
-					<td class="bg-cyan-950">{{ segundosToString .Segundos }}</td>
-
-					{{ range $proyectoID, $v := .Proyectos -}}
-						{{ $horas := 0.0 }}{{ if eq $proyectoID .Proyecto.ProyectoID }}{{ $horas = .Horas }}{{ end }}
-						<td class="bg-cyan-950 text-nowrap">
-							{{ .Proyecto.ProyectoID }} {{ segundosToString .Segundos }}
-						</td>
+					<td class="bg-cyan-950 text-nowrap">{{ segundosToString .SegundosTotal }}</td>
+					{{ range .SegundosLista -}}
+					<td class="bg-cyan-950 text-nowrap">{{ if . }}{{ segundosToString . }}{{ end }}</td>
 					{{ end }}
 				</tr>
 				{{ end }}
