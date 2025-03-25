@@ -11,11 +11,7 @@ func (s *servidor) continuar(c *gecko.Context) error {
 		s.noContinuar = !s.noContinuar
 		return c.RedirFull("/continuar")
 	}
-	if s.noContinuar {
-		return c.StringOk("Guarda esta página como marcador")
-	} else {
-		return c.RenderOk("app/continuar", nil)
-	}
+	return c.Render(200, "app/continuar", !s.noContinuar)
 }
 
 func (s *servidor) materializarHistorias(c *gecko.Context) error {
