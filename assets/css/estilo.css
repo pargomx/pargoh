@@ -472,9 +472,6 @@
   .w-60 {
     width: calc(var(--spacing) * 60);
   }
-  .w-64 {
-    width: calc(var(--spacing) * 64);
-  }
   .w-\[var\(--container-xl\)\] {
     width: var(--container-xl);
   }
@@ -498,6 +495,9 @@
   }
   .max-w-40 {
     max-width: calc(var(--spacing) * 40);
+  }
+  .max-w-72 {
+    max-width: calc(var(--spacing) * 72);
   }
   .max-w-96 {
     max-width: calc(var(--spacing) * 96);

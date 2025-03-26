@@ -165,12 +165,12 @@
 
 	<!-- Toast -->
 	<template id="toastTemplate">
-		<div class="relative bg-white/75 rounded-md shadow-md px-3 py-2 pointer-events-auto after:content-['\00D7'] after:absolute after:top-2 after:right-2 hover:cursor-pointer hover:bg-gray-300">
+		<div class="relative max-w-72 bg-white/75 rounded-md shadow-md px-3 py-2 overflow-auto pointer-events-auto after:content-['\00D7'] after:absolute after:top-2 after:right-2 hover:cursor-pointer hover:bg-gray-300">
 			<span class="toast-message text-sm"></span>
 		</div>
 	</template>
-	<dialog id="toastDialog" class="fixed mx-auto top-0 right-0 bg-transparent pointer-events-none">
-		<div id="toastContainer" class="flex flex-col gap-2 w-64 text-black pt-4"></div>
+	<dialog id="toastDialog" class="fixed top-0 right-0 h-dvh px-4 mx-auto overflow-auto bg-transparent pointer-events-none">
+		<div id="toastContainer" class="flex flex-col gap-2 text-black pt-4 overflow-auto w-full"></div>
 	</dialog>
 	<style>
 		@keyframes fade-out {
