@@ -66,22 +66,20 @@ async function validateSpecificCache(cache, pathPrefix) {
 			const serverLastModified = serverResponse.headers.get('Last-Modified');
 			if (
 				(cachedETag && serverETag && cachedETag !== serverETag) ||
-				(cachedLastModified &&
-					serverLastModified &&
-					cachedLastModified !== serverLastModified)
+				(cachedLastModified && serverLastModified && cachedLastModified !== serverLastModified)
 			) {
 				sendToast(`Updating cache for ${request.url}`);
 				const freshResponse = await fetch(request.url);
 				if (freshResponse.ok) {
 					await cache.put(request, freshResponse);
-					sendToast(`${request.url} updated in cache`);
+					sendToast(`Updated: ${request.url.split('/').slice(3).join('/')} LastMod:${serverLastModified} Etag:${serverETag}`); // quitar servidor del url
 				} else {
 					console.warn(
 						`Failed to update ${request.url} in cache. Server returned ${freshResponse.status}`
 					);
 				}
 			} else {
-				sendToast(`${request.url} is up to date`);
+				sendToast(`SinCambios: ${request.url.split('/').slice(3).join('/')} LastMod:${serverLastModified} Etag:${serverETag}`); // quitar servidor del url
 			}
 		} catch (error) {
 			console.error(`Error validating ${request.url}:`, error);
