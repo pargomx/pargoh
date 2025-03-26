@@ -8,7 +8,7 @@ const IMAGES_CACHE_PREFIX = '/imagenes/';
 const OFFLINE_PATH = '/offline';
 
 async function initAssetsCache() {
-	console.log('initAssetsCache');
+	sendToast('initAssetsCache');
 	const cache = await caches.open(ASSETS_CACHE_NAME);
 	return cache.addAll([OFFLINE_PATH]);
 }
@@ -17,7 +17,7 @@ async function cleanOldCaches(cacheNames) {
 	return Promise.all(
 		cacheNames.map((cacheName) => {
 			if (cacheName !== ASSETS_CACHE_NAME && cacheName !== IMAGES_CACHE_NAME) {
-				console.log('Cleaning old cache', cacheName);
+				sendToast('Cleaning old cache', cacheName);
 				return caches.delete(cacheName);
 			}
 		})
@@ -25,7 +25,7 @@ async function cleanOldCaches(cacheNames) {
 }
 
 async function validateCaches() {
-	console.log('Validando caches...');
+	sendToast('Validando caches...');
 	const assetCache = await caches.open(ASSETS_CACHE_NAME);
 	const imageCache = await caches.open(IMAGES_CACHE_NAME);
 	await validateSpecificCache(assetCache, ASSETS_CACHE_PREFIX);
@@ -33,7 +33,7 @@ async function validateCaches() {
 }
 
 async function validateSpecificCache(cache, pathPrefix) {
-	console.log("Validando cache", pathPrefix)
+	sendToast("Validando cache", pathPrefix)
 	const keys = await cache.keys();
 	for (const request of keys) {
 		try {
@@ -70,18 +70,18 @@ async function validateSpecificCache(cache, pathPrefix) {
 					serverLastModified &&
 					cachedLastModified !== serverLastModified)
 			) {
-				console.log(`Updating cache for ${request.url}`);
+				sendToast(`Updating cache for ${request.url}`);
 				const freshResponse = await fetch(request.url);
 				if (freshResponse.ok) {
 					await cache.put(request, freshResponse);
-					console.log(`${request.url} updated in cache`);
+					sendToast(`${request.url} updated in cache`);
 				} else {
 					console.warn(
 						`Failed to update ${request.url} in cache. Server returned ${freshResponse.status}`
 					);
 				}
 			} else {
-				console.log(`${request.url} is up to date`);
+				sendToast(`${request.url} is up to date`);
 			}
 		} catch (error) {
 			console.error(`Error validating ${request.url}:`, error);
@@ -147,7 +147,7 @@ async function handleCacheFirstFetch(event, cacheName, url) {
 			return cachedResponse;
 		}
 		const fetchResponse = await fetch(event.request);
-		console.log("Guardando en cache", url.pathname)
+		sendToast("Guardando en cache", url.pathname)
 		cache.put(event.request, fetchResponse.clone());
 		return fetchResponse;
 	});
@@ -162,16 +162,25 @@ function handleMessage(event) {
 	}
 }
 
+function sendToast(...args) {
+	const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+	self.clients.matchAll().then(clients => {
+		clients.forEach(client => {
+			client.postMessage({ tipo: 'toast', texto: message });
+		});
+	});
+}
+
 // ================================================================ //
 // ========== EVENTOS ============================================= //
 
 self.addEventListener('install', (event) => {
-	console.log('ServiceWorker installing');
+	sendToast('ServiceWorker installing');
 	event.waitUntil(initAssetsCache());
 });
 
 self.addEventListener('activate', (event) => {
-	console.log('ServiceWorker activating');
+	sendToast('ServiceWorker activating');
 	event.waitUntil(
 		caches.keys().then((cacheNames) => cleanOldCaches(cacheNames))
 	);

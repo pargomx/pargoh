@@ -6,9 +6,11 @@ function registrarServiceWorker() {
 			.register('/service-worker.js')
 			.then((registration) => {
 				console.log('ServiceWorker registered with scope:', registration.scope);
+				showToast('ServiceWorker registered')
 			})
 			.catch((error) => {
 				console.error('ServiceWorker registration failed:', error);
+				showToast('ServiceWorker registration failed')
 			});
 	} else {
 		alert('ServiceWorker no soportado')
@@ -22,6 +24,11 @@ function validarCache() {
 		alert('no se pudo validar')
 	}
 }
+
+navigator.serviceWorker.addEventListener('message', function(event) {
+	console.log(event.data)
+	showToast(event.data.texto);
+});
 
 </script>
 
