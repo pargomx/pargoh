@@ -111,7 +111,7 @@ async function fetchHandler(event) {
  * This function attempts to retrieve the requested resource from the network.
  * If the network request fails (e.g., due to being offline), it retrieves the
  * offline page resource from the cache for GET requests. For other HTTP methods,
- * it returns a 503 Service Unavailable response with a message "App offline".
+ * it tries to fetch them normally and only if that fails then returns a 503 Service Unavailable response.
  * 
  * @param {FetchEvent} event - The fetch event to handle.
  * @returns {Promise<Response>} A promise that resolves to the network or cached response.
@@ -122,7 +122,9 @@ async function handleNetworkFirstFetch(event) {
 			return caches.match(OFFLINE_PATH);
 		});
 	} else {
-		return new Response('App fuera de línea', { status: 503, statusText: 'Service Unavailable' });
+		return fetch(event.request).catch(() => {
+			return new Response(`App fuera de línea`, { status: 503, statusText: 'Service Unavailable' });
+		});
 	}
 }
 
