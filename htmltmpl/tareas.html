@@ -171,3 +171,11 @@
 	{{ template "mover_tarea_dialog" "" }}
 </div>
 
+<script>
+	function showMoverTarea(tareaID, descripcion) {
+		let mov = document.getElementById('moverTareaDialog');
+		mov.showModal();
+		mov.querySelector('input[name=tarea_id]').value = tareaID;
+		mov.querySelector('p').innerText = descripcion;
+	}
+</script>
