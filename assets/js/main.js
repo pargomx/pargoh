@@ -576,12 +576,12 @@ prepararInputsEn(document.body)
 prepararTextareasEn(document.body)
 restoreScrollPosition()
 recordarCurrentURL()
+mostrarContenidoListo()
+primeraCarga = false
 
 // Cuando se termine la carga de recursos incluyendo imágenes y estilos.
 window.addEventListener("load", (event) => {
 	logTimeTotal("window:load (main.js)")
-	mostrarContenidoListo()
-	primeraCarga = false
 });
 
 // El navegador puede ignorar "Cache-Control: no-store" y activar
