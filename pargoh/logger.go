@@ -35,7 +35,10 @@ func (s *servidor) GET(path string, authHandler gecko.HandlerFunc) {
 		if AMBIENTE == "DEV" {
 			time.Sleep(time.Millisecond * time.Duration(s.cfg.debug.readDelay))
 		}
-		c.Response().Header().Set("Cache-Control", "no-store")
+		if c.Response().Header().Get("Cache-Control") == "" {
+			c.Response().Header().Set("Cache-Control", "no-store")
+		}
+		c.Compress = true
 		return authHandler(c)
 	}))
 }
