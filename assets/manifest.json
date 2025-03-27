@@ -1,0 +1,71 @@
+{
+	"id": "v01",
+	"short_name": "Pargo",
+	"name": "Pargo: gestión personal de software",
+	"description": "Gestión personal de proyectos de software",
+	
+	"display": "standalone",
+	"orientation": "natural",
+	"launch_handler": {
+		"client_mode": "focus-existing"
+	},
+	
+	"scope": "/",
+	"start_url": "/proyectos",
+	"shortcuts": [
+		{
+			"name": "Continuar donde me quedé",
+			"short_name": "Continuar",
+			"description": "Abrir lo último revisado",
+			"url": "/continuar"
+		},
+		{
+			"name": "Tareas rápidas",
+			"short_name": "QuickTask",
+			"description": "Comenzar una tarea sin considerar proyecto",
+			"url": "/tareas"
+		},
+		{
+			"name": "Métricas",
+			"short_name": "Métricas",
+			"description": "Ver mis métricas",
+			"url": "/metricas"
+		}
+	],
+	"note_taking": {
+		"new_note_url": "/tareas"
+	},
+
+	"background_color": "#091a20",
+	"theme_color": "#083344",
+	"icons": [
+		{
+			"src": "/assets/img/pargo-ff/pargo-ff-32.png",
+			"sizes": "32x32", "type": "image/png", "purpose": "maskable"
+		},
+		{
+			"src": "/assets/img/pargo-aa/pargo-aa-64.png",
+			"sizes": "64x64", "type": "image/png", "purpose": "maskable"
+		},
+		{
+			"src": "/assets/img/pargo-aa/pargo-aa-128.png",
+			"sizes": "128x128", "type": "image/png", "purpose": "maskable"
+		},
+		{
+			"src": "/assets/img/pargo-bb/pargo-bb-192.png",
+			"sizes": "192x192", "type": "image/png", "purpose": "any"
+		},
+		{
+			"src": "/assets/img/pargo-aa/pargo-aa-256.png",
+			"sizes": "256x256", "type": "image/png", "purpose": "maskable"
+		},
+		{
+			"src": "/assets/img/pargo-aa/pargo-aa-384.png",
+			"sizes": "384x384", "type": "image/png", "purpose": "maskable"
+		},
+		{
+			"src": "/assets/img/pargo-bb/pargo-bb-512.png",
+			"sizes": "512x512", "type": "image/png", "purpose": "any"
+		}
+	]
+}

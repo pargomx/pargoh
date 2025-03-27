@@ -127,10 +127,12 @@ func main() {
 		s.gecko.StaticAbs("/assets", s.cfg.sourceDir+"/assets")
 		s.gecko.FileAbs("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico")
 		s.gecko.FileAbs("/service-worker.js", s.cfg.sourceDir+"/assets/js/service-worker.js")
+		s.gecko.FileAbs("/pargo.webmanifest", s.cfg.sourceDir+"/assets/manifest.json")
 	} else {
 		s.gecko.StaticFS("/assets", assets.AssetsFS)
 		s.gecko.FileFS("/favicon.ico", "img/favicon.ico", assets.AssetsFS)
 		s.gecko.FileFS("/service-worker.js", "js/service-worker.js", assets.AssetsFS)
+		s.gecko.FileFS("/pargo.webmanifest", "manifest.json", assets.AssetsFS)
 	}
 	s.gecko.GET("/assets/js/htmx.js", s.gecko.ServirHtmxMinJS())
 	s.gecko.GET("/assets/js/gecko.js", s.gecko.ServirGeckoJS())

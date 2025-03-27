@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-//go:embed css img js webfonts
+//go:embed css img js webfonts manifest.json
 var AssetsFS embed.FS
 
 // ================================================================ //
