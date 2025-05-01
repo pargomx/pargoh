@@ -12,6 +12,8 @@ import (
 	"github.com/pargomx/gecko/gkoid"
 )
 
+const defaultVigenciaSesiones = 30 * 24 * time.Hour
+
 type Sesion struct {
 	SesionID  string
 	Usuario   string
@@ -44,7 +46,7 @@ func NewAuthService(adminUser, adminPass string) *authService {
 		adminUser:     adminUser,
 		adminPass:     adminPass,
 		sesiones:      make(map[string]Sesion),
-		vigencia:      30 * 24 * time.Hour,
+		vigencia:      defaultVigenciaSesiones,
 	}
 	if s.pathLoginPage == "" {
 		gko.LogWarn("No se ha definido la ruta para la página de inicio de sesión")
@@ -52,13 +54,29 @@ func NewAuthService(adminUser, adminPass string) *authService {
 	if s.pathLoginPage == s.pathHomePage {
 		gko.LogWarn("La página de inicio de sesión y la de inicio son la misma, peligro de redirección infinita")
 	}
-	if s.adminUser == "" {
-		gko.FatalExit("Auth: Usuario indefinido")
-	}
-	if s.adminPass == "" {
-		gko.FatalExit("Auth: Passwd indefinido")
+	err := credencialesSiguenReglas(s.adminUser, s.adminPass)
+	if err != nil {
+		gko.FatalError(gko.Err(err).Op("NewAuthService"))
 	}
 	return s
+}
+
+func credencialesSiguenReglas(usuario, passwrd string) error {
+	lenUsuario := len(usuario)
+	lenPasswrd := len(passwrd)
+	if lenUsuario == 0 {
+		return gko.ErrDatoIndef().Str("usuario indefinido")
+	}
+	if lenPasswrd == 0 {
+		return gko.ErrDatoIndef().Str("passwrd indefinido")
+	}
+	if lenUsuario > 25 || lenPasswrd > 25 {
+		return gko.ErrDatoInvalido().Strf("creds_too_long: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
+	}
+	if lenUsuario < 5 || lenPasswrd < 5 {
+		return gko.ErrDatoInvalido().Strf("creds_too_short: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
+	}
+	return nil
 }
 
 // Manda que el cliente elimine cookie de sesión de su navegador.
@@ -91,19 +109,15 @@ func (s *authService) setCookieForHAProxy(c *gecko.Context) {
 // ========== AUTENTICAR ========================================== //
 
 func (s *authService) validarCredenciales(usuario, passwrd string) (string, error) {
-	lenUsuario := len(usuario)
-	lenPasswrd := len(passwrd)
-	if lenUsuario > 25 || lenPasswrd > 25 {
-		return "", gko.ErrDatoInvalido().Strf("creds_too_long: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
+	err := credencialesSiguenReglas(usuario, passwrd)
+	if err != nil {
+		return "", err
 	}
-	if lenUsuario < 5 || lenPasswrd < 5 {
-		return "", gko.ErrDatoInvalido().Strf("creds_too_short: usuario(%d) passwd(%d)", lenUsuario, lenPasswrd)
-	}
-	// TODO: multi usuarios
+	// TODO: Permitir varios usuarios, guardar con hash+salt.
 	if usuario == s.adminUser && passwrd == s.adminPass {
 		return usuario, nil
 	}
-	return "", gko.ErrDatoInvalido().Strf("creds_not_found: usuario[%s] passwd(%d)", usuario, lenPasswrd)
+	return "", gko.ErrDatoInvalido().Strf("creds_not_found: usuario[%s] passwd(%d)", usuario, len(passwrd))
 }
 
 func (s *authService) registrarNuevaSesion(usuario, ip, userAgent string) (*Sesion, error) {
@@ -133,7 +147,7 @@ func (s *authService) validarSesion(sesionID string) (*Sesion, error) {
 	if !ok {
 		return nil, gko.ErrDatoInvalido().Strf("sesion_not_found: %s", sesionID)
 	}
-	if time.Since(ses.ValidFrom) > 30*24*time.Hour {
+	if time.Since(ses.ValidFrom) > s.vigencia {
 		delete(s.sesiones, sesionID)
 		return nil, gko.ErrDatoInvalido().Strf("sesion_expired: %s", sesionID)
 	}
@@ -173,6 +187,7 @@ func (s *authService) Auth(next gecko.HandlerFunc) gecko.HandlerFunc {
 		ses, err := s.validarSesionCookie(c)
 		if err != nil {
 			gko.Err(err).Op("Auth").Log()
+			// return gko.ErrDatoInvalido().Msg("Sesión inválida")
 			return c.RedirFull(s.pathLoginPage) // ...sesión inválida
 		}
 		c.SesionID = ses.SesionID
@@ -203,12 +218,14 @@ func (s *authService) postLogin(c *gecko.Context) error {
 	usuario, err := s.validarCredenciales(c.FormVal("usuario"), c.FormValue("passwd"))
 	if err != nil {
 		gko.Err(err).Op("postLogin").Log()
-		return c.RedirFull(s.pathLoginPage)
+		return gko.ErrDatoInvalido().Msg("Información incorrecta")
+		// return c.RedirFull(s.pathLoginPage) // Rechazar sin decir nada jeje.
 	}
 	ses, err = s.registrarNuevaSesion(usuario, c.RealIP(), c.Request().UserAgent())
 	if err != nil {
 		gko.Err(err).Op("postLogin").Log()
-		return c.RedirFull(s.pathLoginPage)
+		return gko.ErrNoDisponible().Msg("No disponible")
+		// return c.RedirFull(s.pathLoginPage) // Rechazar sin decir nada jeje.
 	}
 	cookie := &http.Cookie{
 		Name:     s.nombreCookie,
