@@ -114,7 +114,7 @@
 				</option>
 			</select>
 		</div>
-		<div class="flex items-center gap-1">
+		<!-- <div class="flex items-center gap-1">
 			<input class="form-control max-w-32"
 				hx-askfor="reloadProgreso"
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
@@ -127,7 +127,7 @@
 				value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
 				>
 			Hrs.
-		</div>
+		</div> -->
 	</div>
 
 	<!--* ANCESTROS *-->
@@ -150,7 +150,7 @@
 		{{ end }}
 	</div>
 	{{ end }}
-	
+
 	<!--* TÍTULO -->
 	<div class="mt-2 mb-1">
 		<textarea class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400"
@@ -182,91 +182,179 @@
 		</textarea>
 	</div>
 
-	<!--* REGLAS DE NEGOCIO -->
-	<ol id="reglasDeNegocio" tipo="sort_reglas" class="mb-6">
-		{{ range .Reglas -}}
-		<li tipo="sort_regla" class="flex gap-1 p-1 group">
-			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100"
-				title="Posición {{ .Posicion }}"
-				>
-				⣿
-				<form tipo="sort_form"
-					hx-post="/reordenar-regla"
-					hx-select="#reglasDeNegocio"
-					hx-target="#reglasDeNegocio"
-					hx-trigger="reordenarEnd"
+	<!--* DESCENDIENTES *-->
+	<!-- <h3 class="mb-2 text-xl text-cyan-600">
+		Descendientes
+	</h3> -->
+	<ul id="descendientesList" tipo="sort_descendientes" class="mb-6"
+		hx-select="#descendientesList"
+		hx-target="#descendientesList"
+		hx-select-oob="#descendientesMenus"
+		>
+		{{ range .Descendientes }}
+		<li tipo="sort_descendiente" class="">
+			<div class="flex gap-1 p-1 group">
+				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
+					⣿
+					<form tipo="sort_form"
+						hx-post="/reordenar-historia"
+						hx-trigger="reordenarEnd"
+						>
+						<input
+							type="hidden"
+							name="historia_id"
+							value="{{ .HistoriaID }}"
+							>
+						<input
+							type="hidden"
+							name="old_pos"
+							value="{{ .Posicion }}"
+							>
+						<input
+							type="hidden"
+							name="new_pos"
+							>
+					</form>
+				</div>
+				<button tipo="descendiente_bullet" class="inline-block w-5 text-center"
+					type="button"
+					onclick="showMenuHistoria(event, {{ .HistoriaID }})"
 					>
-					<input
-						type="hidden"
-						name="historia_id"
-						value="{{ .HistoriaID }}"
+					{{- if .Completada }}
+					<i class="text-green-600 fa-solid fa-circle-check"></i>
+					{{- else if .EsPrioridadMust }}
+					<i class="text-orange-600 fa-solid fa-angles-up"></i>
+					{{- else if .EsPrioridadShould }}
+					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+					{{- else if .EsPrioridadCould }}
+					<i class="text-orange-200 fa-solid fa-minus"></i>
+					{{- else }}
+					<i class="text-slate-400 fa-solid fa-ban"></i>
+					{{- end }}
+				</button>
+				<div class="grow">
+					<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
+						href="/historias/{{ .HistoriaID }}"
 						>
-					<input
-						type="hidden"
-						name="old_pos"
-						value="{{ .Posicion }}"
-						>
-					<input
-						type="hidden"
-						name="new_pos"
-						>
-				</form>
+						{{- enfatizar .Titulo -}}
+					</a>
+					<span class="float-right text-sm opacity-75">
+						{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
+					</span>
+				</div>
 			</div>
-			<button class="pr-2"
-				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}/marcar"
-				hx-select="#reglasDeNegocio"
-				hx-target="#reglasDeNegocio"
-				type="button"
-				>
-				{{ if and .Implementada .Probada }}
-				<i class="text-sm text-green-500 fa-solid fa-arrow-right"></i>
-				{{ else if .Implementada }}
-				<i class="text-sm text-orange-500 fa-solid fa-arrow-right"></i>
-				{{ else }}
-				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+
+			<!--* DESC NIVEL DOS  -->
+			{{ if .Descendientes -}}
+			<ul class="">
+				{{ range .Descendientes }}
+				<li class="flex gap-1 p-1 group">
+					<div class="pl-8">
+						<button tipo="descendiente_bullet" class="inline-block w-5 text-center"
+							type="button"
+							onclick="showMenuHistoria(event, {{ .HistoriaID }})"
+							>
+							{{- if .Completada }}
+							<i class="text-green-600 fa-solid fa-circle-check"></i>
+							{{- else if .EsPrioridadMust }}
+							<i class="text-orange-600 fa-solid fa-angles-up"></i>
+							{{- else if .EsPrioridadShould }}
+							<i class="text-orange-400 fa-solid fa-chevron-up"></i>
+							{{- else if .EsPrioridadCould }}
+							<i class="text-orange-200 fa-solid fa-minus"></i>
+							{{- else }}
+							<i class="text-slate-400 fa-solid fa-ban"></i>
+							{{- end }}
+						</button>
+					</div>
+					<div class="grow">
+						<a class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300"
+							href="/historias/{{ .HistoriaID }}"
+							>
+							{{- enfatizar .Titulo -}}
+						</a>
+						<span class="float-right text-xs opacity-50">
+							{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
+						</span>
+					</div>
+				</li>
 				{{ end }}
-			</button>
-			<textarea id="input_Regla{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-select="#reglasDeNegocio"
-				hx-target="#reglasDeNegocio"
-				enterkeyhint="enter"
-				name="texto"
-				rows="1"
-				>
-				{{- .Texto -}}
-			</textarea>
+			</ul>
+			{{ end }}
+		</li>
+		{{ end }}
+
+		<li class="">
+			<div class="flex gap-1 p-1 group">
+				<div class="hidden opacity-0 md:block">
+					⣿
+				</div>
+				<span class="inline-block w-5 text-center">
+					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+				</span>
+				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
+					hx-post="/historias/{{ .Historia.HistoriaID }}"
+					hx-trigger="keyup[key=='Enter']"
+					enterkeyhint="enter"
+					name="titulo"
+					placeholder="Agregar historia descendiente"
+					rows="1"
+					></textarea>
+			</div>
+		</li>
+	</ul>
+
+	<!-- Menú contextextual de descendientes -->
+	<div id="descendientesMenus"
+		hx-askfor="/historias/{{ .Historia.HistoriaID }}"
+		hx-select="#descendientesList"
+		hx-target="#descendientesList"
+		hx-select-oob="#descendientesMenus"
+		>
+		{{ range .Descendientes -}}
+			{{ template "ctxMenuHistoria" . -}}
+			{{ range .Descendientes -}}
+				{{ template "ctxMenuHistoria" . -}}
+			{{ end }}
+		{{ end }}
+	</div>
+
+	<!--* RELACIONADAS *-->
+	<h3 class="mb-2 text-xl text-cyan-600 group">
+		Relacionadas
+		<button class="ml-2 text-base transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-cyan-300"
+			type="button"
+			onclick="showAddReferencia()"
+			title="Agregar historia relacionada"
+			>
+			<i class="fa-solid fa-square-plus"></i>
+		</button>
+	</h3>
+	<ul id="relacionadasList" class="mb-6">
+		{{ range .Relacionadas -}}
+		<li class="flex gap-1 p-1 group">
+			<div class="pr-2 md:pl-4">
+				<i class="text-xs text-slate-400 fa-solid fa-circle"></i>
+			</div>
+			<div class="grow">
+				<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
+					href="/historias/{{ .HistoriaID }}"
+					>
+					{{- enfatizar .Titulo -}}
+				</a>
+			</div>
 			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
-				hx-confirm="¿Eliminar regla? {{ .Texto }}"
-				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
-				hx-select="#reglasDeNegocio"
-				hx-target="#reglasDeNegocio"
+				hx-delete="/historias/{{ $.Agregado.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
+				hx-select="#relacionadasList"
+				hx-target="#relacionadasList"
 				type="button"
-				title="Quitar regla"
+				title="Quitar historia relacionada"
 				>
 				<i class="fa-solid fa-trash"></i>
 			</button>
 		</li>
 		{{ end }}
-		<li class="flex items-center gap-1 p-1">
-			<div class="hidden opacity-0 md:block">
-				⣿
-			</div>
-			<div class="pr-2">
-				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
-			</div>
-			<textarea id="input_AddRegla" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
-				hx-select="#reglasDeNegocio"
-				hx-target="#reglasDeNegocio"
-				hx-trigger="keyup[key=='Enter']"
-				enterkeyhint="enter"
-				name="texto"
-				placeholder="Agregar regla"
-				rows="1"
-				></textarea>
-		</li>
-	</ol>
+	</ul>
 
 	<!--* AVANCE  -->
 	<div id="progreso"
@@ -277,11 +365,27 @@
 		hx-trigger="reloadProgreso from:body"
 		>
 		{{ if or .SegundosPresupuesto .SegundosEstimado .SegundosUtilizado }}
-		<h3 class="mb-4 text-xl text-cyan-600">
-			<a href="#progreso">
-				Progreso
-			</a>
-		</h3>
+		<div class="flex items-center justify-between gap-4 mb-4">
+			<h3 class="text-xl text-cyan-600">
+				<a href="#progreso">
+					Recursos
+				</a>
+			</h3>
+			<div class="flex items-center gap-1">
+				<input class="form-control max-w-32"
+					hx-askfor="reloadProgreso"
+					hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
+					hx-swap="none"
+					type="number"
+					max="30"
+					min="0"
+					name="value"
+					placeholder="Presupuesto"
+					value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
+					>
+				Hrs.
+			</div>
+		</div>
 		<!-- Tarjetas avance -->
 		<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
 			<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
@@ -568,6 +672,92 @@
 		{{ end }}
 	</div>
 
+	<!--* REGLAS DE NEGOCIO -->
+	<ol id="reglasDeNegocio" tipo="sort_reglas" class="mb-6">
+		{{ range .Reglas -}}
+		<li tipo="sort_regla" class="flex gap-1 p-1 group">
+			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100"
+				title="Posición {{ .Posicion }}"
+				>
+				⣿
+				<form tipo="sort_form"
+					hx-post="/reordenar-regla"
+					hx-select="#reglasDeNegocio"
+					hx-target="#reglasDeNegocio"
+					hx-trigger="reordenarEnd"
+					>
+					<input
+						type="hidden"
+						name="historia_id"
+						value="{{ .HistoriaID }}"
+						>
+					<input
+						type="hidden"
+						name="old_pos"
+						value="{{ .Posicion }}"
+						>
+					<input
+						type="hidden"
+						name="new_pos"
+						>
+				</form>
+			</div>
+			<button class="pr-2"
+				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}/marcar"
+				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
+				type="button"
+				>
+				{{ if and .Implementada .Probada }}
+				<i class="text-sm text-green-500 fa-solid fa-arrow-right"></i>
+				{{ else if .Implementada }}
+				<i class="text-sm text-orange-500 fa-solid fa-arrow-right"></i>
+				{{ else }}
+				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+				{{ end }}
+			</button>
+			<textarea id="input_Regla{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
+				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
+				enterkeyhint="enter"
+				name="texto"
+				rows="1"
+				>
+				{{- .Texto -}}
+			</textarea>
+			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
+				hx-confirm="¿Eliminar regla? {{ .Texto }}"
+				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
+				type="button"
+				title="Quitar regla"
+				>
+				<i class="fa-solid fa-trash"></i>
+			</button>
+		</li>
+		{{ end }}
+		<li class="flex items-center gap-1 p-1">
+			<div class="hidden opacity-0 md:block">
+				⣿
+			</div>
+			<div class="pr-2">
+				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+			</div>
+			<textarea id="input_AddRegla" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
+				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
+				hx-select="#reglasDeNegocio"
+				hx-target="#reglasDeNegocio"
+				hx-trigger="keyup[key=='Enter']"
+				enterkeyhint="enter"
+				name="texto"
+				placeholder="Agregar regla"
+				rows="1"
+				></textarea>
+		</li>
+	</ol>
+
 	<!--* VIAJE DE USUARIO *-->
 	<h3 class="mb-2 text-xl text-cyan-600 group">
 		Viaje de usuario
@@ -664,7 +854,7 @@
 			{{ end }}
 		</li>
 		{{ end }}
-		
+
 		<!-- Agregar tramo... -->
 		<li class="flex items-center gap-1 p-1">
 			<div class="hidden opacity-0 md:block">
@@ -774,227 +964,6 @@
 		</div>
 	</dialog>
 
-	<!--* DESCENDIENTES *-->
-	<h3 class="mb-2 text-xl text-cyan-600">
-		Descendientes
-	</h3>
-	<ul id="descendientesList" tipo="sort_descendientes" class="mb-6"
-		hx-select="#descendientesList"
-		hx-target="#descendientesList"
-		hx-select-oob="#descendientesMenus"
-		>
-		{{ range .Descendientes }}
-		<li tipo="sort_descendiente" class="">
-			<div class="flex gap-1 p-1 group">
-				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
-					⣿
-					<form tipo="sort_form"
-						hx-post="/reordenar-historia"
-						hx-trigger="reordenarEnd"
-						>
-						<input
-							type="hidden"
-							name="historia_id"
-							value="{{ .HistoriaID }}"
-							>
-						<input
-							type="hidden"
-							name="old_pos"
-							value="{{ .Posicion }}"
-							>
-						<input
-							type="hidden"
-							name="new_pos"
-							>
-					</form>
-				</div>
-				<button tipo="descendiente_bullet" class="inline-block w-5 text-center"
-					type="button"
-					onclick="showMenuHistoria(event, {{ .HistoriaID }})"
-					>
-					{{- if .Completada }}
-					<i class="text-green-600 fa-solid fa-circle-check"></i>
-					{{- else if .EsPrioridadMust }}
-					<i class="text-orange-600 fa-solid fa-angles-up"></i>
-					{{- else if .EsPrioridadShould }}
-					<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-					{{- else if .EsPrioridadCould }}
-					<i class="text-orange-200 fa-solid fa-minus"></i>
-					{{- else }}
-					<i class="text-slate-400 fa-solid fa-ban"></i>
-					{{- end }}
-				</button>
-				<div class="grow">
-					<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
-						href="/historias/{{ .HistoriaID }}"
-						>
-						{{- enfatizar .Titulo -}}
-					</a>
-					<span class="float-right text-sm opacity-75">
-						{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
-					</span>
-				</div>
-			</div>
-
-			<!--* DESC NIVEL DOS  -->
-			{{ if .Descendientes -}}
-			<ul class="">
-				{{ range .Descendientes }}
-				<li class="flex gap-1 p-1 group">
-					<div class="pl-8">
-						<button tipo="descendiente_bullet" class="inline-block w-5 text-center"
-							type="button"
-							onclick="showMenuHistoria(event, {{ .HistoriaID }})"
-							>
-							{{- if .Completada }}
-							<i class="text-green-600 fa-solid fa-circle-check"></i>
-							{{- else if .EsPrioridadMust }}
-							<i class="text-orange-600 fa-solid fa-angles-up"></i>
-							{{- else if .EsPrioridadShould }}
-							<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-							{{- else if .EsPrioridadCould }}
-							<i class="text-orange-200 fa-solid fa-minus"></i>
-							{{- else }}
-							<i class="text-slate-400 fa-solid fa-ban"></i>
-							{{- end }}
-						</button>
-					</div>
-					<div class="grow">
-						<a class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300"
-							href="/historias/{{ .HistoriaID }}"
-							>
-							{{- enfatizar .Titulo -}}
-						</a>
-						<span class="float-right text-xs opacity-50">
-							{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
-						</span>
-					</div>
-				</li>
-				{{ end }}
-			</ul>
-			{{ end }}
-		</li>
-		{{ end }}
-		
-		<li class="">
-			<div class="flex gap-1 p-1 group">
-				<div class="hidden opacity-0 md:block">
-					⣿
-				</div>
-				<span class="inline-block w-5 text-center">
-					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
-				</span>
-				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-					hx-post="/historias/{{ .Historia.HistoriaID }}"
-					hx-trigger="keyup[key=='Enter']"
-					enterkeyhint="enter"
-					name="titulo"
-					placeholder="Agregar historia"
-					rows="1"
-					></textarea>
-			</div>
-		</li>
-	</ul>
-
-	<!-- Menú contextextual de descendientes -->
-	<div id="descendientesMenus"
-		hx-askfor="/historias/{{ .Historia.HistoriaID }}"
-		hx-select="#descendientesList"
-		hx-target="#descendientesList"
-		hx-select-oob="#descendientesMenus"
-		>
-		{{ range .Descendientes -}}
-			{{ template "ctxMenuHistoria" . -}}
-			{{ range .Descendientes -}}
-				{{ template "ctxMenuHistoria" . -}}
-			{{ end }}
-		{{ end }}
-	</div>
-
-	<!--* RELACIONADAS *-->
-	<h3 class="mb-2 text-xl text-cyan-600 group">
-		Relacionadas
-		<button class="ml-2 text-base transition-opacity opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-cyan-300"
-			type="button"
-			onclick="showAddReferencia()"
-			title="Agregar historia relacionada"
-			>
-			<i class="fa-solid fa-square-plus"></i>
-		</button>
-	</h3>
-	<ul id="relacionadasList" class="mb-6">
-		{{ range .Relacionadas -}}
-		<li class="flex gap-1 p-1 group">
-			<div class="pr-2 md:pl-4">
-				<i class="text-xs text-slate-400 fa-solid fa-circle"></i>
-			</div>
-			<div class="grow">
-				<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
-					href="/historias/{{ .HistoriaID }}"
-					>
-					{{- enfatizar .Titulo -}}
-				</a>
-			</div>
-			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
-				hx-delete="/historias/{{ $.Agregado.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
-				hx-select="#relacionadasList"
-				hx-target="#relacionadasList"
-				type="button"
-				title="Quitar historia relacionada"
-				>
-				<i class="fa-solid fa-trash"></i>
-			</button>
-		</li>
-		{{ end }}
-	</ul>
-
-	<!--* IMPLEMENTACIÓN -->
-	<div id="implementacion">
-		<h3 class="text-xl text-cyan-600 mb-2">
-			<a href="#implementacion">
-				Implementación
-			</a>
-			{{ if .Historia.Notas -}}
-			<button class="mx-2 text-base hover:text-cyan-300 float-right"
-				type="button"
-				onclick="editNotasImplementacion(this)"
-				title="Editar notas"
-				>
-				<i class="fa-solid fa-pencil"></i>
-			</button>
-			{{ end -}}
-			<button id="viewNotasBtn" class="mx-2 text-base hover:text-cyan-300 float-right hidden"
-				type="button"
-				hx-get="/historias/{{ .Historia.HistoriaID }}"
-				hx-select="#implementacion"
-				hx-target="#implementacion"
-				title="Ver con formato"
-				>
-				<i class="fa-solid fa-eye"></i>
-			</button>
-		</h3>
-		{{ if .Historia.Notas -}}
-		<p id="notasImplView" class="px-2 py-1 mb-1 text-white/75 whitespace-pre-line">
-			{{- enfatizar .Historia.Notas -}}
-		</p>
-		{{ end -}}
-		<div id="notasImplEdit" class="{{ if .Historia.Notas -}}hidden{{ end }}">
-			<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/notas"
-				hx-swap="none"
-				hx-trigger="change, keyup changed delay:60s"
-				enterkeyhint="enter"
-				name="value"
-				placeholder="Notas de implementación..."
-				rows="1"
-				title="Detalles de implementación"
-				onchange="let btn = document.getElementById('viewNotasBtn'); if(this.value.trim() !== '') { btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); }"
-				>
-				{{- .Historia.Notas -}}
-			</textarea>
-		</div>
-	</div>
-
 	<!--* TAREAS -->
 	<div class="flex flex-wrap items-baseline gap-4 mb-2 text-cyan-600">
 		<h3 id="tareas" class="grow text-xl">
@@ -1076,7 +1045,7 @@
 					{{- .Tipo.Etiqueta -}}
 				</span>
 				{{ end }}
-				
+
 				<span class="cursor-pointer {{ if .Finalizada }} opacity-50 line-through {{ end }}"
 					onclick="document.getElementById('edit{{ .TareaID }}').showModal()"
 					>
@@ -1091,7 +1060,7 @@
 						>
 				</span>
 				{{- end -}}
-				
+
 				<span class="float-right sm:hidden">
 					{{- if .SegundosEstimado -}}
 					<span class="pl-4 text-sm opacity-75 whitespace-nowrap"
@@ -1118,7 +1087,7 @@
 					{{ .Impedimentos }}
 				</i>
 				{{- end }}
-				
+
 				<!-- <span class="px-2 py-1 text-xs font-semibold leading-none text-white bg-cyan-950 rounded-md opacity-50">
 					e:{{ .SegundosEstimado }}
 					r:{{ .SegundosUtilizado }}
@@ -1221,6 +1190,55 @@
 		</li>
 	</ol>
 
+	<!--* IMPLEMENTACIÓN -->
+	<div id="implementacion" class="mb-6">
+		<h3 class="text-xl text-cyan-600 mb-2">
+			<a href="#implementacion">
+				Implementación
+			</a>
+			{{ if .Historia.Notas -}}
+			<button class="mx-2 text-base hover:text-cyan-300 float-right"
+				type="button"
+				onclick="editNotasImplementacion(this)"
+				aria-label="Editar notas"
+				title="Editar notas"
+				>
+				<i class="fa-solid fa-pencil"></i>
+			</button>
+			{{ end -}}
+			<button id="viewNotasBtn" class="mx-2 text-base hover:text-cyan-300 float-right hidden"
+				type="button"
+				hx-get="/historias/{{ .Historia.HistoriaID }}"
+				hx-select="#implementacion"
+				hx-target="#implementacion"
+				aria-label="Ver con formato"
+				title="Ver con formato"
+				>
+				<i class="fa-solid fa-eye"></i>
+			</button>
+		</h3>
+		{{ if .Historia.Notas -}}
+		<p id="notasImplView" class="px-2 py-1 mb-1 text-white/75 whitespace-pre-line">
+			{{- enfatizar .Historia.Notas -}}
+		</p>
+		{{ end -}}
+		<div id="notasImplEdit" class="{{ if .Historia.Notas -}}hidden{{ end }}">
+			<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
+				hx-patch="/historias/{{ .Historia.HistoriaID }}/notas"
+				hx-swap="none"
+				hx-trigger="change, keyup changed delay:60s"
+				enterkeyhint="enter"
+				name="value"
+				placeholder="Notas de implementación..."
+				rows="1"
+				title="Detalles de implementación"
+				onchange="let btn = document.getElementById('viewNotasBtn'); if(this.value.trim() !== '') { btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); }"
+				>
+				{{- .Historia.Notas -}}
+			</textarea>
+		</div>
+	</div>
+
 	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Historia.Notas) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
 	<div class="text-center">
 		<button class="px-4 py-2 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
@@ -1233,7 +1251,6 @@
 		</button>
 	</div>
 	{{ end }}
-	
 
 </main>
 {{ end }}
