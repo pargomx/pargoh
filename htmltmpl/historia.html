@@ -114,7 +114,7 @@
 				</option>
 			</select>
 		</div>
-		<!-- <div class="flex items-center gap-1">
+		<div class="flex items-center gap-1">
 			<input class="form-control max-w-32"
 				hx-askfor="reloadProgreso"
 				hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
@@ -127,7 +127,7 @@
 				value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
 				>
 			Hrs.
-		</div> -->
+		</div>
 	</div>
 
 	<!--* ANCESTROS *-->
@@ -239,7 +239,10 @@
 						{{- enfatizar .Titulo -}}
 					</a>
 					<span class="float-right text-sm opacity-75">
-						{{ if .SegundosPresupuesto }}{{ segundosToString .SegundosPresupuesto }}{{ end }}
+						{{ if .SegundosPresupuestoMust }}PM:{{ segundosToString .SegundosPresupuestoMust }}{{ end }}
+						{{ if .SegundosEstimadoMust }}EM:{{ segundosToString .SegundosEstimadoMust }}{{ end }}
+						{{ if .SegundosEstimado }}Es:{{ segundosToString .SegundosEstimado }}{{ end }}
+						{{ if .SegundosPresupuesto }}Pr:{{ segundosToString .SegundosPresupuesto }}{{ end }}
 					</span>
 				</div>
 			</div>
