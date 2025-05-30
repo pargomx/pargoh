@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (01, CURRENT_TIMESTAMP, "Esquema: historias de usuario y tareas");
+INSERT INTO migraciones VALUES (1,01, CURRENT_TIMESTAMP, "Esquema: historias de usuario y tareas");
 
 CREATE TABLE nodos (
   nodo_id INT NOT NULL,

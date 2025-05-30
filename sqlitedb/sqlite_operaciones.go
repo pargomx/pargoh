@@ -3,6 +3,7 @@ package sqlitedb
 import (
 	"context"
 	"database/sql"
+	"errors"
 )
 
 type Transaccion struct {
@@ -35,6 +36,33 @@ func (s *SqliteDB) Exec(query string, args ...interface{}) (sql.Result, error) {
 }
 
 // ================================================================ //
+// ================================================================ //
+
+// Ejecuta el query dentro de una transacción y hace el rollback si hay
+// error. Un helper para hacer Begin, Exec y Rollback en una línea.
+func (s *SqliteDB) ExecInTransaction(query string, args ...interface{}) (sql.Result, error) {
+	if s.log {
+		logSQL(tipoExec, query, args...)
+	}
+	tx, err := s.Begin()
+	if err != nil {
+		return nil, err
+	}
+	res, err := tx.Exec(query, args...)
+	if err != nil {
+		errRollback := tx.Rollback()
+		if errRollback != nil {
+			return nil, errors.Join(err, errRollback)
+		}
+		return nil, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // ================================================================ //
 
 func (s *SqliteDB) Begin() (*Transaccion, error) {

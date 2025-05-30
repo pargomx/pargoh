@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (02, CURRENT_TIMESTAMP, "Viajes de usuario");
+INSERT INTO migraciones VALUES (1,02, CURRENT_TIMESTAMP, "Viajes de usuario");
 
 CREATE TABLE tramos (
   historia_id INT NOT NULL,

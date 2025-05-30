@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (11, CURRENT_TIMESTAMP, "Asociar timetracker a persona en lugar de proyecto");
+INSERT INTO migraciones VALUES (1,11, CURRENT_TIMESTAMP, "Asociar timetracker a persona en lugar de proyecto");
 
 /*
 	Agregar campo segundos_gestion a personas.

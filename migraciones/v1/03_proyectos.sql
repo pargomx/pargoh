@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (03, CURRENT_TIMESTAMP, "Proyectos");
+INSERT INTO migraciones VALUES (1,03, CURRENT_TIMESTAMP, "Proyectos");
 
 CREATE TABLE proyectos (
   proyecto_id TEXT NOT NULL,

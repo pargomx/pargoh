@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (07, CURRENT_TIMESTAMP, "Time tracker de gestión con latidos");
+INSERT INTO migraciones VALUES (1,07, CURRENT_TIMESTAMP, "Time tracker de gestión con latidos");
 
 CREATE TABLE latidos (
   timestamp TEXT NOT NULL,

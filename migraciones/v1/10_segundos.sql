@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (10, CURRENT_TIMESTAMP, "Todos los campos de duración deben ser segundos");
+INSERT INTO migraciones VALUES (1,10, CURRENT_TIMESTAMP, "Todos los campos de duración deben ser segundos");
 
 ALTER TABLE tareas RENAME COLUMN tiempo_real TO segundos_real;
 

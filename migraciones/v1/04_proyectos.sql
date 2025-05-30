@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (04, CURRENT_TIMESTAMP, "Reglas de negocio");
+INSERT INTO migraciones VALUES (1,04, CURRENT_TIMESTAMP, "Reglas de negocio");
 
 CREATE TABLE reglas (
   historia_id INT NOT NULL,

@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (13, CURRENT_TIMESTAMP, "Tabla para referenciar unas historias a otras");
+INSERT INTO migraciones VALUES (1,13, CURRENT_TIMESTAMP, "Tabla para referenciar unas historias a otras");
 
 CREATE TABLE referencias (
   historia_id INT NOT NULL,

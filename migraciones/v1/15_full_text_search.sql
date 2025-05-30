@@ -1,4 +1,4 @@
-INSERT INTO migraciones VALUES (15, CURRENT_TIMESTAMP, "Full text search virtual table & triggers");
+INSERT INTO migraciones VALUES (1,15, CURRENT_TIMESTAMP, "Full text search virtual table & triggers");
 
 CREATE VIRTUAL TABLE historias_fts USING fts5 (
 	historia_id UNINDEXED,
