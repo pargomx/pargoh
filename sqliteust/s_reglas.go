@@ -58,7 +58,7 @@ func (s *Repositorio) ReordenarRegla(historiaID int, oldPos int, newPos int) err
 func (s *Repositorio) DeleteAllReglas(HistoriaID int) error {
 	const op string = "DeleteAllReglas"
 	if HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Msg("HistoriaID sin especificar").Str("pk_indefinida").Op(op)
 	}
 	err := s.ExisteHistoria(HistoriaID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (s *Repositorio) DeleteAllReglas(HistoriaID int) error {
 		HistoriaID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }

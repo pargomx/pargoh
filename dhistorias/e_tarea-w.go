@@ -337,7 +337,7 @@ func ParcharIntervalo(tareaID int, inicio string, nuevoInicio string, nuevoFinal
 		// final debe ser después de inicio
 		inicio, err := time.Parse("2006-01-02 15:04:05", interv.Inicio)
 		if err != nil {
-			return 0, gko.ErrInesperado().Err(err).Op("ParseToCheckIntervalo").Ctx("inicio", interv.Inicio)
+			return 0, gko.ErrInesperado.Err(err).Op("ParseToCheckIntervalo").Ctx("inicio", interv.Inicio)
 		}
 		if fin.Before(inicio) {
 			return 0, op.Msg("La fecha de final debe ser posterior a la de inicio")

@@ -15,7 +15,7 @@ func (s *Repositorio) ListHistoriasCosto(personaID int) ([]ust.HistoriaCosto, er
 	const op string = "ListHistoriasCosto"
 	rows, err := s.db.Query(qryHistoriasCosto, personaID)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	defer rows.Close()
 	items := []ust.HistoriaCosto{}
@@ -33,7 +33,7 @@ func (s *Repositorio) ListHistoriasCosto(personaID int) ([]ust.HistoriaCosto, er
 			&item.SegundosUtilizado,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, item)
 	}
@@ -56,7 +56,7 @@ func (s *Repositorio) ListDias() ([]string, error) {
 	const op string = "ListDias"
 	rows, err := s.db.Query(qryDias)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	defer rows.Close()
 	items := []string{}
@@ -64,7 +64,7 @@ func (s *Repositorio) ListDias() ([]string, error) {
 		var item string
 		err := rows.Scan(&item)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, item)
 	}

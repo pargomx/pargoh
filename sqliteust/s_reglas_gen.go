@@ -15,13 +15,13 @@ import (
 func (s *Repositorio) InsertRegla(reg ust.Regla) error {
 	const op string = "InsertRegla"
 	if reg.HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if reg.Posicion == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	if reg.Texto == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Texto sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Texto sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO reglas "+
 		"(historia_id, posicion, texto, implementada, probada) "+
@@ -29,7 +29,7 @@ func (s *Repositorio) InsertRegla(reg ust.Regla) error {
 		reg.HistoriaID, reg.Posicion, reg.Texto, reg.Implementada, reg.Probada,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -41,13 +41,13 @@ func (s *Repositorio) InsertRegla(reg ust.Regla) error {
 func (s *Repositorio) UpdateRegla(reg ust.Regla) error {
 	const op string = "UpdateRegla"
 	if reg.HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if reg.Posicion == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	if reg.Texto == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Texto sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Texto sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE reglas SET "+
@@ -57,7 +57,7 @@ func (s *Repositorio) UpdateRegla(reg ust.Regla) error {
 		reg.HistoriaID, reg.Posicion,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -74,14 +74,14 @@ func (s *Repositorio) ExisteRegla(HistoriaID int, Posicion int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrReglaNotFound).Op(op)
+			return gko.ErrNoEncontrado.Msg("Regla no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrReglaNotFound).Op(op)
+		return gko.ErrNoEncontrado.Msg("Regla no encontrado").Op(op)
 	}
 	return nil
 }
@@ -92,10 +92,10 @@ func (s *Repositorio) ExisteRegla(HistoriaID int, Posicion int) error {
 func (s *Repositorio) DeleteRegla(HistoriaID int, Posicion int) error {
 	const op string = "DeleteRegla"
 	if HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if Posicion == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	err := s.ExisteRegla(HistoriaID, Posicion)
 	if err != nil {
@@ -106,7 +106,7 @@ func (s *Repositorio) DeleteRegla(HistoriaID int, Posicion int) error {
 		HistoriaID, Posicion,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	// porque sqlite no mueve los IDs de manera que no haya conflictos.
 	_, err = s.db.Exec(
@@ -114,14 +114,14 @@ func (s *Repositorio) DeleteRegla(HistoriaID int, Posicion int) error {
 		HistoriaID, Posicion,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	_, err = s.db.Exec(
 		"UPDATE reglas SET posicion = -posicion WHERE historia_id = ? AND posicion < 0",
 		HistoriaID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -155,9 +155,9 @@ func (s *Repositorio) scanRowRegla(row *sql.Row, reg *ust.Regla) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Regla no se encuentra")
+			return gko.ErrNoEncontrado.Msg("Regla no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -170,10 +170,10 @@ func (s *Repositorio) scanRowRegla(row *sql.Row, reg *ust.Regla) error {
 func (s *Repositorio) GetRegla(HistoriaID int, Posicion int) (*ust.Regla, error) {
 	const op string = "GetRegla"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if Posicion == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasRegla+" "+fromRegla+
@@ -203,7 +203,7 @@ func (s *Repositorio) scanRowsRegla(rows *sql.Rows, op string) ([]ust.Regla, err
 			&reg.HistoriaID, &reg.Posicion, &reg.Texto, &reg.Implementada, &reg.Probada,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, reg)
 	}
@@ -211,12 +211,12 @@ func (s *Repositorio) scanRowsRegla(rows *sql.Rows, op string) ([]ust.Regla, err
 }
 
 //  ================================================================  //
-//  ========== LIST_BY =============================================  //
+//  ========== LIST_BY HISTORIA_ID =================================  //
 
 func (s *Repositorio) ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error) {
 	const op string = "ListReglasByHistoriaID"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("HistoriaID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasRegla+" "+fromRegla+
@@ -224,7 +224,7 @@ func (s *Repositorio) ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error
 		HistoriaID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsRegla(rows, op)
 }

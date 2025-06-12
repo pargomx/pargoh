@@ -10,13 +10,13 @@ func validarNombreDescrDePersona(per *ust.Persona) error {
 	per.Nombre = txtQuitarEspaciosYSaltos(per.Nombre)
 	per.Descripcion = txtQuitarEspaciosYSaltos(per.Descripcion)
 	if per.Nombre == "" {
-		return gko.ErrDatoIndef().Msg("Nombre de la persona indefinido")
+		return gko.ErrDatoIndef.Msg("Nombre de la persona indefinido")
 	}
 	if len(per.Nombre) > 40 {
-		return gko.ErrDatoInvalido().Msg("El nombre del personaje no debe superar los 40 caracteres").Strf("Nombre muy largo: %d", len(per.Nombre))
+		return gko.ErrDatoInvalido.Msg("El nombre del personaje no debe superar los 40 caracteres").Strf("Nombre muy largo: %d", len(per.Nombre))
 	}
 	if len(per.Nombre) > 5000 {
-		return gko.ErrDatoInvalido().Msg("La descripción del personaje no debe superar los 5000 caracteres").Strf("Descripcion muy largo: %d", len(per.Descripcion))
+		return gko.ErrDatoInvalido.Msg("La descripción del personaje no debe superar los 5000 caracteres").Strf("Descripcion muy largo: %d", len(per.Descripcion))
 	}
 	return nil
 }

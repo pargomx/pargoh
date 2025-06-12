@@ -9,7 +9,7 @@ type Repo interface {
 	// Proyectos
 	InsertProyecto(pro ust.Proyecto) error
 	GetProyecto(ProyectoID string) (*ust.Proyecto, error)
-	UpdateProyecto(pro ust.Proyecto) error
+	UpdateProyecto(ProyectoID string, pro ust.Proyecto) error
 	ExisteProyecto(ProyectoID string) error
 	DeleteProyecto(ProyectoID string) error
 	ListProyectos() ([]ust.Proyecto, error)

@@ -10,7 +10,7 @@ import (
 // Si no existe lo intenta crear.
 func VerificarDirectorioExports(exportDir string) error {
 	if exportDir == "" {
-		return gko.ErrDatoIndef().Msg("Directorio para guardar exports indefinido")
+		return gko.ErrDatoIndef.Msg("Directorio para guardar exports indefinido")
 	}
 	inf, err := os.Stat(exportDir)
 	if err != nil {
@@ -25,7 +25,7 @@ func VerificarDirectorioExports(exportDir string) error {
 		}
 	} else {
 		if !inf.IsDir() {
-			return gko.ErrDatoInvalido().Msgf("No es un directorio válido para exports: %v", exportDir)
+			return gko.ErrDatoInvalido.Msgf("No es un directorio válido para exports: %v", exportDir)
 		}
 	}
 	outFile, err := os.CreateTemp(exportDir, "*.doc")

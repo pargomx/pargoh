@@ -80,7 +80,7 @@ func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
 		return err
 	}
 	if estimado <= 0 {
-		return gko.ErrDatoInvalido().Msg("El estimado debe ser mayor a 0")
+		return gko.ErrDatoInvalido.Msg("El estimado debe ser mayor a 0")
 	}
 	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
 	if err != nil {

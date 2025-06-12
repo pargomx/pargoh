@@ -47,7 +47,7 @@ func (s *Repositorio) scanRowsIntervaloEnDia(rows *sql.Rows, op string) ([]ust.I
 			&intervd.ProyectoID, &intervd.PersonaID, &intervd.HistoriaID, &intervd.TareaID, &intervd.Inicio, &intervd.Fin, &intervd.Fecha, &intervd.Segundos,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, intervd)
 	}
@@ -63,7 +63,7 @@ func (s *Repositorio) ListIntervalosEnDias() ([]ust.IntervaloEnDia, error) {
 		"SELECT " + columnasIntervaloEnDia + " " + fromIntervaloEnDia,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsIntervaloEnDia(rows, op)
 }
@@ -74,7 +74,7 @@ func (s *Repositorio) ListIntervalosEnDias() ([]ust.IntervaloEnDia, error) {
 func (s *Repositorio) ListIntervalosEnDiasByProyectoID(ProyectoID string) ([]ust.IntervaloEnDia, error) {
 	const op string = "ListIntervalosEnDiasByProyectoID"
 	if ProyectoID == "" {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("ProyectoID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasIntervaloEnDia+" "+fromIntervaloEnDia+
@@ -82,7 +82,7 @@ func (s *Repositorio) ListIntervalosEnDiasByProyectoID(ProyectoID string) ([]ust
 		ProyectoID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsIntervaloEnDia(rows, op)
 }
@@ -98,7 +98,7 @@ func (s *Repositorio) ListIntervalosEnDiasEntre(desde string, hasta string) ([]u
 		desde, hasta,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsIntervaloEnDia(rows, op)
 }

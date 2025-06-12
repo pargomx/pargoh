@@ -9,7 +9,7 @@ import (
 func (s *Repositorio) FullTextSearch(search string) ([]ust.SearchResult, error) {
 	const op string = "FullTextSearch"
 	if search == "" {
-		return nil, gko.ErrDatoIndef().Msg("Búsqueda vacía").Op(op)
+		return nil, gko.ErrDatoIndef.Msg("Búsqueda vacía").Op(op)
 	}
 	rows, err := s.db.Query(
 		"SELECT historia_id, otro_id, origen, snippet(historias_fts, 3, 'ſ', 'ſ', '...', 64) "+
@@ -17,7 +17,7 @@ func (s *Repositorio) FullTextSearch(search string) ([]ust.SearchResult, error) 
 		search,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	defer rows.Close()
 	items := []ust.SearchResult{}
@@ -27,7 +27,7 @@ func (s *Repositorio) FullTextSearch(search string) ([]ust.SearchResult, error) 
 			&item.HistoriaID, &item.OtroID, &item.Origen, &item.Texto,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, item)
 	}

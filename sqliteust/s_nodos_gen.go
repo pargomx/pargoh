@@ -16,13 +16,13 @@ import (
 func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 	const op string = "UpdateNodo"
 	if nod.NodoID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("NodoID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("NodoID sin especificar")
 	}
 	if nod.NodoTbl == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("NodoTbl sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("NodoTbl sin especificar")
 	}
 	if nod.PadreTbl == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("PadreTbl sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("PadreTbl sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE nodos SET "+
@@ -32,7 +32,7 @@ func (s *Repositorio) UpdateNodo(nod ust.Nodo) error {
 		nod.NodoID,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -49,14 +49,14 @@ func (s *Repositorio) ExisteNodo(NodoID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrNodoNotFound).Op(op)
+			return gko.ErrNoEncontrado.Msg("Nodo Old no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrNodoNotFound).Op(op)
+		return gko.ErrNoEncontrado.Msg("Nodo Old no encontrado").Op(op)
 	}
 	return nil
 }
@@ -67,7 +67,7 @@ func (s *Repositorio) ExisteNodo(NodoID int) error {
 func (s *Repositorio) DeleteNodo(NodoID int) error {
 	const op string = "DeleteNodo"
 	if NodoID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("NodoID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("NodoID sin especificar")
 	}
 	err := s.ExisteNodo(NodoID)
 	if err != nil {
@@ -78,7 +78,7 @@ func (s *Repositorio) DeleteNodo(NodoID int) error {
 		NodoID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -113,9 +113,9 @@ func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Nodo no se encuentra")
+			return gko.ErrNoEncontrado.Msg("Nodo Old no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -128,7 +128,7 @@ func (s *Repositorio) scanRowNodo(row *sql.Row, nod *ust.Nodo) error {
 func (s *Repositorio) GetNodo(NodoID int) (*ust.Nodo, error) {
 	// const op string = "GetNodo"
 	// if NodoID == 0 {
-	// 	return nil, gko.ErrDatoIndef().Op(op).Msg("NodoID sin especificar").Str("pk_indefinida")
+	// 	return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("NodoID sin especificar")
 	// }
 	row := s.db.QueryRow(
 		"SELECT "+columnasNodo+" "+fromNodo+
@@ -158,7 +158,7 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]ust.Nodo, error
 			&nod.NodoID, &nod.NodoTbl, &nod.PadreID, &nod.PadreTbl, &nod.Nivel, &nod.Posicion,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, nod)
 	}
@@ -166,12 +166,12 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]ust.Nodo, error
 }
 
 //  ================================================================  //
-//  ========== LIST_BY =============================================  //
+//  ========== LIST_BY PADRE_ID ====================================  //
 
 func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]ust.Nodo, error) {
 	const op string = "ListNodosByPadreID"
 	if PadreID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("PadreID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("PadreID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodo+" "+fromNodo+
@@ -179,7 +179,7 @@ func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]ust.Nodo, error) {
 		PadreID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodo(rows, op)
 }

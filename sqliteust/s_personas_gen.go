@@ -15,10 +15,10 @@ import (
 func (s *Repositorio) InsertPersona(per ust.Persona) error {
 	const op string = "InsertPersona"
 	if per.PersonaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("PersonaID sin especificar")
 	}
 	if per.Nombre == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Nombre sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Nombre sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO personas "+
 		"(persona_id, proyecto_id, nombre, descripcion, segundos_gestion) "+
@@ -26,7 +26,7 @@ func (s *Repositorio) InsertPersona(per ust.Persona) error {
 		per.PersonaID, per.ProyectoID, per.Nombre, per.Descripcion, per.SegundosGestion,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -38,10 +38,10 @@ func (s *Repositorio) InsertPersona(per ust.Persona) error {
 func (s *Repositorio) UpdatePersona(per ust.Persona) error {
 	const op string = "UpdatePersona"
 	if per.PersonaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("PersonaID sin especificar")
 	}
 	if per.Nombre == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Nombre sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Nombre sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE personas SET "+
@@ -51,7 +51,7 @@ func (s *Repositorio) UpdatePersona(per ust.Persona) error {
 		per.PersonaID,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -68,14 +68,14 @@ func (s *Repositorio) ExistePersona(PersonaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Msg("Persona del dominio no encontrado").Op(op)
+			return gko.ErrNoEncontrado.Msg("Persona del dominio no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Msg("Persona del dominio no encontrado").Op(op)
+		return gko.ErrNoEncontrado.Msg("Persona del dominio no encontrado").Op(op)
 	}
 	return nil
 }
@@ -86,7 +86,7 @@ func (s *Repositorio) ExistePersona(PersonaID int) error {
 func (s *Repositorio) DeletePersona(PersonaID int) error {
 	const op string = "DeletePersona"
 	if PersonaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("PersonaID sin especificar")
 	}
 	err := s.ExistePersona(PersonaID)
 	if err != nil {
@@ -97,14 +97,14 @@ func (s *Repositorio) DeletePersona(PersonaID int) error {
 		PersonaID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	_, err = s.db.Exec(
 		"DELETE FROM personas WHERE persona_id = ?",
 		PersonaID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -138,9 +138,9 @@ func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Persona del dominio no encontrado")
+			return gko.ErrNoEncontrado.Msg("Persona del dominio no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -153,7 +153,7 @@ func (s *Repositorio) scanRowPersona(row *sql.Row, per *ust.Persona) error {
 func (s *Repositorio) GetPersona(PersonaID int) (*ust.Persona, error) {
 	const op string = "GetPersona"
 	if PersonaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("PersonaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("PersonaID sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasPersona+" "+fromPersona+
@@ -183,7 +183,7 @@ func (s *Repositorio) scanRowsPersona(rows *sql.Rows, op string) ([]ust.Persona,
 			&per.PersonaID, &per.ProyectoID, &per.Nombre, &per.Descripcion, &per.SegundosGestion,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, per)
 	}
@@ -199,7 +199,7 @@ func (s *Repositorio) ListPersonas() ([]ust.Persona, error) {
 		"SELECT " + columnasPersona + " " + fromPersona,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsPersona(rows, op)
 }

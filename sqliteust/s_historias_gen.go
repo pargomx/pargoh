@@ -15,10 +15,10 @@ import (
 func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 	const op string = "InsertHistoria"
 	if his.HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if his.Titulo == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Titulo sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO historias "+
 		"(historia_id, titulo, objetivo, prioridad, completada, persona_id, proyecto_id, segundos_presupuesto, descripcion, notas) "+
@@ -26,7 +26,7 @@ func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 		his.HistoriaID, his.Titulo, his.Objetivo, his.Prioridad, his.Completada, his.PersonaID, his.ProyectoID, his.SegundosPresupuesto, his.Descripcion, his.Notas,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -38,10 +38,10 @@ func (s *Repositorio) InsertHistoria(his ust.Historia) error {
 func (s *Repositorio) UpdateHistoria(his ust.Historia) error {
 	const op string = "UpdateHistoria"
 	if his.HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if his.Titulo == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Titulo sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE historias SET "+
@@ -51,7 +51,7 @@ func (s *Repositorio) UpdateHistoria(his ust.Historia) error {
 		his.HistoriaID,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -68,14 +68,14 @@ func (s *Repositorio) ExisteHistoria(HistoriaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado").Op(op)
+			return gko.ErrNoEncontrado.Msg("Historia de usuario no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado").Op(op)
+		return gko.ErrNoEncontrado.Msg("Historia de usuario no encontrado").Op(op)
 	}
 	return nil
 }
@@ -86,7 +86,7 @@ func (s *Repositorio) ExisteHistoria(HistoriaID int) error {
 func (s *Repositorio) DeleteHistoria(HistoriaID int) error {
 	const op string = "DeleteHistoria"
 	if HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	err := s.ExisteHistoria(HistoriaID)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *Repositorio) DeleteHistoria(HistoriaID int) error {
 		HistoriaID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -136,9 +136,9 @@ func (s *Repositorio) scanRowHistoria(row *sql.Row, his *ust.Historia) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado")
+			return gko.ErrNoEncontrado.Msg("Historia de usuario no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -151,7 +151,7 @@ func (s *Repositorio) scanRowHistoria(row *sql.Row, his *ust.Historia) error {
 func (s *Repositorio) GetHistoria(HistoriaID int) (*ust.Historia, error) {
 	const op string = "GetHistoria"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasHistoria+" "+fromHistoria+
@@ -181,7 +181,7 @@ func (s *Repositorio) scanRowsHistoria(rows *sql.Rows, op string) ([]ust.Histori
 			&his.HistoriaID, &his.Titulo, &his.Objetivo, &his.Prioridad, &his.Completada, &his.PersonaID, &his.ProyectoID, &his.SegundosPresupuesto, &his.Descripcion, &his.Notas,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, his)
 	}
@@ -197,7 +197,7 @@ func (s *Repositorio) ListHistorias() ([]ust.Historia, error) {
 		"SELECT " + columnasHistoria + " " + fromHistoria,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsHistoria(rows, op)
 }
@@ -208,7 +208,7 @@ func (s *Repositorio) ListHistorias() ([]ust.Historia, error) {
 func (s *Repositorio) ListHistoriasByProyectoID(ProyectoID string) ([]ust.Historia, error) {
 	const op string = "ListHistoriasByProyectoID"
 	if ProyectoID == "" {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("ProyectoID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasHistoria+" "+fromHistoria+
@@ -216,7 +216,7 @@ func (s *Repositorio) ListHistoriasByProyectoID(ProyectoID string) ([]ust.Histor
 		ProyectoID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsHistoria(rows, op)
 }
@@ -232,7 +232,7 @@ func (s *Repositorio) ListHistoriasByPadreID(nodoID int) ([]ust.Historia, error)
 		nodoID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsHistoria(rows, op)
 }

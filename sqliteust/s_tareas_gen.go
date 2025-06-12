@@ -15,7 +15,7 @@ import (
 func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 	const op string = "InsertTarea"
 	if tar.TareaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO tareas "+
 		"(tarea_id, historia_id, descripcion, importancia, tipo, estatus, impedimentos, segundos_estimado, segundos_real) "+
@@ -23,7 +23,7 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 		tar.TareaID, tar.HistoriaID, tar.Descripcion, tar.Importancia.String, tar.Tipo.String, tar.Estatus, tar.Impedimentos, tar.SegundosEstimado, tar.SegundosUtilizado,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -35,7 +35,7 @@ func (s *Repositorio) InsertTarea(tar ust.Tarea) error {
 func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 	const op string = "UpdateTarea"
 	if tar.TareaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE tareas SET "+
@@ -45,7 +45,7 @@ func (s *Repositorio) UpdateTarea(tar ust.Tarea) error {
 		tar.TareaID,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -62,14 +62,14 @@ func (s *Repositorio) ExisteTarea(TareaID int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrTareaNotFound).Op(op)
+			return gko.ErrNoEncontrado.Msg("Tarea no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrTareaNotFound).Op(op)
+		return gko.ErrNoEncontrado.Msg("Tarea no encontrado").Op(op)
 	}
 	return nil
 }
@@ -109,9 +109,9 @@ func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Tarea no se encuentra")
+			return gko.ErrNoEncontrado.Msg("Tarea no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	tar.Importancia = ust.SetImportanciaTareaDB(importancia)
 	tar.Tipo = ust.SetTipoTareaDB(tipo)
@@ -126,7 +126,7 @@ func (s *Repositorio) scanRowTarea(row *sql.Row, tar *ust.Tarea) error {
 func (s *Repositorio) GetTarea(TareaID int) (*ust.Tarea, error) {
 	const op string = "GetTarea"
 	if TareaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasTarea+" "+fromTarea+
@@ -158,7 +158,7 @@ func (s *Repositorio) scanRowsTarea(rows *sql.Rows, op string) ([]ust.Tarea, err
 			&tar.TareaID, &tar.HistoriaID, &tar.Descripcion, &importancia, &tipo, &tar.Estatus, &tar.Impedimentos, &tar.SegundosEstimado, &tar.SegundosUtilizado,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		tar.Importancia = ust.SetImportanciaTareaDB(importancia)
 		tar.Tipo = ust.SetTipoTareaDB(tipo)
@@ -176,7 +176,7 @@ func (s *Repositorio) ListTareas() ([]ust.Tarea, error) {
 		"SELECT " + columnasTarea + " " + fromTarea,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsTarea(rows, op)
 }
@@ -187,7 +187,7 @@ func (s *Repositorio) ListTareas() ([]ust.Tarea, error) {
 func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error) {
 	const op string = "ListTareasByHistoriaID"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("HistoriaID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasTarea+" "+fromTarea+
@@ -195,7 +195,7 @@ func (s *Repositorio) ListTareasByHistoriaID(HistoriaID int) ([]ust.Tarea, error
 		HistoriaID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsTarea(rows, op)
 }
@@ -210,7 +210,7 @@ func (s *Repositorio) ListTareasBugs() ([]ust.Tarea, error) {
 			"WHERE tipo = 'BUG' AND estatus < 3",
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsTarea(rows, op)
 }
@@ -225,7 +225,7 @@ func (s *Repositorio) ListTareasEnCurso() ([]ust.Tarea, error) {
 			"WHERE estatus = 1",
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsTarea(rows, op)
 }

@@ -40,7 +40,7 @@ func (s *GestionTimeTracker) AddTimeSpent(PersonaID int, segundos int) error {
 		return gko.Err(err).Op(op)
 	}
 	if segundos < 0 {
-		return gko.ErrDatoInvalido().Msg("El tiempo no puede ser negativo").Op(op)
+		return gko.ErrDatoInvalido.Msg("El tiempo no puede ser negativo").Op(op)
 	}
 	err = s.repo.InsertLatido(ust.Latido{
 		Timestamp: time.Now().In(locationMexicoCity).Format("2006-01-02 15:04:05"),

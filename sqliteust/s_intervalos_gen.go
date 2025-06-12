@@ -15,10 +15,10 @@ import (
 func (s *Repositorio) InsertIntervalo(interv ust.Intervalo) error {
 	const op string = "InsertIntervalo"
 	if interv.TareaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	if interv.Inicio == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Inicio sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO intervalos "+
 		"(tarea_id, inicio, fin) "+
@@ -26,7 +26,7 @@ func (s *Repositorio) InsertIntervalo(interv ust.Intervalo) error {
 		interv.TareaID, interv.Inicio, interv.Fin,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -38,10 +38,10 @@ func (s *Repositorio) InsertIntervalo(interv ust.Intervalo) error {
 func (s *Repositorio) UpdateIntervalo(TareaID int, Inicio string, interv ust.Intervalo) error {
 	const op string = "UpdateIntervalo"
 	if interv.TareaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	if interv.Inicio == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Inicio sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE intervalos SET "+
@@ -51,7 +51,7 @@ func (s *Repositorio) UpdateIntervalo(TareaID int, Inicio string, interv ust.Int
 		TareaID, Inicio,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -68,14 +68,14 @@ func (s *Repositorio) ExisteIntervalo(TareaID int, Inicio string) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrIntervaloNotFound).Op(op)
+			return gko.ErrNoEncontrado.Msg("Intervalo no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrIntervaloNotFound).Op(op)
+		return gko.ErrNoEncontrado.Msg("Intervalo no encontrado").Op(op)
 	}
 	return nil
 }
@@ -86,10 +86,10 @@ func (s *Repositorio) ExisteIntervalo(TareaID int, Inicio string) error {
 func (s *Repositorio) DeleteIntervalo(TareaID int, Inicio string) error {
 	const op string = "DeleteIntervalo"
 	if TareaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	if Inicio == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Inicio sin especificar")
 	}
 	err := s.ExisteIntervalo(TareaID, Inicio)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *Repositorio) DeleteIntervalo(TareaID int, Inicio string) error {
 		TareaID, Inicio,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -132,9 +132,9 @@ func (s *Repositorio) scanRowIntervalo(row *sql.Row, interv *ust.Intervalo) erro
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Intervalo no se encuentra")
+			return gko.ErrNoEncontrado.Msg("Intervalo no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -147,10 +147,10 @@ func (s *Repositorio) scanRowIntervalo(row *sql.Row, interv *ust.Intervalo) erro
 func (s *Repositorio) GetIntervalo(TareaID int, Inicio string) (*ust.Intervalo, error) {
 	const op string = "GetIntervalo"
 	if TareaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("TareaID sin especificar")
 	}
 	if Inicio == "" {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("Inicio sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Inicio sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasIntervalo+" "+fromIntervalo+
@@ -180,7 +180,7 @@ func (s *Repositorio) scanRowsIntervalo(rows *sql.Rows, op string) ([]ust.Interv
 			&interv.TareaID, &interv.Inicio, &interv.Fin,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, interv)
 	}
@@ -193,7 +193,7 @@ func (s *Repositorio) scanRowsIntervalo(rows *sql.Rows, op string) ([]ust.Interv
 func (s *Repositorio) ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, error) {
 	const op string = "ListIntervalosByTareaID"
 	if TareaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("TareaID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("TareaID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasIntervalo+" "+fromIntervalo+
@@ -201,7 +201,7 @@ func (s *Repositorio) ListIntervalosByTareaID(TareaID int) ([]ust.Intervalo, err
 		TareaID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsIntervalo(rows, op)
 }

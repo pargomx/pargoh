@@ -12,7 +12,7 @@ import (
 // Si no existe lo intenta crear.
 func (s *servidor) verificarDirectorioImagenes() error {
 	if s.cfg.imagesDir == "" {
-		return gko.ErrDatoIndef().Msg("Directorio para guardar imágenes indefinido")
+		return gko.ErrDatoIndef.Msg("Directorio para guardar imágenes indefinido")
 	}
 	inf, err := os.Stat(s.cfg.imagesDir)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *servidor) verificarDirectorioImagenes() error {
 		}
 	} else {
 		if !inf.IsDir() {
-			return gko.ErrDatoInvalido().Msgf("No es un directorio válido para imágenes: %v", s.cfg.imagesDir)
+			return gko.ErrDatoInvalido.Msgf("No es un directorio válido para imágenes: %v", s.cfg.imagesDir)
 		}
 	}
 	outFile, err := os.CreateTemp(s.cfg.imagesDir, "*.jpeg")

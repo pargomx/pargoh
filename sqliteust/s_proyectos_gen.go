@@ -15,10 +15,10 @@ import (
 func (s *Repositorio) InsertProyecto(pro ust.Proyecto) error {
 	const op string = "InsertProyecto"
 	if pro.ProyectoID == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("ProyectoID sin especificar")
 	}
 	if pro.Titulo == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Titulo sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO proyectos "+
 		"(proyecto_id, posicion, titulo, color, imagen, descripcion, fecha_registro) "+
@@ -26,7 +26,7 @@ func (s *Repositorio) InsertProyecto(pro ust.Proyecto) error {
 		pro.ProyectoID, pro.Posicion, pro.Titulo, pro.Color, pro.Imagen, pro.Descripcion, pro.FechaRegistro,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -62,9 +62,9 @@ func (s *Repositorio) scanRowProyecto(row *sql.Row, pro *ust.Proyecto) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Proyecto no encontrado")
+			return gko.ErrNoEncontrado.Msg("Proyecto no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -77,7 +77,7 @@ func (s *Repositorio) scanRowProyecto(row *sql.Row, pro *ust.Proyecto) error {
 func (s *Repositorio) GetProyecto(ProyectoID string) (*ust.Proyecto, error) {
 	const op string = "GetProyecto"
 	if ProyectoID == "" {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("ProyectoID sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasProyecto+" "+fromProyecto+
@@ -96,23 +96,23 @@ func (s *Repositorio) GetProyecto(ProyectoID string) (*ust.Proyecto, error) {
 //  ========== UPDATE ==============================================  //
 
 // UpdateProyecto valida y sobreescribe el registro en la base de datos.
-func (s *Repositorio) UpdateProyecto(pro ust.Proyecto) error {
+func (s *Repositorio) UpdateProyecto(ProyectoID string, pro ust.Proyecto) error {
 	const op string = "UpdateProyecto"
 	if pro.ProyectoID == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("ProyectoID sin especificar")
 	}
 	if pro.Titulo == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Titulo sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Titulo sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE proyectos SET "+
 			"proyecto_id=?, posicion=?, titulo=?, color=?, imagen=?, descripcion=?, fecha_registro=? "+
 			"WHERE proyecto_id = ?",
 		pro.ProyectoID, pro.Posicion, pro.Titulo, pro.Color, pro.Imagen, pro.Descripcion, pro.FechaRegistro,
-		pro.ProyectoID,
+		ProyectoID,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -129,14 +129,14 @@ func (s *Repositorio) ExisteProyecto(ProyectoID string) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Msg("Proyecto no encontrado").Op(op)
+			return gko.ErrNoEncontrado.Msg("Proyecto no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Msg("Proyecto no encontrado").Op(op)
+		return gko.ErrNoEncontrado.Msg("Proyecto no encontrado").Op(op)
 	}
 	return nil
 }
@@ -147,7 +147,7 @@ func (s *Repositorio) ExisteProyecto(ProyectoID string) error {
 func (s *Repositorio) DeleteProyecto(ProyectoID string) error {
 	const op string = "DeleteProyecto"
 	if ProyectoID == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("ProyectoID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("ProyectoID sin especificar")
 	}
 	err := s.ExisteProyecto(ProyectoID)
 	if err != nil {
@@ -158,7 +158,7 @@ func (s *Repositorio) DeleteProyecto(ProyectoID string) error {
 		ProyectoID,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -178,7 +178,7 @@ func (s *Repositorio) scanRowsProyecto(rows *sql.Rows, op string) ([]ust.Proyect
 			&pro.ProyectoID, &pro.Posicion, &pro.Titulo, &pro.Color, &pro.Imagen, &pro.Descripcion, &pro.FechaRegistro,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, pro)
 	}
@@ -195,7 +195,7 @@ func (s *Repositorio) ListProyectos() ([]ust.Proyecto, error) {
 			"ORDER BY posicion",
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsProyecto(rows, op)
 }

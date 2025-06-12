@@ -11,17 +11,17 @@ import (
 func (s *Repositorio) InsertNodo(nod ust.Nodo) error {
 	const op string = "sqliteust.InsertNodo"
 	if nod.NodoID == 0 {
-		return gko.ErrDatoInvalido().Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
+		return gko.ErrDatoInvalido.Msg("NodoID sin especificar").Ctx(op, "pk_indefinida")
 	}
 	if nod.NodoTbl == "" {
-		return gko.ErrDatoInvalido().Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido.Msg("NodoTbl sin especificar").Ctx(op, "required_sin_valor")
 	}
 	if nod.PadreTbl == "" {
-		return gko.ErrDatoInvalido().Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
+		return gko.ErrDatoInvalido.Msg("PadreTbl sin especificar").Ctx(op, "required_sin_valor")
 	}
 	err := nod.Validar()
 	if err != nil {
-		return gko.ErrDatoInvalido().Err(err).Op(op).Msg(err.Error())
+		return gko.ErrDatoInvalido.Err(err).Op(op).Msg(err.Error())
 	}
 	_, err = s.db.Exec("INSERT INTO nodos "+
 		"(nodo_id, nodo_tbl, padre_id, padre_tbl, nivel, posicion) "+
@@ -30,11 +30,11 @@ func (s *Repositorio) InsertNodo(nod ust.Nodo) error {
 	)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Error 1062 (23000)") {
-			return gko.ErrYaExiste().Err(err).Op(op)
+			return gko.ErrYaExiste.Err(err).Op(op)
 		} else if strings.HasPrefix(err.Error(), "Error 1452 (23000)") {
-			return gko.ErrDatoInvalido().Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
+			return gko.ErrDatoInvalido.Err(err).Op(op).Msg("No se puede insertar la información porque el registro asociado no existe")
 		} else {
-			return gko.ErrInesperado().Err(err).Op(op)
+			return gko.ErrInesperado.Err(err).Op(op)
 		}
 	}
 	return nil

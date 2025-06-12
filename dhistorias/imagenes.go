@@ -28,34 +28,34 @@ func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int
 			return op.Err(err).Str("decodificar GIF")
 		}
 		if len(imgGIF.Image) == 0 {
-			return op.ErrDatoInvalido().Msg("GIF vacío")
+			return op.E(gko.ErrDatoInvalido).Msg("GIF vacío")
 		}
 		if imgGIF.Image[0] == nil {
-			return op.ErrDatoInvalido().Msg("GIF inválido")
+			return op.E(gko.ErrDatoInvalido).Msg("GIF inválido")
 		}
 		if imgGIF.Image[0].Bounds().Max.X > maxPix {
-			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, imgGIF.Image[0].Bounds().Max.X)
+			return op.E(gko.ErrTooBig).Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, imgGIF.Image[0].Bounds().Max.X)
 		}
 		if imgGIF.Image[0].Bounds().Max.Y > maxPix {
-			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, imgGIF.Image[0].Bounds().Max.Y)
+			return op.E(gko.ErrTooBig).Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, imgGIF.Image[0].Bounds().Max.Y)
 		}
 	} else {
 		img, _, err = image.Decode(input)
 		if err != nil {
-			return op.Err(err).ErrNoSoportado().Msg("Imposible decodificar imagen")
+			return op.Err(err).E(gko.ErrNoSoportado).Msg("Imposible decodificar imagen")
 		}
 		if img.Bounds().Max.X > maxPix {
-			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.X)
+			return op.E(gko.ErrTooBig).Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.X)
 		}
 		if img.Bounds().Max.Y > maxPix {
-			return op.ErrTooBig().Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.Y)
+			return op.E(gko.ErrTooBig).Msgf("Suba máximo una imagen de %dpx, no %dpx", maxPix, img.Bounds().Max.Y)
 		}
 	}
 
 	// Evitar sobreescribir un archivo existente.
 	_, err = os.Stat(outputPath)
 	if err == nil {
-		return op.ErrYaExiste().Strf("ya existe una imagen en %s y no se va a sobreescribir", outputPath)
+		return op.E(gko.ErrYaExiste).Strf("ya existe una imagen en %s y no se va a sobreescribir", outputPath)
 	} else if !os.IsNotExist(err) {
 		return op.Err(err).Str("error verificando existencia del archivo")
 	}
@@ -76,7 +76,7 @@ func GuardarImagen(input io.Reader, format string, outputPath string, maxPix int
 	case "gif":
 		err = gif.EncodeAll(outFile, imgGIF) // Puede ser animado
 	default:
-		return op.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
+		return op.E(gko.ErrNoSoportado).Msgf("Formato de imagen no soportado: %v", format)
 	}
 	if err != nil {
 		return op.Err(err).Strf("codificar archivo %v", format)
@@ -101,7 +101,7 @@ func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio strin
 	case "image/gif":
 		extension = "gif"
 	default:
-		return op.ErrNoSoportado().Msgf("MIME no soportado: %v", MIME)
+		return op.E(gko.ErrNoSoportado).Msgf("MIME no soportado: %v", MIME)
 	}
 
 	uniqueID, err := gkoid.New62(8)
@@ -134,7 +134,7 @@ func EliminarFotoTramo(HistoriaID int, Posicion int, directorio string, repo Rep
 		return op.Err(err)
 	}
 	if Tramo.Imagen == "" {
-		return op.ErrDatoInvalido().Msg("No hay imagen que eliminar")
+		return op.E(gko.ErrDatoInvalido).Msg("No hay imagen que eliminar")
 	}
 	err = os.Remove(filepath.Join(directorio, Tramo.Imagen))
 	if err != nil {
@@ -160,7 +160,7 @@ func SetImagenProyecto(proyectoID string, format string, input io.Reader, dir st
 		return op.Err(err)
 	}
 	if format != "jpeg" && format != "png" && format != "gif" {
-		return op.ErrNoSoportado().Msgf("Formato de imagen no soportado: %v", format)
+		return op.E(gko.ErrNoSoportado).Msgf("Formato de imagen no soportado: %v", format)
 	}
 	uniqueID, err := gkoid.New62(8)
 	if err != nil {
@@ -179,7 +179,7 @@ func SetImagenProyecto(proyectoID string, format string, input io.Reader, dir st
 		return op.Err(err)
 	}
 	pry.Imagen = Filename
-	err = repo.UpdateProyecto(*pry)
+	err = repo.UpdateProyecto(pry.ProyectoID, *pry)
 	if err != nil {
 		return op.Err(err)
 	}

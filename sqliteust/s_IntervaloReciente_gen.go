@@ -54,7 +54,7 @@ func (s *Repositorio) scanRowsIntervaloReciente(rows *sql.Rows, op string) ([]us
 			&itvr.HistoriaID, &itvr.TareaID, &itvr.Inicio, &itvr.Fin, &tipo, &itvr.Descripcion, &itvr.Impedimentos, &itvr.SegundosEstimado, &itvr.SegundosUtilizado, &itvr.Estatus, &itvr.Titulo, &itvr.Objetivo, &itvr.Completada, &itvr.Prioridad,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		itvr.Tipo = ust.SetTipoTareaDB(tipo)
 		items = append(items, itvr)
@@ -72,7 +72,7 @@ func (s *Repositorio) ListIntervalosRecientes() ([]ust.IntervaloReciente, error)
 			"WHERE interv.fin <> '' ORDER BY interv.inicio DESC LIMIT 20",
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsIntervaloReciente(rows, op)
 }
@@ -87,7 +87,7 @@ func (s *Repositorio) ListIntervalosRecientesAbiertos() ([]ust.IntervaloReciente
 			"WHERE interv.fin == '' ORDER BY interv.inicio DESC LIMIT 20",
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsIntervaloReciente(rows, op)
 }

@@ -26,10 +26,10 @@ func NuevoProyecto(clave string, titulo string, desc string, repo Repo) error {
 		Posicion:      1,
 	}
 	if pro.ProyectoID == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("clave de proyecto indefinida")
+		return gko.ErrDatoIndef.Msg("clave de proyecto indefinida").Op(op)
 	}
 	if pro.Titulo == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("titulo de proyecto indefinido")
+		return gko.ErrDatoIndef.Msg("titulo de proyecto indefinido").Op(op)
 	}
 	err := repo.InsertProyecto(pro)
 	if err != nil {
@@ -51,14 +51,14 @@ func ModificarProyecto(proyectoID string, nuevo ust.Proyecto, repo Repo) error {
 	nuevo.Color = gkt.SinEspaciosNinguno(nuevo.Color)
 
 	if nuevo.ProyectoID == "" {
-		return op.ErrDatoIndef().Msg("clave de proyecto indefinida")
+		return op.E(gko.ErrDatoIndef).Msg("clave de proyecto indefinida")
 	}
 	if nuevo.Titulo == "" {
-		return op.ErrDatoIndef().Msg("titulo de proyecto indefinido")
+		return op.E(gko.ErrDatoIndef).Msg("titulo de proyecto indefinido")
 	}
 
 	if pro.ProyectoID != nuevo.ProyectoID {
-		return op.ErrNoSoportado().Msg("no se puede cambiar la clave del proyecto")
+		return op.E(gko.ErrNoSoportado).Msg("no se puede cambiar la clave del proyecto")
 	}
 	if pro.Titulo != nuevo.Titulo {
 		pro.Titulo = nuevo.Titulo
@@ -73,7 +73,7 @@ func ModificarProyecto(proyectoID string, nuevo ust.Proyecto, repo Repo) error {
 		pro.Posicion = nuevo.Posicion
 	}
 
-	err = repo.UpdateProyecto(*pro)
+	err = repo.UpdateProyecto(pro.ProyectoID, *pro)
 	if err != nil {
 		return op.Err(err)
 	}
@@ -104,7 +104,7 @@ func ParcharProyecto(proyectoID string, param string, newVal string, repo Repo) 
 	default:
 		return op.Msgf("Parámetro no soportado: %v", param)
 	}
-	err = repo.UpdateProyecto(*Proyecto)
+	err = repo.UpdateProyecto(Proyecto.ProyectoID, *Proyecto)
 	if err != nil {
 		return op.Err(err)
 	}
@@ -118,7 +118,7 @@ func EliminarProyecto(ProyectoID string, repo Repo) error {
 		return gko.Err(err).Op(op)
 	}
 	if len(pers) != 0 {
-		return gko.ErrHayHuerfanos().Msg("Para eliminar este proyecto primero elimine todas sus historias y personajes")
+		return gko.ErrHayHuerfanos.Msg("Para eliminar este proyecto primero elimine todas sus historias y personajes")
 	}
 	err = repo.DeleteProyecto(ProyectoID)
 	if err != nil {

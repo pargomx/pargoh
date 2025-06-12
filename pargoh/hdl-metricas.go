@@ -241,14 +241,14 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			// Conocer a quién pertenece.
 			tarea, ok := TareasMap[itv.TareaID]
 			if !ok {
-				return gko.ErrNoEncontrado().Msgf("Tarea %d no encontrada", itv.TareaID)
+				return gko.ErrNoEncontrado.Msgf("Tarea %d no encontrada", itv.TareaID)
 			}
 			if tarea.HistoriaID == dhistorias.QUICK_TASK_HISTORIA_ID {
 				continue
 			}
 			historia, ok := HistoriasMap[tarea.HistoriaID]
 			if !ok {
-				return gko.ErrNoEncontrado().Msgf("Historia %d no encontrada", tarea.HistoriaID)
+				return gko.ErrNoEncontrado.Msgf("Historia %d no encontrada", tarea.HistoriaID)
 			}
 
 			Dias[i].Segundos += itv.Segundos

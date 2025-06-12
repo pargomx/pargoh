@@ -52,9 +52,9 @@ func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria)
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Historia de usuario no encontrado")
+			return gko.ErrNoEncontrado.Msg("Historia de usuario no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -67,7 +67,7 @@ func (s *Repositorio) scanRowNodoHistoria(row *sql.Row, nhist *ust.NodoHistoria)
 func (s *Repositorio) GetNodoHistoria(HistoriaID int) (*ust.NodoHistoria, error) {
 	const op string = "GetNodoHistoria"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasNodoHistoria+" "+fromNodoHistoria+
@@ -97,7 +97,7 @@ func (s *Repositorio) scanRowsNodoHistoria(rows *sql.Rows, op string) ([]ust.Nod
 			&nhist.HistoriaID, &nhist.ProyectoID, &nhist.PersonaID, &nhist.Titulo, &nhist.Objetivo, &nhist.Prioridad, &nhist.Completada, &nhist.PadreID, &nhist.PadreTbl, &nhist.Nivel, &nhist.Posicion, &nhist.SegundosPresupuesto, &nhist.Descripcion, &nhist.Notas, &nhist.NumHistorias, &nhist.NumTareas, &nhist.SegundosEstimado, &nhist.SegundosUtilizado,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, nhist)
 	}
@@ -113,7 +113,7 @@ func (s *Repositorio) ListNodoHistorias() ([]ust.NodoHistoria, error) {
 		"SELECT " + columnasNodoHistoria + " " + fromNodoHistoria,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }
@@ -129,7 +129,7 @@ func (s *Repositorio) ListNodoHistoriasByProyectoID(ProyectoID string) ([]ust.No
 		ProyectoID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }
@@ -145,7 +145,7 @@ func (s *Repositorio) ListNodoHistoriasByPadreID(PadreID int) ([]ust.NodoHistori
 		PadreID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }
@@ -160,7 +160,7 @@ func (s *Repositorio) ListNodoHistoriasPrioritarias() ([]ust.NodoHistoria, error
 			"WHERE his.prioridad > 0 AND completada == 0 ORDER BY (his.prioridad * nod.nivel) + 20 - nod.posicion DESC LIMIT 50",
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }
@@ -176,7 +176,7 @@ func (s *Repositorio) ListNodoHistoriasRelacionadas(HistoriaID int) ([]ust.NodoH
 		HistoriaID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodoHistoria(rows, op)
 }

@@ -11,7 +11,7 @@ import (
 func (s *servidor) postReferencia(c *gecko.Context) error {
 	refHistoriaID := c.FormInt("target_historia_id")
 	if refHistoriaID == 0 {
-		return gko.ErrDatoIndef().Msg("Debe seleccionar una historia de usuario")
+		return gko.ErrDatoIndef.Msg("Debe seleccionar una historia de usuario")
 	}
 	err := dhistorias.AgregarReferencia(s.repo, c.PathInt("historia_id"), refHistoriaID)
 	if err != nil {

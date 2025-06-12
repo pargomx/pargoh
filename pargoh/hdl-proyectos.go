@@ -22,12 +22,12 @@ func (s *servidor) listaProyectos(c *gecko.Context) error {
 	// Limitar acceso a proyectos...
 	ses, ok := c.Sesion.(*Sesion)
 	if !ok {
-		return gko.ErrDatoInvalido().Msg("Sesión inválida")
+		return gko.ErrDatoInvalido.Msg("Sesión inválida")
 	}
 	if ses.Usuario != s.cfg.adminUser {
 		pry, err := s.repo.GetProyecto(ses.Usuario)
 		if err != nil {
-			gko.Err(err).Strf("usuario '%v' no correspone a ningún proyecto", ses.Usuario).ErrNoAutorizado().Log()
+			gko.Err(err).Strf("usuario '%v' no correspone a ningún proyecto", ses.Usuario).E(gko.ErrNoAutorizado).Log()
 			return c.RedirFull("/logout")
 		}
 		Proyectos = []ust.Proyecto{*pry}
@@ -120,7 +120,7 @@ func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
 		return err
 	}
 	if c.PromptVal() != "eliminar_"+pry.Proyecto.ProyectoID {
-		return gko.ErrDatoInvalido().Msg("No se confirmó la eliminación")
+		return gko.ErrDatoInvalido.Msg("No se confirmó la eliminación")
 	}
 	err = pry.EliminarPorCompleto(s.repo)
 	if err != nil {

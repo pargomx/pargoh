@@ -88,7 +88,7 @@ func (s *servidor) exportarProyectoTeX(c *gecko.Context) error {
 func (s *servidor) exportarPersonaDocx(apiKey string) gecko.HandlerFunc {
 	var errLic error
 	if apiKey == "" {
-		errLic = gko.ErrDatoIndef().Msg("API Key para Unidoc indefinida")
+		errLic = gko.ErrDatoIndef.Msg("API Key para Unidoc indefinida")
 	} else {
 		errLic = license.SetMeteredKey(apiKey)
 		if errLic != nil {

@@ -235,7 +235,7 @@ func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	} else if hist.PadreTbl == ust.TipoNodoHistoria {
 		return c.RedirOtrof("/historias/%v", hist.PadreID)
 	} else {
-		return gko.ErrInesperado().Msgf("reordenarHistoria: padre %v no es persona ni historia, sino %v", hist.PadreID, hist.PadreTbl)
+		return gko.ErrInesperado.Msgf("reordenarHistoria: padre %v no es persona ni historia, sino %v", hist.PadreID, hist.PadreTbl)
 	}
 }
 

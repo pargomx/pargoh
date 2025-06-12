@@ -15,13 +15,13 @@ import (
 func (s *Repositorio) InsertTramo(tra ust.Tramo) error {
 	const op string = "InsertTramo"
 	if tra.HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if tra.Posicion == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	if tra.Texto == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Texto sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Texto sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO tramos "+
 		"(historia_id, posicion, texto, imagen) "+
@@ -29,7 +29,7 @@ func (s *Repositorio) InsertTramo(tra ust.Tramo) error {
 		tra.HistoriaID, tra.Posicion, tra.Texto, tra.Imagen,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op)
+		return gko.ErrAlEscribir.Err(err).Op(op)
 	}
 	return nil
 }
@@ -41,13 +41,13 @@ func (s *Repositorio) InsertTramo(tra ust.Tramo) error {
 func (s *Repositorio) UpdateTramo(tra ust.Tramo) error {
 	const op string = "UpdateTramo"
 	if tra.HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if tra.Posicion == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	if tra.Texto == "" {
-		return gko.ErrDatoIndef().Op(op).Msg("Texto sin especificar").Str("required_sin_valor")
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Texto sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE tramos SET "+
@@ -57,7 +57,7 @@ func (s *Repositorio) UpdateTramo(tra ust.Tramo) error {
 		tra.HistoriaID, tra.Posicion,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
@@ -74,14 +74,14 @@ func (s *Repositorio) ExisteTramo(HistoriaID int, Posicion int) error {
 	).Scan(&num)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return gko.ErrNoEncontrado().Err(ust.ErrTramoNotFound).Op(op)
+			return gko.ErrNoEncontrado.Msg("Tramo no encontrado").Op(op)
 		}
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	if num > 1 {
-		return gko.ErrInesperado().Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
+		return gko.ErrInesperado.Err(nil).Op(op).Str("existen más de un registro para la pk").Ctx("registros", num)
 	} else if num == 0 {
-		return gko.ErrNoEncontrado().Err(ust.ErrTramoNotFound).Op(op)
+		return gko.ErrNoEncontrado.Msg("Tramo no encontrado").Op(op)
 	}
 	return nil
 }
@@ -92,10 +92,10 @@ func (s *Repositorio) ExisteTramo(HistoriaID int, Posicion int) error {
 func (s *Repositorio) DeleteTramo(HistoriaID int, Posicion int) error {
 	const op string = "DeleteTramo"
 	if HistoriaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if Posicion == 0 {
-		return gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	err := s.ExisteTramo(HistoriaID, Posicion)
 	if err != nil {
@@ -106,14 +106,14 @@ func (s *Repositorio) DeleteTramo(HistoriaID int, Posicion int) error {
 		HistoriaID, Posicion,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op).Ctx("historia_id", HistoriaID).Ctx("Pos", Posicion)
+		return gko.ErrAlEscribir.Err(err).Op(op).Ctx("historia_id", HistoriaID).Ctx("Pos", Posicion)
 	}
 	_, err = s.db.Exec(
 		"UPDATE tramos SET posicion = posicion - 1 WHERE historia_id = ? AND posicion > ?",
 		HistoriaID, Posicion,
 	)
 	if err != nil {
-		return gko.ErrAlEscribir().Err(err).Op(op).Ctx("historia_id", HistoriaID).Ctx("Pos", Posicion)
+		return gko.ErrAlEscribir.Err(err).Op(op).Ctx("historia_id", HistoriaID).Ctx("Pos", Posicion)
 	}
 	return nil
 }
@@ -146,9 +146,9 @@ func (s *Repositorio) scanRowTramo(row *sql.Row, tra *ust.Tramo) error {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return gko.ErrNoEncontrado().Msg("Tramo no se encuentra")
+			return gko.ErrNoEncontrado.Msg("Tramo no encontrado")
 		}
-		return gko.ErrInesperado().Err(err)
+		return gko.ErrInesperado.Err(err)
 	}
 	return nil
 }
@@ -161,10 +161,10 @@ func (s *Repositorio) scanRowTramo(row *sql.Row, tra *ust.Tramo) error {
 func (s *Repositorio) GetTramo(HistoriaID int, Posicion int) (*ust.Tramo, error) {
 	const op string = "GetTramo"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("HistoriaID sin especificar")
 	}
 	if Posicion == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("Posicion sin especificar").Str("pk_indefinida")
+		return nil, gko.ErrDatoIndef.Str("pk_indefinida").Op(op).Msg("Posicion sin especificar")
 	}
 	row := s.db.QueryRow(
 		"SELECT "+columnasTramo+" "+fromTramo+
@@ -194,7 +194,7 @@ func (s *Repositorio) scanRowsTramo(rows *sql.Rows, op string) ([]ust.Tramo, err
 			&tra.HistoriaID, &tra.Posicion, &tra.Texto, &tra.Imagen,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, tra)
 	}
@@ -202,12 +202,12 @@ func (s *Repositorio) scanRowsTramo(rows *sql.Rows, op string) ([]ust.Tramo, err
 }
 
 //  ================================================================  //
-//  ========== LIST_BY =============================================  //
+//  ========== LIST_BY HISTORIA_ID =================================  //
 
 func (s *Repositorio) ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error) {
 	const op string = "ListTramosByHistoriaID"
 	if HistoriaID == 0 {
-		return nil, gko.ErrDatoIndef().Op(op).Msg("HistoriaID sin especificar").Str("param_indefinido")
+		return nil, gko.ErrDatoIndef.Str("param_indefinido").Op(op).Msg("HistoriaID sin especificar")
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasTramo+" "+fromTramo+
@@ -215,7 +215,7 @@ func (s *Repositorio) ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error
 		HistoriaID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsTramo(rows, op)
 }

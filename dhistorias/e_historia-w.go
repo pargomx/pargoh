@@ -142,10 +142,10 @@ func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) err
 				return op.Err(err)
 			}
 			if horas < 0 {
-				return op.ErrDatoInvalido().Msg("El presupuesto debe ser positivo")
+				return op.E(gko.ErrDatoInvalido).Msg("El presupuesto debe ser positivo")
 			}
 			if horas > 30 {
-				return op.ErrDatoInvalido().Msgf("Establezca un presupuesto menor, %v son demasiadas horas para una sola historia.", horas)
+				return op.E(gko.ErrDatoInvalido).Msgf("Establezca un presupuesto menor, %v son demasiadas horas para una sola historia.", horas)
 			}
 			Hist.SegundosPresupuesto = horas * 3600
 		}

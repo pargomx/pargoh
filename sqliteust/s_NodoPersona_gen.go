@@ -46,7 +46,7 @@ func (s *Repositorio) scanRowsNodoPersona(rows *sql.Rows, op string) ([]ust.Nodo
 			&nper.PersonaID, &nper.ProyectoID, &nper.Nombre, &nper.Descripcion, &nper.PadreID, &nper.PadreTbl, &nper.Nivel, &nper.Posicion,
 		)
 		if err != nil {
-			return nil, gko.ErrInesperado().Err(err).Op(op)
+			return nil, gko.ErrInesperado.Err(err).Op(op)
 		}
 		items = append(items, nper)
 	}
@@ -64,7 +64,7 @@ func (s *Repositorio) ListNodosPersonas(ProyectoID string) ([]ust.NodoPersona, e
 		ProyectoID,
 	)
 	if err != nil {
-		return nil, gko.ErrInesperado().Err(err).Op(op)
+		return nil, gko.ErrInesperado.Err(err).Op(op)
 	}
 	return s.scanRowsNodoPersona(rows, op)
 }

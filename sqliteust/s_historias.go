@@ -8,17 +8,17 @@ import (
 func (s *Repositorio) CambiarProyectoDeHistoriasByPersonaID(personaID int, proyectoID string) error {
 	const op string = "CambiarProyectoDeHistoriasByPersonaID"
 	if personaID == 0 {
-		return gko.ErrDatoIndef().Op(op).Str("personaID sin especificar")
+		return gko.ErrDatoIndef.Str("personaID sin especificar").Op(op)
 	}
 	if proyectoID == "" {
-		return gko.ErrDatoIndef().Op(op).Str("proyectoID sin especificar")
+		return gko.ErrDatoIndef.Str("proyectoID sin especificar").Op(op)
 	}
 	_, err := s.db.Exec(
 		"UPDATE historias SET proyecto_id = ? WHERE persona_id = ?",
 		proyectoID, personaID,
 	)
 	if err != nil {
-		return gko.ErrInesperado().Err(err).Op(op)
+		return gko.ErrInesperado.Err(err).Op(op)
 	}
 	return nil
 }
