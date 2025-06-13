@@ -413,7 +413,7 @@ func (s *SqliteDB) aplicarMigraciones(aplicadas map[[2]int]migracionAplicada, po
 					if err != nil {
 						return execErr.Err(err)
 					}
-					outputMsgs = append(outputMsgs, fmt.Sprintf("%v(%d): %v", migra.filename, i+1, msg))
+					outputMsgs = append(outputMsgs, fmt.Sprintf("%v(%02d): %v", migra.filename, i+1, msg))
 				}
 
 			} else {
