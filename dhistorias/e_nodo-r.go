@@ -61,26 +61,3 @@ func GetHijosDeNodo(id int, repo Repo) ([]Nodo, error) {
 	}
 	return hijos, nil
 }
-
-func GetNodoConHijos(id int, repo Repo) (*NodoConHijos, error) {
-	op := gko.Op("GetNodoConHijos").Ctx("id", id)
-	nod, err := GetNodo(id, repo)
-	if err != nil {
-		return nil, op.Err(err)
-	}
-	hijos, err := GetHijosDeNodo(nod.Nodo.NodoID, repo)
-	if err != nil {
-		return nil, op.Err(err)
-	}
-	padre, _ := GetNodo(nod.Nodo.PadreID, repo)
-	// Puede que no tenga padre y se deja nil
-	nodo := NodoConHijos{
-		Nodo:     nod.Nodo,
-		Persona:  nod.Persona,
-		Historia: nod.Historia,
-		Tarea:    nod.Tarea,
-		Padre:    padre,
-		Hijos:    hijos,
-	}
-	return &nodo, nil
-}

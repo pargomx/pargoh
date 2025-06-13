@@ -293,6 +293,7 @@ func FinalizarTarea(tareaID int, repo Repo) (int, error) {
 	return tar.HistoriaID, nil
 }
 
+/*
 func MaterializarTiempoRealTareas(repo Repo) error {
 	tareas, err := repo.ListTareas()
 	if err != nil {
@@ -310,6 +311,7 @@ func MaterializarTiempoRealTareas(repo Repo) error {
 	}
 	return nil
 }
+*/
 
 func ParcharIntervalo(tareaID int, inicio string, nuevoInicio string, nuevoFinal string, repo Repo) (int, error) {
 	op := gko.Op("ParcharIntervalo")

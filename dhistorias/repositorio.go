@@ -93,7 +93,6 @@ type Repo interface {
 	ListLatidos(desde, hasta string) ([]ust.Latido, error)
 	ListPersonas() ([]ust.Persona, error)
 	ListTareasEnCurso() ([]ust.Tarea, error)
-	ListHistoriasCosto(personaID int) ([]ust.HistoriaCosto, error)
 	ListTareasBugs() ([]ust.Tarea, error)
 	ListIntervalosRecientes() ([]ust.IntervaloReciente, error)
 	ListIntervalosRecientesAbiertos() ([]ust.IntervaloReciente, error)

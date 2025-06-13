@@ -152,7 +152,6 @@ func main() {
 	s.GET("/proyectos", s.listaProyectos)
 	s.POS("/proyectos", s.postProyecto)
 	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
-	s.GET("/proyectos/{proyecto_id}/metricas", s.getMetricasProyecto)
 	s.GET("/proyectos/{proyecto_id}/doc", s.getDocumentacionProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
 	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
@@ -165,7 +164,6 @@ func main() {
 	s.GET("/personas/{persona_id}/doc", s.getPersonaDoc)
 	s.GET("/personas/{persona_id}/debug", s.getPersonaDebug)
 	s.POS("/personas/{persona_id}", s.postHistoriaDePersona)
-	s.GET("/personas/{persona_id}/metricas", s.getMétricasPersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
@@ -240,23 +238,25 @@ func main() {
 	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
 
 	// Exportar e importar
-	s.GET("/arbol", s.exportarArbolTXT)
-	s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
-	s.POS("/proyectos/importar", s.importarJSON)
-	s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
-	s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
-	s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarProyectoDocx)
-	s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
-	s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
-	s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
-	s.POS("/personas/{persona_id}/docx", s.exportarPersonaDocx(s.cfg.unidocApiKey))
-	s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
+	/*
+		s.GET("/arbol", s.exportarArbolTXT)
+		s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
+		s.POS("/proyectos/importar", s.importarJSON)
+		s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
+		s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
+		s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarProyectoDocx)
+		s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
+		s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
+		s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
+		s.POS("/personas/{persona_id}/docx", s.exportarPersonaDocx(s.cfg.unidocApiKey))
+		s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
+	*/
 
 	// General
 	s.GET("/metricas", s.getMétricas)
-	s.GET("/metricas2", s.getMétricas2)
-	s.GET("/materializar-tiempos", s.materializarTiemposTareas)
-	s.GET("/materializar-historias", s.materializarHistorias)
+	// s.GET("/metricas2", s.getMétricas2)
+	// s.GET("/materializar-tiempos", s.materializarTiemposTareas)
+	// s.GET("/materializar-historias", s.materializarHistorias)
 
 	s.GET("/reload", s.brodcastReload)
 	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)

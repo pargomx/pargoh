@@ -139,6 +139,7 @@ func (s *servidor) terminarTarea(c *gecko.Context) error {
 	return c.AskedForFallback("/historias/%v", historiaID)
 }
 
+/*
 func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
 	err := dhistorias.MaterializarTiempoRealTareas(s.repo)
 	if err != nil {
@@ -146,6 +147,7 @@ func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
 	}
 	return c.StringOk("Tiempos actualizados según los intervalos de trabajo")
 }
+*/
 
 func (s *servidor) getTarea(c *gecko.Context) error {
 	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))

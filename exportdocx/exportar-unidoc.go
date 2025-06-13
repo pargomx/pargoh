@@ -1,21 +1,8 @@
 package exportdocx
 
-import (
-	"fmt"
-	"monorepo/dhistorias"
-	"monorepo/ust"
-	"strings"
-
-	"github.com/pargomx/gecko/gko"
-	"github.com/unidoc/unioffice/common"
-	"github.com/unidoc/unioffice/document"
-	"github.com/unidoc/unioffice/measurement"
-	"github.com/unidoc/unioffice/schema/soo/wml"
-)
-
 // ================================================================ //
 // ========== unidoc ============================================== //
-
+/*
 func ExportarDocx(personaID int, repo dhistorias.Repo, filepath string) error {
 	op := gko.Op("ExportarDocx").Ctx("personaID", personaID)
 
@@ -318,3 +305,4 @@ func addHistoriaDocx(doc *document.Document, his dhistorias.HistoriaRecursiva, n
 	}
 	return nil
 }
+*/

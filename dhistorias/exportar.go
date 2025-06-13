@@ -2,11 +2,8 @@ package dhistorias
 
 import (
 	"fmt"
-	"io"
 	"monorepo/ust"
-	"strings"
 
-	"github.com/gingfrederik/docx"
 	"github.com/pargomx/gecko/gko"
 )
 
@@ -107,7 +104,7 @@ func GetProyectoExport(proyectoID string, repo Repo) (*ProyectoExport, error) {
 }
 
 // ================================================================ //
-
+/*
 func GetPersonaExport(personaID int, repo Repo) (*PersonaExport, error) {
 	per, err := repo.GetPersona(personaID)
 	if err != nil {
@@ -140,7 +137,7 @@ func GetPersonaExport(personaID int, repo Repo) (*PersonaExport, error) {
 	}
 	return &Persona, nil
 }
-
+*/
 // ================================================================ //
 
 func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport {
@@ -184,7 +181,7 @@ func getHistoriaExportsRecursiva(his ust.NodoHistoria, repo Repo) HistoriaExport
 }
 
 // ================================================================ //
-
+/*
 func Importar(p ProyectoExport, repo Repo) error {
 	err := repo.InsertProyecto(p.Proyecto)
 	if err != nil {
@@ -254,9 +251,10 @@ func insertHistoriaRecursiva(padreID int, his HistoriaExport, repo Repo) error {
 	}
 	return nil
 }
-
+*/
 // ================================================================ //
 
+/*
 func ExportarMarkdown(proyectoID string, w io.Writer, repo Repo) error {
 	Proyecto, err := repo.GetProyecto(proyectoID)
 	if err != nil {
@@ -454,3 +452,4 @@ func printHistoriaDocx(f *docx.File, his ust.NodoHistoria, repo Repo) error {
 	}
 	return nil
 }
+*/

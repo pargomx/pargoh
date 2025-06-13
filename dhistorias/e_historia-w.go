@@ -308,6 +308,7 @@ func MoverHistoria(historiaID int, nuevoPadreID int, repo Repo) error {
 	return nil
 }
 
+/*
 // Actualiza los campos PersonaID y ProyectoID de todas las historias.
 func MaterializarAncestrosDeHistorias(repo Repo) error {
 	op := gko.Op("MaterializarAncestrosDeHistorias")
@@ -329,3 +330,4 @@ func MaterializarAncestrosDeHistorias(repo Repo) error {
 	}
 	return nil
 }
+*/

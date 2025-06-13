@@ -1,11 +1,6 @@
 package dhistorias
 
-import (
-	"monorepo/ust"
-
-	"github.com/pargomx/gecko/gko"
-)
-
+/*
 func ImportarFake(repo Repo) error {
 	op := gko.Op("CrearFake")
 
@@ -83,3 +78,4 @@ func ImportarFake(repo Repo) error {
 
 	return nil
 }
+*/

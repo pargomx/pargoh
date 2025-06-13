@@ -1,18 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"monorepo/dhistorias"
-	"monorepo/exportdocx"
-	"path/filepath"
-	"strings"
-	"time"
-
-	"github.com/pargomx/gecko"
-	"github.com/pargomx/gecko/gko"
-	"github.com/unidoc/unioffice/common/license"
-)
-
+/*
 func (s *servidor) exportarJSON(c *gecko.Context) error {
 	out, err := dhistorias.GetProyectoExport(c.PathVal("proyecto_id"), s.repo)
 	if err != nil {
@@ -152,3 +140,4 @@ func printHistRec(his dhistorias.HistoriaExport, nivel int) string {
 	}
 	return res
 }
+*/

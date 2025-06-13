@@ -1,14 +1,10 @@
 package dhistorias
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/pargomx/gecko/gko"
-	"github.com/rwestlund/gotex"
-
 	_ "embed"
 )
+
+/*
 
 // ================================================================ //
 // ========== LaTeX =============================================== //
@@ -192,3 +188,5 @@ func (b *latexBuilder) ToPDF() ([]byte, error) {
 	}
 	return pdf, nil
 }
+
+*/
