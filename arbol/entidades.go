@@ -5,18 +5,21 @@ package arbol
 // Por default se generan dos grupos:
 //   - "Activos" para los proyectos que se muestran en la página de inicio.
 //   - "Archivados" para los que se ocultan de la página de inicio.
+//
+// El padre siempre es el nodo ROOT.
 type Grupo struct {
 	GrupoID  int
-	PadreID  int
 	Posicion int
 
 	Nombre string
 }
 
 // Proyecto representa el esfuerzo de desarrollar una o varias apps.
+//
+// El padre siempre es un Grupo.
 type Proyecto struct {
 	ProyectoID int // nodo "PRY"
-	PadreID    int
+	GrupoID    int
 	Posicion   int
 
 	Titulo      string
@@ -35,9 +38,11 @@ type Proyecto struct {
 
 // Persona de las historias de usuario descendientes. Para hacer mapa de
 // empatía y escribir historias desde la perspectiva del usuario.
+//
+// El padre puede ser un proyecto o historia.
 type Persona struct {
 	PersonaID int // nodo "PER"
-	PadreID   int // antes ProyectoID
+	PadreID   int // Proyecto o Historia.
 	Posicion  int
 
 	Nombre      string
@@ -61,20 +66,24 @@ type Persona struct {
 // Historia de usuario que representan funcionalidad que aporta valor a quien
 // utiliza la aplicación o el software. Se pueden descomponer en historias más
 // pequeñas hasta hacerlas unidades discretas de trabajo.
+//
+// El padre puede ser un proyecto, persona o historia.
 type HistoriaDeUsuario struct {
-	HistoriaID int // `historias.historia_id`
-	PadreID    int // `historias.padre_id`  Historia padre para el árbol
-	Posicion   int // `historias.posicion`  Posición consecutiva con respecto a sus nodos hermanos
+	HistoriaID int
+	PadreID    int // Proyecto, Persona, Historia.
+	Posicion   int
 
-	Titulo      string // `historias.titulo`
-	Objetivo    string // `historias.objetivo`
-	Descripcion string // `historias.descripcion`  Descripción  de la historia en infinitivo para que la lea el usuario en la documentación.
-	Notas       string // `historias.notas`  Apuntes técnicos sobre la implementación de la historia.
+	Titulo      string
+	Descripcion string
+	Objetivo    string
+	Notas       string
 
-	Prioridad           int  // `historias.prioridad`
-	Completada          bool // `historias.completada`
-	SegundosPresupuesto int  // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
-	// Centavos            int
+	Imagen string
+
+	Prioridad           int
+	Completada          bool
+	SegundosPresupuesto int
+	Centavos            int
 
 	// Legacy
 	PersonaID  int
@@ -88,47 +97,61 @@ type HistoriaDeUsuario struct {
 // Cuestiones técnicas o de configuración que son parte del proyecto en general
 // pero no aportan valor funcional al software, sino que mejoran la seguridad,
 // eficiencia o mantenibilidad del sistema.
-type HistoriaTécnica struct {
-	HistoriaID int // `historias.historia_id`
-	PadreID    int // `historias.padre_id`  Historia padre para el árbol
-	Posicion   int // `historias.posicion`  Posición consecutiva con respecto a sus nodos hermanos
+//
+// El padre puede ser un proyecto, persona o historia.
+type HistoriaTecnica struct {
+	HistoriaID int
+	PadreID    int // Proyecto, Persona, Historia.
+	Posicion   int
 
-	Titulo      string // `historias.titulo`
-	Objetivo    string // `historias.objetivo`
-	Descripcion string // `historias.descripcion`  Descripción  de la historia en infinitivo para que la lea el usuario en la documentación.
-	Notas       string // `historias.notas`  Apuntes técnicos sobre la implementación de la historia.
+	Titulo      string
+	Descripcion string
+	Objetivo    string
+	Notas       string
 
-	Prioridad  int  // `historias.prioridad`
-	Completada bool // `historias.completada`
+	Imagen string
 
-	SegundosPresupuesto   int // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
-	SegundosDocumentacion int // `historias.segundos_documentacion`
-	SegundosUtilizado     int // `historias.segundos_utilizado`
+	Prioridad           int
+	Completada          bool
+	SegundosPresupuesto int
+	Centavos            int
+
+	// Materializa
+	SegundosDocumentacion int
+	SegundosUtilizado     int
 }
 
 // Actividades de gestión parte del ciclo de vida de desarrollo y mantenimiento
 // de la aplicación:  documentación, juntas, soporte técnico, proceso de venta, etc.
+//
+// El padre puede ser un proyecto, persona o historia.
 type ActividadDeGestión struct {
-	HistoriaID int // `historias.historia_id`
-	PadreID    int // `historias.padre_id`  Historia padre para el árbol
-	Posicion   int // `historias.posicion`  Posición consecutiva con respecto a sus nodos hermanos
+	HistoriaID int
+	PadreID    int // Proyecto, Persona, Historia.
+	Posicion   int
 
-	Titulo      string // `historias.titulo`
-	Objetivo    string // `historias.objetivo`
-	Descripcion string // `historias.descripcion`  Descripción  de la historia en infinitivo para que la lea el usuario en la documentación.
-	Notas       string // `historias.notas`  Apuntes técnicos sobre la implementación de la historia.
+	Titulo      string
+	Descripcion string
+	Objetivo    string
+	Notas       string
 
-	Prioridad  int  // `historias.prioridad`
-	Completada bool // `historias.completada`
+	Imagen string
 
-	SegundosPresupuesto   int // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
-	SegundosDocumentacion int // `historias.segundos_documentacion`
-	SegundosUtilizado     int // `historias.segundos_utilizado`
+	Prioridad           int
+	Completada          bool
+	SegundosPresupuesto int
+	Centavos            int
+
+	// Materializa
+	SegundosDocumentacion int
+	SegundosUtilizado     int
 }
 
-// Regla de negocio
+// Regla de negocio.
+//
+// El padre siempre es una historia.
 type Regla struct {
-	NodoID     int
+	ReglaID    int // NodoID
 	HistoriaID int // PadreID
 	Posicion   int
 
@@ -151,6 +174,8 @@ type Regla struct {
 }
 
 // Tarea de desarrollo
+//
+// El padre siempre es una historia.
 type Tarea struct {
 	TareaID    int // NodoID
 	HistoriaID int // PadreID
@@ -164,18 +189,20 @@ type Tarea struct {
 	// 	Color  string
 	// Imagen string
 
-	Prioridad int // Importancia
-	Estatus   int
-	Segundos  int
-	Centavos  int
+	Prioridad        int // Importancia
+	Estatus          int
+	SegundosEstimado int
+	// Centavos         int
 
 	// Legacy
-	SegundosEstimado  int
 	SegundosUtilizado int
 }
 
+// Tramo del viaje de usuario
+//
+// El padre siempre es una historia.
 type Tramo struct {
-	NodoID     int
+	TramoID    int // NodoID
 	HistoriaID int // PadreID
 	Posicion   int
 

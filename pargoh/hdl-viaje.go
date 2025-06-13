@@ -2,7 +2,6 @@ package main
 
 import (
 	"monorepo/dhistorias"
-	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
 )
@@ -20,11 +19,11 @@ func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
 }
 
 func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarTramoDeViaje(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.EliminarTramoDeViaje(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -35,11 +34,11 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 }
 
 func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarTramoDeViaje(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
+	err = dhistorias.EditarTramoDeViaje(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -50,11 +49,11 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 }
 
 func (s *servidor) reordenarTramo(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarTramo(sqlitepuente.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarTramo(tx.repo, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
 	if err != nil {
 		tx.Rollback()
 		return err

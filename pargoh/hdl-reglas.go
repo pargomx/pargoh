@@ -2,7 +2,6 @@ package main
 
 import (
 	"monorepo/dhistorias"
-	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
 )
@@ -21,11 +20,11 @@ func (s *servidor) postRegla(c *gecko.Context) error {
 }
 
 func (s *servidor) deleteRegla(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarRegla(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.EliminarRegla(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -37,11 +36,11 @@ func (s *servidor) deleteRegla(c *gecko.Context) error {
 }
 
 func (s *servidor) patchRegla(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarRegla(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
+	err = dhistorias.EditarRegla(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -53,11 +52,11 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 }
 
 func (s *servidor) marcarRegla(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.MarcarRegla(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.MarcarRegla(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -69,11 +68,11 @@ func (s *servidor) marcarRegla(c *gecko.Context) error {
 }
 
 func (s *servidor) reordenarRegla(c *gecko.Context) error {
-	tx, err := s.db.Begin()
+	tx, err := s.newRepoTx()
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarRegla(sqlitepuente.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarRegla(tx.repo, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
 	if err != nil {
 		tx.Rollback()
 		return err

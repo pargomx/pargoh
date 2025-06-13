@@ -48,7 +48,7 @@ type servidor struct {
 	cfg   configs
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
-	repo  *sqlitepuente.Repositorio
+	repo  dhistorias.Repo
 	auth  *authService
 
 	reloader reloader // websocket.go

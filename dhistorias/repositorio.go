@@ -84,4 +84,21 @@ type Repo interface {
 	InsertReferencia(ref ust.Referencia) error
 	DeleteReferencia(HistoriaID int, RefHistoriaID int) error
 	ListNodoHistoriasRelacionadas(HistoriaID int) ([]ust.NodoHistoria, error)
+
+	// Read only
+	FullTextSearch(search string) ([]ust.SearchResult, error)
+	ListNodoHistoriasByProyectoID(ProyectoID string) ([]ust.NodoHistoria, error)
+	ListDias() ([]string, error)
+	ListIntervalosEnDias() ([]ust.IntervaloEnDia, error)
+	ListLatidos(desde, hasta string) ([]ust.Latido, error)
+	ListPersonas() ([]ust.Persona, error)
+	ListTareasEnCurso() ([]ust.Tarea, error)
+	ListHistoriasCosto(personaID int) ([]ust.HistoriaCosto, error)
+	ListTareasBugs() ([]ust.Tarea, error)
+	ListIntervalosRecientes() ([]ust.IntervaloReciente, error)
+	ListIntervalosRecientesAbiertos() ([]ust.IntervaloReciente, error)
+	ListHistoriasByPadreID(nodoID int) ([]ust.Historia, error)
+
+	// Time tracker
+	InsertLatido(lat ust.Latido) error
 }
