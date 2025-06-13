@@ -2,7 +2,7 @@ package main
 
 import (
 	"monorepo/dhistorias"
-	"monorepo/sqliteust"
+	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
@@ -26,7 +26,7 @@ func (s *servidor) deleteReferencia(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarReferencia(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("ref_historia_id"))
+	err = dhistorias.EliminarReferencia(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("ref_historia_id"))
 	if err != nil {
 		tx.Rollback()
 		return err

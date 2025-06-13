@@ -2,7 +2,7 @@ package main
 
 import (
 	"monorepo/dhistorias"
-	"monorepo/sqliteust"
+	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
 )
@@ -25,7 +25,7 @@ func (s *servidor) deleteRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarRegla(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.EliminarRegla(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -41,7 +41,7 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarRegla(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
+	err = dhistorias.EditarRegla(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -57,7 +57,7 @@ func (s *servidor) marcarRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.MarcarRegla(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.MarcarRegla(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -73,7 +73,7 @@ func (s *servidor) reordenarRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarRegla(sqliteust.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarRegla(sqlitepuente.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
 	if err != nil {
 		tx.Rollback()
 		return err

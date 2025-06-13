@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"monorepo/dhistorias"
 	"monorepo/exportdocx"
-	"monorepo/sqliteust"
+	"monorepo/sqlitepuente"
 	"path/filepath"
 	"strings"
 	"time"
@@ -32,7 +32,7 @@ func (s *servidor) importarJSON(c *gecko.Context) error {
 	if err != nil {
 		return gko.Err(err).Op("Begin")
 	}
-	err = dhistorias.Importar(proyecto, sqliteust.NuevoRepo(tx))
+	err = dhistorias.Importar(proyecto, sqlitepuente.NuevoRepo(tx))
 	if err != nil {
 		tx.Rollback()
 		return gko.Err(err).Op("Importar")

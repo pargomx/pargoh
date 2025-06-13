@@ -9,7 +9,7 @@ import (
 	"monorepo/exportdocx"
 	"monorepo/htmltmpl"
 	"monorepo/migraciones"
-	"monorepo/sqliteust"
+	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
@@ -48,7 +48,7 @@ type servidor struct {
 	cfg   configs
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
-	repo  *sqliteust.Repositorio
+	repo  *sqlitepuente.Repositorio
 	auth  *authService
 
 	reloader reloader // websocket.go
@@ -95,7 +95,7 @@ func main() {
 	if s.cfg.debug.logDB {
 		s.db.ToggleLog()
 	}
-	s.repo = sqliteust.NuevoRepo(s.db)
+	s.repo = sqlitepuente.NuevoRepo(s.db)
 	s.timeTracker = dhistorias.NewGestionTimeTracker(s.repo, 0)
 
 	if s.cfg.sourceDir != "" {

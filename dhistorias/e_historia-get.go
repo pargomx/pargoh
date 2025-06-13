@@ -96,16 +96,16 @@ func GetHistoria(historiaID int, flags flagGet, repo Repo) (*HistoriaAgregado, e
 			return nil, op.Msgf("el nodo %v es un %v y no puede ser ancestro de historias", sigAncestroID, esteAncestro.NodoTbl)
 		}
 	}
-	if item.Persona.PersonaID == 0 {
-		return nil, op.Msgf("no se encontró la persona de la historia %v en sus ancestros", historiaID)
-	}
+	// if item.Persona.PersonaID == 0 {
+	// 	return nil, op.Msgf("no se encontró la persona de la historia %v en sus ancestros", historiaID)
+	// }
 
 	// Obtener proyecto
-	proy, err := repo.GetProyecto(item.Persona.ProyectoID)
-	if err != nil {
-		return nil, op.Err(err)
-	}
-	item.Proyecto = *proy
+	// proy, err := repo.GetProyecto(item.Persona.ProyectoID)
+	// if err != nil {
+	// 	return nil, op.Err(err)
+	// }
+	// item.Proyecto = *proy
 
 	// Obtener historias descendientes.
 	if flags&GetDescendientes != 0 {

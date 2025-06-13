@@ -2,7 +2,7 @@ package main
 
 import (
 	"monorepo/dhistorias"
-	"monorepo/sqliteust"
+	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
 )
@@ -24,7 +24,7 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarTramoDeViaje(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.EliminarTramoDeViaje(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -39,7 +39,7 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarTramoDeViaje(sqliteust.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
+	err = dhistorias.EditarTramoDeViaje(sqlitepuente.NuevoRepo(tx), c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -54,7 +54,7 @@ func (s *servidor) reordenarTramo(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarTramo(sqliteust.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarTramo(sqlitepuente.NuevoRepo(tx), c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
 	if err != nil {
 		tx.Rollback()
 		return err

@@ -2,7 +2,7 @@ package main
 
 import (
 	"monorepo/dhistorias"
-	"monorepo/sqliteust"
+	"monorepo/sqlitepuente"
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
@@ -47,7 +47,7 @@ func (s *servidor) postHistoriaDePersona(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	repotx := sqliteust.NuevoRepo(tx)
+	repotx := sqlitepuente.NuevoRepo(tx)
 	nuevaHistoria := ust.Historia{
 		HistoriaID: ust.NewRandomID(),
 		Titulo:     c.FormVal("titulo"),
@@ -73,7 +73,7 @@ func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	repotx := sqliteust.NuevoRepo(tx)
+	repotx := sqlitepuente.NuevoRepo(tx)
 	nuevaHistoria := ust.Historia{
 		HistoriaID: ust.NewRandomID(),
 		Titulo:     c.FormVal("titulo"),
@@ -100,7 +100,7 @@ func (s *servidor) postPadreParaHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	repotx := sqliteust.NuevoRepo(tx)
+	repotx := sqlitepuente.NuevoRepo(tx)
 
 	histActual, err := repotx.GetNodoHistoria(c.PathInt("historia_id"))
 	if err != nil {
@@ -215,7 +215,7 @@ func (s *servidor) reordenarHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), sqliteust.NuevoRepo(tx))
+	err = dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), sqlitepuente.NuevoRepo(tx))
 	if err != nil {
 		tx.Rollback()
 		return err
