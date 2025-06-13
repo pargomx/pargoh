@@ -13,30 +13,49 @@ type Grupo struct {
 	Nombre string
 }
 
-// Proyecto que representa una aplicación o grupo de aplicaciones para un cliente.
+// Proyecto representa el esfuerzo de desarrollar una o varias apps.
 type Proyecto struct {
-	ProyectoID string // `proyectos.proyecto_id`
+	ProyectoID int // nodo "PRY"
 	PadreID    int
-	Posicion   int // `proyectos.posicion`  Posición consecutiva con respecto a sus nodos hermanos
+	Posicion   int
 
-	Titulo        string // `proyectos.titulo`
-	Color         string // `proyectos.color`
-	Imagen        string // `proyectos.imagen`
-	Descripcion   string // `proyectos.descripcion`
-	FechaRegistro string // `proyectos.fecha_registro`
+	Titulo      string
+	Descripcion string
+	// Objetivo string
+	// Notas    string
+
+	Color  string
+	Imagen string
+
+	// Prioridad int
+	// Estatus   int
+	// Segundos  int
+	// Centavos  int
 }
 
-// Personaje de las historias de usuario descendientes. Para hacer mapa de
+// Persona de las historias de usuario descendientes. Para hacer mapa de
 // empatía y escribir historias desde la perspectiva del usuario.
-type Personaje struct {
-	PersonaID int // `personas.persona_id`
-	PadreID   int
+type Persona struct {
+	PersonaID int // nodo "PER"
+	PadreID   int // antes ProyectoID
 	Posicion  int
 
-	ProyectoID      string // `personas.proyecto_id`
-	Nombre          string // `personas.nombre`
-	Descripcion     string // `personas.descripcion`
-	SegundosGestion int    // `personas.segundos_gestion`  Número de segundos que se ha trabajado en la gestión y documentadión del proyecto dentro de Pargo
+	Nombre      string
+	Descripcion string
+	// Objetivo string
+	// Notas    string
+
+	// Color  string
+	// Imagen string
+
+	// Prioridad int
+	// Estatus   int
+	// Segundos  int
+	// Centavos  int
+
+	// LEGACY
+	ProyectoID      string
+	SegundosGestion int
 }
 
 // Historia de usuario que representan funcionalidad que aporta valor a quien
@@ -52,12 +71,14 @@ type HistoriaDeUsuario struct {
 	Descripcion string // `historias.descripcion`  Descripción  de la historia en infinitivo para que la lea el usuario en la documentación.
 	Notas       string // `historias.notas`  Apuntes técnicos sobre la implementación de la historia.
 
-	Prioridad  int  // `historias.prioridad`
-	Completada bool // `historias.completada`
+	Prioridad           int  // `historias.prioridad`
+	Completada          bool // `historias.completada`
+	SegundosPresupuesto int  // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
+	// Centavos            int
 
-	SegundosPresupuesto   int // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
-	SegundosDocumentacion int // `historias.segundos_documentacion`
-	SegundosUtilizado     int // `historias.segundos_utilizado`
+	// Legacy
+	PersonaID  int
+	ProyectoID string
 }
 
 // Historia técnica que representa una mejora o trabajo necesario relacionado
@@ -103,4 +124,61 @@ type ActividadDeGestión struct {
 	SegundosPresupuesto   int // `historias.segundos_presupuesto`  Tiempo estimado en segundos para implementar la historia de usuario en su totalidad
 	SegundosDocumentacion int // `historias.segundos_documentacion`
 	SegundosUtilizado     int // `historias.segundos_utilizado`
+}
+
+// Regla de negocio
+type Regla struct {
+	NodoID     int
+	HistoriaID int // PadreID
+	Posicion   int
+
+	Texto string
+	// Descripcion string
+	// Objetivo    string
+	// Notas       string
+
+	// Color  string
+	// Imagen string
+
+	// Prioridad int
+	Estatus int
+	// Segundos int
+	// Centavos int
+
+	// Legacy
+	Implementada bool // Estatus
+	Probada      bool // Estatus
+}
+
+// Tarea de desarrollo
+type Tarea struct {
+	TareaID    int // NodoID
+	HistoriaID int // PadreID
+	Posicion   int
+
+	Descripcion  string
+	Impedimentos string
+	// Objetivo    string // TipoTarea
+	// Notas       string // SegundosEstimado
+
+	// 	Color  string
+	// Imagen string
+
+	Prioridad int // Importancia
+	Estatus   int
+	Segundos  int
+	Centavos  int
+
+	// Legacy
+	SegundosEstimado  int
+	SegundosUtilizado int
+}
+
+type Tramo struct {
+	NodoID     int
+	HistoriaID int // PadreID
+	Posicion   int
+
+	Texto  string
+	Imagen string
 }
