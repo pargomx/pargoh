@@ -4,11 +4,13 @@ import (
 	"flag"
 	"os"
 
+	"monorepo/arbol"
 	"monorepo/assets"
 	"monorepo/dhistorias"
 	"monorepo/exportdocx"
 	"monorepo/htmltmpl"
 	"monorepo/migraciones"
+	"monorepo/sqlitearbol"
 	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
@@ -49,6 +51,7 @@ type servidor struct {
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
 	repo  dhistorias.Repo
+	repo2 arbol.Repo
 	auth  *authService
 
 	reloader reloader // websocket.go
@@ -96,6 +99,7 @@ func main() {
 		s.db.ToggleLog()
 	}
 	s.repo = sqlitepuente.NuevoRepo(s.db)
+	s.repo2 = sqlitearbol.NuevoRepo(s.db)
 	s.timeTracker = dhistorias.NewGestionTimeTracker(s.repo, 0)
 
 	if s.cfg.sourceDir != "" {

@@ -3,10 +3,7 @@ module monorepo
 go 1.25.6
 
 require (
-	github.com/gingfrederik/docx v0.0.1
 	github.com/pargomx/gecko v0.0.0-20251105072957-bda00bacca0d
-	github.com/rwestlund/gotex v0.0.0-20170412080108-3c68d9bfff3b
-	github.com/unidoc/unioffice v1.39.0
 	golang.org/x/net v0.49.0
 )
 
@@ -18,7 +15,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/richardlehane/msoleps v1.0.6 // indirect
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect

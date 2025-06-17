@@ -8,6 +8,11 @@ import (
 )
 
 func (s *servidor) getPersona(c *gecko.Context) error {
+	Per, err := s.repo2.GetPersona(c.PathInt("persona_id"))
+	if err != nil {
+		return err
+	}
+
 	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
@@ -35,7 +40,7 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	}
 	data := map[string]any{
 		"Titulo":        Persona.Nombre + " - " + Proyecto.Titulo,
-		"Persona":       Persona,
+		"Persona":       Per,
 		"Proyecto":      Proyecto,
 		"Historias":     Historias,
 		"TareasEnCurso": TareasEnCurso,
@@ -160,19 +165,19 @@ func (s *servidor) deletePersona(c *gecko.Context) error {
 }
 
 func (s *servidor) reordenarPersona(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
+	// tx, err := s.newRepoTx()
+	// if err != nil {
+	// 	return err
+	// }
+	err := s.repo2.ReordenarNodo(c.FormInt("persona_id"), c.FormInt("new_pos"))
 	if err != nil {
+		// tx.Rollback()
 		return err
 	}
-	err = dhistorias.ReordenarNodo(c.FormInt("persona_id"), c.FormInt("new_pos"), tx.repo)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
+	// err = tx.Commit()
+	// if err != nil {
+	// 	return err
+	// }
 	pers, err := s.repo.GetPersona(c.FormInt("persona_id"))
 	if err != nil {
 		return err

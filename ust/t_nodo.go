@@ -33,9 +33,9 @@ func (nod *Nodo) Validar() error {
 // ================================================================ //
 
 const (
-	TipoNodoPersona  = "per"
-	TipoNodoHistoria = "his"
-	TipoNodoTarea    = "tar"
+	TipoNodoPersona  = "PER"
+	TipoNodoHistoria = "HIS"
+	TipoNodoTarea    = "TAR"
 	RootNodoID       = 0
 )
 

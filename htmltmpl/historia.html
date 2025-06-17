@@ -1,6 +1,6 @@
 {{ with .Agregado -}}
 <script>
-	let historiaID = {{ .Historia.HistoriaID -}};
+	let historiaID = {{ .HistoriaID -}};
 </script>
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
 	<div class="p-1">
@@ -38,7 +38,7 @@
 </header>
 
 <main class="grow w-full max-w-5xl p-2 mx-auto"
-	hx-get="/historias/{{ .Historia.HistoriaID }}"
+	hx-get="/historias/{{ .HistoriaID }}"
 	hx-select="main"
 	hx-swap="outerHTML"
 	hx-target="this"
@@ -49,7 +49,7 @@
 		<!--* PERSONA  -->
 		<h4 class="grow">
 			<a class="mx-1 rounded-md opacity-75 hover:opacity-100"
-				href="/personas/{{ .Persona.PersonaID }}/doc#{{ .Historia.HistoriaID }}"
+				href="/personas/{{ .Persona.PersonaID }}/doc#{{ .HistoriaID }}"
 				title="Documentación"
 				>
 				<i class="fa-solid fa-book"></i>
@@ -70,7 +70,7 @@
 		<!--* INSERTAR PADRE  -->
 		<div>
 			<button class="mx-1 rounded-md opacity-75 hover:opacity-100"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/padre"
+				hx-post="/historias/{{ .HistoriaID }}/padre"
 				hx-prompt="Insertar historia padre con el título..."
 				type="button"
 				title="Insertar historia padre"
@@ -81,20 +81,20 @@
 		<!--* PRIORIDAD -->
 		<div>
 			<select class="form-control"
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/prioridad"
+				hx-patch="/historias/{{ .HistoriaID }}/prioridad"
 				hx-swap="none"
 				name="value"
 				>
-				<option value="0" {{ if .Historia.EsPrioridadWont }}selected{{ end }}>
+				<option value="0" {{ if .EsPrioridadWont }}selected{{ end }}>
 					🚫 Won't
 				</option>
-				<option value="1" {{ if .Historia.EsPrioridadCould }}selected{{ end }}>
+				<option value="1" {{ if .EsPrioridadCould }}selected{{ end }}>
 					😶‍🌫️ Could
 				</option>
-				<option value="2" {{ if .Historia.EsPrioridadShould }}selected{{ end }}>
+				<option value="2" {{ if .EsPrioridadShould }}selected{{ end }}>
 					🤔 Should
 				</option>
-				<option value="3" {{ if .Historia.EsPrioridadMust }}selected{{ end }}>
+				<option value="3" {{ if .EsPrioridadMust }}selected{{ end }}>
 					🤩 Must
 				</option>
 			</select>
@@ -102,14 +102,14 @@
 		<!--* COMPLETADA -->
 		<div>
 			<select class="form-control"
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/completada"
+				hx-patch="/historias/{{ .HistoriaID }}/completada"
 				hx-swap="none"
 				name="value"
 				>
 				<option value="0">
 					Pendiente
 				</option>
-				<option value="1" {{- if .Historia.Completada }}selected{{ end }}>
+				<option value="1" {{- if .Completada }}selected{{ end }}>
 					✅ Completada
 				</option>
 			</select>
@@ -117,14 +117,14 @@
 		<div class="flex items-center gap-1">
 			<input class="form-control max-w-32"
 				hx-askfor="reloadProgreso"
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
+				hx-patch="/historias/{{ .HistoriaID }}/presupuesto"
 				hx-swap="none"
 				type="number"
 				max="30"
 				min="0"
 				name="value"
 				placeholder="Presupuesto"
-				value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
+				value="{{ if .SegundosPresupuesto }}{{ div .SegundosPresupuesto 3600 }}{{ end }}"
 				>
 			Hrs.
 		</div>
@@ -137,7 +137,7 @@
 		<ul class="pl-2 list-disc">
 			<li class="pt-1">
 				<a class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400"
-					href="/historias/{{ .HistoriaID }}"
+					href="/historias/{{ .NodoID }}"
 					title="Ir al ancestro"
 					{{ if eq (suma $i 1) (len $.Agregado.Ancestros) }}tipo="ancestro_directo"{{ end }}
 					>
@@ -154,7 +154,7 @@
 	<!--* TÍTULO -->
 	<div class="mt-2 mb-1">
 		<textarea class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400"
-			hx-patch="/historias/{{ .Historia.HistoriaID }}/titulo"
+			hx-patch="/historias/{{ .HistoriaID }}/titulo"
 			hx-swap="none"
 			enterkeyhint="enter"
 			name="value"
@@ -162,14 +162,14 @@
 			rows="1"
 			title="Título de la historia"
 			>
-			{{- .Historia.Titulo -}}
+			{{- .Titulo -}}
 		</textarea>
 	</div>
 
 	<!--* CONTEXTO -->
 	<div class="mb-4">
 		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-			hx-patch="/historias/{{ .Historia.HistoriaID }}/objetivo"
+			hx-patch="/historias/{{ .HistoriaID }}/objetivo"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			enterkeyhint="enter"
@@ -178,7 +178,7 @@
 			rows="1"
 			title="Objetivo empático de la historia"
 			>
-			{{- .Historia.Objetivo -}}
+			{{- .Objetivo -}}
 		</textarea>
 	</div>
 
@@ -296,7 +296,7 @@
 					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 				</span>
 				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-					hx-post="/historias/{{ .Historia.HistoriaID }}"
+					hx-post="/historias/{{ .HistoriaID }}"
 					hx-trigger="keyup[key=='Enter']"
 					enterkeyhint="enter"
 					name="titulo"
@@ -309,7 +309,7 @@
 
 	<!-- Menú contextextual de descendientes -->
 	<div id="descendientesMenus"
-		hx-askfor="/historias/{{ .Historia.HistoriaID }}"
+		hx-askfor="/historias/{{ .HistoriaID }}"
 		hx-select="#descendientesList"
 		hx-target="#descendientesList"
 		hx-select-oob="#descendientesMenus"
@@ -347,7 +347,7 @@
 				</a>
 			</div>
 			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
-				hx-delete="/historias/{{ $.Agregado.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
+				hx-delete="/historias/{{ $.Agregado.HistoriaID }}/referencias/{{ .HistoriaID }}"
 				hx-select="#relacionadasList"
 				hx-target="#relacionadasList"
 				type="button"
@@ -361,7 +361,7 @@
 
 	<!--* AVANCE  -->
 	<div id="progreso"
-		hx-get="/historias/{{ .Historia.HistoriaID }}"
+		hx-get="/historias/{{ .HistoriaID }}"
 		hx-select="#progreso"
 		hx-target="#progreso"
 		hx-swap="outerHTML"
@@ -377,14 +377,14 @@
 			<div class="flex items-center gap-1">
 				<input class="form-control max-w-32"
 					hx-askfor="reloadProgreso"
-					hx-patch="/historias/{{ .Historia.HistoriaID }}/presupuesto"
+					hx-patch="/historias/{{ .HistoriaID }}/presupuesto"
 					hx-swap="none"
 					type="number"
 					max="30"
 					min="0"
 					name="value"
 					placeholder="Presupuesto"
-					value="{{ if .Historia.SegundosPresupuesto }}{{ div .Historia.SegundosPresupuesto 3600 }}{{ end }}"
+					value="{{ if .SegundosPresupuesto }}{{ div .SegundosPresupuesto 3600 }}{{ end }}"
 					>
 				Hrs.
 			</div>
@@ -749,7 +749,7 @@
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 			</div>
 			<textarea id="input_AddRegla" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/reglas"
+				hx-post="/historias/{{ .HistoriaID }}/reglas"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				hx-trigger="keyup[key=='Enter']"
@@ -765,7 +765,7 @@
 	<h3 class="mb-2 text-xl text-cyan-600 group">
 		Viaje de usuario
 		<a class="mx-1 text-base opacity-0 group-hover:opacity-100 focus:opacity-100"
-			href="/personas/{{ .Persona.PersonaID }}/doc#{{ .Historia.HistoriaID }}"
+			href="/personas/{{ .Persona.PersonaID }}/doc#{{ .HistoriaID }}"
 			title="Ver en documentación"
 			>
 			<i class="fa-solid fa-book"></i>
@@ -773,7 +773,7 @@
 	</h3>
 	<div class="mb-2">
 		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-			hx-patch="/historias/{{ .Historia.HistoriaID }}/descripcion"
+			hx-patch="/historias/{{ .HistoriaID }}/descripcion"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			enterkeyhint="enter"
@@ -782,7 +782,7 @@
 			rows="1"
 			title="Descripción de la historia"
 			>
-			{{- .Historia.Descripcion -}}
+			{{- .Descripcion -}}
 		</textarea>
 	</div>
 	<ol id="viajeList" tipo="sort_tramos" class="mb-6">
@@ -869,7 +869,7 @@
 				</span>
 			</div>
 			<textarea id="input_AddTramo" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/viaje"
+				hx-post="/historias/{{ .HistoriaID }}/viaje"
 				hx-select="#viajeList"
 				hx-target="#viajeList"
 				hx-trigger="keyup[key=='Enter']"
@@ -1174,7 +1174,7 @@
 			<input id="input_AddTarea" class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 				hx-include="closest li"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
+				hx-post="/historias/{{ .HistoriaID }}/tareas"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				type="text"
@@ -1184,7 +1184,7 @@
 				>
 			<input class="inline-block text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 				hx-include="closest li"
-				hx-post="/historias/{{ .Historia.HistoriaID }}/tareas"
+				hx-post="/historias/{{ .HistoriaID }}/tareas"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				type="text"
@@ -1201,7 +1201,7 @@
 			<a href="#implementacion">
 				Implementación
 			</a>
-			{{ if .Historia.Notas -}}
+			{{ if .Notas -}}
 			<button class="mx-2 text-base hover:text-cyan-300 float-right"
 				type="button"
 				onclick="editNotasImplementacion(this)"
@@ -1213,7 +1213,7 @@
 			{{ end -}}
 			<button id="viewNotasBtn" class="mx-2 text-base hover:text-cyan-300 float-right hidden"
 				type="button"
-				hx-get="/historias/{{ .Historia.HistoriaID }}"
+				hx-get="/historias/{{ .HistoriaID }}"
 				hx-select="#implementacion"
 				hx-target="#implementacion"
 				aria-label="Ver con formato"
@@ -1222,14 +1222,14 @@
 				<i class="fa-solid fa-eye"></i>
 			</button>
 		</h3>
-		{{ if .Historia.Notas -}}
+		{{ if .Notas -}}
 		<p id="notasImplView" class="px-2 py-1 mb-1 text-white/75 whitespace-pre-line">
-			{{- enfatizar .Historia.Notas -}}
+			{{- enfatizar .Notas -}}
 		</p>
 		{{ end -}}
-		<div id="notasImplEdit" class="{{ if .Historia.Notas -}}hidden{{ end }}">
+		<div id="notasImplEdit" class="{{ if .Notas -}}hidden{{ end }}">
 			<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-				hx-patch="/historias/{{ .Historia.HistoriaID }}/notas"
+				hx-patch="/historias/{{ .HistoriaID }}/notas"
 				hx-swap="none"
 				hx-trigger="change, keyup changed delay:60s"
 				enterkeyhint="enter"
@@ -1239,16 +1239,16 @@
 				title="Detalles de implementación"
 				onchange="let btn = document.getElementById('viewNotasBtn'); if(this.value.trim() !== '') { btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); }"
 				>
-				{{- .Historia.Notas -}}
+				{{- .Notas -}}
 			</textarea>
 		</div>
 	</div>
 
-	{{ if and (not .Historia.Descripcion) (not .Historia.Objetivo) (not .Historia.Notas) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
+	{{ if and (not .Descripcion) (not .Objetivo) (not .Notas) (not .Reglas) (not .Descendientes) (not .Tramos) (not .Relacionadas) (not .Tareas) -}}
 	<div class="text-center">
 		<button class="px-4 py-2 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
 			hx-confirm="¿Eliminar historia vacía?"
-			hx-delete="/historias/{{ .Historia.HistoriaID }}"
+			hx-delete="/historias/{{ .HistoriaID }}"
 			type="button"
 			>
 			<i class="mr-2 fa-solid fa-trash"></i>
@@ -1410,7 +1410,7 @@
 			required
 			>
 		<div id="navTreeTramo" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-get="/nav/hist/{{ .Agregado.HistoriaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navTreeTramo"
 			hx-trigger="navTreeTramoShown"
@@ -1430,7 +1430,7 @@
 	</form>
 </dialog>
 
-{{ block "mover_tarea_dialog" .Agregado.Historia.HistoriaID }}
+{{ block "mover_tarea_dialog" .Agregado.HistoriaID }}
 {{/* Recibe el historia_id que será origen para nav, sino inicia en root */}}
 <dialog id="moverTareaDialog" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
 	<header class="flex items-center gap-2 p-2 bg-cyan-800">
@@ -1499,7 +1499,7 @@
 			required
 			>
 		<div id="navTreeHistoria" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-get="/nav/hist/{{ .Agregado.HistoriaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navTreeHistoria"
 			hx-trigger="navTreeHistoriaShown"
@@ -1534,7 +1534,7 @@
 	</header>
 	<form class="flex flex-col gap-2 p-2">
 		<div id="navAddReferencia" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/hist/{{ .Agregado.Historia.HistoriaID }}"
+			hx-get="/nav/hist/{{ .Agregado.HistoriaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navAddReferencia"
 			hx-trigger="navAddReferenciaShown"
@@ -1542,7 +1542,7 @@
 			<!-- nav_tree -->
 		</div>
 		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
-			hx-post="/historias/{{ .Agregado.Historia.HistoriaID }}/referencias"
+			hx-post="/historias/{{ .Agregado.HistoriaID }}/referencias"
 			hx-select="main"
 			hx-swap="outerHTML"
 			hx-target="main"

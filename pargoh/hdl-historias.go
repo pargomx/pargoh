@@ -12,12 +12,13 @@ import (
 // ========== READ ================================================ //
 
 func (s *servidor) getHistoria(c *gecko.Context) error {
-	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repo)
+	Historia, err := s.repo2.GetHistoria(c.PathInt("historia_id"))
 	if err != nil {
 		return err
 	}
+
 	data := map[string]any{
-		"Titulo":          Historia.Historia.Titulo,
+		"Titulo":          Historia.Titulo,
 		"Agregado":        Historia,
 		"ScriptsHistoria": true,
 		"OldGrafico":      c.QueryBool("old"),
@@ -206,19 +207,22 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) reordenarHistoria(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
+	// tx, err := s.newRepoTx()
+	// if err != nil {
+	// 	return err
+	// }
+
+	err := s.repo2.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"))
 	if err != nil {
+		// tx.Rollback()
 		return err
 	}
-	err = dhistorias.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"), tx.repo)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
+
+	// err = tx.Commit()
+	// if err != nil {
+	// 	return err
+	// }
+
 	hist, err := s.repo.GetNodoHistoria(c.FormInt("historia_id"))
 	if err != nil {
 		return err

@@ -138,15 +138,7 @@ func (s *servidor) postTimeGestion(c *gecko.Context) error {
 }
 
 func (s *servidor) getProyecto(c *gecko.Context) error {
-	Proyecto, err := s.repo.GetProyecto(c.PathVal("proyecto_id"))
-	if err != nil {
-		return err
-	}
-	Personas, err := s.repo.ListNodosPersonas(Proyecto.ProyectoID)
-	if err != nil {
-		return err
-	}
-	Proyectos, err := s.repo.ListProyectos()
+	Pry, err := s.repo2.GetProyecto(c.PathInt("proyecto_id"))
 	if err != nil {
 		return err
 	}
@@ -155,10 +147,10 @@ func (s *servidor) getProyecto(c *gecko.Context) error {
 		return err
 	}
 	data := map[string]any{
-		"Titulo":        Proyecto.Titulo,
-		"Proyecto":      Proyecto,
-		"Personas":      Personas,
-		"Proyectos":     Proyectos, // Para cambiar de proyecto a una persona.
+		"Titulo":   Pry.Titulo,
+		"Proyecto": Pry,
+		"Personas": Pry.Personas,
+		// "Proyectos":     Proyectos, // Para cambiar de proyecto a una persona.
 		"TareasEnCurso": TareasEnCurso,
 	}
 	return c.RenderOk("proyecto", data)
