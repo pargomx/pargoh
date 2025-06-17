@@ -32,7 +32,7 @@ func (s *Repositorio) GetProyecto(ProyectoID string) (*ust.Proyecto, error) {
 	return &ust.Proyecto{
 		ProyectoID:  fmt.Sprint(nod.NodoID),
 		Posicion:    nod.Posicion,
-		Titulo:      nod.Título,
+		Titulo:      nod.Titulo,
 		Color:       nod.Color,
 		Imagen:      nod.Imagen,
 		Descripcion: nod.Descripcion,
@@ -61,7 +61,7 @@ func (s *Repositorio) ListProyectos() ([]ust.Proyecto, error) {
 		lista = append(lista, ust.Proyecto{
 			ProyectoID:  fmt.Sprint(nod.NodoID),
 			Posicion:    nod.Posicion,
-			Titulo:      nod.Título,
+			Titulo:      nod.Titulo,
 			Color:       nod.Color,
 			Imagen:      nod.Imagen,
 			Descripcion: nod.Descripcion,
@@ -134,7 +134,7 @@ func (s *Repositorio) GetPersona(personaID int) (*ust.Persona, error) {
 	return &ust.Persona{
 		PersonaID:   nod.NodoID,
 		ProyectoID:  fmt.Sprint(nod.PadreID),
-		Nombre:      nod.Título,
+		Nombre:      nod.Titulo,
 		Descripcion: nod.Descripcion,
 	}, nil
 }
@@ -159,7 +159,7 @@ func (s *Repositorio) ListNodosPersonas(ProyectoID string) ([]ust.NodoPersona, e
 			ProyectoID: fmt.Sprint(nod.PadreID),
 			Posicion:   nod.Posicion,
 
-			Nombre:      nod.Título,
+			Nombre:      nod.Titulo,
 			Descripcion: nod.Descripcion,
 
 			PadreID:  nod.PadreID,
@@ -194,7 +194,7 @@ func (s *Repositorio) GetHistoria(historiaID int) (*ust.Historia, error) {
 	}
 	return &ust.Historia{
 		HistoriaID:          nod.NodoID,
-		Titulo:              nod.Título,
+		Titulo:              nod.Titulo,
 		Objetivo:            nod.Objetivo,
 		Prioridad:           nod.Prioridad,
 		Completada:          nod.Estatus > 0,
@@ -209,7 +209,7 @@ func convertNodoHistoria(nod arbol.Nodo) ust.NodoHistoria {
 		HistoriaID:          nod.NodoID,
 		ProyectoID:          "",
 		PersonaID:           0,
-		Titulo:              nod.Título,
+		Titulo:              nod.Titulo,
 		Objetivo:            nod.Objetivo,
 		Prioridad:           nod.Prioridad,
 		Completada:          nod.Estatus > 0,
@@ -292,7 +292,7 @@ func (s *Repositorio) ListTareasByHistoriaID(historiaID int) ([]ust.Tarea, error
 		lista = append(lista, ust.Tarea{
 			TareaID:          nod.NodoID,
 			HistoriaID:       nod.PadreID,
-			Descripcion:      nod.Título,
+			Descripcion:      nod.Titulo,
 			Importancia:      ust.ImportanciaTareaNecesaria, // mentira
 			Tipo:             ust.TipoTareaIndefinido,       // mentira
 			Estatus:          nod.Estatus,
@@ -359,7 +359,7 @@ func (s *Repositorio) ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error
 		lista = append(lista, ust.Tramo{
 			HistoriaID: nod.PadreID,
 			Posicion:   nod.Posicion,
-			Texto:      nod.Título,
+			Texto:      nod.Titulo,
 			Imagen:     nod.Imagen,
 		})
 	}
@@ -409,7 +409,7 @@ func (s *Repositorio) ListReglasByHistoriaID(HistoriaID int) ([]ust.Regla, error
 		lista = append(lista, ust.Regla{
 			HistoriaID:   nod.PadreID,
 			Posicion:     nod.Posicion,
-			Texto:        nod.Título,
+			Texto:        nod.Titulo,
 			Implementada: nod.Estatus > 0,
 			Probada:      nod.Estatus > 1,
 		})
@@ -468,7 +468,7 @@ func (s *Repositorio) ListHistoriasByPadreID(nodoID int) ([]ust.Historia, error)
 	for _, nod := range nodos {
 		lista = append(lista, ust.Historia{
 			HistoriaID:          nod.NodoID,
-			Titulo:              nod.Título,
+			Titulo:              nod.Titulo,
 			Objetivo:            nod.Objetivo,
 			Prioridad:           nod.Prioridad,
 			Completada:          nod.Estatus > 0,

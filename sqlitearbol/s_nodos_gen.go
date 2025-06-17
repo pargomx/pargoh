@@ -20,13 +20,13 @@ func (s *Repositorio) InsertNodo(nod arbol.Nodo) error {
 	if nod.Tipo == "" {
 		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Tipo sin especificar")
 	}
-	if nod.Título == "" {
-		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Título sin especificar")
+	if nod.Titulo == "" {
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Titulo sin especificar")
 	}
 	_, err := s.db.Exec("INSERT INTO nodos "+
 		"(nodo_id, padre_id, tipo, posicion, titulo, descripcion, objetivo, notas, color, imagen, prioridad, estatus, segundos, centavos) "+
 		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ",
-		nod.NodoID, nod.PadreID, nod.Tipo, nod.Posicion, nod.Título, nod.Descripcion, nod.Objetivo, nod.Notas, nod.Color, nod.Imagen, nod.Prioridad, nod.Estatus, nod.Segundos, nod.Centavos,
+		nod.NodoID, nod.PadreID, nod.Tipo, nod.Posicion, nod.Titulo, nod.Descripcion, nod.Objetivo, nod.Notas, nod.Color, nod.Imagen, nod.Prioridad, nod.Estatus, nod.Segundos, nod.Centavos,
 	)
 	if err != nil {
 		return gko.ErrAlEscribir.Err(err).Op(op)
@@ -46,14 +46,14 @@ func (s *Repositorio) UpdateNodo(NodoID int, nod arbol.Nodo) error {
 	if nod.Tipo == "" {
 		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Tipo sin especificar")
 	}
-	if nod.Título == "" {
-		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Título sin especificar")
+	if nod.Titulo == "" {
+		return gko.ErrDatoIndef.Str("required_sin_valor").Op(op).Msg("Titulo sin especificar")
 	}
 	_, err := s.db.Exec(
 		"UPDATE nodos SET "+
 			"nodo_id=?, padre_id=?, tipo=?, posicion=?, titulo=?, descripcion=?, objetivo=?, notas=?, color=?, imagen=?, prioridad=?, estatus=?, segundos=?, centavos=? "+
 			"WHERE nodo_id = ?",
-		nod.NodoID, nod.PadreID, nod.Tipo, nod.Posicion, nod.Título, nod.Descripcion, nod.Objetivo, nod.Notas, nod.Color, nod.Imagen, nod.Prioridad, nod.Estatus, nod.Segundos, nod.Centavos,
+		nod.NodoID, nod.PadreID, nod.Tipo, nod.Posicion, nod.Titulo, nod.Descripcion, nod.Objetivo, nod.Notas, nod.Color, nod.Imagen, nod.Prioridad, nod.Estatus, nod.Segundos, nod.Centavos,
 		NodoID,
 	)
 	if err != nil {
@@ -142,7 +142,7 @@ const fromNodo string = "FROM nodos "
 // Utilizar luego de un sql.QueryRow(). No es necesario hacer row.Close()
 func (s *Repositorio) scanRowNodo(row *sql.Row, nod *arbol.Nodo) error {
 	err := row.Scan(
-		&nod.NodoID, &nod.PadreID, &nod.Tipo, &nod.Posicion, &nod.Título, &nod.Descripcion, &nod.Objetivo, &nod.Notas, &nod.Color, &nod.Imagen, &nod.Prioridad, &nod.Estatus, &nod.Segundos, &nod.Centavos,
+		&nod.NodoID, &nod.PadreID, &nod.Tipo, &nod.Posicion, &nod.Titulo, &nod.Descripcion, &nod.Objetivo, &nod.Notas, &nod.Color, &nod.Imagen, &nod.Prioridad, &nod.Estatus, &nod.Segundos, &nod.Centavos,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -188,7 +188,7 @@ func (s *Repositorio) scanRowsNodo(rows *sql.Rows, op string) ([]arbol.Nodo, err
 	for rows.Next() {
 		nod := arbol.Nodo{}
 		err := rows.Scan(
-			&nod.NodoID, &nod.PadreID, &nod.Tipo, &nod.Posicion, &nod.Título, &nod.Descripcion, &nod.Objetivo, &nod.Notas, &nod.Color, &nod.Imagen, &nod.Prioridad, &nod.Estatus, &nod.Segundos, &nod.Centavos,
+			&nod.NodoID, &nod.PadreID, &nod.Tipo, &nod.Posicion, &nod.Titulo, &nod.Descripcion, &nod.Objetivo, &nod.Notas, &nod.Color, &nod.Imagen, &nod.Prioridad, &nod.Estatus, &nod.Segundos, &nod.Centavos,
 		)
 		if err != nil {
 			return nil, gko.ErrInesperado.Err(err).Op(op)

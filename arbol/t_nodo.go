@@ -7,7 +7,7 @@ type Nodo struct {
 	Tipo     string // `nodos.tipo`  Tipo de nodo
 	Posicion int    // `nodos.posicion`  Posición consecutiva con respecto a sus nodos hermanos
 
-	Título      string // `nodos.titulo`  Nombre o título de la entidad.
+	Titulo      string // `nodos.titulo`  Nombre o título de la entidad.
 	Descripcion string // `nodos.descripcion`
 	Objetivo    string // `nodos.objetivo`
 	Notas       string // `nodos.notas`
