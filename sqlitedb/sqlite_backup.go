@@ -41,7 +41,7 @@ func (s *SqliteDB) Backup() error {
 	}
 
 	// Cerrar base de datos para que todo esté contenido en un solo archivo.
-	err = s.Close()
+	err = s.CloseFully()
 	if err != nil {
 		return op.Err(err)
 	}

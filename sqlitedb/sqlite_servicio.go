@@ -37,13 +37,23 @@ func (s *SqliteDB) ToggleLog() {
 	s.log = !s.log
 }
 
+// Cerrar base de datos.
+func (s *SqliteDB) Close() error {
+	op := gko.Op("sqlitedb.Close")
+	err := s.db.Close()
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
 // Cerrar base de datos y comprobar que todo esté contenido en un solo archivo.
 // En WAL mode para un archivo "app.db" se generan "app.db-shm" y "app.db-wal".
 // Si aún están estos archivos puede que algo los mantenga abiertos y por lo tanto
 // puede usarse el error para no continuar en operaciones que se quieran hacer con
 // el archivo de base de datos.
-func (s *SqliteDB) Close() error {
-	op := gko.Op("sqlitedb.Close")
+func (s *SqliteDB) CloseFully() error {
+	op := gko.Op("sqlitedb.CloseFully")
 	err := s.db.Close()
 	if err != nil {
 		return op.Err(err)

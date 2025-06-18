@@ -279,7 +279,7 @@ func (s *SqliteDB) upgradeVersionEsquema(migEsquema migracionDisponible, migDato
 	if err != nil {
 		return op.Err(err)
 	}
-	err = s.Close() // asegurando que todo se contenga en un solo archivo.
+	err = s.CloseFully() // asegurando que todo se contenga en un solo archivo.
 	if err != nil {
 		return op.Err(err)
 	}
@@ -333,7 +333,7 @@ func (s *SqliteDB) upgradeVersionEsquema(migEsquema migracionDisponible, migDato
 	}
 
 	// Cerrar para poder reemplazar viejo archivo por el nuevo recién migrado.
-	err = s.Close()
+	err = s.CloseFully()
 	if err != nil {
 		return op.Err(err).Msg("Cleanup required").
 			Strf("se aplicaron las migraciones a '%v' pero no se pudo reemplazar la db", newTempFilename)
