@@ -23,7 +23,7 @@ func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarTramoDeViaje(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.EliminarTramoDeViaje(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -38,7 +38,7 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarTramoDeViaje(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
+	err = dhistorias.EditarTramoDeViaje(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -53,7 +53,7 @@ func (s *servidor) reordenarTramo(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarTramo(tx.repo, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarTramo(tx.repoOld, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
 	if err != nil {
 		tx.Rollback()
 		return err

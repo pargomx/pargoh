@@ -54,6 +54,8 @@ type servidor struct {
 	repo2 arbol.Repo
 	auth  *authService
 
+	app *arbol.Servicio
+
 	reloader reloader // websocket.go
 
 	timeTracker *dhistorias.GestionTimeTracker
@@ -125,6 +127,10 @@ func main() {
 	s.auth = NewAuthService(s.cfg.adminUser, s.cfg.adminPass)
 	s.auth.RecuperarSesiones()
 
+	s.app, err = arbol.NuevoServicio(arbol.Config{
+		Repo: s.repo2,
+	})
+
 	// ================================================================ //
 
 	if s.cfg.sourceDir != "" {
@@ -172,7 +178,7 @@ func main() {
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
 	s.POS("/personas/{persona_id}/time/{seg}", s.postTimeGestion)
-	s.POS("/reordenar-persona", s.reordenarPersona)
+	s.POS("/reordenar-persona", s.inTx(s.reordenarPersona))
 
 	// Historias
 	s.GET("/historias/{historia_id}", s.getHistoria)
@@ -186,7 +192,7 @@ func main() {
 	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.priorizarHistoriaNuevo)
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
-	s.POS("/reordenar-historia", s.reordenarHistoria)
+	s.POS("/reordenar-historia", s.inTx(s.reordenarHistoria))
 
 	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)

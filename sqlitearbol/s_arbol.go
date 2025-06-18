@@ -162,20 +162,21 @@ func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
 // ================================================================ //
 // ================================================================ //
 
-func (s *Repositorio) ReordenarNodo(nodoID int, newPosicion int) error {
-	var op = gko.Op("ReordenarNodo").Ctx("id", nodoID)
-	nod, err := s.GetNodo(nodoID)
-	if err != nil {
-		return err
+func (s *Repositorio) ReordenarNodo(nod arbol.Nodo, newPosicion int) error {
+	var op = gko.Op("ReordenarNodo")
+	if nod.NodoID == 0 {
+		return op.Str("nodo inválido")
 	}
 	oldPosicion := nod.Posicion
+	op.Ctx("id", nod.NodoID)
+
 	if oldPosicion == newPosicion {
 		return op.Msg("Posición sin cambios")
 	}
 
 	// Validar nueva posición
 	var hermanos int
-	err = s.db.QueryRow("SELECT COUNT(*) FROM nodos WHERE padre_id = ? AND tipo = ?",
+	err := s.db.QueryRow("SELECT COUNT(*) FROM nodos WHERE padre_id = ? AND tipo = ?",
 		nod.PadreID, nod.Tipo).Scan(&hermanos)
 	if err != nil {
 		return op.Op("contar_hermanos").Err(err)
@@ -219,8 +220,5 @@ func (s *Repositorio) ReordenarNodo(nodoID int, newPosicion int) error {
 	if err != nil {
 		return op.Op("set_pos_positiva").Err(err)
 	}
-
-	gko.LogDebugf("Reordenado %v from %v to %v", nod.NodoID, nod.Posicion, newPosicion)
-
 	return nil
 }

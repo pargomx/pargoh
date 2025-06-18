@@ -5,5 +5,10 @@ type Repo interface {
 	GetPersona(personaID int) (*Persona, error)
 	GetHistoria(historiaID int) (*HistoriaDeUsuario, error)
 
-	ReordenarNodo(nodoID int, newPosicion int) error
+	GetNodo(NodoID int) (*Nodo, error)
+
+	InsertNodo(nod Nodo) error
+	UpdateNodo(NodoID int, nod Nodo) error
+	DeleteNodo(NodoID int) error
+	ReordenarNodo(nod Nodo, newPosicion int) error
 }

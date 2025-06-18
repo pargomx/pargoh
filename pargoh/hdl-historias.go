@@ -1,6 +1,7 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 
@@ -54,7 +55,7 @@ func (s *servidor) postHistoriaDePersona(c *gecko.Context) error {
 		Prioridad:  c.FormInt("prioridad"),
 		Completada: c.FormBool("completada"),
 	}
-	err = dhistorias.AgregarHistoria(c.PathInt("persona_id"), nuevaHistoria, tx.repo)
+	err = dhistorias.AgregarHistoria(c.PathInt("persona_id"), nuevaHistoria, tx.repoOld)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -79,7 +80,7 @@ func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
 		Prioridad:  c.FormInt("prioridad"),
 		Completada: c.FormBool("completada"),
 	}
-	err = dhistorias.AgregarHistoria(c.PathInt("historia_id"), nuevaHistoria, tx.repo)
+	err = dhistorias.AgregarHistoria(c.PathInt("historia_id"), nuevaHistoria, tx.repoOld)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -98,7 +99,7 @@ func (s *servidor) postPadreParaHistoria(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	histActual, err := tx.repo.GetNodoHistoria(c.PathInt("historia_id"))
+	histActual, err := tx.repoOld.GetNodoHistoria(c.PathInt("historia_id"))
 	if err != nil {
 		return gko.Err(err).Err(tx.Rollback())
 	}
@@ -106,11 +107,11 @@ func (s *servidor) postPadreParaHistoria(c *gecko.Context) error {
 		HistoriaID: ust.NewRandomID(),
 		Titulo:     c.PromptVal(),
 	}
-	err = dhistorias.AgregarHistoria(histActual.PadreID, nuevaHistoria, tx.repo)
+	err = dhistorias.AgregarHistoria(histActual.PadreID, nuevaHistoria, tx.repoOld)
 	if err != nil {
 		return gko.Err(err).Err(tx.Rollback())
 	}
-	err = dhistorias.MoverHistoria(histActual.HistoriaID, nuevaHistoria.HistoriaID, tx.repo)
+	err = dhistorias.MoverHistoria(histActual.HistoriaID, nuevaHistoria.HistoriaID, tx.repoOld)
 	if err != nil {
 		return gko.Err(err).Err(tx.Rollback())
 	}
@@ -206,22 +207,14 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 	}
 }
 
-func (s *servidor) reordenarHistoria(c *gecko.Context) error {
-	// tx, err := s.newRepoTx()
-	// if err != nil {
-	// 	return err
-	// }
-
-	err := s.repo2.ReordenarNodo(c.FormInt("historia_id"), c.FormInt("new_pos"))
+func (s *servidor) reordenarHistoria(c *gecko.Context, tx *arbol.AppTx) error {
+	err := tx.ReordenarEntidad(arbol.ArgsReordenar{
+		NodoID: c.FormInt("historia_id"),
+		NewPos: c.FormInt("new_pos"),
+	})
 	if err != nil {
-		// tx.Rollback()
 		return err
 	}
-
-	// err = tx.Commit()
-	// if err != nil {
-	// 	return err
-	// }
 
 	hist, err := s.repo.GetNodoHistoria(c.FormInt("historia_id"))
 	if err != nil {

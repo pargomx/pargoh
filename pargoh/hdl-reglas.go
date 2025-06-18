@@ -24,7 +24,7 @@ func (s *servidor) deleteRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarRegla(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.EliminarRegla(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -40,7 +40,7 @@ func (s *servidor) patchRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarRegla(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
+	err = dhistorias.EditarRegla(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -56,7 +56,7 @@ func (s *servidor) marcarRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.MarcarRegla(tx.repo, c.PathInt("historia_id"), c.PathInt("posicion"))
+	err = dhistorias.MarcarRegla(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"))
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -72,7 +72,7 @@ func (s *servidor) reordenarRegla(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.ReordenarRegla(tx.repo, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
+	err = dhistorias.ReordenarRegla(tx.repoOld, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
 	if err != nil {
 		tx.Rollback()
 		return err

@@ -25,7 +25,7 @@ func (s *servidor) deleteReferencia(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EliminarReferencia(tx.repo, c.PathInt("historia_id"), c.PathInt("ref_historia_id"))
+	err = dhistorias.EliminarReferencia(tx.repoOld, c.PathInt("historia_id"), c.PathInt("ref_historia_id"))
 	if err != nil {
 		tx.Rollback()
 		return err
