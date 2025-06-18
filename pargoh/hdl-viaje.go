@@ -1,7 +1,6 @@
 package main
 
 import (
-	"monorepo/arbol"
 	"monorepo/dhistorias"
 
 	"github.com/pargomx/gecko"
@@ -47,18 +46,6 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
-}
-
-func (s *servidor) reordenarTramo(c *gecko.Context, tx *arbol.AppTx) error {
-	err := tx.ReordenarEntidad(arbol.ArgsReordenar{
-		NodoID: c.FormInt("historia_id"),
-		NewPos: c.FormInt("new_pos"),
-	})
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
 }
 
 func (s *servidor) moverTramo(c *gecko.Context) error {

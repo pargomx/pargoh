@@ -1,7 +1,6 @@
 package main
 
 import (
-	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 
@@ -163,19 +162,4 @@ func (s *servidor) deletePersona(c *gecko.Context) error {
 		return err
 	}
 	return c.RefreshHTMX()
-}
-
-func (s *servidor) reordenarPersona(c *gecko.Context, tx *arbol.AppTx) error {
-	err := tx.ReordenarEntidad(arbol.ArgsReordenar{
-		NodoID: c.FormInt("persona_id"),
-		NewPos: c.FormInt("new_pos"),
-	})
-	if err != nil {
-		return err
-	}
-	pers, err := s.repo.GetPersona(c.FormInt("persona_id"))
-	if err != nil {
-		return err
-	}
-	return c.RedirOtrof("/proyectos/%v", pers.ProyectoID)
 }

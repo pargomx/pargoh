@@ -4,6 +4,7 @@ import (
 	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/sqlitearbol"
+	"monorepo/sqlitedb"
 	"monorepo/sqliteust"
 
 	"github.com/pargomx/gecko"
@@ -30,29 +31,62 @@ func (s *servidor) newRepoTx() (*serverTx, error) {
 	}, nil
 }
 
+type handlerTx struct {
+	app  *arbol.AppTx
+	repo arbol.Repo
+	db   *sqlitedb.Transaccion
+}
+
 // Inicia una transacción en la base de datos, crea un repositorio y comienza
 // una transacción de aplicación que es entregada al handler. Cuando el handler
 // retorna: si no hay error hace Commit, si hay error o panic hace rollback.
-func (s *servidor) inTx(fn func(c *gecko.Context, tx *arbol.AppTx) error) gecko.HandlerFunc {
+func (s *servidor) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gecko.HandlerFunc {
 	return func(c *gecko.Context) error {
 		dbTx, err := s.db.Begin()
 		if err != nil {
 			return err
 		}
+		gko.LogDebug("TX Started")
+
 		defer func() {
 			if p := recover(); p != nil {
-				_ = dbTx.Rollback()
+				err = dbTx.Rollback()
+				if err != nil {
+					gko.Err(err).Log()
+				}
+				gko.LogDebug("TX Rollback after panic")
 				panic(p) // re-throw panic after rollback
 			} else if err != nil {
-				_ = dbTx.Rollback()
-			} else {
-				err = dbTx.Commit()
+				err = dbTx.Rollback()
+				if err != nil {
+					gko.Err(err).Log()
+				}
+				gko.LogDebug("TX Rollback in defer")
 			}
 		}()
+
 		repoTx := sqlitearbol.NuevoRepo(dbTx)
 		appTx := s.app.NewTx(repoTx)
-		err = fn(c, appTx)
-		// necesario hacer en dos líneas para que tenga efecto el defer.
+
+		err = handler(c, &handlerTx{
+			repo: repoTx,
+			app:  appTx,
+			db:   dbTx,
+		})
+		if err != nil {
+			err = dbTx.Rollback()
+			if err != nil {
+				gko.Err(err).Log()
+			}
+			gko.LogDebug("TX Rollback")
+		}
+
+		err = dbTx.Commit() // necesario hacer en dos líneas para que tenga efecto el defer.
+		if err != nil {
+			gko.Err(err).Log()
+		}
+		gko.LogDebug("TX Commited")
+
 		return err
 	}
 }

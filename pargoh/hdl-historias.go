@@ -1,7 +1,6 @@
 package main
 
 import (
-	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 
@@ -204,30 +203,6 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 	} else {
 		gko.LogWarnf("deleteHistoria: padre %v no es persona ni historia", padreID)
 		return c.RedirOtro("/proyectos")
-	}
-}
-
-func (s *servidor) reordenarHistoria(c *gecko.Context, tx *arbol.AppTx) error {
-	err := tx.ReordenarEntidad(arbol.ArgsReordenar{
-		NodoID: c.FormInt("historia_id"),
-		NewPos: c.FormInt("new_pos"),
-	})
-	if err != nil {
-		return err
-	}
-
-	hist, err := s.repo.GetNodoHistoria(c.FormInt("historia_id"))
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-
-	if hist.PadreTbl == ust.TipoNodoPersona {
-		return c.RedirOtrof("/personas/%v", hist.PadreID)
-	} else if hist.PadreTbl == ust.TipoNodoHistoria {
-		return c.RedirOtrof("/historias/%v", hist.PadreID)
-	} else {
-		return gko.ErrInesperado.Msgf("reordenarHistoria: padre %v no es persona ni historia, sino %v", hist.PadreID, hist.PadreTbl)
 	}
 }
 

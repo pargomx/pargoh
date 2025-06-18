@@ -51,7 +51,7 @@ type servidor struct {
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
 	repo  dhistorias.Repo
-	repo2 arbol.Repo
+	repo2 arbol.ReadRepo
 	auth  *authService
 
 	app *arbol.Servicio
@@ -127,9 +127,10 @@ func main() {
 	s.auth = NewAuthService(s.cfg.adminUser, s.cfg.adminPass)
 	s.auth.RecuperarSesiones()
 
-	s.app, err = arbol.NuevoServicio(arbol.Config{
-		Repo: s.repo2,
-	})
+	s.app, err = arbol.NuevoServicio(arbol.Config{})
+	if err != nil {
+		gko.FatalError(err)
+	}
 
 	// ================================================================ //
 

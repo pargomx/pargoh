@@ -11,14 +11,12 @@ type Servicio struct {
 	cfg Config
 }
 
-type Config struct {
-	Repo Repo
-}
+type Config struct{}
 
 func NuevoServicio(cfg Config) (*Servicio, error) {
-	if cfg.Repo == nil {
-		return nil, gko.ErrNoDisponible.Str("NuevoServicio: repo es nil")
-	}
+	// if cfg.Repo == nil {
+	// 	return nil, gko.ErrNoDisponible.Str("NuevoServicio: repo es nil")
+	// }
 
 	return &Servicio{
 		cfg: cfg,
