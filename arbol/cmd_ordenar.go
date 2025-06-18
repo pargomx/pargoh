@@ -17,7 +17,7 @@ func (s *AppTx) ReordenarEntidad(args ArgsReordenar) error {
 	if err != nil {
 		return op.Err(err)
 	}
-	s.Results.Add(EvNodoReordenado.WithArgs(args).
-		Msgf("Reordenado %v de %v a %v", nod.NodoID, nod.Posicion, args.NewPos))
+	s.Results.Add(EvNodoReordenado.WithArgs(args))
+	// .Msgf("Reordenado %v de %v a %v", nod.NodoID, nod.Posicion, args.NewPos))
 	return nil
 }

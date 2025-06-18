@@ -37,8 +37,6 @@ func (s *servidor) reordenarHistoria(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 
-	gko.LogDebugf("Reordenada %v", his.HistoriaID)
-
 	padre, err := tx.repo.GetNodo(his.PadreID)
 	if err != nil {
 		return err

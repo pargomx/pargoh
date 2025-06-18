@@ -46,7 +46,6 @@ func (s *servidor) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 		if err != nil {
 			return err
 		}
-		gko.LogDebug("TX Started")
 
 		defer func() {
 			if p := recover(); p != nil {
@@ -54,14 +53,12 @@ func (s *servidor) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 				if err != nil {
 					gko.Err(err).Log()
 				}
-				gko.LogDebug("TX Rollback after panic")
 				panic(p) // re-throw panic after rollback
 			} else if err != nil {
 				err = dbTx.Rollback()
 				if err != nil {
 					gko.Err(err).Log()
 				}
-				gko.LogDebug("TX Rollback in defer")
 			}
 		}()
 
@@ -78,15 +75,38 @@ func (s *servidor) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 			if err != nil {
 				gko.Err(err).Log()
 			}
-			gko.LogDebug("TX Rollback")
 		}
 
 		err = dbTx.Commit() // necesario hacer en dos líneas para que tenga efecto el defer.
 		if err != nil {
 			gko.Err(err).Log()
 		}
-		gko.LogDebug("TX Commited")
+
+		// Rise events
+		s.LogEventos(appTx.Results)
 
 		return err
+	}
+}
+
+// ================================================================ //
+// ========== Event store ========================================= //
+
+func (s *servidor) LogEventos(result *gko.TxResult) {
+	if len(result.Events) == 0 {
+		gko.LogWarn("LogEventos: nothing to log")
+	}
+	if len(result.Errors) > 0 {
+		gko.LogWarn("LogEventos: loging errors before events")
+		for _, err := range result.Errors {
+			err.Log()
+		}
+	}
+	for _, ev := range result.Events {
+		if ev.Mensaje == "" {
+			gko.LogEventof("%s %+v", ev.EventKey, ev.Body)
+		} else {
+			gko.LogEvento(ev.Mensaje)
+		}
 	}
 }
