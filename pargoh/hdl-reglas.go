@@ -1,6 +1,7 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
 
 	"github.com/pargomx/gecko"
@@ -67,17 +68,11 @@ func (s *servidor) marcarRegla(c *gecko.Context) error {
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
-func (s *servidor) reordenarRegla(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
-	if err != nil {
-		return err
-	}
-	err = dhistorias.ReordenarRegla(tx.repoOld, c.FormInt("historia_id"), c.FormInt("old_pos"), c.FormInt("new_pos"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
+func (s *servidor) reordenarRegla(c *gecko.Context, tx *arbol.AppTx) error {
+	err := tx.ReordenarEntidad(arbol.ArgsReordenar{
+		NodoID: c.FormInt("historia_id"),
+		NewPos: c.FormInt("new_pos"),
+	})
 	if err != nil {
 		return err
 	}

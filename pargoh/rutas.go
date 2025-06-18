@@ -178,7 +178,6 @@ func main() {
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
 	s.POS("/personas/{persona_id}/time/{seg}", s.postTimeGestion)
-	s.POS("/reordenar-persona", s.inTx(s.reordenarPersona))
 
 	// Historias
 	s.GET("/historias/{historia_id}", s.getHistoria)
@@ -192,7 +191,6 @@ func main() {
 	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.priorizarHistoriaNuevo)
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
-	s.POS("/reordenar-historia", s.inTx(s.reordenarHistoria))
 
 	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
@@ -230,7 +228,6 @@ func main() {
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
 	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.patchTramoDeViaje)
-	s.POS("/reordenar-tramo", s.reordenarTramo)
 
 	s.gecko.StaticSub("/imagenes", s.cfg.imagesDir)
 	s.POS("/imagenes", s.setImagenTramo)
@@ -241,11 +238,16 @@ func main() {
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
 	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.patchRegla)
 	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.marcarRegla)
-	s.POS("/reordenar-regla", s.reordenarRegla)
 
 	// Referencias
 	s.POS("/historias/{historia_id}/referencias", s.postReferencia)
 	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
+
+	// REORDENAR
+	s.POS("/reordenar-persona", s.inTx(s.reordenarPersona))
+	s.POS("/reordenar-historia", s.inTx(s.reordenarHistoria))
+	s.POS("/reordenar-tramo", s.inTx(s.reordenarTramo))
+	s.POS("/reordenar-regla", s.inTx(s.reordenarRegla))
 
 	// Exportar e importar
 	/*

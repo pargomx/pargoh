@@ -366,10 +366,6 @@ func (s *Repositorio) ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error
 	return lista, nil
 }
 
-func (s *Repositorio) ReordenarTramo(HistoriaID, oldPos, newPos int) error {
-	return ErrMientrasMigramos.Copy().Op("ReordenarTramo")
-}
-
 func (s *Repositorio) MoverTramo(historiaID int, posicion int, newHistoriaID int) error {
 	return ErrMientrasMigramos.Copy().Op("MoverTramo")
 }
