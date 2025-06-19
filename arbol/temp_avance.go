@@ -103,10 +103,6 @@ func (tareas TareasList) ValorPorcentual(x int) float64 {
 	return 0
 }
 
-func (tar Tarea) Finalizada() bool {
-	return tar.Estatus > 1
-}
-
 func (tar Tarea) Importancia() ust.ImportanciaTarea {
 	switch tar.Prioridad {
 	default:
@@ -122,23 +118,6 @@ func (tar Tarea) Importancia() ust.ImportanciaTarea {
 
 func (tar Tarea) Tipo() ust.TipoTarea {
 	return ust.TipoTareaIndefinido
-}
-
-const (
-	EstatusTareaNoIniciada = 0
-	EstatusTareaEnCurso    = 1
-	EstatusTareaEnPausa    = 2
-	EstatusTareaFinalizada = 3
-)
-
-func (tar Tarea) NoIniciada() bool {
-	return tar.Estatus == EstatusTareaNoIniciada
-}
-func (tar Tarea) EnCurso() bool {
-	return tar.Estatus == EstatusTareaEnCurso
-}
-func (tar Tarea) EnPausa() bool {
-	return tar.Estatus == EstatusTareaEnPausa
 }
 
 // func (tar Tarea) Finalizada() bool {

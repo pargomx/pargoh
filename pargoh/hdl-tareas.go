@@ -82,29 +82,46 @@ func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
 	return c.AskedForFallback("/historias/%v#%v", nod.PadreID, nod.NodoID)
 }
 
-func (s *servidor) iniciarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repoOld)
+func (s *writehdl) iniciarTarea(c *gecko.Context, tx *handlerTx) error {
+	tareaID := c.PathInt("tarea_id")
+	err := tx.app.IniciarTarea(tareaID)
+	if err != nil {
+		return err
+	}
+	tar, err := tx.repo.GetNodo(tareaID)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", historiaID)
+	return c.AskedForFallback("/historias/%v", tar.PadreID)
 }
-func (s *servidor) pausarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.PausarTarea(c.PathInt("tarea_id"), s.repoOld)
+
+func (s *writehdl) pausarTarea(c *gecko.Context, tx *handlerTx) error {
+	tareaID := c.PathInt("tarea_id")
+	err := tx.app.PausarTarea(tareaID)
+	if err != nil {
+		return err
+	}
+	tar, err := tx.repo.GetNodo(tareaID)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", historiaID)
+	return c.AskedForFallback("/historias/%v", tar.PadreID)
 }
-func (s *servidor) terminarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.FinalizarTarea(c.PathInt("tarea_id"), s.repoOld)
+
+func (s *writehdl) terminarTarea(c *gecko.Context, tx *handlerTx) error {
+	tareaID := c.PathInt("tarea_id")
+	err := tx.app.FinalizarTarea(tareaID)
+	if err != nil {
+		return err
+	}
+	tar, err := tx.repo.GetNodo(tareaID)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", historiaID)
+	return c.AskedForFallback("/historias/%v", tar.PadreID)
 }
 
 /*

@@ -8,6 +8,11 @@ type ReadRepo interface {
 	GetNodo(NodoID int) (*Nodo, error)
 	ListNodosByPadreID(PadreID int) ([]Nodo, error)
 	ListNodosByPadreIDTipo(PadreID int, Tipo string) ([]Nodo, error)
+
+	ListLatidos(desde, hasta string) ([]Latido, error)
+	ListIntervalosByNodoID(NodoID int) ([]Intervalo, error)
+	ExisteIntervalo(NodoID int, TsIni string) error
+	GetIntervalo(NodoID int, TsIni string) (*Intervalo, error)
 }
 
 type Repo interface {
@@ -19,4 +24,9 @@ type Repo interface {
 	DeleteHijos(NodoID int) error
 	ReordenarNodo(nod Nodo, newPosicion int) error
 	MoverNodo(nod Nodo, newPadreID int) error
+
+	InsertLatido(lat Latido) error
+	InsertIntervalo(itv Intervalo) error
+	UpdateIntervalo(NodoID int, TsIni string, itv Intervalo) error
+	DeleteIntervalo(NodoID int, TsIni string) error
 }

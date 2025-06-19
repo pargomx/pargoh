@@ -259,9 +259,9 @@ func main() {
 	s.PCH("/tareas/{tarea_id}/estimado", w.inTx(w.cambiarEstimadoTarea))
 	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
 	s.POS("/tareas/{tarea_id}/importancia", w.inTx(w.ciclarImportanciaTarea))
-	s.POS("/tareas/{tarea_id}/iniciar", s.iniciarTarea)
-	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
-	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
+	s.POS("/tareas/{tarea_id}/iniciar", w.inTx(w.iniciarTarea))
+	s.POS("/tareas/{tarea_id}/pausar", w.inTx(w.pausarTarea))
+	s.POS("/tareas/{tarea_id}/terminar", w.inTx(w.terminarTarea))
 
 	// ELIMINAR
 	s.DEL("/proyectos/{proyecto_id}", w.inTx(w.deleteProyecto))
