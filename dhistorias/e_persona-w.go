@@ -44,34 +44,3 @@ func InsertarPersona(per ust.Persona, repo Repo) error {
 	}
 	return nil
 }
-
-// Acepta cambiar de proyecto a la persona.
-func ActualizarPersona(per ust.Persona, repo Repo) error {
-	op := gko.Op("ActualizarPersona")
-	if per.Nombre == "" {
-		return op.Msg("Persona sin nombre")
-	}
-	oldPer, err := repo.GetPersona(per.PersonaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	if oldPer.ProyectoID != per.ProyectoID {
-		err = repo.ExisteProyecto(per.ProyectoID)
-		if err != nil {
-			return op.Err(err)
-		}
-		err := repo.CambiarProyectoDeHistoriasByPersonaID(per.PersonaID, per.ProyectoID)
-		if err != nil {
-			return op.Err(err)
-		}
-	}
-	err = validarNombreDescrDePersona(&per)
-	if err != nil {
-		return op.Err(err)
-	}
-	err = repo.UpdatePersona(per)
-	if err != nil {
-		return op.Err(err)
-	}
-	return nil
-}

@@ -59,17 +59,7 @@ func (s *readhdl) listaProyectos(c *gecko.Context) error {
 	return c.RenderOk("proyectos", data)
 }
 
-func (s *servidor) updateProyecto(c *gecko.Context) error {
-	err := dhistorias.ModificarProyecto(c.PathVal("proyecto_id"), ust.Proyecto{
-		ProyectoID:  c.FormVal("clave"),
-		Posicion:    c.FormInt("posicion"),
-		Titulo:      c.FormVal("titulo"),
-		Color:       c.FormVal("color"),
-		Descripcion: c.FormVal("descripcion"),
-	}, s.repoOld)
-	if err != nil {
-		return err
-	}
+func (s *servidor) setImagenProyecto(c *gecko.Context) error {
 	hdr, err := c.FormFile("imagen")
 	if err == nil {
 		file, err := hdr.Open()

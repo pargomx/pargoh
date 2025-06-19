@@ -130,20 +130,6 @@ func (s *writehdl) postPersona(c *gecko.Context, tx *handlerTx) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) updatePersona(c *gecko.Context) error {
-	persona := ust.Persona{
-		PersonaID:   c.PathInt("persona_id"),
-		ProyectoID:  c.FormVal("proyecto_id"),
-		Nombre:      c.FormVal("nombre"),
-		Descripcion: c.FormVal("descripcion"),
-	}
-	err := dhistorias.ActualizarPersona(persona, s.repoOld)
-	if err != nil {
-		return err
-	}
-	return c.RefreshHTMX()
-}
-
 func (s *writehdl) patchPersona(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
 		NodoID: c.PathInt("persona_id"),

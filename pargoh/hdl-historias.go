@@ -123,24 +123,6 @@ func (s *writehdl) postPadreParaHistoria(c *gecko.Context, tx *handlerTx) error 
 	return c.AskedForFallback("/historias/%v", newPadre.NodoID)
 }
 
-func (s *servidor) updateHistoria(c *gecko.Context) error {
-	err := dhistorias.ActualizarHistoria(
-		c.PathInt("historia_id"),
-		ust.Historia{
-			HistoriaID: c.FormInt("historia_id"),
-			Titulo:     c.FormValue("titulo"),
-			Objetivo:   c.FormValue("objetivo"),
-			Prioridad:  c.FormInt("prioridad"),
-			Completada: c.FormBool("completada"),
-		},
-		s.repoOld,
-	)
-	if err != nil {
-		return err
-	}
-	return c.AskedFor("Historia actualizada")
-}
-
 func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
 		NodoID: c.PathInt("historia_id"),

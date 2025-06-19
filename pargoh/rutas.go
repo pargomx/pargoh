@@ -248,11 +248,6 @@ func main() {
 	s.PCH("/historias/{historia_id}/reglas/{posicion}", w.inTx(w.patchRegla))
 	s.PCH("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.patchTramoDeViaje))
 
-	// UPDATE (deprecated)
-	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
-	s.PUT("/personas/{persona_id}", s.updatePersona)
-	s.PUT("/historias/{historia_id}", s.updateHistoria)
-
 	// OTROS
 	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.marcarRegla)
 	s.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
@@ -283,6 +278,7 @@ func main() {
 
 	// IMAGENES
 	s.POS("/imagenes", s.setImagenTramo)
+	s.PUT("/proyectos/{proyecto_id}", s.setImagenProyecto)
 
 	// Referencias
 	s.POS("/historias/{historia_id}/referencias", s.postReferencia)
