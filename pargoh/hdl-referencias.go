@@ -12,7 +12,7 @@ func (s *servidor) postReferencia(c *gecko.Context) error {
 	if refHistoriaID == 0 {
 		return gko.ErrDatoIndef.Msg("Debe seleccionar una historia de usuario")
 	}
-	err := dhistorias.AgregarReferencia(s.repo, c.PathInt("historia_id"), refHistoriaID)
+	err := dhistorias.AgregarReferencia(s.repoOld, c.PathInt("historia_id"), refHistoriaID)
 	if err != nil {
 		return err
 	}

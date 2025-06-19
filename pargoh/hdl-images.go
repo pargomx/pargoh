@@ -63,7 +63,7 @@ func (s *servidor) setImagenTramo(c *gecko.Context) error {
 		foto,
 		s.cfg.imagesDir,
 		file.Header.Get("Content-Type"),
-		s.repo,
+		s.repoOld,
 	)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (s *servidor) setImagenTramo(c *gecko.Context) error {
 }
 
 func (s *servidor) deleteImagenTramo(c *gecko.Context) error {
-	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.imagesDir, s.repo)
+	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.imagesDir, s.repoOld)
 	if err != nil {
 		return err
 	}

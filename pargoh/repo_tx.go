@@ -40,7 +40,7 @@ type handlerTx struct {
 // Inicia una transacción en la base de datos, crea un repositorio y comienza
 // una transacción de aplicación que es entregada al handler. Cuando el handler
 // retorna: si no hay error hace Commit, si hay error o panic hace rollback.
-func (s *servidor) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gecko.HandlerFunc {
+func (s *writehdl) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gecko.HandlerFunc {
 	return func(c *gecko.Context) error {
 		dbTx, err := s.db.Begin()
 		if err != nil {
@@ -92,7 +92,7 @@ func (s *servidor) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 // ================================================================ //
 // ========== Event store ========================================= //
 
-func (s *servidor) LogEventos(result *gko.TxResult) {
+func (s *writehdl) LogEventos(result *gko.TxResult) {
 	if len(result.Events) == 0 {
 		gko.LogWarn("LogEventos: nothing to log")
 	}

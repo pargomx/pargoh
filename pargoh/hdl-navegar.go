@@ -6,8 +6,8 @@ import (
 	"github.com/pargomx/gecko"
 )
 
-func (s *servidor) navDesdeRoot(c *gecko.Context) error {
-	proyectos, err := s.repo.ListProyectos()
+func (s *readhdl) navDesdeRoot(c *gecko.Context) error {
+	proyectos, err := s.repoOld.ListProyectos()
 	if err != nil {
 		return err
 	}
@@ -17,12 +17,12 @@ func (s *servidor) navDesdeRoot(c *gecko.Context) error {
 	return c.RenderOk("nav_root", data)
 }
 
-func (s *servidor) navDesdeProyecto(c *gecko.Context) error {
-	proyecto, err := s.repo.GetProyecto(c.PathVal("proyecto_id"))
+func (s *readhdl) navDesdeProyecto(c *gecko.Context) error {
+	proyecto, err := s.repoOld.GetProyecto(c.PathVal("proyecto_id"))
 	if err != nil {
 		return err
 	}
-	personas, err := s.repo.ListNodosPersonas(proyecto.ProyectoID)
+	personas, err := s.repoOld.ListNodosPersonas(proyecto.ProyectoID)
 	if err != nil {
 		return err
 	}
@@ -33,16 +33,16 @@ func (s *servidor) navDesdeProyecto(c *gecko.Context) error {
 	return c.RenderOk("nav_proy", data)
 }
 
-func (s *servidor) navDesdePersona(c *gecko.Context) error {
-	persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+func (s *readhdl) navDesdePersona(c *gecko.Context) error {
+	persona, err := s.repoOld.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
-	proyecto, err := s.repo.GetProyecto(persona.ProyectoID)
+	proyecto, err := s.repoOld.GetProyecto(persona.ProyectoID)
 	if err != nil {
 		return err
 	}
-	historias, err := s.repo.ListNodoHistoriasByPadreID(persona.PersonaID)
+	historias, err := s.repoOld.ListNodoHistoriasByPadreID(persona.PersonaID)
 	if err != nil {
 		return err
 	}
@@ -54,8 +54,8 @@ func (s *servidor) navDesdePersona(c *gecko.Context) error {
 	return c.RenderOk("nav_pers", data)
 }
 
-func (s *servidor) navDesdeHistoria(c *gecko.Context) error {
-	agg, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repo)
+func (s *readhdl) navDesdeHistoria(c *gecko.Context) error {
+	agg, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repoOld)
 	if err != nil {
 		return err
 	}

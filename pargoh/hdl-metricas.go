@@ -139,15 +139,15 @@ func (s *servidor) getMétricas2(c *gecko.Context) error {
 }
 */
 
-func (s *servidor) getMétricas(c *gecko.Context) error {
+func (s *readhdl) getMétricas(c *gecko.Context) error {
 
 	// Traer todos los días trabajados hasta el presente.
-	ListaDias, err := s.repo.ListDias()
+	ListaDias, err := s.repoOld.ListDias()
 	if err != nil {
 		return err
 	}
 	// Traer todos los recursos para no estar buscando en DB y poner en mapa.
-	Intervalos, err := s.repo.ListIntervalosEnDias()
+	Intervalos, err := s.repoOld.ListIntervalosEnDias()
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		IntervalosMapDia[interv.Fecha] = append(IntervalosMapDia[interv.Fecha], interv)
 	}
 
-	Tareas, err := s.repo.ListTareas()
+	Tareas, err := s.repoOld.ListTareas()
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	for _, tarea := range Tareas {
 		TareasMap[tarea.TareaID] = tarea
 	}
-	Historias, err := s.repo.ListNodoHistorias()
+	Historias, err := s.repoOld.ListNodoHistorias()
 	if err != nil {
 		return err
 	}
@@ -198,7 +198,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 		FinDia:          finDia,
 	}
 
-	Latidos, err := s.repo.ListLatidos(
+	Latidos, err := s.repoOld.ListLatidos(
 		iniDia.AddDate(0, 0, -7).Format(gkt.FormatoFechaHora),
 		finDia.Format(gkt.FormatoFechaHora),
 	)
@@ -218,7 +218,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 
 	}
 
-	Personas, err := s.repo.ListPersonas()
+	Personas, err := s.repoOld.ListPersonas()
 	if err != nil {
 		return err
 	}
@@ -260,7 +260,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			}
 			pro, ok := Dias[i].Proyectos[historia.ProyectoID]
 			if !ok {
-				proyecto, err := s.repo.GetProyecto(historia.ProyectoID)
+				proyecto, err := s.repoOld.GetProyecto(historia.ProyectoID)
 				if err != nil {
 					return err
 				}
@@ -318,7 +318,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 			}
 			pro, ok := Dias[i].Proyectos[per.ProyectoID]
 			if !ok {
-				proyecto, err := s.repo.GetProyecto(per.ProyectoID)
+				proyecto, err := s.repoOld.GetProyecto(per.ProyectoID)
 				if err != nil {
 					return err
 				}
@@ -360,7 +360,7 @@ func (s *servidor) getMétricas(c *gecko.Context) error {
 	}
 
 	// TABLA DE DÍA TRABAJADO CONTRA PROYECTOS
-	ProyectosSimple, err := s.repo.ListProyectos()
+	ProyectosSimple, err := s.repoOld.ListProyectos()
 	if err != nil {
 		return err
 	}

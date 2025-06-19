@@ -10,7 +10,7 @@ import (
 // ========== VIAJE DE USUARIO ==================================== //
 
 func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
-	err := dhistorias.AgregarTramoDeViaje(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
+	err := dhistorias.AgregarTramoDeViaje(s.repoOld, c.PathInt("historia_id"), c.FormValue("texto"))
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 }
 
 func (s *servidor) moverTramo(c *gecko.Context) error {
-	historiaID, err := dhistorias.MoverTramo(c.FormInt("historia_id"), c.FormInt("posicion"), c.FormInt("target_historia_id"), s.repo)
+	historiaID, err := dhistorias.MoverTramo(c.FormInt("historia_id"), c.FormInt("posicion"), c.FormInt("target_historia_id"), s.repoOld)
 	if err != nil {
 		return err
 	}

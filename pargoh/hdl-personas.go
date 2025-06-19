@@ -7,34 +7,34 @@ import (
 	"github.com/pargomx/gecko"
 )
 
-func (s *servidor) getPersona(c *gecko.Context) error {
-	Per, err := s.repo2.GetPersona(c.PathInt("persona_id"))
+func (s *readhdl) getPersona(c *gecko.Context) error {
+	Per, err := s.repo.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
 
-	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+	Persona, err := s.repoOld.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
-	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	Proyecto, err := s.repoOld.GetProyecto(Persona.ProyectoID)
 	if err != nil {
 		return err
 	}
 	// Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
-	hists, err := s.repo.ListHistoriasByPadreID(Persona.PersonaID)
+	hists, err := s.repoOld.ListHistoriasByPadreID(Persona.PersonaID)
 	if err != nil {
 		return err
 	}
 	Historias := make(dhistorias.HistoriaAgregadoList, len(hists))
 	for i, h := range hists {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repo)
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repoOld)
 		if err != nil {
 			return err
 		}
 		Historias[i] = *agg
 	}
-	TareasEnCurso, err := s.repo.ListTareasEnCurso()
+	TareasEnCurso, err := s.repoOld.ListTareasEnCurso()
 	if err != nil {
 		return err
 	}
@@ -48,22 +48,22 @@ func (s *servidor) getPersona(c *gecko.Context) error {
 	return c.RenderOk("persona", data)
 }
 
-func (s *servidor) getPersonaDoc(c *gecko.Context) error {
-	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+func (s *readhdl) getPersonaDoc(c *gecko.Context) error {
+	Persona, err := s.repoOld.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
-	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	Proyecto, err := s.repoOld.GetProyecto(Persona.ProyectoID)
 	if err != nil {
 		return err
 	}
-	hists, err := s.repo.ListHistoriasByPadreID(Persona.PersonaID)
+	hists, err := s.repoOld.ListHistoriasByPadreID(Persona.PersonaID)
 	if err != nil {
 		return err
 	}
 	Historias := make(dhistorias.HistoriaAgregadoList, len(hists))
 	for i, h := range hists {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes|dhistorias.GetTramos|dhistorias.GetReglas|dhistorias.GetRelacionadas, s.repo)
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes|dhistorias.GetTramos|dhistorias.GetReglas|dhistorias.GetRelacionadas, s.repoOld)
 		if err != nil {
 			return err
 		}
@@ -78,12 +78,12 @@ func (s *servidor) getPersonaDoc(c *gecko.Context) error {
 	return c.Render(200, "persona_doc", data)
 }
 
-func (s *servidor) getPersonaDebug(c *gecko.Context) error {
-	Persona, err := s.repo.GetPersona(c.PathInt("persona_id"))
+func (s *readhdl) getPersonaDebug(c *gecko.Context) error {
+	Persona, err := s.repoOld.GetPersona(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
-	Proyecto, err := s.repo.GetProyecto(Persona.ProyectoID)
+	Proyecto, err := s.repoOld.GetProyecto(Persona.ProyectoID)
 	if err != nil {
 		return err
 	}
@@ -91,13 +91,13 @@ func (s *servidor) getPersonaDebug(c *gecko.Context) error {
 		Agg dhistorias.HistoriaAgregado
 		Rec dhistorias.HistoriaRecursiva
 	}
-	HistoriasRec, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, dhistorias.GetReglas|dhistorias.GetTareas, s.repo)
+	HistoriasRec, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, dhistorias.GetReglas|dhistorias.GetTareas, s.repoOld)
 	if err != nil {
 		return err
 	}
 	Historias := make([]HistoriaDebug, len(HistoriasRec))
 	for i, h := range HistoriasRec {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repo)
+		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repoOld)
 		if err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func (s *servidor) postPersona(c *gecko.Context) error {
 		Nombre:      c.FormVal("nombre"),
 		Descripcion: c.FormVal("descripcion"),
 	}
-	err := dhistorias.InsertarPersona(persona, s.repo)
+	err := dhistorias.InsertarPersona(persona, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func (s *servidor) updatePersona(c *gecko.Context) error {
 		Nombre:      c.FormVal("nombre"),
 		Descripcion: c.FormVal("descripcion"),
 	}
-	err := dhistorias.ActualizarPersona(persona, s.repo)
+	err := dhistorias.ActualizarPersona(persona, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func (s *servidor) patchPersona(c *gecko.Context) error {
 		c.PathInt("persona_id"),
 		c.PathVal("param"),
 		c.FormValue("value"),
-		s.repo,
+		s.repoOld,
 	)
 	if err != nil {
 		return err
@@ -157,7 +157,7 @@ func (s *servidor) patchPersona(c *gecko.Context) error {
 }
 
 func (s *servidor) deletePersona(c *gecko.Context) error {
-	err := dhistorias.EliminarPersona(c.PathInt("persona_id"), s.repo)
+	err := dhistorias.EliminarPersona(c.PathInt("persona_id"), s.repoOld)
 	if err != nil {
 		return err
 	}

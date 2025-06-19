@@ -7,7 +7,7 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-func (s *servidor) reordenarPersona(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) reordenarPersona(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ReordenarEntidad(arbol.ArgsReordenar{
 		NodoID: c.FormInt("persona_id"),
 		NewPos: c.FormInt("new_pos"),
@@ -22,7 +22,7 @@ func (s *servidor) reordenarPersona(c *gecko.Context, tx *handlerTx) error {
 	return c.RedirOtrof("/proyectos/%v", pers.ProyectoID)
 }
 
-func (s *servidor) reordenarHistoria(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) reordenarHistoria(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ReordenarEntidad(arbol.ArgsReordenar{
 		NodoID: c.FormInt("historia_id"),
 		NewPos: c.FormInt("new_pos"),
@@ -50,7 +50,7 @@ func (s *servidor) reordenarHistoria(c *gecko.Context, tx *handlerTx) error {
 		padre.NodoID, padre.Tipo)
 }
 
-func (s *servidor) reordenarTramo(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) reordenarTramo(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ReordenarEntidad(arbol.ArgsReordenar{
 		NodoID: c.FormInt("historia_id"),
 		NewPos: c.FormInt("new_pos"),
@@ -62,7 +62,7 @@ func (s *servidor) reordenarTramo(c *gecko.Context, tx *handlerTx) error {
 	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
 }
 
-func (s *servidor) reordenarRegla(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) reordenarRegla(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ReordenarEntidad(arbol.ArgsReordenar{
 		NodoID: c.FormInt("historia_id"),
 		NewPos: c.FormInt("new_pos"),

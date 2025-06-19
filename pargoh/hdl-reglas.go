@@ -10,7 +10,7 @@ import (
 // ========== REGLAS DE NEGOCIO =================================== //
 
 func (s *servidor) postRegla(c *gecko.Context) error {
-	err := dhistorias.AgregarRegla(s.repo, c.PathInt("historia_id"), c.FormValue("texto"))
+	err := dhistorias.AgregarRegla(s.repoOld, c.PathInt("historia_id"), c.FormValue("texto"))
 	if err != nil {
 		return err
 	}

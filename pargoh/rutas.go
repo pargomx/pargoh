@@ -50,9 +50,11 @@ type servidor struct {
 	cfg   configs
 	gecko *gecko.Gecko
 	db    *sqlitedb.SqliteDB
-	repo  dhistorias.Repo
-	repo2 arbol.ReadRepo
-	auth  *authService
+
+	repoOld dhistorias.Repo
+	repo    arbol.ReadRepo
+
+	auth *authService
 
 	app *arbol.Servicio
 
@@ -61,6 +63,19 @@ type servidor struct {
 	timeTracker *dhistorias.GestionTimeTracker
 
 	noContinuar bool // feature flag
+}
+
+type readhdl struct {
+	db      *sqlitedb.SqliteDB
+	repo    arbol.ReadRepo
+	repoOld dhistorias.Repo
+}
+
+type writehdl struct {
+	db          *sqlitedb.SqliteDB
+	app         *arbol.Servicio
+	reloader    reloader // websocket.go
+	timeTracker *dhistorias.GestionTimeTracker
 }
 
 func main() {
@@ -100,9 +115,9 @@ func main() {
 	if s.cfg.debug.logDB {
 		s.db.ToggleLog()
 	}
-	s.repo = sqlitepuente.NuevoRepo(s.db)
-	s.repo2 = sqlitearbol.NuevoRepo(s.db)
-	s.timeTracker = dhistorias.NewGestionTimeTracker(s.repo, 0)
+	s.repoOld = sqlitepuente.NuevoRepo(s.db)
+	s.repo = sqlitearbol.NuevoRepo(s.db)
+	s.timeTracker = dhistorias.NewGestionTimeTracker(s.repoOld, 0)
 
 	if s.cfg.sourceDir != "" {
 		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
@@ -132,6 +147,18 @@ func main() {
 		gko.FatalError(err)
 	}
 
+	r := readhdl{
+		db:      s.db,
+		repo:    sqlitearbol.NuevoRepo(s.db),
+		repoOld: sqlitepuente.NuevoRepo(s.db),
+	}
+	w := writehdl{
+		db:          s.db,
+		app:         s.app,
+		reloader:    s.reloader,
+		timeTracker: s.timeTracker,
+	}
+
 	// ================================================================ //
 
 	if s.cfg.sourceDir != "" {
@@ -154,16 +181,16 @@ func main() {
 	s.GET("/logout", s.auth.logout)
 	s.GET("/sesiones", s.auth.printSesiones)
 
-	s.GET("/buscar", s.buscar)
+	s.GET("/buscar", r.buscar)
 
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
 
 	// Proyectos
-	s.GET("/proyectos", s.listaProyectos)
+	s.GET("/proyectos", r.listaProyectos)
 	s.POS("/proyectos", s.postProyecto)
-	s.GET("/proyectos/{proyecto_id}", s.getProyecto)
-	s.GET("/proyectos/{proyecto_id}/doc", s.getDocumentacionProyecto)
+	s.GET("/proyectos/{proyecto_id}", r.getProyecto)
+	s.GET("/proyectos/{proyecto_id}/doc", r.getDocumentacionProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
 	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
 	s.PUT("/proyectos/{proyecto_id}", s.updateProyecto)
@@ -171,9 +198,9 @@ func main() {
 
 	// Personas
 	s.POS("/personas", s.postPersona)
-	s.GET("/personas/{persona_id}", s.getPersona)
-	s.GET("/personas/{persona_id}/doc", s.getPersonaDoc)
-	s.GET("/personas/{persona_id}/debug", s.getPersonaDebug)
+	s.GET("/personas/{persona_id}", r.getPersona)
+	s.GET("/personas/{persona_id}/doc", r.getPersonaDoc)
+	s.GET("/personas/{persona_id}/debug", r.getPersonaDebug)
 	s.POS("/personas/{persona_id}", s.postHistoriaDePersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
@@ -181,8 +208,8 @@ func main() {
 	s.POS("/personas/{persona_id}/time/{seg}", s.postTimeGestion)
 
 	// Historias
-	s.GET("/historias/{historia_id}", s.getHistoria)
-	s.GET("/historias/{historia_id}/tablero", s.getHistoriaTablero)
+	s.GET("/historias/{historia_id}", r.getHistoria)
+	s.GET("/historias/{historia_id}/tablero", r.getHistoriaTablero)
 	s.POS("/historias/{historia_id}", s.postHistoriaDeHistoria)
 	s.POS("/historias/{historia_id}/padre", s.postPadreParaHistoria)
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
@@ -193,14 +220,14 @@ func main() {
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
 
-	s.GET("/historias/{historia_id}/mover", s.moverHistoriaForm)
+	s.GET("/historias/{historia_id}/mover", r.moverHistoriaForm)
 	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
 
 	// Navegador del árbol de historias
-	s.GET("/nav", s.navDesdeRoot)
-	s.GET("/nav/proy/{proyecto_id}", s.navDesdeProyecto)
-	s.GET("/nav/pers/{persona_id}", s.navDesdePersona)
-	s.GET("/nav/hist/{historia_id}", s.navDesdeHistoria)
+	s.GET("/nav", r.navDesdeRoot)
+	s.GET("/nav/proy/{proyecto_id}", r.navDesdeProyecto)
+	s.GET("/nav/pers/{persona_id}", r.navDesdePersona)
+	s.GET("/nav/hist/{historia_id}", r.navDesdeHistoria)
 
 	s.POS("/mover/tramo", s.moverTramo)
 	s.POS("/mover/tarea", s.moverTarea)
@@ -209,7 +236,7 @@ func main() {
 	// Tareas técnicas
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)
 
-	s.GET("/tareas/{tarea_id}", s.getTarea)
+	s.GET("/tareas/{tarea_id}", r.getTarea)
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
 	s.DEL("/tareas/{tarea_id}", s.eliminarTarea)
 	s.PCH("/tareas/{tarea_id}/estimado", s.cambiarEstimadoTarea)
@@ -218,12 +245,12 @@ func main() {
 	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
 
-	s.GET("/intervalos", s.getIntervalos)
+	s.GET("/intervalos", r.getIntervalos)
 	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
 
 	// Quick tasks
 	s.POS("/tareas", s.postQuickTask)
-	s.GET("/tareas", s.getQuickTasks)
+	s.GET("/tareas", r.getQuickTasks)
 
 	// Viaje de usuario
 	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
@@ -245,10 +272,10 @@ func main() {
 	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
 
 	// REORDENAR
-	s.POS("/reordenar-persona", s.inTx(s.reordenarPersona))
-	s.POS("/reordenar-historia", s.inTx(s.reordenarHistoria))
-	s.POS("/reordenar-tramo", s.inTx(s.reordenarTramo))
-	s.POS("/reordenar-regla", s.inTx(s.reordenarRegla))
+	s.POS("/reordenar-persona", w.inTx(w.reordenarPersona))
+	s.POS("/reordenar-historia", w.inTx(w.reordenarHistoria))
+	s.POS("/reordenar-tramo", w.inTx(w.reordenarTramo))
+	s.POS("/reordenar-regla", w.inTx(w.reordenarRegla))
 
 	// Exportar e importar
 	/*
@@ -266,7 +293,7 @@ func main() {
 	*/
 
 	// General
-	s.GET("/metricas", s.getMétricas)
+	s.GET("/metricas", r.getMétricas)
 	// s.GET("/metricas2", s.getMétricas2)
 	// s.GET("/materializar-tiempos", s.materializarTiemposTareas)
 	// s.GET("/materializar-historias", s.materializarHistorias)

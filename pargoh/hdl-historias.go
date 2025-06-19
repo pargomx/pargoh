@@ -11,8 +11,8 @@ import (
 // ================================================================ //
 // ========== READ ================================================ //
 
-func (s *servidor) getHistoria(c *gecko.Context) error {
-	Historia, err := s.repo2.GetHistoria(c.PathInt("historia_id"))
+func (s *readhdl) getHistoria(c *gecko.Context) error {
+	Historia, err := s.repo.GetHistoria(c.PathInt("historia_id"))
 	if err != nil {
 		return err
 	}
@@ -27,8 +27,8 @@ func (s *servidor) getHistoria(c *gecko.Context) error {
 	return c.RenderOk("historia", data)
 }
 
-func (s *servidor) getHistoriaTablero(c *gecko.Context) error {
-	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repo)
+func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
+	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -132,7 +132,7 @@ func (s *servidor) updateHistoria(c *gecko.Context) error {
 			Prioridad:  c.FormInt("prioridad"),
 			Completada: c.FormBool("completada"),
 		},
-		s.repo,
+		s.repoOld,
 	)
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 		c.PathInt("historia_id"),
 		c.PathVal("param"),
 		c.FormValue("value"),
-		s.repo,
+		s.repoOld,
 	)
 	if err != nil {
 		return err
@@ -155,7 +155,7 @@ func (s *servidor) patchHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) priorizarHistoria(c *gecko.Context) error {
-	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.FormInt("prioridad"), s.repo)
+	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.FormInt("prioridad"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -163,7 +163,7 @@ func (s *servidor) priorizarHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
-	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.PathInt("prioridad"), s.repo)
+	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.PathInt("prioridad"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
 }
 
 func (s *servidor) marcarHistoria(c *gecko.Context) error {
-	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.FormBool("completada"), s.repo)
+	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.FormBool("completada"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func (s *servidor) marcarHistoria(c *gecko.Context) error {
 }
 
 func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
-	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.PathBool("completada"), s.repo)
+	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.PathBool("completada"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -187,11 +187,11 @@ func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
 }
 
 func (s *servidor) deleteHistoria(c *gecko.Context) error {
-	padreID, err := dhistorias.EliminarHistoria(c.PathInt("historia_id"), s.repo)
+	padreID, err := dhistorias.EliminarHistoria(c.PathInt("historia_id"), s.repoOld)
 	if err != nil {
 		return err
 	}
-	padre, err := s.repo.GetNodo(padreID)
+	padre, err := s.repoOld.GetNodo(padreID)
 	if err != nil {
 		return err
 	}
@@ -218,7 +218,7 @@ func (s *servidor) moverHistoria(c *gecko.Context) error {
 	if historiaID == 0 {
 		historiaID = c.PathInt("historia_id")
 	}
-	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repo)
+	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repoOld)
 	if err != nil {
 		return err
 	}

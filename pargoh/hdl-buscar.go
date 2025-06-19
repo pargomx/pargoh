@@ -20,9 +20,9 @@ func highlight(text string) template.HTML {
 	return template.HTML(escapedText)
 }
 
-func (s *servidor) buscar(c *gecko.Context) error {
+func (s *readhdl) buscar(c *gecko.Context) error {
 	query := c.QueryVal("q")
-	resultados, err := s.repo.FullTextSearch(query)
+	resultados, err := s.repoOld.FullTextSearch(query)
 	if err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ func (s *servidor) postTarea(c *gecko.Context) error {
 		SegundosEstimado: estimado,
 		Importancia:      ust.SetImportanciaTareaDB(c.FormVal("importancia")),
 	}
-	err = dhistorias.AgregarTarea(tarea, s.repo)
+	err = dhistorias.AgregarTarea(tarea, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 		SegundosEstimado: estimado,
 		Importancia:      ust.SetImportanciaTareaDB(c.FormVal("importancia")),
 	}
-	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), tarea, s.repo)
+	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), tarea, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 }
 
 func (s *servidor) ciclarImportanciaTarea(c *gecko.Context) error {
-	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
+	tarea, err := s.repoOld.GetTarea(c.PathInt("tarea_id"))
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func (s *servidor) ciclarImportanciaTarea(c *gecko.Context) error {
 	} else {
 		tarea.Importancia = ust.ImportanciaTareaIdea
 	}
-	err = dhistorias.ActualizarTarea(tarea.TareaID, *tarea, s.repo)
+	err = dhistorias.ActualizarTarea(tarea.TareaID, *tarea, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -82,12 +82,12 @@ func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
 	if estimado <= 0 {
 		return gko.ErrDatoInvalido.Msg("El estimado debe ser mayor a 0")
 	}
-	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
+	tarea, err := s.repoOld.GetTarea(c.PathInt("tarea_id"))
 	if err != nil {
 		return err
 	}
 	tarea.SegundosEstimado = estimado
-	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), *tarea, s.repo)
+	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), *tarea, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
 }
 
 func (s *servidor) moverTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.MoverTarea(c.FormInt("tarea_id"), c.FormInt("target_historia_id"), s.repo)
+	historiaID, err := dhistorias.MoverTarea(c.FormInt("tarea_id"), c.FormInt("target_historia_id"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (s *servidor) moverTarea(c *gecko.Context) error {
 }
 
 func (s *servidor) eliminarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func (s *servidor) eliminarTarea(c *gecko.Context) error {
 }
 
 func (s *servidor) iniciarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (s *servidor) iniciarTarea(c *gecko.Context) error {
 	return c.AskedForFallback("/historias/%v", historiaID)
 }
 func (s *servidor) pausarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.PausarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.PausarTarea(c.PathInt("tarea_id"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (s *servidor) pausarTarea(c *gecko.Context) error {
 	return c.AskedForFallback("/historias/%v", historiaID)
 }
 func (s *servidor) terminarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.FinalizarTarea(c.PathInt("tarea_id"), s.repo)
+	historiaID, err := dhistorias.FinalizarTarea(c.PathInt("tarea_id"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -149,12 +149,12 @@ func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
 }
 */
 
-func (s *servidor) getTarea(c *gecko.Context) error {
-	tarea, err := s.repo.GetTarea(c.PathInt("tarea_id"))
+func (s *readhdl) getTarea(c *gecko.Context) error {
+	tarea, err := s.repoOld.GetTarea(c.PathInt("tarea_id"))
 	if err != nil {
 		return err
 	}
-	intervalos, err := s.repo.ListIntervalosByTareaID(tarea.TareaID)
+	intervalos, err := s.repoOld.ListIntervalosByTareaID(tarea.TareaID)
 	if err != nil {
 		return err
 	}
@@ -165,12 +165,12 @@ func (s *servidor) getTarea(c *gecko.Context) error {
 	return c.RenderOk("tarea", data)
 }
 
-func (s *servidor) getIntervalos(c *gecko.Context) error {
-	recientes, err := s.repo.ListIntervalosRecientes()
+func (s *readhdl) getIntervalos(c *gecko.Context) error {
+	recientes, err := s.repoOld.ListIntervalosRecientes()
 	if err != nil {
 		return err
 	}
-	abiertos, err := s.repo.ListIntervalosRecientesAbiertos()
+	abiertos, err := s.repoOld.ListIntervalosRecientesAbiertos()
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func (s *servidor) getIntervalos(c *gecko.Context) error {
 }
 
 func (s *servidor) patchIntervalo(c *gecko.Context) error {
-	historiaID, err := dhistorias.ParcharIntervalo(c.PathInt("tarea_id"), c.PathVal("inicio"), c.FormVal("inicio"), c.FormVal("fin"), s.repo)
+	historiaID, err := dhistorias.ParcharIntervalo(c.PathInt("tarea_id"), c.PathVal("inicio"), c.FormVal("inicio"), c.FormVal("fin"), s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -200,19 +200,19 @@ func (s *servidor) postQuickTask(c *gecko.Context) error {
 		HistoriaID:  dhistorias.QUICK_TASK_HISTORIA_ID,
 		Descripcion: c.PromptVal(),
 	}
-	err := dhistorias.AgregarTarea(tarea, s.repo)
+	err := dhistorias.AgregarTarea(tarea, s.repoOld)
 	if err != nil {
 		return err
 	}
-	_, err = dhistorias.IniciarTarea(tarea.TareaID, s.repo)
+	_, err = dhistorias.IniciarTarea(tarea.TareaID, s.repoOld)
 	if err != nil {
 		return err
 	}
 	return c.AskedForFallback("/tareas")
 }
 
-func (s *servidor) getQuickTasks(c *gecko.Context) error {
-	tareas, err := s.repo.ListTareasByHistoriaID(dhistorias.QUICK_TASK_HISTORIA_ID)
+func (s *readhdl) getQuickTasks(c *gecko.Context) error {
+	tareas, err := s.repoOld.ListTareasByHistoriaID(dhistorias.QUICK_TASK_HISTORIA_ID)
 	if err != nil {
 		return err
 	}
