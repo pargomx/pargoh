@@ -324,7 +324,9 @@ type Regla struct {
 	// Imagen string
 
 	// Prioridad int
-	Estatus int
+
+	Estatus int // 0:gris, 1:naranja, 2:verde
+
 	// Segundos int
 	// Centavos int
 
@@ -362,7 +364,7 @@ type Tarea struct {
 	// Color  string
 	// Imagen string
 
-	Prioridad        int // Antes Importancia
+	Prioridad        int // Importancia 0:indefinido, 1:idea, 2:mejora, 3:necesaria
 	Estatus          int
 	SegundosEstimado int // nod.Segundos
 	// Centavos         int

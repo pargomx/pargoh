@@ -136,32 +136,32 @@ func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {
 	return c.AskedFor("Historia parchada")
 }
 
-func (s *servidor) priorizarHistoria(c *gecko.Context) error {
-	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.FormInt("prioridad"), s.repoOld)
+func (s *writehdl) priorizarHistoria(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("historia_id"),
+		Campo:  "prioridad",
+		NewVal: c.FormVal("prioridad"),
+	}
+	if args.NewVal == "" {
+		args.NewVal = c.PathVal("prioridad")
+	}
+	err := tx.app.ParcharNodo(args)
 	if err != nil {
 		return err
 	}
 	return c.AskedFor("Historia priorizada")
 }
 
-func (s *servidor) priorizarHistoriaNuevo(c *gecko.Context) error {
-	err := dhistorias.PriorizarHistoria(c.PathInt("historia_id"), c.PathInt("prioridad"), s.repoOld)
-	if err != nil {
-		return err
+func (s *writehdl) marcarHistoria(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("historia_id"),
+		Campo:  "completada",
+		NewVal: c.FormVal("completada"),
 	}
-	return c.AskedFor("Historia priorizada")
-}
-
-func (s *servidor) marcarHistoria(c *gecko.Context) error {
-	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.FormBool("completada"), s.repoOld)
-	if err != nil {
-		return err
+	if args.NewVal == "" {
+		args.NewVal = c.PathVal("completada")
 	}
-	return c.AskedFor("Historia marcada")
-}
-
-func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
-	err := dhistorias.MarcarHistoria(c.PathInt("historia_id"), c.PathBool("completada"), s.repoOld)
+	err := tx.app.ParcharNodo(args)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,8 @@
 package arbol
 
 import (
+	"fmt"
+	"monorepo/ust"
 	"strings"
 
 	"github.com/pargomx/gecko/gko"
@@ -54,13 +56,36 @@ func (s *AppTx) ParcharNodo(args ArgsParcharNodo) error {
 
 	case "prioridad":
 		nod.Prioridad, _ = gkt.ToInt(args.NewVal)
-		// if !prioridadValida(nod.Prioridad) {
-		// 	return op.Msg(prioridadInvalidaMsg)
-		// }
+		if !prioridadValida(nod.Prioridad) {
+			return op.E(ErrPrioridadInvalida).Msg("La prioridad debe estar entre 0 y 3")
+		}
+
+	case "importancia":
+		if args.NewVal != "" {
+			nod.Prioridad, _ = gkt.ToInt(args.NewVal)
+		} else {
+			tarea := nod.ToTarea()
+			tarea.Prioridad = ((tarea.Prioridad + 1) % 3) + 1
+			nod.Prioridad = tarea.Prioridad
+			args.NewVal = fmt.Sprint(tarea.Prioridad)
+		}
+		if !prioridadValida(nod.Prioridad) {
+			return op.E(ErrPrioridadInvalida).Msg("La importancia debe estar entre 0 y 3")
+		}
 
 	case "completada":
-		num, _ := gkt.ToInt(args.NewVal)
-		nod.Estatus = num
+		completada := gkt.ToBool(args.NewVal)
+		if completada {
+			nod.Estatus = 1
+		} else {
+			nod.Estatus = 0
+		}
+
+	case "marcar_regla":
+		regla := nod.ToRegla()
+		regla.Estatus = (regla.Estatus + 1) % 3
+		nod.Estatus = regla.Estatus
+		args.NewVal = fmt.Sprint(regla.Estatus)
 
 	case "presupuesto":
 		if args.NewVal == "" {
@@ -77,6 +102,15 @@ func (s *AppTx) ParcharNodo(args ArgsParcharNodo) error {
 				return op.E(gko.ErrDatoInvalido).Msgf("Establezca un presupuesto menor, %v son demasiadas horas para una sola historia.", horas)
 			}
 			nod.Segundos = horas * 3600
+		}
+
+	case "estimado":
+		estimado, err := ust.NuevaDuraciónSegundos(args.NewVal)
+		if err != nil {
+			return op.Err(err)
+		}
+		if estimado <= 0 {
+			return op.E(gko.ErrDatoInvalido).Msg("El estimado debe ser mayor a 0")
 		}
 
 	default:

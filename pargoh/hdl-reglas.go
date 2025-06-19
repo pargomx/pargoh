@@ -2,7 +2,6 @@ package main
 
 import (
 	"monorepo/arbol"
-	"monorepo/dhistorias"
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
@@ -41,17 +40,15 @@ func (s *writehdl) patchRegla(c *gecko.Context, tx *handlerTx) error {
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }
 
-func (s *servidor) marcarRegla(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
+func (s *writehdl) marcarRegla(c *gecko.Context, tx *handlerTx) error {
+	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("regla_id"),
+		Campo:  "marcar_regla",
+		NewVal: "",
+	})
 	if err != nil {
 		return err
 	}
-	err = dhistorias.MarcarRegla(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))

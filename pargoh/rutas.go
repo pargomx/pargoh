@@ -249,16 +249,16 @@ func main() {
 	s.PCH("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.patchTramoDeViaje))
 
 	// OTROS
-	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.marcarRegla)
-	s.POS("/historias/{historia_id}/priorizar", s.priorizarHistoria)
-	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.priorizarHistoriaNuevo)
-	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
-	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
+	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", w.inTx(w.marcarRegla))
+	s.POS("/historias/{historia_id}/priorizar", w.inTx(w.priorizarHistoria))
+	s.POS("/historias/{historia_id}/priorizar/{prioridad}", w.inTx(w.priorizarHistoria))
+	s.POS("/historias/{historia_id}/marcar", w.inTx(w.marcarHistoria))
+	s.POS("/historias/{historia_id}/marcar/{completada}", w.inTx(w.marcarHistoria))
 
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
-	s.PCH("/tareas/{tarea_id}/estimado", s.cambiarEstimadoTarea)
+	s.PCH("/tareas/{tarea_id}/estimado", w.inTx(w.cambiarEstimadoTarea))
 	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
-	s.POS("/tareas/{tarea_id}/importancia", s.ciclarImportanciaTarea)
+	s.POS("/tareas/{tarea_id}/importancia", w.inTx(w.ciclarImportanciaTarea))
 	s.POS("/tareas/{tarea_id}/iniciar", s.iniciarTarea)
 	s.POS("/tareas/{tarea_id}/pausar", s.pausarTarea)
 	s.POS("/tareas/{tarea_id}/terminar", s.terminarTarea)
@@ -271,7 +271,6 @@ func main() {
 	s.DEL("/tareas/{tarea_id}", w.inTx(w.eliminarTarea))
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", w.inTx(w.deleteRegla))
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.deleteTramoDeViaje))
-	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
 
 	// TIME TRACKER
 	s.POS("/personas/{persona_id}/time/{seg}", s.postTimeGestion)
@@ -279,6 +278,7 @@ func main() {
 	// IMAGENES
 	s.POS("/imagenes", s.setImagenTramo)
 	s.PUT("/proyectos/{proyecto_id}", s.setImagenProyecto)
+	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
 
 	// Referencias
 	s.POS("/historias/{historia_id}/referencias", s.postReferencia)

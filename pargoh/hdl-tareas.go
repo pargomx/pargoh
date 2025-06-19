@@ -6,7 +6,6 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
-	"github.com/pargomx/gecko/gko"
 )
 
 func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
@@ -47,47 +46,40 @@ func (s *servidor) modificarTarea(c *gecko.Context) error {
 	return c.AskedForFallback("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
-func (s *servidor) ciclarImportanciaTarea(c *gecko.Context) error {
-	tarea, err := s.repoOld.GetTarea(c.PathInt("tarea_id"))
+func (s *writehdl) ciclarImportanciaTarea(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("tarea_id"),
+		Campo:  "importancia",
+		NewVal: "",
+	}
+	err := tx.app.ParcharNodo(args)
 	if err != nil {
 		return err
 	}
-	if tarea.Importancia.EsIdea() {
-		tarea.Importancia = ust.ImportanciaTareaNecesaria
-	} else if tarea.Importancia.EsNecesaria() {
-		tarea.Importancia = ust.ImportanciaTareaMejora
-	} else if tarea.Importancia.EsMejora() {
-		tarea.Importancia = ust.ImportanciaTareaIdea
-	} else {
-		tarea.Importancia = ust.ImportanciaTareaIdea
-	}
-	err = dhistorias.ActualizarTarea(tarea.TareaID, *tarea, s.repoOld)
+	nod, err := tx.repo.GetNodo(args.NodoID)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", tarea.HistoriaID)
+	return c.AskedForFallback("/historias/%v", nod.PadreID)
 }
 
-func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
-	estimado, err := ust.NuevaDuraciónSegundos(c.PromptVal())
+func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("tarea_id"),
+		Campo:  "estimado",
+		NewVal: c.PromptVal(),
+	}
+	err := tx.app.ParcharNodo(args)
 	if err != nil {
 		return err
 	}
-	if estimado <= 0 {
-		return gko.ErrDatoInvalido.Msg("El estimado debe ser mayor a 0")
-	}
-	tarea, err := s.repoOld.GetTarea(c.PathInt("tarea_id"))
-	if err != nil {
-		return err
-	}
-	tarea.SegundosEstimado = estimado
-	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), *tarea, s.repoOld)
+	nod, err := tx.repo.GetNodo(args.NodoID)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
+	return c.AskedForFallback("/historias/%v#%v", nod.PadreID, nod.NodoID)
 }
 
 func (s *servidor) iniciarTarea(c *gecko.Context) error {
