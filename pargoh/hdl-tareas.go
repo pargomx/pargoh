@@ -90,16 +90,6 @@ func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
 	return c.AskedForFallback("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
-func (s *servidor) eliminarTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	gko.LogInfof("Tarea %d eliminada", c.PathInt("tarea_id"))
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", historiaID)
-}
-
 func (s *servidor) iniciarTarea(c *gecko.Context) error {
 	historiaID, err := dhistorias.IniciarTarea(c.PathInt("tarea_id"), s.repoOld)
 	if err != nil {

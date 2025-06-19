@@ -27,21 +27,6 @@ func (s *writehdl) postTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
 	return c.RedirOtrof("/historias/%v", args.PadreID)
 }
 
-func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
-	if err != nil {
-		return err
-	}
-	err = dhistorias.EliminarTramoDeViaje(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
-	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
-}
-
 func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
 	tx, err := s.newRepoTx()
 	if err != nil {

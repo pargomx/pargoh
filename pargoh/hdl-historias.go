@@ -6,7 +6,6 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
-	"github.com/pargomx/gecko/gko"
 )
 
 // ================================================================ //
@@ -186,24 +185,4 @@ func (s *servidor) marcarHistoriaNueva(c *gecko.Context) error {
 		return err
 	}
 	return c.AskedFor("Historia marcada")
-}
-
-func (s *servidor) deleteHistoria(c *gecko.Context) error {
-	padreID, err := dhistorias.EliminarHistoria(c.PathInt("historia_id"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	padre, err := s.repoOld.GetNodo(padreID)
-	if err != nil {
-		return err
-	}
-	// TODO: AskedFor
-	if padre.EsHistoria() {
-		return c.RedirOtrof("/historias/%v", padreID)
-	} else if padre.EsPersona() {
-		return c.RedirOtrof("/personas/%v", padreID)
-	} else {
-		gko.LogWarnf("deleteHistoria: padre %v no es persona ni historia", padreID)
-		return c.RedirOtro("/proyectos")
-	}
 }

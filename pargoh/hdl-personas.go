@@ -156,11 +156,3 @@ func (s *servidor) patchPersona(c *gecko.Context) error {
 	}
 	return c.RefreshHTMX()
 }
-
-func (s *servidor) deletePersona(c *gecko.Context) error {
-	err := dhistorias.EliminarPersona(c.PathInt("persona_id"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	return c.RefreshHTMX()
-}

@@ -98,29 +98,6 @@ func (s *servidor) patchProyecto(c *gecko.Context) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) deleteProyecto(c *gecko.Context) error {
-	err := dhistorias.EliminarProyecto(c.PathVal("proyecto_id"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	return c.RedirOtro("/")
-}
-
-func (s *servidor) deleteProyectoPorCompleto(c *gecko.Context) error {
-	pry, err := dhistorias.GetProyectoExport(c.PathVal("proyecto_id"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	if c.PromptVal() != "eliminar_"+pry.Proyecto.ProyectoID {
-		return gko.ErrDatoInvalido.Msg("No se confirmó la eliminación")
-	}
-	err = pry.EliminarPorCompleto(s.repoOld)
-	if err != nil {
-		return err
-	}
-	return c.RedirOtro("/")
-}
-
 func (s *servidor) postTimeGestion(c *gecko.Context) error {
 	return c.StringOk("ok")
 	// err := s.timeTracker.AddTimeSpent(c.PathInt("persona_id"), c.PathInt("seg"))

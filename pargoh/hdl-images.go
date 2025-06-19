@@ -71,12 +71,3 @@ func (s *servidor) setImagenTramo(c *gecko.Context) error {
 	defer s.reloader.brodcastReload(c)
 	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
 }
-
-func (s *servidor) deleteImagenTramo(c *gecko.Context) error {
-	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.imagesDir, s.repoOld)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
-}
