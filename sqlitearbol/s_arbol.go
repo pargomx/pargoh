@@ -273,3 +273,26 @@ func (s *Repositorio) MoverNodo(nod arbol.Nodo, newPadreID int) error {
 
 	return nil
 }
+
+// ================================================================ //
+// ========== DELETE ============================================== //
+
+// Elimina todos los hijos (descendientes inmediatos) de un nodo.
+func (s *Repositorio) DeleteHijos(NodoID int) error {
+	op := gko.Op("DeleteHijos")
+	if NodoID == 0 {
+		return op.E(gko.ErrDatoIndef).Str("nodoID sin especificar")
+	}
+	err := s.ExisteNodo(NodoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	_, err = s.db.Exec(
+		"DELETE FROM nodos WHERE padre_id = ?",
+		NodoID,
+	)
+	if err != nil {
+		return op.E(gko.ErrAlEscribir).Err(err)
+	}
+	return nil
+}

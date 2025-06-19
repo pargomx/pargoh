@@ -11,7 +11,9 @@ type Servicio struct {
 	cfg Config
 }
 
-type Config struct{}
+type Config struct {
+	ImagesDir string
+}
 
 func NuevoServicio(cfg Config) (*Servicio, error) {
 	// if cfg.Repo == nil {
@@ -26,16 +28,18 @@ func NuevoServicio(cfg Config) (*Servicio, error) {
 // ================================================================ //
 // ========== Transacción ========================================= //
 
-func (s *Servicio) NewTx(repoTx Repo) *AppTx {
-	return &AppTx{
-		s:       s,
-		repo:    repoTx,
-		Results: &gko.TxResult{},
-	}
+type AppTx struct {
+	s         *Servicio
+	repo      Repo          // Podría ser db.Tx
+	Results   *gko.TxResult // Eventos y errores
+	ImagesDir string
 }
 
-type AppTx struct {
-	s       *Servicio
-	repo    Repo          // Podría ser db.Tx
-	Results *gko.TxResult // Eventos y errores
+func (s *Servicio) NewTx(repoTx Repo) *AppTx {
+	return &AppTx{
+		s:         s,
+		repo:      repoTx,
+		Results:   &gko.TxResult{},
+		ImagesDir: s.cfg.ImagesDir,
+	}
 }

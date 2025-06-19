@@ -35,28 +35,6 @@ func AgregarTramoDeViaje(repo Repo, historiaID int, texto string) error {
 	return nil
 }
 
-func EliminarTramoDeViaje(repo Repo, historiaID int, posicion int) error {
-	op := gko.Op("EliminarTramoDeViaje")
-	if historiaID == 0 {
-		return op.Msg("falta historiaID")
-	}
-	if posicion == 0 {
-		return op.Msg("falta posición del tramo")
-	}
-	Tramo, err := repo.GetTramo(historiaID, posicion)
-	if err != nil {
-		return op.Err(err)
-	}
-	if Tramo.Imagen != "" {
-		return op.Msg("Antes de eliminar el tramo quite la imagen")
-	}
-	err = repo.DeleteTramo(historiaID, posicion)
-	if err != nil {
-		return op.Err(err)
-	}
-	return nil
-}
-
 // Si el texto está vacío, elimina el tramo.
 func EditarTramoDeViaje(repo Repo, historiaID int, posicion int, texto string) error {
 	op := gko.Op("EditarTramoDeViaje")
@@ -66,8 +44,8 @@ func EditarTramoDeViaje(repo Repo, historiaID int, posicion int, texto string) e
 	}
 	texto = strings.TrimSpace(texto)
 	if texto == "" {
-		// return op.Msg("El texto no puede estar vacío")
-		return EliminarTramoDeViaje(repo, historiaID, posicion)
+		return op.Msg("El texto no puede estar vacío")
+		// return EliminarTramoDeViaje(repo, historiaID, posicion)
 	}
 	tramo.Texto = texto
 	err = repo.UpdateTramo(*tramo)

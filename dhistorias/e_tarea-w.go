@@ -26,20 +26,6 @@ func AgregarTarea(tarea ust.Tarea, repo Repo) error {
 	return nil
 }
 
-// Devuelve su HistoriaID.
-func EliminarTarea(tareaID int, repo Repo) (int, error) {
-	op := gko.Op("EliminarTarea").Ctx("tareaID", tareaID)
-	tar, err := repo.GetTarea(tareaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	err = repo.DeleteTarea(tareaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	return tar.HistoriaID, nil
-}
-
 func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	op := gko.Op("ActualizarTarea")
 	tar, err := repo.GetTarea(tareaID)

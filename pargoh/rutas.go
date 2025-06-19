@@ -274,14 +274,14 @@ func main() {
 	s.POS("/reordenar-regla", w.inTx(w.reordenarRegla))
 
 	// ELIMINAR
-	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
-	s.DEL("/proyectos/{proyecto_id}/definitivo", s.deleteProyectoPorCompleto)
-	s.DEL("/personas/{persona_id}", s.deletePersona)
-	s.DEL("/historias/{historia_id}", s.deleteHistoria)
-	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
-	s.DEL("/tareas/{tarea_id}", s.eliminarTarea)
+	s.DEL("/proyectos/{proyecto_id}", w.inTx(w.deleteProyecto))
+	s.DEL("/proyectos/{proyecto_id}/definitivo", w.inTx(w.deleteProyectoPorCompleto))
+	s.DEL("/personas/{persona_id}", w.inTx(w.deletePersona))
+	s.DEL("/historias/{historia_id}", w.inTx(w.deleteHistoria))
+	s.DEL("/tareas/{tarea_id}", w.inTx(w.eliminarTarea))
+	s.DEL("/historias/{historia_id}/reglas/{posicion}", w.inTx(w.deleteRegla))
+	s.DEL("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.deleteTramoDeViaje))
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
-	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
 
 	// Exportar e importar
 	/*

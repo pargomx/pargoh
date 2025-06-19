@@ -99,28 +99,3 @@ func ParcharPersona(personaID int, param string, newVal string, repo Repo) error
 	}
 	return nil
 }
-
-func EliminarPersona(personaID int, repo Repo) error {
-	op := gko.Op("EliminarPersona")
-	per, err := repo.GetPersona(personaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	// Verificar que no tenga hijos
-	hijos, err := GetHijosDeNodo(per.PersonaID, repo)
-	if err != nil {
-		return op.Err(err)
-	}
-	if len(hijos) > 0 {
-		return op.Msg("Para eliminar una persona, primero elimine sus historias")
-	}
-	err = repo.EliminarNodo(per.PersonaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	err = repo.DeletePersona(per.PersonaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	return nil
-}

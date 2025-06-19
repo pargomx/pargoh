@@ -148,51 +148,6 @@ func MarcarHistoria(historiaID int, completada bool, repo Repo) error {
 	return nil
 }
 
-func EliminarHistoria(historiaID int, repo Repo) (padreID int, err error) {
-	op := gko.Op("EliminarHistoria").Ctx("historiaID", historiaID)
-	his, err := repo.GetNodoHistoria(historiaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	hijos, err := repo.ListNodosByPadreID(his.HistoriaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	if len(hijos) > 0 {
-		return 0, op.Msg("la historia tiene descendientes y no puede ser eliminada")
-	}
-	tramos, err := repo.ListTramosByHistoriaID(his.HistoriaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	if len(tramos) > 0 {
-		return 0, op.Msg("la historia tiene tramos y no puede ser eliminada")
-	}
-	tareas, err := repo.ListTareasByHistoriaID(his.HistoriaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	if len(tareas) > 0 {
-		return 0, op.Msg("la historia tiene tareas y no puede ser eliminada")
-	}
-	reglas, err := repo.ListReglasByHistoriaID(his.HistoriaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	if len(reglas) > 0 {
-		return 0, op.Msg("la historia tiene reglas y no puede ser eliminada")
-	}
-	err = repo.EliminarNodo(his.HistoriaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	err = repo.DeleteHistoria(his.HistoriaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	return his.PadreID, nil
-}
-
 /*
 // Actualiza los campos PersonaID y ProyectoID de todas las historias.
 func MaterializarAncestrosDeHistorias(repo Repo) error {

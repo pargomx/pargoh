@@ -6,6 +6,8 @@ type ReadRepo interface {
 	GetHistoria(historiaID int) (*HistoriaDeUsuario, error)
 
 	GetNodo(NodoID int) (*Nodo, error)
+	ListNodosByPadreID(PadreID int) ([]Nodo, error)
+	ListNodosByPadreIDTipo(PadreID int, Tipo string) ([]Nodo, error)
 }
 
 type Repo interface {
@@ -14,6 +16,7 @@ type Repo interface {
 	InsertNodo(nod Nodo) error
 	UpdateNodo(NodoID int, nod Nodo) error
 	DeleteNodo(NodoID int) error
+	DeleteHijos(NodoID int) error
 	ReordenarNodo(nod Nodo, newPosicion int) error
 	MoverNodo(nod Nodo, newPadreID int) error
 }

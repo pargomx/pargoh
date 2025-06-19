@@ -35,32 +35,6 @@ func AgregarRegla(repo Repo, historiaID int, texto string) error {
 	return nil
 }
 
-func EliminarRegla(repo Repo, historiaID int, posicion int) error {
-	op := gko.Op("EliminarRegla")
-	if historiaID == 0 {
-		return op.Msg("falta historiaID")
-	}
-	if posicion == 0 {
-		return op.Msg("falta posición del regla")
-	}
-	err := repo.ExisteHistoria(historiaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	reglas, err := repo.ListReglasByHistoriaID(historiaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	if posicion < 1 || posicion > len(reglas) {
-		op.Msg("posición de regla inválida").Ctx("historia", historiaID).Ctx("pos", posicion).Ctx("hermanos", len(reglas)).Alert() // Solo alertar
-	}
-	err = repo.DeleteRegla(historiaID, posicion)
-	if err != nil {
-		return op.Err(err)
-	}
-	return nil
-}
-
 // Si el texto está vacío, elimina el tramo.
 func EditarRegla(repo Repo, historiaID int, posicion int, texto string) error {
 	op := gko.Op("EditarRegla")
@@ -69,8 +43,8 @@ func EditarRegla(repo Repo, historiaID int, posicion int, texto string) error {
 		return op.Err(err)
 	}
 	if texto == "" {
-		// return op.Msg("El texto no puede estar vacío")
-		return EliminarRegla(repo, historiaID, posicion)
+		return op.Msg("El texto no puede estar vacío")
+		// return EliminarRegla(repo, historiaID, posicion)
 	}
 	regla.Texto = strings.TrimSpace(texto)
 	err = repo.UpdateRegla(*regla)

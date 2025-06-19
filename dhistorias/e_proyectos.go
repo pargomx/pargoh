@@ -110,19 +110,3 @@ func ParcharProyecto(proyectoID string, param string, newVal string, repo Repo) 
 	}
 	return nil
 }
-
-func EliminarProyecto(ProyectoID string, repo Repo) error {
-	const op string = "app.QuitarProyecto"
-	pers, err := repo.ListNodosPersonas(ProyectoID)
-	if err != nil {
-		return gko.Err(err).Op(op)
-	}
-	if len(pers) != 0 {
-		return gko.ErrHayHuerfanos.Msg("Para eliminar este proyecto primero elimine todas sus historias y personajes")
-	}
-	err = repo.DeleteProyecto(ProyectoID)
-	if err != nil {
-		return gko.Err(err).Op(op)
-	}
-	return nil
-}
