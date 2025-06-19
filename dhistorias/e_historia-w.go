@@ -4,7 +4,6 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko/gko"
-	"github.com/pargomx/gecko/gkt"
 )
 
 const prioridadInvalidaMsg = "La prioridad debe estar entre 0 y 3"
@@ -42,66 +41,6 @@ func ActualizarHistoria(historiaID int, his ust.Historia, repo Repo) error {
 	oldHis.Completada = his.Completada
 
 	err = repo.UpdateHistoria(*oldHis)
-	if err != nil {
-		return op.Err(err)
-	}
-	return nil
-}
-
-func ParcharHistoria(historiaID int, param string, newVal string, repo Repo) error {
-	op := gko.Op("ParcharHistoria").Ctx("historiaID", historiaID)
-	if historiaID == 0 {
-		return op.Msg("el ID de la historia debe estar definido")
-	}
-	Hist, err := repo.GetHistoria(historiaID)
-	if err != nil {
-		return op.Err(err)
-	}
-	switch param {
-	case "titulo":
-		Hist.Titulo = gkt.SinEspaciosExtra(newVal)
-
-	case "objetivo":
-		Hist.Objetivo = gkt.SinEspaciosExtraConSaltos(newVal)
-
-	case "descripcion":
-		Hist.Descripcion = gkt.SinEspaciosExtraConSaltos(newVal)
-
-	case "notas":
-		Hist.Notas = gkt.SinEspaciosExtraConSaltos(newVal)
-
-	case "prioridad":
-		Hist.Prioridad, _ = gkt.ToInt(newVal)
-		if !prioridadValida(Hist.Prioridad) {
-			return op.Msg(prioridadInvalidaMsg)
-		}
-
-	case "completada":
-		num, _ := gkt.ToInt(newVal)
-		Hist.Completada = num > 0
-
-	case "presupuesto":
-		if newVal == "" {
-			Hist.SegundosPresupuesto = 0
-		} else {
-			horas, err := gkt.ToInt(newVal)
-			if err != nil {
-				return op.Err(err)
-			}
-			if horas < 0 {
-				return op.E(gko.ErrDatoInvalido).Msg("El presupuesto debe ser positivo")
-			}
-			if horas > 30 {
-				return op.E(gko.ErrDatoInvalido).Msgf("Establezca un presupuesto menor, %v son demasiadas horas para una sola historia.", horas)
-			}
-			Hist.SegundosPresupuesto = horas * 3600
-		}
-
-	default:
-		gko.LogWarnf("Nada cambió para historia %v", Hist.HistoriaID)
-		return nil
-	}
-	err = repo.UpdateHistoria(*Hist)
 	if err != nil {
 		return op.Err(err)
 	}

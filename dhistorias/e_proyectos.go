@@ -79,34 +79,3 @@ func ModificarProyecto(proyectoID string, nuevo ust.Proyecto, repo Repo) error {
 	}
 	return nil
 }
-
-func ParcharProyecto(proyectoID string, param string, newVal string, repo Repo) error {
-	op := gko.Op("ParcharProyecto").Ctx("proyectoID", proyectoID)
-	if proyectoID == "" {
-		return op.Msg("el ID del proyecto debe estar definido")
-	}
-	Proyecto, err := repo.GetProyecto(proyectoID)
-	if err != nil {
-		return op.Err(err)
-	}
-	switch param {
-	case "titulo":
-		Proyecto.Titulo = gkt.SinEspaciosExtra(newVal)
-	case "descripcion":
-		Proyecto.Descripcion = gkt.SinEspaciosExtraConSaltos(newVal)
-	case "color":
-		Proyecto.Color = gkt.SinEspaciosNinguno(newVal)
-	case "posicion":
-		Proyecto.Posicion, err = gkt.ToInt(newVal)
-		if err != nil {
-			return op.Err(err)
-		}
-	default:
-		return op.Msgf("Parámetro no soportado: %v", param)
-	}
-	err = repo.UpdateProyecto(Proyecto.ProyectoID, *Proyecto)
-	if err != nil {
-		return op.Err(err)
-	}
-	return nil
-}

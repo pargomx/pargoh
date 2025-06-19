@@ -27,17 +27,15 @@ func (s *writehdl) postRegla(c *gecko.Context, tx *handlerTx) error {
 	return c.RedirOtrof("/historias/%v", args.PadreID)
 }
 
-func (s *servidor) patchRegla(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
+func (s *writehdl) patchRegla(c *gecko.Context, tx *handlerTx) error {
+	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("regla_id"),
+		Campo:  "texto",
+		NewVal: c.FormValue("texto"),
+	})
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarRegla(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))

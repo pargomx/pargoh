@@ -144,13 +144,12 @@ func (s *servidor) updatePersona(c *gecko.Context) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) patchPersona(c *gecko.Context) error {
-	err := dhistorias.ParcharPersona(
-		c.PathInt("persona_id"),
-		c.PathVal("param"),
-		c.FormValue("value"),
-		s.repoOld,
-	)
+func (s *writehdl) patchPersona(c *gecko.Context, tx *handlerTx) error {
+	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("persona_id"),
+		Campo:  c.PathVal("param"),
+		NewVal: c.FormValue("value"),
+	})
 	if err != nil {
 		return err
 	}

@@ -141,13 +141,12 @@ func (s *servidor) updateHistoria(c *gecko.Context) error {
 	return c.AskedFor("Historia actualizada")
 }
 
-func (s *servidor) patchHistoria(c *gecko.Context) error {
-	err := dhistorias.ParcharHistoria(
-		c.PathInt("historia_id"),
-		c.PathVal("param"),
-		c.FormValue("value"),
-		s.repoOld,
-	)
+func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {
+	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("historia_id"),
+		Campo:  c.PathVal("param"),
+		NewVal: c.FormValue("value"),
+	})
 	if err != nil {
 		return err
 	}

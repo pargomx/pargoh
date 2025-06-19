@@ -2,7 +2,6 @@ package main
 
 import (
 	"monorepo/arbol"
-	"monorepo/dhistorias"
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
@@ -27,17 +26,15 @@ func (s *writehdl) postTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
 	return c.RedirOtrof("/historias/%v", args.PadreID)
 }
 
-func (s *servidor) patchTramoDeViaje(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
+func (s *writehdl) patchTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
+	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("regla_id"),
+		Campo:  "texto",
+		NewVal: c.FormValue("texto"),
+	})
 	if err != nil {
 		return err
 	}
-	err = dhistorias.EditarTramoDeViaje(tx.repoOld, c.PathInt("historia_id"), c.PathInt("posicion"), c.FormValue("texto"))
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
 	defer s.reloader.brodcastReload(c)
 	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
 }

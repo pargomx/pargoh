@@ -1,6 +1,7 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 	"strings"
@@ -85,13 +86,12 @@ func (s *servidor) updateProyecto(c *gecko.Context) error {
 	return c.AskedFor("Proyecto actualizado")
 }
 
-func (s *servidor) patchProyecto(c *gecko.Context) error {
-	err := dhistorias.ParcharProyecto(
-		c.PathVal("proyecto_id"),
-		c.PathVal("param"),
-		c.FormValue("value"),
-		s.repoOld,
-	)
+func (s *writehdl) patchProyecto(c *gecko.Context, tx *handlerTx) error {
+	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
+		NodoID: c.PathInt("proyecto_id"),
+		Campo:  c.PathVal("param"),
+		NewVal: c.FormValue("value"),
+	})
 	if err != nil {
 		return err
 	}
