@@ -1,5 +1,14 @@
 package arbol
 
+func esTipoValido(tipo string) bool {
+	switch tipo {
+	case "GRP", "PRY", "PER", "HIS", "TEC", "GES", "REG", "TAR", "VIA":
+		return true
+	default:
+		return false
+	}
+}
+
 func (nod Nodo) EsGrupo() bool {
 	return nod.Tipo == "GRP"
 }

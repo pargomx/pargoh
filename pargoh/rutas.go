@@ -201,7 +201,6 @@ func main() {
 	s.GET("/personas/{persona_id}", r.getPersona)
 	s.GET("/personas/{persona_id}/doc", r.getPersonaDoc)
 	s.GET("/personas/{persona_id}/debug", r.getPersonaDebug)
-	s.POS("/personas/{persona_id}", s.postHistoriaDePersona)
 	s.DEL("/personas/{persona_id}", s.deletePersona)
 	s.PUT("/personas/{persona_id}", s.updatePersona)
 	s.PCH("/personas/{persona_id}/{param}", s.patchPersona)
@@ -210,8 +209,7 @@ func main() {
 	// Historias
 	s.GET("/historias/{historia_id}", r.getHistoria)
 	s.GET("/historias/{historia_id}/tablero", r.getHistoriaTablero)
-	s.POS("/historias/{historia_id}", s.postHistoriaDeHistoria)
-	s.POS("/historias/{historia_id}/padre", s.postPadreParaHistoria)
+
 	s.DEL("/historias/{historia_id}", s.deleteHistoria)
 	s.PUT("/historias/{historia_id}", s.updateHistoria)
 	s.PCH("/historias/{historia_id}/{param}", s.patchHistoria)
@@ -270,6 +268,11 @@ func main() {
 	// Referencias
 	s.POS("/historias/{historia_id}/referencias", s.postReferencia)
 	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
+
+	// ADD HOJA
+	s.POS("/personas/{persona_id}", w.inTx(w.postHistoriaDePersona))
+	s.POS("/historias/{historia_id}", w.inTx(w.postHistoriaDeHistoria))
+	s.POS("/historias/{historia_id}/padre", w.inTx(w.postPadreParaHistoria))
 
 	// REORDENAR
 	s.POS("/reordenar-persona", w.inTx(w.reordenarPersona))

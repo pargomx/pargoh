@@ -1,6 +1,7 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 
@@ -42,84 +43,71 @@ func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
 // ================================================================ //
 // ========== WRITE =============================================== //
 
-func (s *servidor) postHistoriaDePersona(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
-	if err != nil {
-		return err
+func (s *writehdl) postHistoriaDePersona(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    "HIS",
+		NodoID:  ust.NewRandomID(),
+		PadreID: c.PathInt("persona_id"),
+		Titulo:  c.FormVal("titulo"),
 	}
-	nuevaHistoria := ust.Historia{
-		HistoriaID: ust.NewRandomID(),
-		Titulo:     c.FormVal("titulo"),
-		Objetivo:   c.FormVal("objetivo"),
-		Prioridad:  c.FormInt("prioridad"),
-		Completada: c.FormBool("completada"),
-	}
-	err = dhistorias.AgregarHistoria(c.PathInt("persona_id"), nuevaHistoria, tx.repoOld)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
+	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/personas/%v", c.PathInt("persona_id"))
+	return c.AskedForFallback("/personas/%v", args.PadreID)
 }
 
-func (s *servidor) postHistoriaDeHistoria(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
-	if err != nil {
-		return err
+func (s *writehdl) postHistoriaDeHistoria(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    "HIS",
+		NodoID:  ust.NewRandomID(),
+		PadreID: c.PathInt("historia_id"),
+		Titulo:  c.FormVal("titulo"),
 	}
-	nuevaHistoria := ust.Historia{
-		HistoriaID: ust.NewRandomID(),
-		Titulo:     c.FormVal("titulo"),
-		Objetivo:   c.FormVal("objetivo"),
-		Prioridad:  c.FormInt("prioridad"),
-		Completada: c.FormBool("completada"),
-	}
-	err = dhistorias.AgregarHistoria(c.PathInt("historia_id"), nuevaHistoria, tx.repoOld)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
+	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", c.PathInt("historia_id"))
+	return c.AskedForFallback("/historias/%v", args.PadreID)
 }
 
 // Agregar historia de usuario como padre de la actual.
-func (s *servidor) postPadreParaHistoria(c *gecko.Context) error {
-	tx, err := s.newRepoTx()
+func (s *writehdl) postPadreParaHistoria(c *gecko.Context, tx *handlerTx) error {
+	nod, err := tx.repo.GetNodo(c.PathInt("historia_id"))
 	if err != nil {
 		return err
 	}
-	histActual, err := tx.repoOld.GetNodoHistoria(c.PathInt("historia_id"))
+	newPadre := arbol.ArgsAgregarHoja{
+		Tipo:    "HIS",
+		NodoID:  ust.NewRandomID(),
+		PadreID: nod.PadreID,
+		Titulo:  c.PromptVal(),
+	}
+	err = tx.app.AgregarHoja(newPadre)
 	if err != nil {
-		return gko.Err(err).Err(tx.Rollback())
+		return err
 	}
-	nuevaHistoria := ust.Historia{
-		HistoriaID: ust.NewRandomID(),
-		Titulo:     c.PromptVal(),
-	}
-	err = dhistorias.AgregarHistoria(histActual.PadreID, nuevaHistoria, tx.repoOld)
+
+	err = tx.app.MoverHoja(arbol.ArgsMover{
+		NodoID:     nod.NodoID,
+		NewPadreID: newPadre.NodoID,
+	})
 	if err != nil {
-		return gko.Err(err).Err(tx.Rollback())
+		return err
 	}
-	err = dhistorias.MoverHistoria(histActual.HistoriaID, nuevaHistoria.HistoriaID, tx.repoOld)
-	if err != nil {
-		return gko.Err(err).Err(tx.Rollback())
+
+	// Mover el padre a la misma posición en que estaba el otro nodo.
+	if nod.Posicion > 1 {
+		tx.app.ReordenarEntidad(arbol.ArgsReordenar{
+			NodoID: newPadre.NodoID,
+			NewPos: nod.Posicion,
+		})
 	}
-	err = tx.Commit()
-	if err != nil {
-		return gko.Err(err).Err(tx.Rollback())
-	}
+
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", nuevaHistoria.HistoriaID)
+	return c.AskedForFallback("/historias/%v", newPadre.NodoID)
 }
 
 func (s *servidor) updateHistoria(c *gecko.Context) error {
