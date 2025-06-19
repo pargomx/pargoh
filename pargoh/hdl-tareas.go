@@ -1,6 +1,7 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 
@@ -8,26 +9,20 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-func (s *servidor) postTarea(c *gecko.Context) error {
-	estimado, err := ust.NuevaDuraciónSegundos(c.FormVal("segundos_estimado"))
-	if err != nil {
-		return err
+func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarTarea{
+		Tipo:     "TAR",
+		NodoID:   ust.NewRandomID(),
+		PadreID:  c.PathInt("historia_id"),
+		Titulo:   c.FormVal("descripcion"),
+		Estimado: c.FormVal("segundos_estimado"),
 	}
-	tarea := ust.Tarea{
-		TareaID:          ust.NewRandomID(),
-		HistoriaID:       c.PathInt("historia_id"),
-		Tipo:             ust.SetTipoTareaDB(c.FormVal("tipo")),
-		Descripcion:      c.FormVal("descripcion"),
-		Impedimentos:     c.FormVal("impedimentos"),
-		SegundosEstimado: estimado,
-		Importancia:      ust.SetImportanciaTareaDB(c.FormVal("importancia")),
-	}
-	err = dhistorias.AgregarTarea(tarea, s.repoOld)
+	err := tx.app.AgregarTarea(args)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", tarea.HistoriaID)
+	return c.AskedForFallback("/historias/%v", args.PadreID)
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context) error {
@@ -185,20 +180,23 @@ func (s *servidor) patchIntervalo(c *gecko.Context) error {
 // ================================================================ //
 // ========== QUICK TASKS ========================================= //
 
-func (s *servidor) postQuickTask(c *gecko.Context) error {
-	tarea := ust.Tarea{
-		TareaID:     ust.NewRandomID(),
-		HistoriaID:  dhistorias.QUICK_TASK_HISTORIA_ID,
-		Descripcion: c.PromptVal(),
+func (s *writehdl) postQuickTask(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarTarea{
+		Tipo:     "TAR",
+		NodoID:   ust.NewRandomID(),
+		PadreID:  0, // TODO: poner default historia en migración?
+		Titulo:   c.PromptVal(),
+		Estimado: "1h",
 	}
-	err := dhistorias.AgregarTarea(tarea, s.repoOld)
+	err := tx.app.AgregarTarea(args)
 	if err != nil {
 		return err
 	}
-	_, err = dhistorias.IniciarTarea(tarea.TareaID, s.repoOld)
-	if err != nil {
-		return err
-	}
+	// _, err = dhistorias.IniciarTarea(tarea.TareaID, s.repoOld)
+	// if err != nil {
+	// 	return err
+	// }
+	defer s.reloader.brodcastReload(c)
 	return c.AskedForFallback("/tareas")
 }
 

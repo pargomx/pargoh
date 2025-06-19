@@ -1,6 +1,8 @@
 package arbol
 
 import (
+	"monorepo/ust"
+
 	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/gkt"
 )
@@ -66,7 +68,7 @@ func (s *AppTx) AgregarHoja(args ArgsAgregarHoja) error {
 // ================================================================ //
 // ========== TAREA =============================================== //
 
-const EvTareaAgregado gko.EventKey = "tarea_added"
+const EvTareaAgregada gko.EventKey = "tarea_added"
 
 type ArgsAgregarTarea struct {
 	Tipo     string // Tipo de nodo para agregar.
@@ -110,17 +112,24 @@ func (s *AppTx) AgregarTarea(args ArgsAgregarTarea) error {
 		return op.Msg("el nodo padre es una regla y no puede tener descendientes")
 	}
 
+	// Agregar estimado si lo hay
+	estimado, err := ust.NuevaDuraciónSegundos(args.Estimado)
+	if err != nil {
+		return op.Err(err)
+	}
+
 	// Insertar en la base de datos
 	err = s.repo.InsertNodo(Nodo{
-		NodoID:  args.NodoID,
-		PadreID: args.PadreID,
-		Tipo:    args.Tipo,
-		Titulo:  args.Titulo,
+		NodoID:   args.NodoID,
+		PadreID:  args.PadreID,
+		Tipo:     args.Tipo,
+		Titulo:   args.Titulo,
+		Segundos: estimado,
 	})
 	if err != nil {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvTareaAgregado.WithArgs(args))
+	s.Results.Add(EvTareaAgregada.WithArgs(args))
 	return nil
 }

@@ -272,8 +272,8 @@ func main() {
 	s.POS("/historias/{historia_id}/padre", w.inTx(w.postPadreParaHistoria))
 	s.POS("/historias/{historia_id}/reglas", w.inTx(w.postRegla))
 	s.POS("/historias/{historia_id}/viaje", w.inTx(w.postTramoDeViaje))
-	s.POS("/historias/{historia_id}/tareas", s.postTarea)
-	s.POS("/tareas", s.postQuickTask)
+	s.POS("/historias/{historia_id}/tareas", w.inTx(w.postTarea))
+	s.POS("/tareas", w.inTx(w.postQuickTask))
 
 	// REORDENAR
 	s.POS("/reordenar-persona", w.inTx(w.reordenarPersona))
