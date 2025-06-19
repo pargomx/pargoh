@@ -205,24 +205,3 @@ func (s *servidor) deleteHistoria(c *gecko.Context) error {
 		return c.RedirOtro("/proyectos")
 	}
 }
-
-func (s *servidor) moverHistoria(c *gecko.Context) error {
-	nuevoPadreID := c.FormInt("target_historia_id")
-	if nuevoPadreID == 0 {
-		nuevoPadreID = c.FormInt("target_persona_id")
-		if nuevoPadreID == 0 {
-			nuevoPadreID = c.FormInt("nuevo_padre_id")
-		}
-	}
-	historiaID := c.FormInt("historia_id")
-	if historiaID == 0 {
-		historiaID = c.PathInt("historia_id")
-	}
-	err := dhistorias.MoverHistoria(historiaID, nuevoPadreID, s.repoOld)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	// TODO: enviar link a la nueva ubicación como sugerencia.
-	return c.RefreshHTMX()
-}

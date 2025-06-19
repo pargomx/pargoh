@@ -15,4 +15,5 @@ type Repo interface {
 	UpdateNodo(NodoID int, nod Nodo) error
 	DeleteNodo(NodoID int) error
 	ReordenarNodo(nod Nodo, newPosicion int) error
+	MoverNodo(nod Nodo, newPadreID int) error
 }

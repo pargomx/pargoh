@@ -220,18 +220,18 @@ func main() {
 	s.POS("/historias/{historia_id}/marcar", s.marcarHistoria)
 	s.POS("/historias/{historia_id}/marcar/{completada}", s.marcarHistoriaNueva)
 
-	s.GET("/historias/{historia_id}/mover", r.moverHistoriaForm)
-	s.POS("/historias/{historia_id}/mover", s.moverHistoria)
-
 	// Navegador del árbol de historias
 	s.GET("/nav", r.navDesdeRoot)
 	s.GET("/nav/proy/{proyecto_id}", r.navDesdeProyecto)
 	s.GET("/nav/pers/{persona_id}", r.navDesdePersona)
 	s.GET("/nav/hist/{historia_id}", r.navDesdeHistoria)
 
-	s.POS("/mover/tramo", s.moverTramo)
-	s.POS("/mover/tarea", s.moverTarea)
-	s.POS("/mover/historia", s.moverHistoria)
+	s.GET("/historias/{historia_id}/mover", r.moverHistoriaForm)
+
+	s.POS("/historias/{historia_id}/mover", w.inTx(w.moverHistoria))
+	s.POS("/mover/tramo", w.inTx(w.moverTramo))
+	s.POS("/mover/tarea", w.inTx(w.moverTarea))
+	s.POS("/mover/historia", w.inTx(w.moverHistoria))
 
 	// Tareas técnicas
 	s.POS("/historias/{historia_id}/tareas", s.postTarea)

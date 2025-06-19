@@ -75,27 +75,6 @@ func ActualizarTarea(tareaID int, nueva ust.Tarea, repo Repo) error {
 	return nil
 }
 
-func MoverTarea(tareaID int, nuevoHistoriaID int, repo Repo) (int, error) {
-	op := gko.Op("MoverTarea")
-	tar, err := repo.GetTarea(tareaID)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	if tar.HistoriaID == nuevoHistoriaID {
-		return tar.HistoriaID, nil
-	}
-	tar.HistoriaID = nuevoHistoriaID
-	err = validarTarea(tar, op, repo)
-	if err != nil {
-		return 0, err
-	}
-	err = repo.UpdateTarea(*tar)
-	if err != nil {
-		return 0, err
-	}
-	return nuevoHistoriaID, nil
-}
-
 func validarTarea(tarea *ust.Tarea, op *gko.Error, repo Repo) error {
 	if tarea.TareaID == 0 {
 		return op.Msg("Debe asignarse un ID nuevo a la tarea")

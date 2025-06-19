@@ -162,6 +162,7 @@ func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
 // ================================================================ //
 // ================================================================ //
 
+// La cambia de posición respecto a sus hermanos, o sea en el mismo padre.
 func (s *Repositorio) ReordenarNodo(nod arbol.Nodo, newPosicion int) error {
 	var op = gko.Op("ReordenarNodo")
 	if nod.NodoID == 0 {
@@ -220,5 +221,55 @@ func (s *Repositorio) ReordenarNodo(nod arbol.Nodo, newPosicion int) error {
 	if err != nil {
 		return op.Op("set_pos_positiva").Err(err)
 	}
+	return nil
+}
+
+// ================================================================ //
+// ========== Mover =============================================== //
+
+func (s *Repositorio) MoverNodo(nod arbol.Nodo, newPadreID int) error {
+	op := gko.Op("MoverNodo")
+	if nod.NodoID == 0 || newPadreID == 0 {
+		return op.Str("nodo movido o nuevo padre indefinido")
+	}
+
+	// Poner como último hermano en el nuevo padre.
+	_, err := s.db.Exec(
+		"UPDATE nodos SET padre_id = ?, posicion = (SELECT count(nodo_id)+1 FROM nodos WHERE padre_id = ? AND tipo = ?) WHERE nodo_id = ?",
+		newPadreID, newPadreID, nod.Tipo, nod.NodoID,
+	)
+	if err != nil {
+		return op.Op("update_nodo").Err(err)
+	}
+
+	// Recorrer hermanos en el padre viejo.
+	_, err = s.db.Exec(
+		"UPDATE nodos SET posicion = posicion - 1 WHERE padre_id = ? AND tipo = ? AND posicion > ?",
+		nod.PadreID, nod.Tipo, nod.Posicion,
+	)
+	if err != nil {
+		return op.Err(err).Op("update_old_hermanos")
+	}
+
+	/*
+		Ya no se usa esto porque la tabla nodos dejó de usar unique(nodo_id, tipo, posicion).
+		// Se utilizan posiciones negativas temporales porque no se puede confiar en el orden
+		// con el que el update modifica las filas para que mantenga el UNIQUE con la posición.
+		_, err = s.db.Exec(
+			"UPDATE nodos SET posicion = -(posicion - 1) WHERE padre_id = ? AND tipo = ? AND posicion > ?",
+			nod.PadreID, nod.Tipo, nod.Posicion,
+		)
+		if err != nil {
+			return op.Op("old_hermanos_negativo").Err(err)
+		}
+		_, err = s.db.Exec(
+			"UPDATE nodos SET posicion = -(posicion) WHERE padre_id = ? AND tipo = ? AND posicion < 0",
+			nod.PadreID, nod.Tipo,
+		)
+		if err != nil {
+			return op.Op("old_hermanos_positivo").Err(err)
+		}
+	*/
+
 	return nil
 }

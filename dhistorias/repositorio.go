@@ -18,7 +18,6 @@ type Repo interface {
 	InsertNodo(nod ust.Nodo) error
 	EliminarNodo(nodoID int) error
 	MoverNodo(nodoID int, nuevoPadreID int) error
-	ReordenarNodo(nodoID int, oldPosicion int, newPosicion int) error
 	GetNodo(nodoID int) (*ust.Nodo, error)
 	ListNodosByPadreID(PadreID int) ([]ust.Nodo, error)
 
@@ -67,7 +66,6 @@ type Repo interface {
 	DeleteAllTramos(HistoriaID int) error
 	GetTramo(HistoriaID int, Posicion int) (*ust.Tramo, error)
 	ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error)
-	MoverTramo(historiaID int, posicion int, newHistoriaID int) error
 
 	// Reglas
 	InsertRegla(reg ust.Regla) error

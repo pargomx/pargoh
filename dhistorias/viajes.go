@@ -76,20 +76,3 @@ func EditarTramoDeViaje(repo Repo, historiaID int, posicion int, texto string) e
 	}
 	return nil
 }
-
-func MoverTramo(historiaID int, posicion int, newHistoriaID int, repo Repo) (int, error) {
-	op := gko.Op("MoverTramo")
-	err := repo.ExisteTramo(historiaID, posicion)
-	if err != nil {
-		return 0, op.Err(err)
-	}
-	err = repo.ExisteHistoria(newHistoriaID)
-	if err != nil {
-		return 0, op.Err(err).Msg("Debe mover el tramo a una historia, no persona ni proyecto")
-	}
-	err = repo.MoverTramo(historiaID, posicion, newHistoriaID)
-	if err != nil {
-		return 0, err
-	}
-	return newHistoriaID, nil
-}

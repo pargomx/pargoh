@@ -83,10 +83,6 @@ func (s *Repositorio) MoverNodo(nodoID int, nuevoPadreID int) error {
 	return ErrMientrasMigramos.Copy().Op("MoverNodo")
 }
 
-func (s *Repositorio) ReordenarNodo(nodoID int, oldPosicion int, newPosicion int) error {
-	return ErrMientrasMigramos.Copy().Op("ReordenarNodo")
-}
-
 func (s *Repositorio) GetNodo(nodoID int) (*ust.Nodo, error) {
 	nod, err := s.nvo.GetNodo(nodoID)
 	if err != nil {
@@ -364,10 +360,6 @@ func (s *Repositorio) ListTramosByHistoriaID(HistoriaID int) ([]ust.Tramo, error
 		})
 	}
 	return lista, nil
-}
-
-func (s *Repositorio) MoverTramo(historiaID int, posicion int, newHistoriaID int) error {
-	return ErrMientrasMigramos.Copy().Op("MoverTramo")
 }
 
 // Reglas

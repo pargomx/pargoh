@@ -95,15 +95,6 @@ func (s *servidor) cambiarEstimadoTarea(c *gecko.Context) error {
 	return c.AskedForFallback("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
-func (s *servidor) moverTarea(c *gecko.Context) error {
-	historiaID, err := dhistorias.MoverTarea(c.FormInt("tarea_id"), c.FormInt("target_historia_id"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", historiaID)
-}
-
 func (s *servidor) eliminarTarea(c *gecko.Context) error {
 	historiaID, err := dhistorias.EliminarTarea(c.PathInt("tarea_id"), s.repoOld)
 	if err != nil {
