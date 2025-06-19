@@ -188,7 +188,6 @@ func main() {
 
 	// Proyectos
 	s.GET("/proyectos", r.listaProyectos)
-	s.POS("/proyectos", s.postProyecto)
 	s.GET("/proyectos/{proyecto_id}", r.getProyecto)
 	s.GET("/proyectos/{proyecto_id}/doc", r.getDocumentacionProyecto)
 	s.DEL("/proyectos/{proyecto_id}", s.deleteProyecto)
@@ -270,6 +269,7 @@ func main() {
 	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
 
 	// ADD HOJA
+	s.POS("/proyectos", w.inTx(w.postProyecto))
 	s.POS("/personas/{persona_id}", w.inTx(w.postHistoriaDePersona))
 	s.POS("/historias/{historia_id}", w.inTx(w.postHistoriaDeHistoria))
 	s.POS("/historias/{historia_id}/padre", w.inTx(w.postPadreParaHistoria))
@@ -287,12 +287,12 @@ func main() {
 		s.POS("/proyectos/importar", s.importarJSON)
 		s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
 		s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
-		s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarProyectoDocx)
-		s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
-		s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
-		s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
-		s.POS("/personas/{persona_id}/docx", s.exportarPersonaDocx(s.cfg.unidocApiKey))
-		s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
+			s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarProyectoDocx)
+			s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
+			s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
+			s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
+			s.POS("/personas/{persona_id}/docx", s.exportarPersonaDocx(s.cfg.unidocApiKey))
+			s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
 	*/
 
 	// General

@@ -58,14 +58,6 @@ func (s *readhdl) listaProyectos(c *gecko.Context) error {
 	return c.RenderOk("proyectos", data)
 }
 
-func (s *servidor) postProyecto(c *gecko.Context) error {
-	err := dhistorias.NuevoProyecto(c.FormVal("clave"), c.FormVal("titulo"), c.FormVal("descripcion"), s.repoOld)
-	if err != nil {
-		return err
-	}
-	return c.RedirOtro("/")
-}
-
 func (s *servidor) updateProyecto(c *gecko.Context) error {
 	err := dhistorias.ModificarProyecto(c.PathVal("proyecto_id"), ust.Proyecto{
 		ProyectoID:  c.FormVal("clave"),

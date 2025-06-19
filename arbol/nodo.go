@@ -1,5 +1,7 @@
 package arbol
 
+const NodoProyectosActivos = 2 // NodoID del grupo de Proyectos activos.
+
 func esTipoValido(tipo string) bool {
 	switch tipo {
 	case "GRP", "PRY", "PER", "HIS", "TEC", "GES", "REG", "TAR", "VIA":

@@ -43,6 +43,20 @@ func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
 // ================================================================ //
 // ========== WRITE =============================================== //
 
+func (s *writehdl) postProyecto(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    "PRY",
+		NodoID:  ust.NewRandomID(),
+		PadreID: arbol.NodoProyectosActivos,
+		Titulo:  c.FormVal("titulo"),
+	}
+	err := tx.app.AgregarHoja(args)
+	if err != nil {
+		return err
+	}
+	return c.RedirOtro("/")
+}
+
 func (s *writehdl) postHistoriaDePersona(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsAgregarHoja{
 		Tipo:    "HIS",
