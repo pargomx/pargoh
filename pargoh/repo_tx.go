@@ -42,50 +42,49 @@ type handlerTx struct {
 // retorna: si no hay error hace Commit, si hay error o panic hace rollback.
 func (s *writehdl) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gecko.HandlerFunc {
 	return func(c *gecko.Context) error {
-		dbTx, err := s.db.Begin()
-		if err != nil {
-			return err
+		dbTx, dbErr := s.db.Begin()
+		if dbErr != nil {
+			return gko.ErrNoDisponible.Op("inTx.Begin").Err(dbErr).Msg("Servidor no dispoinible para esta transacción")
 		}
 
+		// Catch panic to do rollback
+		alreadyRolledBack := false
 		defer func() {
-			if p := recover(); p != nil {
-				err = dbTx.Rollback()
-				if err != nil {
-					gko.Err(err).Log()
+			if p := recover(); p != nil && !alreadyRolledBack {
+				dbErr = dbTx.Rollback()
+				if dbErr != nil {
+					gko.Op("inTx.OnDeferPanic").Op("Rollback").Err(dbErr).Log()
 				}
 				panic(p) // re-throw panic after rollback
-			} else if err != nil {
-				err = dbTx.Rollback()
-				if err != nil {
-					gko.Err(err).Log()
-				}
+
 			}
 		}()
 
 		repoTx := sqlitearbol.NuevoRepo(dbTx)
 		appTx := s.app.NewTx(repoTx)
-
-		err = handler(c, &handlerTx{
+		appErr := handler(c, &handlerTx{
 			repo: repoTx,
 			app:  appTx,
 			db:   dbTx,
 		})
-		if err != nil {
-			err = dbTx.Rollback()
-			if err != nil {
-				gko.Err(err).Log()
+		if appErr != nil {
+			dbErr = dbTx.Rollback()
+			if dbErr != nil {
+				gko.Op("inTx.OnHandlerError").Op("Rollback").Err(dbErr).Log()
 			}
+			alreadyRolledBack = true
+			return gko.Err(appErr)
 		}
 
-		err = dbTx.Commit() // necesario hacer en dos líneas para que tenga efecto el defer.
-		if err != nil {
-			gko.Err(err).Log()
+		dbErr = dbTx.Commit() // defer necesita poder leer este error
+		if dbErr != nil {
+			return gko.Op("inTx.Commit").Err(dbErr)
 		}
 
 		// Rise events
 		s.LogEventos(appTx.Results)
 
-		return err
+		return nil
 	}
 }
 
