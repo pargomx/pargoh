@@ -1,7 +1,9 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
+	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
 )
@@ -9,14 +11,20 @@ import (
 // ================================================================ //
 // ========== REGLAS DE NEGOCIO =================================== //
 
-func (s *servidor) postRegla(c *gecko.Context) error {
-	err := dhistorias.AgregarRegla(s.repoOld, c.PathInt("historia_id"), c.FormValue("texto"))
+func (s *writehdl) postRegla(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    "REG",
+		NodoID:  ust.NewRandomID(),
+		PadreID: c.PathInt("historia_id"),
+		Titulo:  c.FormValue("texto"),
+	}
+	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/historias/%v", args.PadreID)
 }
 
 func (s *servidor) deleteRegla(c *gecko.Context) error {

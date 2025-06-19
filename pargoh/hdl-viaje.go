@@ -1,7 +1,9 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
+	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
 )
@@ -9,13 +11,20 @@ import (
 // ================================================================ //
 // ========== VIAJE DE USUARIO ==================================== //
 
-func (s *servidor) postTramoDeViaje(c *gecko.Context) error {
-	err := dhistorias.AgregarTramoDeViaje(s.repoOld, c.PathInt("historia_id"), c.FormValue("texto"))
+func (s *writehdl) postTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    "VIA",
+		NodoID:  ust.NewRandomID(),
+		PadreID: c.PathInt("historia_id"),
+		Titulo:  c.FormValue("texto"),
+	}
+	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	// TODO: Solo enviar el fragmento.
+	return c.RedirOtrof("/historias/%v", args.PadreID)
 }
 
 func (s *servidor) deleteTramoDeViaje(c *gecko.Context) error {

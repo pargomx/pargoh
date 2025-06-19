@@ -1,6 +1,7 @@
 package main
 
 import (
+	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/ust"
 
@@ -115,14 +116,14 @@ func (s *readhdl) getPersonaDebug(c *gecko.Context) error {
 	return c.RenderOk("persona_debug", data)
 }
 
-func (s *servidor) postPersona(c *gecko.Context) error {
-	persona := ust.Persona{
-		PersonaID:   ust.NewPersonaID(),
-		ProyectoID:  c.FormVal("proyecto_id"),
-		Nombre:      c.FormVal("nombre"),
-		Descripcion: c.FormVal("descripcion"),
+func (s *writehdl) postPersona(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    "PER",
+		NodoID:  ust.NewRandomID(),
+		PadreID: c.FormInt("proyecto_id"),
+		Titulo:  c.FormVal("nombre"),
 	}
-	err := dhistorias.InsertarPersona(persona, s.repoOld)
+	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}

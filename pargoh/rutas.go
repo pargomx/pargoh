@@ -196,7 +196,6 @@ func main() {
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.patchProyecto)
 
 	// Personas
-	s.POS("/personas", s.postPersona)
 	s.GET("/personas/{persona_id}", r.getPersona)
 	s.GET("/personas/{persona_id}/doc", r.getPersonaDoc)
 	s.GET("/personas/{persona_id}/debug", r.getPersonaDebug)
@@ -225,13 +224,13 @@ func main() {
 
 	s.GET("/historias/{historia_id}/mover", r.moverHistoriaForm)
 
+	// MOVER
 	s.POS("/historias/{historia_id}/mover", w.inTx(w.moverHistoria))
 	s.POS("/mover/tramo", w.inTx(w.moverTramo))
 	s.POS("/mover/tarea", w.inTx(w.moverTarea))
 	s.POS("/mover/historia", w.inTx(w.moverHistoria))
 
 	// Tareas técnicas
-	s.POS("/historias/{historia_id}/tareas", s.postTarea)
 
 	s.GET("/tareas/{tarea_id}", r.getTarea)
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
@@ -246,11 +245,9 @@ func main() {
 	s.PCH("/tareas/{tarea_id}/intervalos/{inicio}", s.patchIntervalo)
 
 	// Quick tasks
-	s.POS("/tareas", s.postQuickTask)
 	s.GET("/tareas", r.getQuickTasks)
 
 	// Viaje de usuario
-	s.POS("/historias/{historia_id}/viaje", s.postTramoDeViaje)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.deleteTramoDeViaje)
 	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.patchTramoDeViaje)
 
@@ -259,7 +256,6 @@ func main() {
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
 
 	// Reglas de negocio
-	s.POS("/historias/{historia_id}/reglas", s.postRegla)
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.deleteRegla)
 	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.patchRegla)
 	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.marcarRegla)
@@ -268,11 +264,16 @@ func main() {
 	s.POS("/historias/{historia_id}/referencias", s.postReferencia)
 	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
 
-	// ADD HOJA
+	// AGREGAR HOJA
 	s.POS("/proyectos", w.inTx(w.postProyecto))
+	s.POS("/personas", w.inTx(w.postPersona))
 	s.POS("/personas/{persona_id}", w.inTx(w.postHistoriaDePersona))
 	s.POS("/historias/{historia_id}", w.inTx(w.postHistoriaDeHistoria))
 	s.POS("/historias/{historia_id}/padre", w.inTx(w.postPadreParaHistoria))
+	s.POS("/historias/{historia_id}/reglas", w.inTx(w.postRegla))
+	s.POS("/historias/{historia_id}/viaje", w.inTx(w.postTramoDeViaje))
+	s.POS("/historias/{historia_id}/tareas", s.postTarea)
+	s.POS("/tareas", s.postQuickTask)
 
 	// REORDENAR
 	s.POS("/reordenar-persona", w.inTx(w.reordenarPersona))
