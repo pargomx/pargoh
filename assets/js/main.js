@@ -447,13 +447,13 @@ function resaltarFragmento() {
 const segundosParaInactividad = 20;
 const segundosParaEnviarHeartbeat = 5;
 let segundosContados = 0;
-let timePersonaID = "0";
+let timeNodoID = "0";
 let timeCounterIntvl = null;
 let interactionTimeout;
 
 // Enviar un pulso de actividad al servidor.
 function sendHeartbeat() {
-	fetch(`/personas/${timePersonaID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
+	fetch(`/nodos/${timeNodoID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
 	    if (!response.ok) {
 			// TODO: no dar error al usuario, pero guardar en localStorage y enviar cuando se pueda.
 			// localStorage.setItem('timeActive', segundosContados);
@@ -465,14 +465,14 @@ function sendHeartbeat() {
 
 // Continuar contando el tiempo que se trabaja en un personaje.
 function startHeartbeat(razon) {
-	if (!document.querySelector("[data-persona-id]")) {
-		timePersonaID = 0;
+	if (!document.querySelector("[data-nodo-id]")) {
+		timeNodoID = 0;
 		return // Solo contar cuando se trabaja con un personaje.
 	}
 	if (timeCounterIntvl) {
 		return // Puede ya estar contando.
 	}
-	timePersonaID = document.querySelector("[data-persona-id]").getAttribute("data-persona-id");
+	timeNodoID = document.querySelector("[data-nodo-id]").getAttribute("data-nodo-id");
 	timeCounterIntvl = setInterval(sendHeartbeat, segundosParaEnviarHeartbeat * 1000);
 }
 

@@ -60,7 +60,7 @@ type servidor struct {
 
 	reloader reloader // websocket.go
 
-	timeTracker *dhistorias.GestionTimeTracker
+	timeTracker *arbol.AppTimeTracker
 
 	noContinuar bool // feature flag
 }
@@ -72,10 +72,9 @@ type readhdl struct {
 }
 
 type writehdl struct {
-	db          *sqlitedb.SqliteDB
-	app         *arbol.Servicio
-	reloader    reloader // websocket.go
-	timeTracker *dhistorias.GestionTimeTracker
+	db       *sqlitedb.SqliteDB
+	app      *arbol.Servicio
+	reloader reloader // websocket.go
 }
 
 func main() {
@@ -117,7 +116,6 @@ func main() {
 	}
 	s.repoOld = sqlitepuente.NuevoRepo(s.db)
 	s.repo = sqlitearbol.NuevoRepo(s.db)
-	s.timeTracker = dhistorias.NewGestionTimeTracker(s.repoOld, 0)
 
 	if s.cfg.sourceDir != "" {
 		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
@@ -146,6 +144,7 @@ func main() {
 	if err != nil {
 		gko.FatalError(err)
 	}
+	s.timeTracker = arbol.NewAppTimeTracker(sqlitearbol.NuevoRepo(s.db), 0)
 
 	r := readhdl{
 		db:      s.db,
@@ -153,10 +152,9 @@ func main() {
 		repoOld: sqlitepuente.NuevoRepo(s.db),
 	}
 	w := writehdl{
-		db:          s.db,
-		app:         s.app,
-		reloader:    s.reloader,
-		timeTracker: s.timeTracker,
+		db:       s.db,
+		app:      s.app,
+		reloader: s.reloader,
 	}
 
 	// ================================================================ //
@@ -273,7 +271,7 @@ func main() {
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.deleteTramoDeViaje))
 
 	// TIME TRACKER
-	s.POS("/personas/{persona_id}/time/{seg}", s.postTimeGestion)
+	s.POS("/nodos/{nodo_id}/time/{seg}", s.postAppTime)
 
 	// IMAGENES
 	s.POS("/imagenes", s.setImagenTramo)

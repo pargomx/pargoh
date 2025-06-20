@@ -30,3 +30,9 @@ type Repo interface {
 	UpdateIntervalo(NodoID int, TsIni string, itv Intervalo) error
 	DeleteIntervalo(NodoID int, TsIni string) error
 }
+
+type timeTrackerRepo interface {
+	GetNodo(NodoID int) (*Nodo, error)
+	UpdateNodo(NodoID int, nod Nodo) error
+	InsertLatido(lat Latido) error
+}

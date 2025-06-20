@@ -88,13 +88,12 @@ func (s *writehdl) patchProyecto(c *gecko.Context, tx *handlerTx) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) postTimeGestion(c *gecko.Context) error {
+func (s *servidor) postAppTime(c *gecko.Context) error {
+	err := s.timeTracker.AddTimeSpent(c.PathInt("nodo_id"), c.PathInt("seg"))
+	if err != nil {
+		return err
+	}
 	return c.StringOk("ok")
-	// err := s.timeTracker.AddTimeSpent(c.PathInt("persona_id"), c.PathInt("seg"))
-	// if err != nil {
-	// 	return err
-	// }
-	// return c.StringOk("ok")
 }
 
 func (s *readhdl) getProyecto(c *gecko.Context) error {

@@ -16,9 +16,7 @@
 				{{ enfatizar .Proyecto.Titulo }}
 			</a>
 		</h2>
-		<h3 class="flex items-center gap-1 py-1"
-			data-persona-id="{{ .Persona.PersonaID }}"
-			>
+		<h3 class="flex items-center gap-1 py-1">
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">
 				<i class="fa-solid fa-person"></i>
 			</span>
@@ -154,6 +152,7 @@
 	<!--* TÍTULO -->
 	<div class="mt-2 mb-1">
 		<textarea class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400"
+			data-nodo-id="{{ .HistoriaID }}"
 			hx-patch="/historias/{{ .HistoriaID }}/titulo"
 			hx-swap="none"
 			enterkeyhint="enter"
