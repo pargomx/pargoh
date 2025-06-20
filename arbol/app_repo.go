@@ -9,6 +9,8 @@ type ReadRepo interface {
 	ListNodosByPadreID(PadreID int) ([]Nodo, error)
 	ListNodosByPadreIDTipo(PadreID int, Tipo string) ([]Nodo, error)
 
+	ExisteNodo(NodoID int) error
+
 	ListLatidos(desde, hasta string) ([]Latido, error)
 	ListIntervalosByNodoID(NodoID int) ([]Intervalo, error)
 	ExisteIntervalo(NodoID int, TsIni string) error
@@ -29,6 +31,10 @@ type Repo interface {
 	InsertIntervalo(itv Intervalo) error
 	UpdateIntervalo(NodoID int, TsIni string, itv Intervalo) error
 	DeleteIntervalo(NodoID int, TsIni string) error
+
+	InsertReferencia(ref Referencia) error
+	ExisteReferencia(NodoID int, RefNodoID int) error
+	DeleteReferencia(NodoID int, RefNodoID int) error
 }
 
 type timeTrackerRepo interface {

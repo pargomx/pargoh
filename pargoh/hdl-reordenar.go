@@ -79,7 +79,7 @@ func (s *writehdl) reordenarRegla(c *gecko.Context, tx *handlerTx) error {
 // ========== Mover =============================================== //
 
 func (s *writehdl) moverHistoria(c *gecko.Context, tx *handlerTx) error {
-	newPadreID := c.FormInt("target_historia_id")
+	newPadreID := c.FormInt("target_nodo_id")
 	if newPadreID == 0 {
 		newPadreID = c.FormInt("target_persona_id")
 		if newPadreID == 0 {
@@ -104,7 +104,7 @@ func (s *writehdl) moverHistoria(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) moverTramo(c *gecko.Context, tx *handlerTx) error {
-	// historiaID, err := dhistorias.MoverTramo(c.FormInt("historia_id"), c.FormInt("posicion"), c.FormInt("target_historia_id"), s.repoOld)
+	// historiaID, err := dhistorias.MoverTramo(c.FormInt("historia_id"), c.FormInt("posicion"), c.FormInt("target_nodo_id"), s.repoOld)
 	args := arbol.ArgsMover{
 		NodoID:     c.FormInt("nodo_id"),
 		NewPadreID: c.FormInt("new_padre_id"),

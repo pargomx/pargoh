@@ -65,6 +65,14 @@ func (s *Repositorio) GetHistoria(historiaID int) (*arbol.HistoriaDeUsuario, err
 	his.Tareas = desc.Tareas
 	his.Reglas = desc.Reglas
 
+	relacionadas, err := s.ListNodosRelacionados(his.HistoriaID)
+	if err != nil {
+		return nil, op.Err(err)
+	}
+	for _, nod := range relacionadas {
+		his.Relacionadas = append(his.Relacionadas, nod.ToHistoriaDeUsuario())
+	}
+
 	nextPadreID := his.PadreID
 	loops := 0
 	for {
@@ -301,4 +309,21 @@ func (s *Repositorio) DeleteHijos(NodoID int) error {
 		return op.E(gko.ErrAlEscribir).Err(err)
 	}
 	return nil
+}
+
+//  ================================================================  //
+//  ========== LIST RELACIONADOS ===================================  //
+
+func (s *Repositorio) ListNodosRelacionados(NodoID int) ([]arbol.Nodo, error) {
+	const op string = "ListNodosRelacionados"
+	rows, err := s.db.Query(
+		"SELECT "+
+			"n.nodo_id, n.padre_id, n.tipo, n.posicion, n.titulo, n.descripcion, n.objetivo, n.notas, n.color, n.imagen, n.prioridad, n.estatus, n.segundos, n.centavos "+
+			" FROM nodos n JOIN referencias r ON r.nodo_id = n.nodo_id OR r.ref_nodo_id = n.nodo_id WHERE (r.nodo_id = ? OR r.ref_nodo_id = ?) AND n.nodo_id != ?",
+		NodoID, NodoID, NodoID,
+	)
+	if err != nil {
+		return nil, gko.ErrInesperado.Err(err).Op(op)
+	}
+	return s.scanRowsNodo(rows, op)
 }

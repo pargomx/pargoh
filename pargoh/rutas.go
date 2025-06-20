@@ -279,8 +279,8 @@ func main() {
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
 
 	// Referencias
-	s.POS("/historias/{historia_id}/referencias", s.postReferencia)
-	s.DEL("/historias/{historia_id}/referencias/{ref_historia_id}", s.deleteReferencia)
+	s.POS("/historias/{nodo_id}/referencias", w.inTx(w.postReferencia))
+	s.DEL("/historias/{nodo_id}/referencias/{ref_nodo_id}", w.inTx(w.deleteReferencia))
 
 	// Exportar e importar
 	/*
