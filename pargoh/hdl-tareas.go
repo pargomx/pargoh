@@ -135,11 +135,12 @@ func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
 */
 
 func (s *readhdl) getTarea(c *gecko.Context) error {
-	tarea, err := s.repoOld.GetTarea(c.PathInt("tarea_id"))
+	nod, err := s.repo.GetNodo(c.PathInt("tarea_id"))
 	if err != nil {
 		return err
 	}
-	intervalos, err := s.repoOld.ListIntervalosByTareaID(tarea.TareaID)
+	tarea := nod.ToTarea()
+	intervalos, err := s.repo.ListIntervalosByNodoID(tarea.TareaID)
 	if err != nil {
 		return err
 	}
@@ -167,13 +168,28 @@ func (s *readhdl) getIntervalos(c *gecko.Context) error {
 	return c.RenderOk("intervalos", data)
 }
 
-func (s *servidor) patchIntervalo(c *gecko.Context) error {
-	historiaID, err := dhistorias.ParcharIntervalo(c.PathInt("tarea_id"), c.PathVal("inicio"), c.FormVal("inicio"), c.FormVal("fin"), s.repoOld)
+func (s *writehdl) patchIntervalo(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsParcharIntervalo{
+		NodoID: c.PathInt("tarea_id"),
+		TsID:   c.PathVal("ts_id"),
+	}
+	if c.PathVal("cambiar") == "ini" {
+		args.NewTS = c.FormVal("ts_ini")
+		args.Cambiar = "INI"
+	} else {
+		args.NewTS = c.FormVal("ts_fin")
+		args.Cambiar = "FIN"
+	}
+	err := tx.app.ParcharIntervalo(args)
+	if err != nil {
+		return err
+	}
+	padre, err := tx.repo.GetNodo(args.NodoID)
 	if err != nil {
 		return err
 	}
 	// defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", historiaID)
+	return c.AskedForFallback("/historias/%v", padre.NodoID)
 }
 
 // ================================================================ //

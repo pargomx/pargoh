@@ -2,6 +2,8 @@ package arbol
 
 import (
 	"monorepo/ust"
+	"strings"
+	"time"
 
 	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/gkt"
@@ -150,5 +152,67 @@ func (s *AppTx) FinalizarTarea(TareaID int) error {
 		NodoID: interv.NodoID,
 		TS:     interv.TsIni,
 	}))
+	return nil
+}
+
+// ================================================================ //
+
+const EvIntervaloParchado gko.EventKey = "intervalo_parchado"
+
+type ArgsParcharIntervalo struct {
+	NodoID  int    // TareaID
+	TsID    string // Identificar intervalo
+	Cambiar string // "INI" o "FIN"
+	NewTS   string // New timestamp
+}
+
+func (s *AppTx) ParcharIntervalo(args ArgsParcharIntervalo) error {
+	op := gko.Op("ParcharIntervalo")
+	interv, err := s.repo.GetIntervalo(args.NodoID, args.TsID)
+	if err != nil {
+		return op.Err(err)
+	}
+
+	// Validar new timestamp
+	if args.NewTS == "" {
+		return op.Msg("Nada que cambiar")
+	}
+	args.NewTS = strings.Replace(args.NewTS, "T", " ", 1)
+	_, err = time.Parse(gkt.FormatoFechaHora, args.NewTS)
+	if err != nil {
+		return op.Err(err).
+			Msgf("Timestamp '%v' inválida. Debe tener formato AAAA-MM-DD HH:MM:SS",
+				args.NewTS)
+	}
+
+	// Hacer el cambio
+	if args.Cambiar == "INI" {
+		interv.TsIni = args.NewTS
+	} else if args.Cambiar == "FIN" {
+		interv.TsFin = args.NewTS
+	} else {
+		return op.Str("no se sabe si cambiar INI o FIN de intervalo")
+	}
+
+	// Validar intervalo: final debe ser después de inicio
+	inicio, err := time.Parse(gkt.FormatoFechaHora, interv.TsIni)
+	if err != nil {
+		return op.Op("ParseToCheckIntervalo").Err(err)
+	}
+	fin, err := time.Parse(gkt.FormatoFechaHora, interv.TsFin)
+	if err != nil {
+		return op.Op("ParseToCheckIntervalo").Err(err)
+	}
+	if fin.Before(inicio) {
+		return op.Msg("La fecha de final debe ser posterior a la de inicio")
+	}
+
+	// Guardar cambios
+	err = s.repo.UpdateIntervalo(args.NodoID, args.TsID, *interv)
+	if err != nil {
+		return op.Err(err)
+	}
+
+	s.Results.Add(EvIntervaloParchado.WithArgs(args))
 	return nil
 }

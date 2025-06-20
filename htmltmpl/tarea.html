@@ -46,38 +46,38 @@
 			<tr class="font-mono text-sm text-slate-300">
 				<td class="whitespace-nowrap">
 					<input class="hidden form-control text-sm w-48"
-						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
+						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .TsIni }}/ini"
 						hx-select="#tareasList"
 						hx-target="#tareasList"
 						hx-select-oob="#tareasDialogs, #progreso"
 						hx-trigger="keyup[key=='Enter']"
 						enterkeyhint="enter"
 						onkeydown="facilitarInputDatetime(event)"
-						type="datetime"
+						type="datetime-local"
 						inputmode="numeric"
-						name="inicio"
-						value="{{ .Inicio }}"
+						name="ts_ini"
+						value="{{ .TsIni }}"
 						>
 					<span class="px-3 py-2">
-						{{ .Inicio }}
+						{{ .TsIni }}
 					</span>
 				</td>
 				<td class="whitespace-nowrap">
 					<input class="hidden form-control text-sm w-48"
-						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .Inicio }}"
+						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .TsIni }}/fin"
 						hx-select="#tareasList"
 						hx-target="#tareasList"
 						hx-select-oob="#tareasDialogs, #progreso"
 						hx-trigger="keyup[key=='Enter']"
 						enterkeyhint="enter"
 						onkeydown="facilitarInputDatetime(event)"
-						type="datetime"
+						type="datetime-local"
 						inputmode="numeric"
-						name="fin"
-						value="{{ .Fin }}"
+						name="ts_fin"
+						value="{{ .TsFin }}"
 						>
 					<span class="px-3 py-2">
-						{{ .Fin }}
+						{{ .TsFin }}
 					</span>
 				</td>
 				<td class="px-4 py-2 whitespace-nowrap">

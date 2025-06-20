@@ -106,7 +106,7 @@
 						{{ range .Tareas -}}
 							{{ range .Intervalos -}}
 								<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="52" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}">
-									<title data-link="/historias/{{ .HistoriaID }}#{{ .TareaID }}">Tarea: {{ .Inicio }} - {{ .Fin }}</title>
+									<title data-link="/historias/{{ .HistoriaID }}#{{ .TareaID }}">Tarea: {{ .TsIni }} - {{ .TsFin }}</title>
 								</rect>
 							{{ end -}}
 						{{ end -}}

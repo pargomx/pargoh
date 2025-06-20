@@ -148,7 +148,13 @@ func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
 		case "REG":
 			desc.Reglas = append(desc.Reglas, nod.ToRegla())
 		case "TAR":
-			desc.Tareas = append(desc.Tareas, nod.ToTarea())
+			tar := nod.ToTarea()
+			tar.Intervalos, err = s.ListIntervalosByNodoID(tar.TareaID)
+			if err != nil {
+				return desc, op.Err(err)
+			}
+			desc.Tareas = append(desc.Tareas, tar)
+
 		case "VIA":
 			desc.Tramos = append(desc.Tramos, nod.ToTramo())
 

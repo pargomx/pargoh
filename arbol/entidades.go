@@ -370,6 +370,8 @@ type Tarea struct {
 	// Centavos         int
 
 	SegundosUtilizado int // Deprecated: Legacy
+
+	Intervalos []Intervalo
 }
 
 func (nod Nodo) ToTarea() Tarea {

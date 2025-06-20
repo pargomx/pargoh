@@ -1142,7 +1142,6 @@
 				{{ end }}
 			</div>
 			<div class="grow hidden text-right sm:block">
-				{{- if .SegundosUtilizado -}}
 				<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 					onclick="showIntervalos('{{ .TareaID }}')"
 					title="Tiempo transcurrido {{ segundosToString .SegundosUtilizado }}"
@@ -1150,7 +1149,6 @@
 					<i class="fa-solid fa-stopwatch"></i>
 					{{ segundosToString .SegundosUtilizado }}
 				</button>
-				{{- end -}}
 				<button class="pl-4 text-sm opacity-75 whitespace-nowrap"
 					hx-patch="/tareas/{{ .TareaID }}/estimado"
 					hx-prompt="Nuevo estimado"
