@@ -44,7 +44,7 @@ func (s *writehdl) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 	return func(c *gecko.Context) error {
 		dbTx, dbErr := s.db.Begin()
 		if dbErr != nil {
-			return gko.ErrNoDisponible.Op("inTx.Begin").Err(dbErr).Msg("Servidor no dispoinible para esta transacción")
+			return gko.ErrNoDisponible.Err(dbErr).Op("inTx.Begin").Msg("Servidor no dispoinible para esta transacción")
 		}
 
 		// Catch panic to do rollback
