@@ -1,6 +1,6 @@
 package sqliteust
 
-import "monorepo/sqlitedb"
+import "github.com/pargomx/gecko/sqlitedb"
 
 type Repositorio struct {
 	db sqlitedb.Ejecutor

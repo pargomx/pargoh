@@ -9,12 +9,12 @@ import (
 	"monorepo/exportdocx"
 	"monorepo/htmltmpl"
 	"monorepo/migraciones"
-	"monorepo/sqlitedb"
 	"monorepo/sqliteust"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/plantillas"
+	"github.com/pargomx/gecko/sqlitedb"
 )
 
 // Información de compilación establecida con:
