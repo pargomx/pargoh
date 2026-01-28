@@ -3,6 +3,7 @@ package main
 import (
 	"monorepo/arbol"
 	"monorepo/dhistorias"
+	"monorepo/imagenes"
 	"monorepo/sqlitearbol"
 
 	"github.com/pargomx/gecko"
@@ -22,7 +23,8 @@ type writehdl struct {
 	db        *sqlitedb.SqliteDB
 	eventRepo *eventsqlite.EventRepoSqlite
 	app       *arbol.Servicio
-	reloader  reloader // websocket.go
+	reloader  *reloader // websocket.go
+	imagenes  *imagenes.ImgService
 }
 
 type handlerTx struct {

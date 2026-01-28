@@ -3,7 +3,9 @@ module monorepo
 go 1.25.6
 
 require (
+	github.com/disintegration/imaging v1.6.2
 	github.com/pargomx/gecko v0.0.0-20251105072957-bda00bacca0d
+	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	golang.org/x/net v0.49.0
 )
 
@@ -16,6 +18,7 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
+	golang.org/x/image v0.35.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	modernc.org/libc v1.67.7 // indirect

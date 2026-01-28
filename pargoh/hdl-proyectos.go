@@ -68,7 +68,7 @@ func (s *servidor) setImagenProyecto(c *gecko.Context, tx *handlerTx) error {
 		}
 		defer file.Close()
 		gko.LogDebugf("Imagen recibida: %v\t Tamaño: %v\t MIME:%v", hdr.Filename, hdr.Size, hdr.Header.Get("Content-Type"))
-		err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), strings.TrimPrefix(hdr.Header.Get("Content-Type"), "image/"), file, s.cfg.imagesDir, s.repoOld)
+		err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), strings.TrimPrefix(hdr.Header.Get("Content-Type"), "image/"), file, s.cfg.ImagesDir, s.repoOld)
 		if err != nil {
 			return err
 		}

@@ -11,26 +11,26 @@ import (
 // Verificar que se pueda escribir en el directorio.
 // Si no existe lo intenta crear.
 func (s *servidor) verificarDirectorioImagenes() error {
-	if s.cfg.imagesDir == "" {
+	if s.cfg.ImagesDir == "" {
 		return gko.ErrDatoIndef.Msg("Directorio para guardar imágenes indefinido")
 	}
-	inf, err := os.Stat(s.cfg.imagesDir)
+	inf, err := os.Stat(s.cfg.ImagesDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			err := os.MkdirAll(s.cfg.imagesDir, 0750)
+			err := os.MkdirAll(s.cfg.ImagesDir, 0750)
 			if err != nil {
 				return gko.Err(err).Msg("No se puede crear directorio para imágenes")
 			}
-			gko.LogInfof("Directorio de imágenes creado: %v", s.cfg.imagesDir)
+			gko.LogInfof("Directorio de imágenes creado: %v", s.cfg.ImagesDir)
 		} else {
 			return gko.Err(err).Msg("No se puede acceder a directorio de imágenes")
 		}
 	} else {
 		if !inf.IsDir() {
-			return gko.ErrDatoInvalido.Msgf("No es un directorio válido para imágenes: %v", s.cfg.imagesDir)
+			return gko.ErrDatoInvalido.Msgf("No es un directorio válido para imágenes: %v", s.cfg.ImagesDir)
 		}
 	}
-	outFile, err := os.CreateTemp(s.cfg.imagesDir, "*.jpeg")
+	outFile, err := os.CreateTemp(s.cfg.ImagesDir, "*.jpeg")
 	if err != nil {
 		return gko.Err(err).Msg("No se puede guardar imágenes")
 	}
@@ -61,7 +61,7 @@ func (s *servidor) setImagenTramo(c *gecko.Context, tx *handlerTx) error {
 		c.FormInt("historia_id"),
 		c.FormInt("posicion"),
 		foto,
-		s.cfg.imagesDir,
+		s.cfg.ImagesDir,
 		file.Header.Get("Content-Type"),
 		s.repoOld,
 	)

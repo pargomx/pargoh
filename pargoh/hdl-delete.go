@@ -87,7 +87,7 @@ func (s *writehdl) deleteTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
 // ================================================================ //
 
 func (s *servidor) deleteImagenTramo(c *gecko.Context, tx *handlerTx) error {
-	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.imagesDir, s.repoOld)
+	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.ImagesDir, s.repoOld)
 	if err != nil {
 		return err
 	}

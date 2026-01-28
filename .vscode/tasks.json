@@ -13,84 +13,78 @@
 	},
 	"tasks": [
 		{
-			"label": "Ejecutar",
-			"detail": "Ejecutar aplicación en ambiente de desarrollo",
-			"command": "pargoh -src=$(realpath .) -dir=$(realpath ../_tdataPargoh) -auser benito -apass terranova1984",
-			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
-			"isBackground": true,
-		},
-		{
-			"label": "Ejecutar delay",
-			"detail": "Ejecutar aplicación con delay para responder",
-			"command": "pargoh -src=$(realpath .) -dir=$(realpath ../_tdataPargoh) -auser benito -apass terranova1984 -wdelay=2000 -rdelay=500",
-			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
-			"isBackground": true,
-		},
-		{
-			"label": "Ejecutar mac",
-			"detail": "Ejecutar en directorio de prueba mac",
-			"command": "pargoh -src=/Users/andrew/proyectos/pargoh -dir=/Users/andrew/Downloads/pargoh",
-			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
-			"isBackground": true,
-		},
-
-		{
 			"label": "Gkfmt",
 			"detail": "Dar formato al archivo HTML",
 			"command": "gkfmt -i ${file}",
 		},
 		{
+			"label": "Clean test database",
+			"detail": "Eliminar base de datos existente para empezar de cero",
+			"command": "rm _testdata/app.d*; rm _testdata/sesiones.json",
+		},
+		{
+			"label": "Get repo methods",
+			"detail": "Obtener métodos para el repositorio",
+			"command": "go doc sqliteapp.Repositorio | grep '^func (s \\*Repositorio) ' | sed 's/^func (s \\*Repositorio) //'",
+		},
+		{
+			"label": "Ejecutar",
+			"detail": "Ejecutar aplicación en ambiente de desarrollo.",
+			"command": "mkdir -p $(realpath ./_testdata); PROYECTA_ADMIN_PASSWORD='flores99leetcode' pargoh -src=$(realpath .) -dir=$(realpath ./_testdata)",
+			"dependsOn": ["Instalar dev"], "dependsOrder": "sequence",
+			"isBackground": true,
+		},
+		{
 			"label": "Tailwind once",
-			"detail": "Compilar estilos CSS una vez",
+			"detail": "Compilar estilos CSS una vez.",
 			"command": "tailwindcss -i ./assets/source.css -o ./assets/css/estilo.css",
 		},
 		{
 			"label": "Tailwind watch",
-			"detail": "Compilar estilos CSS y observar cambios",
+			"detail": "Compilar estilos CSS y observar cambios.",
 			"command": "tailwindcss -w -i ./assets/source.css -o ./assets/css/estilo.css",
 			"isBackground": true,
 		},
 		{
 			"label": "PargoCode",
-			"detail": "Generación de código mediante interfaz web",
+			"detail": "Generación de código mediante interfaz web.",
 			"command": "sleep 1 && pargocode",
 			"isBackground": true,
 		},
 		{
 			"label": "Instalar dev",
-			"detail": "Instalar app versión desarrollo",
+			"detail": "Instalar app versión desarrollo.",
 			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=DEV\" ./pargoh && echo '[✔] App instalada'",
 			"hide": true,
 		},
 		{
 			"label": "Instalar prod",
-			"detail": "Instalar app versión producción",
+			"detail": "Instalar app versión producción.",
 			"command": "CGO_ENABLED=0 go install -ldflags \"-X main.BUILD_INFO=$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=PROD\" ./pargoh && echo '[✔] App instalada'",
 		},
 		{
 			"label": "Compilar",
 			"detail": "Compilar ejecutable antes de desplegar",
-			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=PROD\" -o /tmp/pargoh ./pargoh && echo '[✔] App compilada\n'",
+			"command": "GOOS=linux CGO_ENABLED=0 go build -ldflags \"-X main.BUILD_INFO=$(date '+%Y-%m-%d%n'):$(git rev-parse --short HEAD) -X main.AMBIENTE=PROD\" -o /tmp/${input:execName} ./pargoh && echo '[✔] App compilada\n'",
 			"hide": true,
 		},
 		{
-			"label": "Deploy avem6",
-			"detail": "Enviar binario al servidor con docker",
-			"command": "rsync -avh --progress /tmp/pargoh avem6:~/bin/ && echo '[✔] App enviada a avem6\n' && ssh avem6 'docker restart pargo' && echo '[✔] Actualización aplicada'",
+			"label": "Deploy",
+			"detail": "Enviar ejecutable al servidor remoto.",
+			"command": "rsync -avh --progress /tmp/${input:execName} ${input:remoteHost}:/usr/local/bin/ && echo '[✔] App enviada a ${input:remoteHost}\n'",
 			"dependsOn": ["Compilar"], "dependsOrder": "sequence",
-		},
-		{
-			"label": "Deploy systemd",
-			"detail": "Enviar binario al servidor con systemd",
-			"command": "rsync -hv --progress -ut /tmp/pargoh ${input:remoteHost}:/usr/local/bin/ && echo '[✔] App enviada a ${input:remoteHost}\n' && ssh ${input:remoteHost} 'echo Reinicio pendiente'",
-			"dependsOn": ["Compilar"], "dependsOrder": "sequence",
+			"isBackground": false,
 		},
 
 	],
 	"inputs": [
 		{
+			"id": "execName", "description": "Nombre del ejecutable compilado",
+			"default": "pargoh", "type": "promptString"
+		},
+		{
 			"id": "remoteHost", "description": "Dirección del remote host",
-			"default": "tabo", "type": "promptString"
+			"default": "localhost", "type": "promptString"
 		},
 	]
 }

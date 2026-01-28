@@ -1,163 +1,12 @@
 package main
 
 import (
-	"flag"
-	"os"
-
-	"monorepo/arbol"
 	"monorepo/assets"
-	"monorepo/dhistorias"
-	"monorepo/exportdocx"
-	"monorepo/htmltmpl"
-	"monorepo/migraciones"
-	"monorepo/sqlitearbol"
-	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
-	"github.com/pargomx/gecko/eventsqlite"
-	"github.com/pargomx/gecko/gko"
-	"github.com/pargomx/gecko/plantillas"
-	"github.com/pargomx/gecko/sqlitedb"
 )
 
-// Información de compilación establecida con:
-//
-//	BUILD_INFO="$(date -I):$(git log --format="%H" -n 1)"
-//	go BUILD_INFO -ldflags "-X main.BUILD_INFO=$BUILD_INFO -X main.ambiente=dev"
-var BUILD_INFO string // Información de compilación [ fecha:commit_hash ]
-var AMBIENTE string   // Ambiente de ejecución [ DEV / PROD ]
-
-type configs struct {
-	puerto       int    // Puerto TCP del servidor
-	directorio   string // Default: directorio actual
-	databasePath string // Default: _pargo/pargo.sqlite
-	sourceDir    string // Directorio raíz para leer assets y plantillas (shadow embed)
-	imagesDir    string // Directorio para guardar imágenes
-	exportDir    string // Directorio para guardar exports
-	unidocApiKey string // API Key para unidoc
-
-	adminUser string
-	adminPass string
-	debug     debugConfig
-}
-
-type debugConfig struct {
-	logDB      bool // Log de consultas a la base de datos
-	writeDelay int  // ms de delay para solicitudes POST, PUT, PATCH, DELETE
-	readDelay  int  // ms de delay para solicitudes GET
-}
-
-type servidor struct {
-	cfg   configs
-	gecko *gecko.Gecko
-	db    *sqlitedb.SqliteDB
-
-	repoOld dhistorias.Repo
-	repo    arbol.ReadRepo
-
-	eventRepo *eventsqlite.EventRepoSqlite
-	r         readhdl
-	w         writehdl
-
-	auth *authService
-
-	app *arbol.Servicio
-
-	reloader reloader // websocket.go
-
-	timeTracker *arbol.AppTimeTracker
-
-	noContinuar bool // feature flag
-}
-
-func main() {
-	gko.LogInfof("Versión:%s:%s", BUILD_INFO, AMBIENTE)
-
-	s := servidor{}
-
-	// Parámetros de ejecución
-	flag.StringVar(&s.cfg.directorio, "dir", "", "directorio raíz de la aplicación")
-	flag.StringVar(&s.cfg.databasePath, "db", "historias.db", "ubicación de la db sqlite")
-	flag.IntVar(&s.cfg.puerto, "p", 5050, "el servidor escuchará en este puerto")
-	flag.StringVar(&s.cfg.sourceDir, "src", "", "directorio con assets y htmltmpl para no usar embeded")
-	flag.StringVar(&s.cfg.imagesDir, "img", "imagenes", "directorio con las imágenes de historias y proyectos")
-	flag.StringVar(&s.cfg.exportDir, "exp", "exports", "directorio con los archivos exportados")
-	flag.StringVar(&s.cfg.unidocApiKey, "unidoc", "", "api key para exportar docx con unidoc")
-	flag.StringVar(&s.cfg.adminUser, "auser", "tulio", "usuario del administrador")
-	flag.StringVar(&s.cfg.adminPass, "apass", "flores99leetcode", "contraseña del administrador")
-	flag.BoolVar(&s.cfg.debug.logDB, "logdb", false, "log de consultas a la base de datos")
-	flag.IntVar(&s.cfg.debug.writeDelay, "wdelay", 300, "ms de delay para solicitudes POST, PUT, PATCH, DELETE")
-	flag.IntVar(&s.cfg.debug.readDelay, "rdelay", 300, "ms de delay para solicitudes GET")
-
-	flag.Parse()
-	if s.cfg.directorio != "" {
-		err := os.Chdir(s.cfg.directorio)
-		if err != nil {
-			gko.FatalExit("directorio de proyecto inválido: " + err.Error())
-		}
-	}
-	s.gecko = gecko.New()
-	var err error
-
-	// Repositorio
-	s.db, err = sqlitedb.NuevoRepositorio(s.cfg.databasePath, migraciones.MigracionesFS)
-	if err != nil {
-		gko.FatalError(err)
-	}
-	if s.cfg.debug.logDB {
-		s.db.ToggleLog()
-	}
-	s.repoOld = sqlitepuente.NuevoRepo(s.db)
-	s.repo = sqlitearbol.NuevoRepo(s.db)
-
-	// Log eventos en sqlite
-	s.eventRepo, err = eventsqlite.NuevoEventRepoSqlite(s.db)
-	if err != nil {
-		gko.FatalError(err)
-	}
-
-	if s.cfg.sourceDir != "" {
-		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
-		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillas(s.cfg.sourceDir+"/htmltmpl", AMBIENTE == "DEV")
-	} else {
-		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillasEmbebidas(htmltmpl.PlantillasFS, "plantillas")
-	}
-	if err != nil {
-		gko.FatalError(err)
-	}
-
-	if err = s.verificarDirectorioImagenes(); err != nil {
-		gko.FatalError(err)
-	}
-
-	if err = exportdocx.VerificarDirectorioExports(s.cfg.exportDir); err != nil {
-		gko.FatalError(err)
-	}
-
-	s.gecko.TmplBaseLayout = "app/layout"
-
-	s.auth = NewAuthService(s.cfg.adminUser, s.cfg.adminPass)
-	s.auth.RecuperarSesiones()
-
-	s.app, err = arbol.NuevoServicio(arbol.Config{})
-	if err != nil {
-		gko.FatalError(err)
-	}
-	s.timeTracker = arbol.NewAppTimeTracker(sqlitearbol.NuevoRepo(s.db), 0)
-
-	s.r = readhdl{
-		db:      s.db,
-		repo:    sqlitearbol.NuevoRepo(s.db),
-		repoOld: sqlitepuente.NuevoRepo(s.db),
-	}
-	s.w = writehdl{
-		db:       s.db,
-		app:      s.app,
-		reloader: s.reloader,
-	}
-
-	// ================================================================ //
-
+func (s *servidor) registrarRutas() {
 	if s.cfg.sourceDir != "" {
 		s.gecko.StaticAbs("/assets", s.cfg.sourceDir+"/assets")
 		s.gecko.FileAbs("/favicon.ico", s.cfg.sourceDir+"/assets/img/favicon.ico")
@@ -173,10 +22,11 @@ func main() {
 	s.gecko.GET("/assets/js/gecko.js", s.gecko.ServirGeckoJS())
 
 	// Imágenes de usuario
-	s.gecko.StaticSub("/imagenes", s.cfg.imagesDir)
+	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)
 
 	// Sesiones
-	s.GET("/", s.auth.getLogin)
+	s.gecko.GET("/", s.auth.getLogin)
+	s.gecko.GET("/login", s.auth.getLogin)
 	s.gecko.POS("/login", s.auth.postLogin)
 	s.GET("/logout", s.auth.logout)
 	s.GET("/sesiones", s.auth.printSesiones)
@@ -311,20 +161,4 @@ func main() {
 		c.Response().Header().Set("Clear-Site-Data", `"cache", "cache", "clientHints", "storage", "executionContexts"`)
 		return c.StringOk("Datos del sitio limpiados. Ok.")
 	})
-
-	// ================================================================ //
-	// ================================================================ //
-
-	s.gecko.CleanupFunc = func() {
-		err = s.db.Close()
-		if err != nil {
-			gko.Op("ShutdownDB").Err(err).Log()
-		}
-		s.auth.PersistirSesiones()
-	}
-
-	err = s.gecko.IniciarEnPuerto(s.cfg.puerto)
-	if err != nil {
-		gko.FatalError(err)
-	}
 }
