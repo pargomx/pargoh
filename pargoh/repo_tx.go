@@ -4,31 +4,25 @@ import (
 	"monorepo/arbol"
 	"monorepo/dhistorias"
 	"monorepo/sqlitearbol"
-	"monorepo/sqlitedb"
-	"monorepo/sqliteust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/eventsqlite"
 	"github.com/pargomx/gecko/gko"
+	"github.com/pargomx/gecko/gkoid"
+	"github.com/pargomx/gecko/sqlitedb"
 )
 
-type serverTx struct {
-	repo     arbol.Repo
-	repoOld  dhistorias.Repo
-	Commit   func() error
-	Rollback func() error
+type readhdl struct {
+	db      *sqlitedb.SqliteDB
+	repo    arbol.ReadRepo
+	repoOld dhistorias.Repo
 }
 
-func (s *servidor) newRepoTx() (*serverTx, error) {
-	tx, err := s.db.Begin()
-	if err != nil {
-		return nil, gko.Err(err)
-	}
-	return &serverTx{
-		repo:     sqlitearbol.NuevoRepo(tx),
-		repoOld:  sqliteust.NuevoRepo(tx),
-		Commit:   tx.Commit,
-		Rollback: tx.Rollback,
-	}, nil
+type writehdl struct {
+	db        *sqlitedb.SqliteDB
+	eventRepo *eventsqlite.EventRepoSqlite
+	app       *arbol.Servicio
+	reloader  reloader // websocket.go
 }
 
 type handlerTx struct {
@@ -37,14 +31,19 @@ type handlerTx struct {
 	db   *sqlitedb.Transaccion
 }
 
+type handlerTxFunc func(c *gecko.Context, tx *handlerTx) error
+
 // Inicia una transacción en la base de datos, crea un repositorio y comienza
 // una transacción de aplicación que es entregada al handler. Cuando el handler
 // retorna: si no hay error hace Commit, si hay error o panic hace rollback.
-func (s *writehdl) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gecko.HandlerFunc {
+func (s *writehdl) inTx(handler handlerTxFunc) gecko.HandlerFunc {
+
+	ResponsableID := gkoid.Decimal(1)
+
 	return func(c *gecko.Context) error {
 		dbTx, dbErr := s.db.Begin()
 		if dbErr != nil {
-			return gko.ErrNoDisponible.Err(dbErr).Op("inTx.Begin").Msg("Servidor no dispoinible para esta transacción")
+			return gko.ErrNoDisponible.Op("inTx.Begin").Err(dbErr).Msg("Servidor no dispoinible para esta transacción")
 		}
 
 		// Catch panic to do rollback
@@ -56,12 +55,16 @@ func (s *writehdl) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 					gko.Op("inTx.OnDeferPanic").Op("Rollback").Err(dbErr).Log()
 				}
 				panic(p) // re-throw panic after rollback
-
 			}
 		}()
 
 		repoTx := sqlitearbol.NuevoRepo(dbTx)
-		appTx := s.app.NewTx(repoTx)
+		eventStore := &gko.EventStore{
+			Repo:       s.eventRepo.NuevoRepoWrite(dbTx),
+			Results:    &gko.TxResult{},
+			ConsoleLog: true,
+		}
+		appTx := arbol.NewTx(ResponsableID, repoTx, eventStore)
 		appErr := handler(c, &handlerTx{
 			repo: repoTx,
 			app:  appTx,
@@ -76,36 +79,76 @@ func (s *writehdl) inTx(handler func(c *gecko.Context, tx *handlerTx) error) gec
 			return gko.Err(appErr)
 		}
 
-		dbErr = dbTx.Commit() // defer necesita poder leer este error
-		if dbErr != nil {
-			return gko.Op("inTx.Commit").Err(dbErr)
-		}
+		if appTx.Rollback {
+			dbErr = dbTx.Rollback()
+			if dbErr != nil {
+				gko.Op("inTx.EndWithRollback").Op("Rollback").Err(dbErr).Log()
+			}
 
-		// Rise events
-		s.LogEventos(appTx.Results)
+		} else {
+			dbErr = dbTx.Commit() // defer necesita poder leer este error
+			if dbErr != nil {
+				return gko.Op("inTx.Commit").Err(dbErr)
+			}
+		}
 
 		return nil
 	}
 }
 
 // ================================================================ //
-// ========== Event store ========================================= //
+// ========== Transacción simple ================================== //
 
-func (s *writehdl) LogEventos(result *gko.TxResult) {
-	if len(result.Events) == 0 {
-		gko.LogWarn("LogEventos: nothing to log")
+// Inicia una transacción en la base de datos, crea un repositorio y comienza
+// una transacción de aplicación que es entregada a la función. Cuando ésta
+// retorna: si no hay error hace Commit, si hay error o panic hace rollback.
+func (s *servidor) inTx(ResponsableID gkoid.Decimal, function func(tx *arbol.AppTx) error) error {
+	dbTx, dbErr := s.db.Begin()
+	if dbErr != nil {
+		return gko.ErrNoDisponible.Op("inTx.Begin").Err(dbErr).Msg("Servidor no dispoinible para esta transacción")
 	}
-	if len(result.Errors) > 0 {
-		gko.LogWarn("LogEventos: loging errors before events")
-		for _, err := range result.Errors {
-			err.Log()
+
+	// Catch panic to do rollback
+	alreadyRolledBack := false
+	defer func() {
+		if p := recover(); p != nil && !alreadyRolledBack {
+			dbErr = dbTx.Rollback()
+			if dbErr != nil {
+				gko.Op("inTx.OnDeferPanic").Op("Rollback").Err(dbErr).Log()
+			}
+			panic(p) // re-throw panic after rollback
+		}
+	}()
+
+	repoTx := sqlitearbol.NuevoRepo(dbTx)
+	eventStore := &gko.EventStore{
+		Repo:       s.eventRepo.NuevoRepoWrite(dbTx),
+		Results:    &gko.TxResult{},
+		ConsoleLog: true,
+	}
+	appTx := arbol.NewTx(ResponsableID, repoTx, eventStore)
+	appErr := function(appTx)
+	if appErr != nil {
+		dbErr = dbTx.Rollback()
+		if dbErr != nil {
+			gko.Op("inTx.OnHandlerError").Op("Rollback").Err(dbErr).Log()
+		}
+		alreadyRolledBack = true
+		return gko.Err(appErr)
+	}
+
+	if appTx.Rollback {
+		dbErr = dbTx.Rollback()
+		if dbErr != nil {
+			gko.Op("inTx.EndWithRollback").Op("Rollback").Err(dbErr).Log()
+		}
+
+	} else {
+		dbErr = dbTx.Commit() // defer necesita poder leer este error
+		if dbErr != nil {
+			return gko.Op("inTx.Commit").Err(dbErr)
 		}
 	}
-	for _, ev := range result.Events {
-		if ev.Mensaje == "" {
-			gko.LogEventof("%s %+v", ev.EventKey, ev.Body)
-		} else {
-			gko.LogEvento(ev.Mensaje)
-		}
-	}
+
+	return nil
 }

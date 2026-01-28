@@ -14,6 +14,7 @@ import (
 	"monorepo/sqlitepuente"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/eventsqlite"
 	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/plantillas"
 	"github.com/pargomx/gecko/sqlitedb"
@@ -54,6 +55,10 @@ type servidor struct {
 	repoOld dhistorias.Repo
 	repo    arbol.ReadRepo
 
+	eventRepo *eventsqlite.EventRepoSqlite
+	r         readhdl
+	w         writehdl
+
 	auth *authService
 
 	app *arbol.Servicio
@@ -63,18 +68,6 @@ type servidor struct {
 	timeTracker *arbol.AppTimeTracker
 
 	noContinuar bool // feature flag
-}
-
-type readhdl struct {
-	db      *sqlitedb.SqliteDB
-	repo    arbol.ReadRepo
-	repoOld dhistorias.Repo
-}
-
-type writehdl struct {
-	db       *sqlitedb.SqliteDB
-	app      *arbol.Servicio
-	reloader reloader // websocket.go
 }
 
 func main() {
@@ -117,6 +110,12 @@ func main() {
 	s.repoOld = sqlitepuente.NuevoRepo(s.db)
 	s.repo = sqlitearbol.NuevoRepo(s.db)
 
+	// Log eventos en sqlite
+	s.eventRepo, err = eventsqlite.NuevoEventRepoSqlite(s.db)
+	if err != nil {
+		gko.FatalError(err)
+	}
+
 	if s.cfg.sourceDir != "" {
 		gko.LogInfo("Usando plantillas y assets " + s.cfg.sourceDir)
 		s.gecko.Renderer, err = plantillas.NuevoServicioPlantillas(s.cfg.sourceDir+"/htmltmpl", AMBIENTE == "DEV")
@@ -146,12 +145,12 @@ func main() {
 	}
 	s.timeTracker = arbol.NewAppTimeTracker(sqlitearbol.NuevoRepo(s.db), 0)
 
-	r := readhdl{
+	s.r = readhdl{
 		db:      s.db,
 		repo:    sqlitearbol.NuevoRepo(s.db),
 		repoOld: sqlitepuente.NuevoRepo(s.db),
 	}
-	w := writehdl{
+	s.w = writehdl{
 		db:       s.db,
 		app:      s.app,
 		reloader: s.reloader,
@@ -178,97 +177,97 @@ func main() {
 
 	// Sesiones
 	s.GET("/", s.auth.getLogin)
-	s.POS("/login", s.auth.postLogin)
+	s.gecko.POS("/login", s.auth.postLogin)
 	s.GET("/logout", s.auth.logout)
 	s.GET("/sesiones", s.auth.printSesiones)
 
 	// General
-	s.GET("/buscar", r.buscar)
+	s.GET("/buscar", s.r.buscar)
 
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
 
 	// Proyectos
-	s.GET("/proyectos", r.listaProyectos)
-	s.GET("/proyectos/{proyecto_id}", r.getProyecto)
-	s.GET("/proyectos/{proyecto_id}/doc", r.getDocumentacionProyecto)
+	s.GET("/proyectos", s.r.listaProyectos)
+	s.GET("/proyectos/{proyecto_id}", s.r.getProyecto)
+	s.GET("/proyectos/{proyecto_id}/doc", s.r.getDocumentacionProyecto)
 
 	// Personas
-	s.GET("/personas/{persona_id}", r.getPersona)
-	s.GET("/personas/{persona_id}/doc", r.getPersonaDoc)
-	s.GET("/personas/{persona_id}/debug", r.getPersonaDebug)
+	s.GET("/personas/{persona_id}", s.r.getPersona)
+	s.GET("/personas/{persona_id}/doc", s.r.getPersonaDoc)
+	s.GET("/personas/{persona_id}/debug", s.r.getPersonaDebug)
 
 	// Historias
-	s.GET("/historias/{historia_id}", r.getHistoria)
-	s.GET("/historias/{historia_id}/tablero", r.getHistoriaTablero)
+	s.GET("/historias/{historia_id}", s.r.getHistoria)
+	s.GET("/historias/{historia_id}/tablero", s.r.getHistoriaTablero)
 
 	// Tareas técnicas
-	s.GET("/tareas/{tarea_id}", r.getTarea)
-	s.GET("/intervalos", r.getIntervalos)
+	s.GET("/tareas/{tarea_id}", s.r.getTarea)
+	s.GET("/intervalos", s.r.getIntervalos)
 
 	// Quick tasks
-	s.GET("/tareas", r.getQuickTasks)
+	s.GET("/tareas", s.r.getQuickTasks)
 
 	// Navegador del árbol de historias
-	s.GET("/nav", r.navDesdeRoot)
-	s.GET("/nav/proy/{proyecto_id}", r.navDesdeProyecto)
-	s.GET("/nav/pers/{persona_id}", r.navDesdePersona)
-	s.GET("/nav/hist/{historia_id}", r.navDesdeHistoria)
-	s.GET("/historias/{historia_id}/mover", r.moverHistoriaForm)
+	s.GET("/nav", s.r.navDesdeRoot)
+	s.GET("/nav/proy/{proyecto_id}", s.r.navDesdeProyecto)
+	s.GET("/nav/pers/{persona_id}", s.r.navDesdePersona)
+	s.GET("/nav/hist/{historia_id}", s.r.navDesdeHistoria)
+	s.GET("/historias/{historia_id}/mover", s.r.moverHistoriaForm)
 
 	// MOVER
-	s.POS("/historias/{historia_id}/mover", w.inTx(w.moverHistoria))
-	s.POS("/mover/tramo", w.inTx(w.moverTramo))
-	s.POS("/mover/tarea", w.inTx(w.moverTarea))
-	s.POS("/mover/historia", w.inTx(w.moverHistoria))
+	s.POS("/historias/{historia_id}/mover", s.w.moverHistoria)
+	s.POS("/mover/tramo", s.w.moverTramo)
+	s.POS("/mover/tarea", s.w.moverTarea)
+	s.POS("/mover/historia", s.w.moverHistoria)
 
 	// AGREGAR HOJA
-	s.POS("/proyectos", w.inTx(w.postProyecto))
-	s.POS("/personas", w.inTx(w.postPersona))
-	s.POS("/personas/{persona_id}", w.inTx(w.postHistoriaDePersona))
-	s.POS("/historias/{historia_id}", w.inTx(w.postHistoriaDeHistoria))
-	s.POS("/historias/{historia_id}/padre", w.inTx(w.postPadreParaHistoria))
-	s.POS("/historias/{historia_id}/reglas", w.inTx(w.postRegla))
-	s.POS("/historias/{historia_id}/viaje", w.inTx(w.postTramoDeViaje))
-	s.POS("/historias/{historia_id}/tareas", w.inTx(w.postTarea))
-	s.POS("/tareas", w.inTx(w.postQuickTask))
+	s.POS("/proyectos", s.w.postProyecto)
+	s.POS("/personas", s.w.postPersona)
+	s.POS("/personas/{persona_id}", s.w.postHistoriaDePersona)
+	s.POS("/historias/{historia_id}", s.w.postHistoriaDeHistoria)
+	s.POS("/historias/{historia_id}/padre", s.w.postPadreParaHistoria)
+	s.POS("/historias/{historia_id}/reglas", s.w.postRegla)
+	s.POS("/historias/{historia_id}/viaje", s.w.postTramoDeViaje)
+	s.POS("/historias/{historia_id}/tareas", s.w.postTarea)
+	s.POS("/tareas", s.w.postQuickTask)
 
 	// REORDENAR
-	s.POS("/reordenar-persona", w.inTx(w.reordenarPersona))
-	s.POS("/reordenar-historia", w.inTx(w.reordenarHistoria))
-	s.POS("/reordenar-tramo", w.inTx(w.reordenarTramo))
-	s.POS("/reordenar-regla", w.inTx(w.reordenarRegla))
+	s.POS("/reordenar-persona", s.w.reordenarPersona)
+	s.POS("/reordenar-historia", s.w.reordenarHistoria)
+	s.POS("/reordenar-tramo", s.w.reordenarTramo)
+	s.POS("/reordenar-regla", s.w.reordenarRegla)
 
 	// PARCHAR
-	s.PCH("/proyectos/{proyecto_id}/{param}", w.inTx(w.patchProyecto))
-	s.PCH("/personas/{persona_id}/{param}", w.inTx(w.patchPersona))
-	s.PCH("/historias/{historia_id}/{param}", w.inTx(w.patchHistoria))
-	s.PCH("/historias/{historia_id}/reglas/{posicion}", w.inTx(w.patchRegla))
-	s.PCH("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.patchTramoDeViaje))
+	s.PCH("/proyectos/{proyecto_id}/{param}", s.w.patchProyecto)
+	s.PCH("/personas/{persona_id}/{param}", s.w.patchPersona)
+	s.PCH("/historias/{historia_id}/{param}", s.w.patchHistoria)
+	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.w.patchRegla)
+	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.w.patchTramoDeViaje)
 
 	// OTROS
-	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", w.inTx(w.marcarRegla))
-	s.POS("/historias/{historia_id}/priorizar", w.inTx(w.priorizarHistoria))
-	s.POS("/historias/{historia_id}/priorizar/{prioridad}", w.inTx(w.priorizarHistoria))
-	s.POS("/historias/{historia_id}/marcar", w.inTx(w.marcarHistoria))
-	s.POS("/historias/{historia_id}/marcar/{completada}", w.inTx(w.marcarHistoria))
+	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.w.marcarRegla)
+	s.POS("/historias/{historia_id}/priorizar", s.w.priorizarHistoria)
+	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
+	s.POS("/historias/{historia_id}/marcar", s.w.marcarHistoria)
+	s.POS("/historias/{historia_id}/marcar/{completada}", s.w.marcarHistoria)
 
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
-	s.PCH("/tareas/{tarea_id}/estimado", w.inTx(w.cambiarEstimadoTarea))
-	s.POS("/tareas/{tarea_id}/importancia", w.inTx(w.ciclarImportanciaTarea))
-	s.POS("/tareas/{tarea_id}/iniciar", w.inTx(w.iniciarTarea))
-	s.POS("/tareas/{tarea_id}/pausar", w.inTx(w.pausarTarea))
-	s.POS("/tareas/{tarea_id}/terminar", w.inTx(w.terminarTarea))
-	s.PCH("/tareas/{tarea_id}/intervalos/{ts_id}/{cambiar}", w.inTx(w.patchIntervalo))
+	s.PCH("/tareas/{tarea_id}/estimado", s.w.cambiarEstimadoTarea)
+	s.POS("/tareas/{tarea_id}/importancia", s.w.ciclarImportanciaTarea)
+	s.POS("/tareas/{tarea_id}/iniciar", s.w.iniciarTarea)
+	s.POS("/tareas/{tarea_id}/pausar", s.w.pausarTarea)
+	s.POS("/tareas/{tarea_id}/terminar", s.w.terminarTarea)
+	s.PCH("/tareas/{tarea_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
 
 	// ELIMINAR
-	s.DEL("/proyectos/{proyecto_id}", w.inTx(w.deleteProyecto))
-	s.DEL("/proyectos/{proyecto_id}/definitivo", w.inTx(w.deleteProyectoPorCompleto))
-	s.DEL("/personas/{persona_id}", w.inTx(w.deletePersona))
-	s.DEL("/historias/{historia_id}", w.inTx(w.deleteHistoria))
-	s.DEL("/tareas/{tarea_id}", w.inTx(w.eliminarTarea))
-	s.DEL("/historias/{historia_id}/reglas/{posicion}", w.inTx(w.deleteRegla))
-	s.DEL("/historias/{historia_id}/viaje/{posicion}", w.inTx(w.deleteTramoDeViaje))
+	s.DEL("/proyectos/{proyecto_id}", s.w.deleteProyecto)
+	s.DEL("/proyectos/{proyecto_id}/definitivo", s.w.deleteProyectoPorCompleto)
+	s.DEL("/personas/{persona_id}", s.w.deletePersona)
+	s.DEL("/historias/{historia_id}", s.w.deleteHistoria)
+	s.DEL("/tareas/{tarea_id}", s.w.eliminarTarea)
+	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.w.deleteRegla)
+	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.w.deleteTramoDeViaje)
 
 	// TIME TRACKER
 	s.POS("/nodos/{nodo_id}/time/{seg}", s.postAppTime)
@@ -279,8 +278,8 @@ func main() {
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
 
 	// Referencias
-	s.POS("/historias/{nodo_id}/referencias", w.inTx(w.postReferencia))
-	s.DEL("/historias/{nodo_id}/referencias/{ref_nodo_id}", w.inTx(w.deleteReferencia))
+	s.POS("/historias/{nodo_id}/referencias", s.w.postReferencia)
+	s.DEL("/historias/{nodo_id}/referencias/{ref_nodo_id}", s.w.deleteReferencia)
 
 	// Exportar e importar
 	/*
@@ -298,7 +297,7 @@ func main() {
 	*/
 
 	// General
-	s.GET("/metricas", r.getMétricas)
+	s.GET("/metricas", s.r.getMétricas)
 	// s.GET("/metricas2", s.getMétricas2)
 	// s.GET("/materializar-tiempos", s.materializarTiemposTareas)
 	// s.GET("/materializar-historias", s.materializarHistorias)

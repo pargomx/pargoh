@@ -1,6 +1,7 @@
 package arbol
 
 import (
+	"fmt"
 	"monorepo/ust"
 	"strings"
 	"time"
@@ -9,13 +10,35 @@ import (
 	"github.com/pargomx/gecko/gkt"
 )
 
-const EvTareaIniciada gko.EventKey = "tarea_iniciada"
-const EvTareaPausada gko.EventKey = "tarea_pausada"
-const EvTareaFinalizada gko.EventKey = "tarea_finalizada"
+const EvTareaIniciada gko.EventKey = "tarea.iniciada"
+const EvTareaPausada gko.EventKey = "tarea.pausada"
+const EvTareaFinalizada gko.EventKey = "tarea.finalizada"
 
-type argsTareaChangedState struct {
-	NodoID int    // TareaID
-	TS     string // Timestamp
+type evTareaIniciada struct {
+	NodoID int
+	TS     string
+}
+
+func (e evTareaIniciada) ToMsg(t string) string {
+	return fmt.Sprintf("TareaIniciada %+v", e)
+}
+
+type evTareaPausada struct {
+	NodoID int
+	TS     string
+}
+
+func (e evTareaPausada) ToMsg(t string) string {
+	return fmt.Sprintf("TareaPausada %+v", e)
+}
+
+type evTareaFinalizada struct {
+	NodoID int
+	TS     string
+}
+
+func (e evTareaFinalizada) ToMsg(t string) string {
+	return fmt.Sprintf("TareaFinalizada %+v", e)
 }
 
 func (s *AppTx) IniciarTarea(TareaID int) error {
@@ -56,11 +79,10 @@ func (s *AppTx) IniciarTarea(TareaID int) error {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvTareaIniciada.WithArgs(argsTareaChangedState{
+	return s.riseEvent(EvTareaIniciada, evTareaIniciada{
 		NodoID: interv.NodoID,
 		TS:     interv.TsIni,
-	}))
-	return nil
+	})
 }
 
 func (s *AppTx) PausarTarea(TareaID int) error {
@@ -103,11 +125,10 @@ func (s *AppTx) PausarTarea(TareaID int) error {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvTareaPausada.WithArgs(argsTareaChangedState{
+	return s.riseEvent(EvTareaPausada, evTareaPausada{
 		NodoID: interv.NodoID,
 		TS:     interv.TsIni,
-	}))
-	return nil
+	})
 }
 
 func (s *AppTx) FinalizarTarea(TareaID int) error {
@@ -148,22 +169,30 @@ func (s *AppTx) FinalizarTarea(TareaID int) error {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvTareaFinalizada.WithArgs(argsTareaChangedState{
+	return s.riseEvent(EvTareaFinalizada, evTareaFinalizada{
 		NodoID: interv.NodoID,
 		TS:     interv.TsIni,
-	}))
-	return nil
+	})
 }
-
-// ================================================================ //
 
 const EvIntervaloParchado gko.EventKey = "intervalo_parchado"
 
-type ArgsParcharIntervalo struct {
-	NodoID  int    // TareaID
-	TsID    string // Identificar intervalo
+type evIntervaloParchado struct {
+	NodoID  int
+	TsID    string
 	Cambiar string // "INI" o "FIN"
-	NewTS   string // New timestamp
+	NewTS   string
+}
+
+func (e evIntervaloParchado) ToMsg(t string) string {
+	return fmt.Sprintf("IntervaloParchado %+v", e)
+}
+
+type ArgsParcharIntervalo struct {
+	NodoID  int
+	TsID    string
+	Cambiar string // "INI" o "FIN"
+	NewTS   string
 }
 
 func (s *AppTx) ParcharIntervalo(args ArgsParcharIntervalo) error {
@@ -173,7 +202,6 @@ func (s *AppTx) ParcharIntervalo(args ArgsParcharIntervalo) error {
 		return op.Err(err)
 	}
 
-	// Validar new timestamp
 	if args.NewTS == "" {
 		return op.Msg("Nada que cambiar")
 	}
@@ -185,7 +213,6 @@ func (s *AppTx) ParcharIntervalo(args ArgsParcharIntervalo) error {
 				args.NewTS)
 	}
 
-	// Hacer el cambio
 	if args.Cambiar == "INI" {
 		interv.TsIni = args.NewTS
 	} else if args.Cambiar == "FIN" {
@@ -194,7 +221,6 @@ func (s *AppTx) ParcharIntervalo(args ArgsParcharIntervalo) error {
 		return op.Str("no se sabe si cambiar INI o FIN de intervalo")
 	}
 
-	// Validar intervalo: final debe ser después de inicio
 	inicio, err := time.Parse(gkt.FormatoFechaHora, interv.TsIni)
 	if err != nil {
 		return op.Op("ParseToCheckIntervalo").Err(err)
@@ -207,12 +233,10 @@ func (s *AppTx) ParcharIntervalo(args ArgsParcharIntervalo) error {
 		return op.Msg("La fecha de final debe ser posterior a la de inicio")
 	}
 
-	// Guardar cambios
 	err = s.repo.UpdateIntervalo(args.NodoID, args.TsID, *interv)
 	if err != nil {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvIntervaloParchado.WithArgs(args))
-	return nil
+	return s.riseEvent(EvIntervaloParchado, evIntervaloParchado(args))
 }

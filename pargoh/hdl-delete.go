@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"monorepo/arbol"
 	"monorepo/dhistorias"
 
 	"github.com/pargomx/gecko"
@@ -10,9 +9,7 @@ import (
 )
 
 func (s *writehdl) deleteProyecto(c *gecko.Context, tx *handlerTx) error {
-	_, err := tx.app.EliminarNodo(arbol.ArgsEliminarNodo{
-		NodoID: c.PathInt("proyecto_id"),
-	})
+	_, err := tx.app.EliminarNodo(c.PathInt("proyecto_id"))
 	if err != nil {
 		return err
 	}
@@ -27,9 +24,7 @@ func (s *writehdl) deleteProyectoPorCompleto(c *gecko.Context, tx *handlerTx) er
 	if c.PromptVal() != fmt.Sprintf("eliminar_%v", pry.ProyectoID) {
 		return gko.ErrDatoInvalido.Msg("No se confirmó la eliminación")
 	}
-	_, err = tx.app.EliminarRama(arbol.ArgsEliminarNodo{
-		NodoID: pry.ProyectoID,
-	})
+	_, err = tx.app.EliminarRama(pry.ProyectoID)
 	if err != nil {
 		return err
 	}
@@ -37,9 +32,7 @@ func (s *writehdl) deleteProyectoPorCompleto(c *gecko.Context, tx *handlerTx) er
 }
 
 func (s *writehdl) deletePersona(c *gecko.Context, tx *handlerTx) error {
-	_, err := tx.app.EliminarNodo(arbol.ArgsEliminarNodo{
-		NodoID: c.PathInt("persona_id"),
-	})
+	_, err := tx.app.EliminarNodo(c.PathInt("persona_id"))
 	if err != nil {
 		return err
 	}
@@ -47,9 +40,7 @@ func (s *writehdl) deletePersona(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) deleteHistoria(c *gecko.Context, tx *handlerTx) error {
-	padre, err := tx.app.EliminarNodo(arbol.ArgsEliminarNodo{
-		NodoID: c.PathInt("historia_id"),
-	})
+	padre, err := tx.app.EliminarNodo(c.PathInt("historia_id"))
 	if err != nil {
 		return err
 	}
@@ -66,9 +57,7 @@ func (s *writehdl) deleteHistoria(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) deleteRegla(c *gecko.Context, tx *handlerTx) error {
-	_, err := tx.app.EliminarNodo(arbol.ArgsEliminarNodo{
-		NodoID: c.PathInt("regla_id"),
-	})
+	_, err := tx.app.EliminarNodo(c.PathInt("regla_id"))
 	if err != nil {
 		return err
 	}
@@ -78,9 +67,7 @@ func (s *writehdl) deleteRegla(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) eliminarTarea(c *gecko.Context, tx *handlerTx) error {
-	padre, err := tx.app.EliminarNodo(arbol.ArgsEliminarNodo{
-		NodoID: c.PathInt("tarea_id"),
-	})
+	padre, err := tx.app.EliminarNodo(c.PathInt("tarea_id"))
 	if err != nil {
 		return err
 	}
@@ -89,9 +76,7 @@ func (s *writehdl) eliminarTarea(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) deleteTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
-	_, err := tx.app.EliminarNodo(arbol.ArgsEliminarNodo{
-		NodoID: c.PathInt("tramo_id"),
-	})
+	_, err := tx.app.EliminarNodo(c.PathInt("tramo_id"))
 	if err != nil {
 		return err
 	}
@@ -101,7 +86,7 @@ func (s *writehdl) deleteTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
 
 // ================================================================ //
 
-func (s *servidor) deleteImagenTramo(c *gecko.Context) error {
+func (s *servidor) deleteImagenTramo(c *gecko.Context, tx *handlerTx) error {
 	err := dhistorias.EliminarFotoTramo(c.PathInt("historia_id"), c.PathInt("posicion"), s.cfg.imagesDir, s.repoOld)
 	if err != nil {
 		return err

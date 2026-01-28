@@ -46,7 +46,7 @@ func (s *servidor) verificarDirectorioImagenes() error {
 	return nil
 }
 
-func (s *servidor) setImagenTramo(c *gecko.Context) error {
+func (s *servidor) setImagenTramo(c *gecko.Context, tx *handlerTx) error {
 	file, err := c.FormFile("imagen")
 	if err != nil {
 		return err

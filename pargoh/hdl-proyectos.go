@@ -59,7 +59,7 @@ func (s *readhdl) listaProyectos(c *gecko.Context) error {
 	return c.RenderOk("proyectos", data)
 }
 
-func (s *servidor) setImagenProyecto(c *gecko.Context) error {
+func (s *servidor) setImagenProyecto(c *gecko.Context, tx *handlerTx) error {
 	hdr, err := c.FormFile("imagen")
 	if err == nil {
 		file, err := hdr.Open()
@@ -88,7 +88,7 @@ func (s *writehdl) patchProyecto(c *gecko.Context, tx *handlerTx) error {
 	return c.RefreshHTMX()
 }
 
-func (s *servidor) postAppTime(c *gecko.Context) error {
+func (s *servidor) postAppTime(c *gecko.Context, tx *handlerTx) error {
 	err := s.timeTracker.AddTimeSpent(c.PathInt("nodo_id"), c.PathInt("seg"))
 	if err != nil {
 		return err

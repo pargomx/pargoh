@@ -1,25 +1,42 @@
 package arbol
 
 import (
+	"fmt"
+
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko/gko"
 	"github.com/pargomx/gecko/gkt"
 )
 
-const EvNodoAgregado gko.EventKey = "nodo_added"
+const EvNodoAgregado gko.EventKey = "nodo.agregado"
+
+type evNodoAgregado struct {
+	NodoID  int
+	PadreID int
+	Tipo    string
+	Titulo  string
+}
+
+func (e evNodoAgregado) ToMsg(t string) string {
+	switch t {
+	case "key":
+		return string(EvNodoAgregado)
+	default:
+		return fmt.Sprintf("Nodo agregado ID: %v Tipo: '%s' Título: '%s'", e.NodoID, e.Tipo, e.Titulo)
+	}
+}
 
 type ArgsAgregarHoja struct {
-	Tipo    string // Tipo de nodo para agregar.
-	NodoID  int    // Nuevo ID aleatorio.
-	PadreID int    // PAdre al que se agregará la hoja.
-	Titulo  string // Nombre o título de la entidad.
+	Tipo    string
+	NodoID  int
+	PadreID int
+	Titulo  string
 }
 
 func (s *AppTx) AgregarHoja(args ArgsAgregarHoja) error {
 	op := gko.Op("AgregarHoja")
 
-	// Validar nuevo nodo
 	if args.NodoID == 0 {
 		return op.Str("el nuevo nodoID aleatorio debe ser definido por quien invoca")
 	}
@@ -27,30 +44,20 @@ func (s *AppTx) AgregarHoja(args ArgsAgregarHoja) error {
 		return op.Strf("tipo de nodo '%v' inválido", args.Tipo)
 	}
 
-	// Validar padre
 	padre, err := s.repo.GetNodo(args.PadreID)
 	if err != nil {
 		return op.Err(err)
 	}
 
-	// Título
 	args.Titulo = gkt.SinEspaciosExtra(args.Titulo)
 	if args.Titulo == "" {
 		return op.Msg("No indicó ningún texto para crear la entidad")
 	}
 
-	// Validar jerarquía
-	if padre.EsTarea() {
-		return op.Msg("el nodo padre es una tarea y no puede tener descendientes")
-	}
-	if padre.EsTramo() {
-		return op.Msg("el nodo padre es un tramo y no puede tener descendientes")
-	}
-	if padre.EsRegla() {
-		return op.Msg("el nodo padre es una regla y no puede tener descendientes")
+	if padre.EsTarea() || padre.EsTramo() || padre.EsRegla() {
+		return op.Msg("el nodo padre no puede tener descendientes")
 	}
 
-	// Insertar en la base de datos
 	err = s.repo.InsertNodo(Nodo{
 		NodoID:  args.NodoID,
 		PadreID: args.PadreID,
@@ -61,27 +68,48 @@ func (s *AppTx) AgregarHoja(args ArgsAgregarHoja) error {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvNodoAgregado.WithArgs(args))
+	err = s.riseEvent(EvNodoAgregado, evNodoAgregado{
+		NodoID:  args.NodoID,
+		PadreID: args.PadreID,
+		Tipo:    args.Tipo,
+		Titulo:  args.Titulo,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+
 	return nil
 }
 
-// ================================================================ //
-// ========== TAREA =============================================== //
+const EvTareaAgregada gko.EventKey = "tarea.agregada"
 
-const EvTareaAgregada gko.EventKey = "tarea_added"
+type evTareaAgregada struct {
+	NodoID  int
+	PadreID int
+	Tipo    string
+	Titulo  string
+}
+
+func (e evTareaAgregada) ToMsg(t string) string {
+	switch t {
+	case "key":
+		return string(EvTareaAgregada)
+	default:
+		return fmt.Sprintf("Tarea agregada ID: %v Título: '%s'", e.NodoID, e.Titulo)
+	}
+}
 
 type ArgsAgregarTarea struct {
-	Tipo     string // Tipo de nodo para agregar.
-	NodoID   int    // Nuevo ID aleatorio.
-	PadreID  int    // PAdre al que se agregará la hoja.
-	Titulo   string // Nombre o título de la entidad.
-	Estimado string // Estimado en segundos (opcional).
+	Tipo     string
+	NodoID   int
+	PadreID  int
+	Titulo   string
+	Estimado string
 }
 
 func (s *AppTx) AgregarTarea(args ArgsAgregarTarea) error {
 	op := gko.Op("AgregarTarea")
 
-	// Validar nuevo nodo
 	if args.NodoID == 0 {
 		return op.Str("el nuevo nodoID aleatorio debe ser definido por quien invoca")
 	}
@@ -89,36 +117,25 @@ func (s *AppTx) AgregarTarea(args ArgsAgregarTarea) error {
 		return op.Strf("tipo de nodo '%v' inválido", args.Tipo)
 	}
 
-	// Validar padre
 	padre, err := s.repo.GetNodo(args.PadreID)
 	if err != nil {
 		return op.Err(err)
 	}
 
-	// Título
 	args.Titulo = gkt.SinEspaciosExtra(args.Titulo)
 	if args.Titulo == "" {
 		return op.Msg("No indicó ningún texto para crear la entidad")
 	}
 
-	// Validar jerarquía
-	if padre.EsTarea() {
-		return op.Msg("el nodo padre es una tarea y no puede tener descendientes")
-	}
-	if padre.EsTramo() {
-		return op.Msg("el nodo padre es un tramo y no puede tener descendientes")
-	}
-	if padre.EsRegla() {
-		return op.Msg("el nodo padre es una regla y no puede tener descendientes")
+	if padre.EsTarea() || padre.EsTramo() || padre.EsRegla() {
+		return op.Msg("el nodo padre no puede tener descendientes")
 	}
 
-	// Agregar estimado si lo hay
 	estimado, err := ust.NuevaDuraciónSegundos(args.Estimado)
 	if err != nil {
 		return op.Err(err)
 	}
 
-	// Insertar en la base de datos
 	err = s.repo.InsertNodo(Nodo{
 		NodoID:   args.NodoID,
 		PadreID:  args.PadreID,
@@ -130,6 +147,15 @@ func (s *AppTx) AgregarTarea(args ArgsAgregarTarea) error {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvTareaAgregada.WithArgs(args))
+	err = s.riseEvent(EvTareaAgregada, evTareaAgregada{
+		NodoID:  args.NodoID,
+		PadreID: args.PadreID,
+		Tipo:    args.Tipo,
+		Titulo:  args.Titulo,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+
 	return nil
 }

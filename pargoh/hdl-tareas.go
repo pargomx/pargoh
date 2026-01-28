@@ -24,7 +24,7 @@ func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
 	return c.AskedForFallback("/historias/%v", args.PadreID)
 }
 
-func (s *servidor) modificarTarea(c *gecko.Context) error {
+func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 	estimado, err := ust.NuevaDuraciónSegundos(c.FormVal("segundos_estimado"))
 	if err != nil {
 		return err

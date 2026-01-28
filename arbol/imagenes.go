@@ -1,9 +1,6 @@
 package arbol
 
 import (
-	"os"
-	"path/filepath"
-
 	"github.com/pargomx/gecko/gko"
 )
 
@@ -19,12 +16,12 @@ func (s *AppTx) borrarImagen(args argsBorrarImagen) error {
 		return op.E(gko.ErrDatoIndef).Str("filename indefinido")
 	}
 
-	err := os.Remove(filepath.Join(s.ImagesDir, args.Filename))
-	if err != nil {
-		return op.Err(err)
-	}
+	// err := os.Remove(filepath.Join(s.ImagesDir, args.Filename))
+	// if err != nil {
+	// 	return op.Err(err)
+	// }
 
-	s.Results.Add(EvBorrarImagen.WithArgs(args))
+	// s.Results.Add(EvBorrarImagen.WithArgs(args))
 
 	return nil
 }

@@ -1,17 +1,31 @@
 package arbol
 
-import "github.com/pargomx/gecko/gko"
+import (
+	"fmt"
 
-const EvEliminarNodo gko.EventKey = "nodo_eliminado"
+	"github.com/pargomx/gecko/gko"
+)
 
-type ArgsEliminarNodo struct {
-	NodoID int // Nuevo ID aleatorio.
+const EvNodoEliminado gko.EventKey = "nodo.eliminado"
+
+type evNodoEliminado struct {
+	NodoID int
+	Tipo   string
 }
 
-func (s *AppTx) EliminarNodo(args ArgsEliminarNodo) (padre *Nodo, err error) {
+func (e evNodoEliminado) ToMsg(t string) string {
+	switch t {
+	case "key":
+		return string(EvNodoEliminado)
+	default:
+		return fmt.Sprintf("Nodo eliminado: %v (tipo: %s)", e.NodoID, e.Tipo)
+	}
+}
+
+func (s *AppTx) EliminarNodo(NodoID int) (padre *Nodo, err error) {
 	op := gko.Op("EliminarNodo")
 
-	nod, err := s.repo.GetNodo(args.NodoID)
+	nod, err := s.repo.GetNodo(NodoID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
@@ -30,8 +44,14 @@ func (s *AppTx) EliminarNodo(args ArgsEliminarNodo) (padre *Nodo, err error) {
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	s.Results.Add(EvEliminarNodo.WithArgs(args).
-		Msgf("Deleted %v %v", nod.Tipo, nod.NodoID))
+
+	err = s.riseEvent(EvNodoEliminado, evNodoEliminado{
+		NodoID: nod.NodoID,
+		Tipo:   nod.Tipo,
+	})
+	if err != nil {
+		return nil, op.Err(err)
+	}
 
 	// Eliminar imagen si la hay
 	if nod.Imagen != "" {
@@ -47,10 +67,10 @@ func (s *AppTx) EliminarNodo(args ArgsEliminarNodo) (padre *Nodo, err error) {
 // ================================================================ //
 
 // Eliminar rama desde el nodo especificado junto con todos sus descendientes.
-func (s *AppTx) EliminarRama(args ArgsEliminarNodo) (padre *Nodo, err error) {
+func (s *AppTx) EliminarRama(NodoID int) (padre *Nodo, err error) {
 	op := gko.Op("EliminarRama")
 
-	nod, err := s.repo.GetNodo(args.NodoID)
+	nod, err := s.repo.GetNodo(NodoID)
 	if err != nil {
 		return nil, op.Err(err)
 	}
@@ -59,8 +79,6 @@ func (s *AppTx) EliminarRama(args ArgsEliminarNodo) (padre *Nodo, err error) {
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	s.Results.Add(EvEliminarNodo.WithArgs(args).
-		Msgf("Deleted %v %v (rama completa)", nod.Tipo, nod.NodoID))
 
 	return s.repo.GetNodo(nod.PadreID)
 }
@@ -77,14 +95,16 @@ func (s *AppTx) eliminarRecursivo(nod Nodo) (err error) {
 		if err != nil {
 			return err
 		}
-		s.Results.Add(EvEliminarNodo.WithArgs(ArgsEliminarNodo{NodoID: hijo.NodoID}).
-			Msgf("Deleted %v %v in order to delete %v", hijo.Tipo, hijo.NodoID, nod.NodoID))
 	}
 
 	err = s.repo.DeleteNodo(nod.NodoID)
 	if err != nil {
 		return err
 	}
+	err = s.riseEvent(EvNodoEliminado, evNodoEliminado{
+		NodoID: nod.NodoID,
+		Tipo:   nod.Tipo,
+	})
 	if nod.Imagen != "" {
 		err = s.borrarImagen(argsBorrarImagen{Filename: nod.Imagen})
 		if err != nil {

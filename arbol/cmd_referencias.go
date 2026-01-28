@@ -1,11 +1,31 @@
 package arbol
 
 import (
+	"fmt"
+
 	"github.com/pargomx/gecko/gko"
 )
 
-const EvReferenciaAgregada gko.EventKey = "referencia_agregada"
-const EvReferenciaEliminada gko.EventKey = "referencia_eliminada"
+const EvNodoReferenciado gko.EventKey = "nodo.referenciado"
+const EvNodoDesreferenciado gko.EventKey = "nodo.desreferenciado"
+
+type evNodoReferenciado struct {
+	NodoID    int
+	RefNodoID int
+}
+
+func (e evNodoReferenciado) ToMsg(t string) string {
+	return fmt.Sprintf("NodoReferenciado %+v", e)
+}
+
+type evNodoDesreferenciado struct {
+	NodoID    int
+	RefNodoID int
+}
+
+func (e evNodoDesreferenciado) ToMsg(t string) string {
+	return fmt.Sprintf("NodoDesreferenciado %+v", e)
+}
 
 type ArgsReferencia struct {
 	NodoID    int
@@ -42,7 +62,15 @@ func (s *AppTx) AgregarReferencia(args ArgsReferencia) error {
 	if err != nil {
 		return op.Err(err)
 	}
-	s.Results.Add(EvReferenciaAgregada.WithArgs(args))
+
+	err = s.riseEvent(EvNodoReferenciado, evNodoReferenciado{
+		NodoID:    args.NodoID,
+		RefNodoID: args.RefNodoID,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+
 	return nil
 }
 
@@ -64,6 +92,12 @@ func (s *AppTx) EliminarReferencia(args ArgsReferencia) error {
 	if err != nil {
 		return op.Err(err)
 	}
-	s.Results.Add(EvReferenciaEliminada.WithArgs(args))
+	err = s.riseEvent(EvNodoDesreferenciado, evNodoDesreferenciado{
+		NodoID:    args.NodoID,
+		RefNodoID: args.RefNodoID,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
 	return nil
 }

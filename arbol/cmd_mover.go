@@ -1,8 +1,72 @@
 package arbol
 
-import "github.com/pargomx/gecko/gko"
+import (
+	"fmt"
 
-const EvNodoMovido gko.EventKey = "nodo_movido"
+	"github.com/pargomx/gecko/gko"
+)
+
+const EvNodoReordenado gko.EventKey = "nodo.reordenado"
+
+type evNodoReordenado struct {
+	NodoID int
+	OldPos int
+	NewPos int
+}
+
+func (e evNodoReordenado) ToMsg(t string) string {
+	switch t {
+	case "key":
+		return string(EvNodoReordenado)
+	default:
+		return fmt.Sprintf("Nodo reposicionado %v de %v a %v", e.NodoID, e.OldPos, e.NewPos)
+	}
+}
+
+type ArgsReordenar struct {
+	NodoID int // Nodo a reordenar respecto a sus hermanos
+	NewPos int // Nueva posición: desde 1 hasta el número total de hermanos.
+}
+
+func (s *AppTx) ReordenarEntidad(args ArgsReordenar) error {
+	op := gko.Op("ReordenarEntidad")
+	nod, err := s.repo.GetNodo(args.NodoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	err = s.repo.ReordenarNodo(*nod, args.NewPos)
+	if err != nil {
+		return op.Err(err)
+	}
+	err = s.riseEvent(EvNodoReordenado, evNodoReordenado{
+		NodoID: nod.NodoID,
+		OldPos: nod.Posicion,
+		NewPos: args.NewPos,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+// ================================================================ //
+// ================================================================ //
+
+const EvNodoMovido gko.EventKey = "nodo.movido"
+
+type evNodoMovido struct {
+	NodoID     int
+	NewPadreID int
+}
+
+func (e evNodoMovido) ToMsg(t string) string {
+	switch t {
+	case "key":
+		return string(EvNodoMovido)
+	default:
+		return fmt.Sprintf("Nodo movido: %v a nuevo padre: %v", e.NodoID, e.NewPadreID)
+	}
+}
 
 type ArgsMover struct {
 	NodoID     int // Nodo que se moverá.
@@ -39,6 +103,14 @@ func (s *AppTx) MoverHoja(args ArgsMover) error {
 	if err != nil {
 		return op.Err(err)
 	}
-	s.Results.Add(EvNodoMovido.WithArgs(args))
+
+	err = s.riseEvent(EvNodoMovido, evNodoMovido{
+		NodoID:     args.NodoID,
+		NewPadreID: args.NewPadreID,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+
 	return nil
 }

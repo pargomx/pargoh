@@ -1,9 +1,5 @@
 package arbol
 
-import (
-	"github.com/pargomx/gecko/gko"
-)
-
 // ================================================================ //
 // ========== Servicio ============================================ //
 
@@ -23,23 +19,4 @@ func NuevoServicio(cfg Config) (*Servicio, error) {
 	return &Servicio{
 		cfg: cfg,
 	}, nil
-}
-
-// ================================================================ //
-// ========== Transacción ========================================= //
-
-type AppTx struct {
-	s         *Servicio
-	repo      Repo          // Podría ser db.Tx
-	Results   *gko.TxResult // Eventos y errores
-	ImagesDir string
-}
-
-func (s *Servicio) NewTx(repoTx Repo) *AppTx {
-	return &AppTx{
-		s:         s,
-		repo:      repoTx,
-		Results:   &gko.TxResult{},
-		ImagesDir: s.cfg.ImagesDir,
-	}
 }

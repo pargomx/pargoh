@@ -9,7 +9,17 @@ import (
 	"github.com/pargomx/gecko/gkt"
 )
 
-const EvParcharNodo gko.EventKey = "nodo_parchado"
+const EvNodoParchado gko.EventKey = "nodo.parchado"
+
+type evNodoParchado struct {
+	NodoID int
+	Campo  string
+	NewVal string
+}
+
+func (e evNodoParchado) ToMsg(t string) string {
+	return fmt.Sprintf("NodoParchado %+v", e)
+}
 
 type ArgsParcharNodo struct {
 	NodoID int
@@ -122,6 +132,14 @@ func (s *AppTx) ParcharNodo(args ArgsParcharNodo) error {
 		return op.Err(err)
 	}
 
-	s.Results.Add(EvParcharNodo.WithArgs(args))
+	err = s.riseEvent(EvNodoParchado, evNodoParchado{
+		NodoID: nod.NodoID,
+		Campo:  args.Campo,
+		NewVal: args.NewVal,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+
 	return nil
 }
