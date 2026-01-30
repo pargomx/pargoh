@@ -23,7 +23,7 @@ func (e evNodoAgregado) ToMsg(t string) string {
 	case "key":
 		return string(EvNodoAgregado)
 	default:
-		return fmt.Sprintf("Nodo agregado ID: %v Tipo: '%s' Título: '%s'", e.NodoID, e.Tipo, e.Titulo)
+		return fmt.Sprintf("Padre: %v ID: %v Tipo: '%s' Título: '%s'", e.PadreID, e.NodoID, e.Tipo, e.Titulo)
 	}
 }
 
@@ -46,7 +46,7 @@ func (s *AppTx) AgregarHoja(args ArgsAgregarHoja) error {
 
 	padre, err := s.repo.GetNodo(args.PadreID)
 	if err != nil {
-		return op.Err(err)
+		return op.Err(err).Msg("Padre indefinido")
 	}
 
 	args.Titulo = gkt.SinEspaciosExtra(args.Titulo)

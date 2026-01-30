@@ -42,6 +42,20 @@ func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
 // ================================================================ //
 // ========== WRITE =============================================== //
 
+func (s *writehdl) postNodo(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarHoja{
+		Tipo:    c.FormVal("tipo"),
+		NodoID:  ust.NewRandomID(),
+		PadreID: c.FormInt("padre_id"),
+		Titulo:  c.FormVal("titulo"),
+	}
+	err := tx.app.AgregarHoja(args)
+	if err != nil {
+		return err
+	}
+	return c.RedirOtrof("/n/%v", c.FormInt("padre_id"))
+}
+
 func (s *writehdl) postProyecto(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsAgregarHoja{
 		Tipo:    "PRY",

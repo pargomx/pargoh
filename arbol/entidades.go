@@ -1,5 +1,18 @@
 package arbol
 
+const (
+	TipoGrupo    = "GRP"
+	TipoProyecto = "PRY"
+	TipoPersona  = "PER"
+	TipoHistoria = "HIS"
+	TipoTecnica  = "TEC"
+	TipoGestion  = "GES"
+	TipoRegla    = "REG"
+	TipoTarea    = "TAR"
+	TipoViaje    = "VIA"
+	TipoRaiz     = "ROOT"
+)
+
 type Raiz struct {
 	Grupos        []Grupo
 	Proyectos     []Proyecto
@@ -21,6 +34,7 @@ type Grupo struct {
 
 	Nombre string
 
+	Grupos    []Grupo
 	Proyectos []Proyecto
 }
 
@@ -98,6 +112,8 @@ type Persona struct {
 	// Estatus   int
 	// Segundos  int
 	// Centavos  int
+
+	Personas []Persona
 
 	Historias   []HistoriaDeUsuario
 	HisTecnicas []HistoriaTecnica

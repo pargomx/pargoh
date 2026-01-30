@@ -1,0 +1,265 @@
+{{ with .Grupo }}
+<header class="relative flex items-center w-full bg-cyan-950 shadow-lg">
+
+	<div class="p-1">
+		<img class=" rounded-md"
+			alt="Pargo"
+			src="/assets/img/pargo-aa/pargo-aa-64.png"
+			>
+	</div>
+
+	<div class="w-full p-2">
+		<h2 class="text-2xl font-medium">
+			{{ .Nombre }}
+		</h2>
+	</div>
+
+	<div>
+		<button class="px-2 bg-cyan-700 rounded-full transition-opacity opacity-75 hover:opacity-100"
+			type="button"
+			title="Agregar grupo o proyecto"
+			onclick="showProyectoForm('New')"
+			>
+			<i class="fa-solid fa-plus"></i>
+		</button>
+	</div>
+
+</header>
+
+
+
+<main class="flex flex-col justify-start grow w-full max-w-5xl gap-4 p-2 mx-auto">
+
+	{{ template "busqueda_input" . }}
+	
+	{{ range .Grupos -}}
+	<div class="w-full">
+		<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
+			<a class="transition-opacity hover:opacity-75 w-full mr-10"
+				href="/proyectos/{{ .GrupoID }}"
+				>
+				{{ .Nombre }}
+			</a>
+		</h4>
+		<hr>
+	</div>
+	{{ end }}
+	
+	{{ range .Proyectos -}}
+	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg"
+		hx-get="/proyectos/{{ .ProyectoID }}"
+		hx-push-url="true"
+		hx-trigger="none"
+		>
+
+		<div class="p-2 rounded-md">
+			<a
+				hx-boost="true"
+				hx-push-url="true"
+				href="/proyectos/{{ .ProyectoID }}"
+				>
+				<img class="w-32 transition-opacity rounded-md hover:opacity-75"
+					alt="Portada del proyecto"
+					src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+					>
+			</a>
+		</div>
+
+		<div class="w-full p-2">
+			<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
+				<a class="rounded-md opacity-75 hover:opacity-100 text-lg"
+					href="/proyectos/{{ .ProyectoID }}/doc"
+					title="Documentación"
+					>
+					<i class="fa-solid fa-book"></i>
+				</a>
+				<a class="transition-opacity hover:opacity-75 w-full mr-10"
+					href="/proyectos/{{ .ProyectoID }}"
+					>
+					{{ .Titulo }}
+				</a>
+			</h4>
+			<p class="mb-2 text-sm opacity-75 line-clamp-3">
+				<a href="/proyectos/{{ .ProyectoID }}">
+					{{- enfatizar .Descripcion -}}
+				</a>
+			</p>
+			<ul class="flex flex-wrap pl-4 mb-2 list-disc gap-x-6 gap-y-1">
+				{{ range .Personas -}}
+				<li class="text-sm">
+					<a class="transition-opacity opacity-75 hover:opacity-100"
+						href="/personas/{{ .PersonaID}}"
+						>
+						{{ .Nombre }}
+					</a>
+				</li>
+				{{ end }}
+			</ul>
+		</div>
+
+		<button class="absolute top-0 right-0 px-1 transition-opacity bg-cyan-900 opacity-75 hover:opacity-100 rounded-tr-md rounded-bl-md"
+			type="button"
+			onclick="showProyectoForm(this.closest('article').id)"
+			title="Editar proyecto"
+			>
+			<i class="px-2 py-2 fa fa-pen"></i>
+		</button>
+	</article>
+	{{ end }}
+
+	{{ if not .Proyectos -}}
+	<button class="px-2 py-1 bg-cyan-700 rounded-full"
+		type="button"
+		onclick="showProyectoForm('New')"
+		>
+		Nuevo proyecto
+		<i class="fa-solid fa-plus"></i>
+	</button>
+	{{ else }}
+	<button class="px-1 bg-cyan-700 rounded-full"
+		type="button"
+		onclick="showProyectoForm('New')"
+		>
+		<i class="fa-solid fa-plus"></i>
+	</button>
+	{{ end }}
+</main>
+
+{{ end }}
+
+<footer class="flex flex-wrap justify-between gap-4 p-4">
+	<p>
+		Hecho con
+		<i class="px-1 text-sm fa-solid fa-heart"></i>
+		por
+		<a class="transition-colors hover:text-cyan-400"
+			href="https://github.com/pargomx"
+			target="_blank"
+			>
+			PargoMx
+		</a>
+	</p>
+	<a class="transition-colors hover:text-cyan-400"
+		href="/offline"
+		>
+		PWA
+		<i class="px-1 text-sm fa-solid fa-gear"></i>
+	</a>
+	<a class="transition-colors hover:text-cyan-400"
+		href="/logout"
+		>
+		Logout
+		<i class="px-1 text-sm fa-solid fa-fish-fins"></i>
+	</a>
+</footer>
+
+<!--* NUEVO PROYECTO -->
+<dialog id="frmPryNew" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Agregar
+		</h2>
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			>
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</header>
+	<form class="flex flex-col gap-2 p-2"
+		hx-post="/nodos"
+		>
+		<input type="hidden" name="padre_id" value="{{ .Grupo.GrupoID }}" required>
+
+		<label>
+			Tipo
+			<select class="form-control"
+				name="tipo"
+				required
+				>
+				<option value="PRY">Proyecto</option>
+				<option value="GRP">Grupo</option>
+			</select>
+		</label>
+		<label>
+			Título
+			<input class="form-control"
+				type="text"
+				name="titulo"
+				required
+				>
+		</label>
+		<button class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600"
+			type="submit"
+			onclick="this.closest('dialog').close()"
+			>
+			Guardar
+		</button>
+	</form>
+</dialog>
+
+<!--* IMPORTAR -->
+<dialog id="importProyecto" class="m-auto text-white bg-cyan-900 border-4 border-cyan-800 rounded-md">
+	<header class="flex items-center gap-2 p-2 bg-cyan-800">
+		<h2 class="grow text-xl">
+			Importar proyecto
+		</h2>
+		<button class="inline-block float-right px-2 text-2xl rounded-md hover:opacity-75"
+			type="button"
+			onclick="this.closest('dialog').close()"
+			title="Cerrar"
+			>
+			<i class="fa-solid fa-xmark"></i>
+		</button>
+	</header>
+	<form class="flex flex-col gap-2 p-2">
+		<div class="py-2">
+			<label for="importProyectoFile">
+				JSON del proyecto
+			</label>
+			<input id="importProyectoFile" class="form-control"
+				type="file"
+				accept="application/json"
+				name="proyecto"
+				required
+				>
+		</div>
+		<button class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600"
+			hx-encoding="multipart/form-data"
+			hx-post="/proyectos/importar"
+			type="button"
+			onclick="this.closest('dialog').close()"
+			>
+			Importar
+		</button>
+	</form>
+</dialog>
+
+
+<div hx-askfor="/proyectos">
+	{{ range .Proyectos }}
+	{{ template "proyecto_form" . }}
+	{{ end }}
+</div>
+
+<script>
+	function showProyectoForm(proyectoID) {
+		let form = document.getElementById(`frmPry${proyectoID}`);
+		form.showModal();
+		let input = form.querySelector("input");
+		input.focus();
+		input.setSelectionRange(input.value.length, input.value.length);
+	}
+
+	function showImagen(input) {
+		const [file] = input.files
+		if (file) {
+			let img = input.closest("form").querySelector("img[tipo=img_preview]")
+			img.classList.remove("hidden")
+			img.classList.add("block")
+			img.src = URL.createObjectURL(file)
+		}
+	}
+</script>
+

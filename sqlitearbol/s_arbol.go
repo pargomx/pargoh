@@ -10,7 +10,7 @@ const NODO_ROOT = 1
 
 func (s *Repositorio) GetRaiz() (*arbol.Raiz, error) {
 	op := gko.Op("GetRaiz")
-	desc, err := s.listDescendientes(NODO_ROOT)
+	desc, err := s.ListDescendientes(NODO_ROOT)
 	if err != nil {
 		return nil, op.Err(err)
 	}
@@ -19,37 +19,166 @@ func (s *Repositorio) GetRaiz() (*arbol.Raiz, error) {
 		Proyectos: desc.Proyectos,
 	}
 
-	for i, grupo := range raiz.Grupos {
-		desc, err := s.listDescendientes(grupo.GrupoID)
+	for i := range raiz.Grupos {
+		err := s.AddHijosToGrupo(&raiz.Grupos[i])
 		if err != nil {
 			return nil, op.Err(err)
 		}
-		raiz.Grupos[i].Proyectos = desc.Proyectos
-		for j, pry := range desc.Proyectos {
-			desc, err := s.listDescendientes(pry.ProyectoID)
-			if err != nil {
-				return nil, op.Err(err)
-			}
-			raiz.Grupos[i].Proyectos[j].Personas = desc.Personas
-			raiz.Grupos[i].Proyectos[j].HisUsuario = desc.HisUsuario
-			raiz.Grupos[i].Proyectos[j].HisGestion = desc.HisGestion
-			raiz.Grupos[i].Proyectos[j].HisTecnicas = desc.HisTecnicas
-		}
 	}
 
-	for i, pry := range raiz.Proyectos {
-		desc, err := s.listDescendientes(pry.ProyectoID)
+	for i := range raiz.Proyectos {
+		err := s.AddHijosToProyecto(&raiz.Proyectos[i])
 		if err != nil {
 			return nil, op.Err(err)
 		}
-		raiz.Proyectos[i].Personas = desc.Personas
-		raiz.Proyectos[i].HisUsuario = desc.HisUsuario
-		raiz.Proyectos[i].HisGestion = desc.HisGestion
-		raiz.Proyectos[i].HisTecnicas = desc.HisTecnicas
 	}
-
 	return &raiz, nil
 }
+
+func (s *Repositorio) AddHijosToGrupo(raiz *arbol.Grupo) error {
+	op := gko.Op("addHijosToGrupo").Ctx("GrupoID", raiz.GrupoID)
+	desc, err := s.ListDescendientes(raiz.GrupoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	raiz.Grupos = desc.Grupos
+	raiz.Proyectos = desc.Proyectos
+
+	for i := range raiz.Grupos {
+		err := s.AddHijosToGrupo(&raiz.Grupos[i])
+		if err != nil {
+			return op.Err(err)
+		}
+	}
+
+	for i := range raiz.Proyectos {
+		err := s.AddHijosToProyecto(&raiz.Proyectos[i])
+		if err != nil {
+			return op.Err(err)
+		}
+	}
+
+	return nil
+}
+
+func (s *Repositorio) AddHijosToProyecto(raiz *arbol.Proyecto) error {
+	op := gko.Op("addHijosToProyecto").Ctx("ProyectoID", raiz.ProyectoID)
+	desc, err := s.ListDescendientes(raiz.ProyectoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	raiz.Personas = desc.Personas
+	raiz.HisUsuario = desc.HisUsuario
+	raiz.HisTecnicas = desc.HisTecnicas
+	raiz.HisGestion = desc.HisGestion
+
+	for i := range raiz.Personas {
+		err := s.AddHijosToPersona(&raiz.Personas[i])
+		if err != nil {
+			return op.Err(err)
+		}
+	}
+
+	return nil
+}
+
+func (s *Repositorio) AddHijosToPersona(raiz *arbol.Persona) error {
+	op := gko.Op("addHijosToPersona").Ctx("PersonaID", raiz.PersonaID)
+	desc, err := s.ListDescendientes(raiz.PersonaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	raiz.Personas = desc.Personas
+	raiz.Historias = desc.HisUsuario
+	raiz.HisTecnicas = desc.HisTecnicas
+	raiz.HisGestion = desc.HisGestion
+
+	for i := range raiz.Personas {
+		err := s.AddHijosToPersona(&raiz.Personas[i])
+		if err != nil {
+			return op.Err(err)
+		}
+	}
+
+	return nil
+}
+
+func (s *Repositorio) AddAncestrosToHisUsuario(raiz *arbol.HistoriaDeUsuario) error {
+	op := gko.Op("addAncestrosToHisUsuario").Ctx("HistoriaID", raiz.HistoriaID)
+	nextPadreID := raiz.PadreID
+	loops := 0
+	for {
+		loops++ // prevent runaway
+		if loops > 10 {
+			gko.LogWarnf("Historia %v tiene demasiados ancestros", raiz.HistoriaID)
+			break
+		}
+		// end when proyect is reached
+		if raiz.Proyecto.ProyectoID != 0 {
+			break
+		}
+		nod, err := s.GetNodo(nextPadreID)
+		if err != nil {
+			return op.Err(err).Ctx("id", nextPadreID)
+		}
+		nextPadreID = nod.PadreID
+		switch {
+		case nod.EsHistoriaDeUsuario(),
+			nod.EsHistoriaTecnica(),
+			nod.EsActividadDeGestión():
+			raiz.Ancestros = append([]arbol.Nodo{*nod}, raiz.Ancestros...) // prepend
+
+		case nod.EsPersona():
+			raiz.Ancestros = append([]arbol.Nodo{*nod}, raiz.Ancestros...) // prepend
+			if raiz.Persona.PersonaID == 0 {
+				raiz.Persona = nod.ToPersona()
+			}
+
+		case nod.EsProyecto():
+			raiz.Proyecto = nod.ToProyecto()
+
+		default:
+			return op.Msgf("Nodo %v %v no debería ser ancestro de historia %v", nod.Tipo, nextPadreID, raiz.HistoriaID)
+		}
+	}
+	return nil
+}
+
+func (s *Repositorio) AddHijosToHisUsuario(raiz *arbol.HistoriaDeUsuario) error {
+	op := gko.Op("addHijosToHisUsuario").Ctx("HistoriaID", raiz.HistoriaID)
+	desc, err := s.ListDescendientes(raiz.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	raiz.Personas = desc.Personas
+	raiz.HisUsuario = desc.HisUsuario
+	raiz.HisTecnicas = desc.HisTecnicas
+	raiz.HisGestion = desc.HisGestion
+
+	raiz.Tramos = desc.Tramos
+	raiz.Tareas = desc.Tareas
+	raiz.Reglas = desc.Reglas
+
+	for i := range raiz.HisUsuario {
+		err := s.AddHijosToHisUsuario(&raiz.HisUsuario[i])
+		if err != nil {
+			return op.Err(err)
+		}
+	}
+
+	relacionadas, err := s.ListNodosRelacionados(raiz.HistoriaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	for _, nod := range relacionadas {
+		raiz.Relacionadas = append(raiz.Relacionadas, nod.ToHistoriaDeUsuario())
+	}
+
+	return nil
+}
+
+// ================================================================ //
+// ================================================================ //
 
 func (s *Repositorio) GetProyecto(proyectoID int) (*arbol.Proyecto, error) {
 	op := gko.Op("GetProyecto").Ctx("proyectoID", proyectoID)
@@ -58,16 +187,10 @@ func (s *Repositorio) GetProyecto(proyectoID int) (*arbol.Proyecto, error) {
 		return nil, op.Err(err)
 	}
 	pry := nod.ToProyecto()
-
-	desc, err := s.listDescendientes(pry.ProyectoID)
+	err = s.AddHijosToProyecto(&pry)
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	pry.Personas = desc.Personas
-	pry.HisUsuario = desc.HisUsuario
-	pry.HisTecnicas = desc.HisTecnicas
-	pry.HisGestion = desc.HisGestion
-
 	return &pry, nil
 }
 
@@ -78,15 +201,10 @@ func (s *Repositorio) GetPersona(personaID int) (*arbol.Persona, error) {
 		return nil, op.Err(err)
 	}
 	per := nod.ToPersona()
-
-	desc, err := s.listDescendientes(per.PersonaID)
+	err = s.AddHijosToPersona(&per)
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	per.Historias = desc.HisUsuario
-	per.HisTecnicas = desc.HisTecnicas
-	per.HisGestion = desc.HisGestion
-
 	return &per, nil
 }
 
@@ -97,62 +215,13 @@ func (s *Repositorio) GetHistoria(historiaID int) (*arbol.HistoriaDeUsuario, err
 		return nil, op.Err(err)
 	}
 	his := nodH.ToHistoriaDeUsuario()
-
-	desc, err := s.listDescendientes(his.HistoriaID)
+	err = s.AddHijosToHisUsuario(&his)
 	if err != nil {
 		return nil, op.Err(err)
 	}
-	his.HisUsuario = desc.HisUsuario
-	his.HisTecnicas = desc.HisTecnicas
-	his.HisGestion = desc.HisGestion
-
-	his.Tramos = desc.Tramos
-	his.Tareas = desc.Tareas
-	his.Reglas = desc.Reglas
-
-	relacionadas, err := s.ListNodosRelacionados(his.HistoriaID)
+	err = s.AddAncestrosToHisUsuario(&his)
 	if err != nil {
 		return nil, op.Err(err)
-	}
-	for _, nod := range relacionadas {
-		his.Relacionadas = append(his.Relacionadas, nod.ToHistoriaDeUsuario())
-	}
-
-	nextPadreID := his.PadreID
-	loops := 0
-	for {
-		loops++ // prevent runaway
-		if loops > 10 {
-			gko.LogWarnf("Historia %v tiene demasiados ancestros", his.HistoriaID)
-			break
-		}
-		// end when proyect is reached
-		if his.Proyecto.ProyectoID != 0 {
-			break
-		}
-		nod, err := s.GetNodo(nextPadreID)
-		if err != nil {
-			return nil, op.Err(err).Ctx("id", nextPadreID)
-		}
-		nextPadreID = nod.PadreID
-		switch {
-		case nod.EsHistoriaDeUsuario(),
-			nod.EsHistoriaTecnica(),
-			nod.EsActividadDeGestión():
-			his.Ancestros = append([]arbol.Nodo{*nod}, his.Ancestros...) // prepend
-
-		case nod.EsPersona():
-			his.Ancestros = append([]arbol.Nodo{*nod}, his.Ancestros...) // prepend
-			if his.Persona.PersonaID == 0 {
-				his.Persona = nod.ToPersona()
-			}
-
-		case nod.EsProyecto():
-			his.Proyecto = nod.ToProyecto()
-
-		default:
-			return nil, op.Msgf("Nodo %v %v no debería ser ancestro de historia %v", nod.Tipo, nextPadreID, his.HistoriaID)
-		}
 	}
 	return &his, nil
 }
@@ -178,8 +247,8 @@ type descendientes struct {
 	Tramos []arbol.Tramo
 }
 
-func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
-	op := gko.Op("listDescendientes").Ctx("padreID", padreID)
+func (s *Repositorio) ListDescendientes(padreID int) (descendientes, error) {
+	op := gko.Op("ListDescendientes").Ctx("padreID", padreID)
 	desc := descendientes{}
 	nodos, err := s.ListNodosByPadreID(padreID)
 	if err != nil {

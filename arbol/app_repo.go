@@ -7,6 +7,11 @@ type ReadRepo interface {
 	GetPersona(personaID int) (*Persona, error)
 	GetHistoria(historiaID int) (*HistoriaDeUsuario, error)
 
+	AddHijosToGrupo(raiz *Grupo) error
+	AddHijosToProyecto(raiz *Proyecto) error
+	AddHijosToPersona(raiz *Persona) error
+	AddHijosToHisUsuario(raiz *HistoriaDeUsuario) error
+
 	GetNodo(NodoID int) (*Nodo, error)
 	ListNodosByPadreID(PadreID int) ([]Nodo, error)
 	ListNodosByPadreIDTipo(PadreID int, Tipo string) ([]Nodo, error)
