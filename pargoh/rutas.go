@@ -119,6 +119,10 @@ func (s *servidor) registrarRutas() {
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.w.deleteRegla)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.w.deleteTramoDeViaje)
 
+	// Raw nodo
+	s.GET("/nodos/{nodo_id}", s.r.getRawNodoEditor)
+	s.PCH("/nodos/{nodo_id}/{param}", s.w.patchRawNodo)
+
 	// TIME TRACKER
 	s.POS("/nodos/{nodo_id}/time/{seg}", s.postAppTime)
 
