@@ -245,7 +245,7 @@ INSERT INTO main.nodos (
 
 ) SELECT /* tramos */
 
-  abs(random() %99999999), /* Make unique */
+  abs(random() %9999999999)+10000000000, /* Make unique */
   t.historia_id,
   'VIA',
   t.posicion,
@@ -294,7 +294,7 @@ INSERT INTO main.nodos (
 
 ) SELECT /* reglas */
 
-  abs(random() %99999999), /* Make unique */
+  abs(random() %9999999999)+1000000000, /* Make unique */
   r.historia_id,
   'REG',
   r.posicion,
@@ -317,6 +317,8 @@ INSERT INTO main.nodos (
 
 SELECT printf('+%03d reglas migrados', COUNT(*)) FROM old_schema.reglas;
 SELECT printf('     %d nodos', COUNT(*)) FROM main.nodos;
+
+UPDATE tareas SET tarea_id = tarea_id + abs(random() %999999999);
 
 /*
 	TAREAS:

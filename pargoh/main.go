@@ -197,10 +197,16 @@ func main() {
 
 	// !---------
 
+	if s.cfg.ImagesDir == "" {
+		s.cfg.ImagesDir = "imagenes"
+	}
 	if err = s.verificarDirectorioImagenes(); err != nil {
 		gko.FatalError(err)
 	}
 
+	if s.cfg.ExportDir == "" {
+		s.cfg.ExportDir = "exports"
+	}
 	if err = exportdocx.VerificarDirectorioExports(s.cfg.ExportDir); err != nil {
 		gko.FatalError(err)
 	}
