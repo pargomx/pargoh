@@ -16,7 +16,7 @@ func (s *writehdl) postReferencia(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", args.NodoID)
+	return c.RedirOtrof("/h/%v", args.NodoID)
 }
 
 func (s *writehdl) deleteReferencia(c *gecko.Context, tx *handlerTx) error {
@@ -29,5 +29,5 @@ func (s *writehdl) deleteReferencia(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", args.NodoID)
+	return c.RedirOtrof("/h/%v", args.NodoID)
 }

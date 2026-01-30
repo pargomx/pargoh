@@ -6,35 +6,6 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
-const NODO_ROOT = 1
-
-func (s *Repositorio) GetRaiz() (*arbol.Raiz, error) {
-	op := gko.Op("GetRaiz")
-	desc, err := s.ListDescendientes(NODO_ROOT)
-	if err != nil {
-		return nil, op.Err(err)
-	}
-	raiz := arbol.Raiz{
-		Grupos:    desc.Grupos,
-		Proyectos: desc.Proyectos,
-	}
-
-	for i := range raiz.Grupos {
-		err := s.AddHijosToGrupo(&raiz.Grupos[i])
-		if err != nil {
-			return nil, op.Err(err)
-		}
-	}
-
-	for i := range raiz.Proyectos {
-		err := s.AddHijosToProyecto(&raiz.Proyectos[i])
-		if err != nil {
-			return nil, op.Err(err)
-		}
-	}
-	return &raiz, nil
-}
-
 func (s *Repositorio) AddHijosToGrupo(raiz *arbol.Grupo) error {
 	op := gko.Op("addHijosToGrupo").Ctx("GrupoID", raiz.GrupoID)
 	desc, err := s.ListDescendientes(raiz.GrupoID)
@@ -258,7 +229,7 @@ func (s *Repositorio) ListDescendientes(padreID int) (descendientes, error) {
 		switch nod.Tipo {
 
 		case "GRP":
-			if padreID != NODO_ROOT {
+			if padreID != arbol.NODO_ROOT {
 				gko.LogAlertf("Nodo descendiente %v es GRP", nod.NodoID)
 			}
 			desc.Grupos = append(desc.Grupos, nod.ToGrupo())

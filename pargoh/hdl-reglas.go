@@ -23,7 +23,7 @@ func (s *writehdl) postRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/historias/%v", args.PadreID)
+	return c.RedirOtrof("/h/%v", args.PadreID)
 }
 
 func (s *writehdl) patchRegla(c *gecko.Context, tx *handlerTx) error {
@@ -37,7 +37,7 @@ func (s *writehdl) patchRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
 }
 
 func (s *writehdl) marcarRegla(c *gecko.Context, tx *handlerTx) error {
@@ -51,5 +51,5 @@ func (s *writehdl) marcarRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
 }

@@ -1,29 +1,30 @@
+{{ with .Proyecto }}
 <header class="relative flex items-center w-full mb-2 bg-cyan-950 shadow-lg">
 	<div class="p-1">
 		<img class="w-24 rounded-md"
 			alt="Portada del proyecto"
-			data-proyecto-id="{{ .Proyecto.ProyectoID }}"
-			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+			data-proyecto-id="{{ .ProyectoID }}"
+			src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
 			>
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
-			{{ .Proyecto.Titulo }}
+			{{ .Titulo }}
 		</h2>
 		<p class="text-sm opacity-75 line-clamp-2">
-			{{ enfatizar .Proyecto.Descripcion }}
+			{{ enfatizar .Descripcion }}
 		</p>
 	</div>
 	<span class="absolute right-2 top-2">
 		<a class="px-2 py-1 mr-2 rounded-md opacity-75 hover:opacity-100"
-			href="/proyectos/{{ .Proyecto.ProyectoID }}/doc"
+			href="/h/{{ .ProyectoID }}/doc"
 			title="Documentación"
 			>
 			<i class="fa-solid fa-book"></i>
 		</a>
 		<button class="px-2 py-1 mr-2 rounded-md opacity-75 hover:opacity-100"
 			type="button"
-			onclick="document.getElementById('frmPry{{ .Proyecto.ProyectoID }}').showModal()"
+			onclick="document.getElementById('frmPry{{ .ProyectoID }}').showModal()"
 			>
 			<i class="fa fa-pen"></i>
 		</button>
@@ -35,14 +36,14 @@
 	</span>
 </header>
 
-{{ if .TareasEnCurso -}}
+{{ if $.TareasEnCurso -}}
 <div class="flex flex-col gap-1 px-2">
 	<h3 class="text-xl text-cyan-600">
 		Tareas en curso
 	</h3>
 	{{ range .TareasEnCurso -}}
 	<a class="flex gap-2 transition-colors hover:text-cyan-200"
-		href="/historias/{{ .HistoriaID }}#{{ .TareaID }}"
+		href="/h/{{ .HistoriaID }}#{{ .TareaID }}"
 		>
 		<span class="inline-block w-6 text-center">
 			<i class="text-slate-400 fa-solid fa-list-check"></i>
@@ -60,38 +61,38 @@
 	{{ end }}
 </div>
 {{ end -}}
-{{ with .Proyecto }}
-<div hx-askfor="/proyectos/{{ .ProyectoID }}">
+
+<div hx-askfor="/h/{{ .ProyectoID }}">
 	{{ template "proyecto_form" . }}
 </div>
-{{ end }}
+
 
 <!--* QUICK EDIT -->
-<!-- <div class="p-2">
+<div class="p-2">
 	<div>
 		<textarea
-			hx-patch="/proyectos/{{ .Proyecto.ProyectoID }}/titulo"
+			hx-patch="/proyectos/{{ .ProyectoID }}/titulo"
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:2s"
 			name="value"
 			rows="1"
 			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400">
-			{{- .Proyecto.Titulo -}}
+			{{- .Titulo -}}
 		</textarea>
 	</div>
 	<div>
 		<textarea
-			hx-patch="/proyectos/{{ .Proyecto.ProyectoID }}/descripcion"
+			hx-patch="/proyectos/{{ .ProyectoID }}/descripcion"
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:2s"
 			name="value"
 			rows="1"
 			placeholder="Descripción del proyecto..." 
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 placeholder:text-slate-600">
-			{{- .Proyecto.Descripcion -}}
+			{{- .Descripcion -}}
 		</textarea>
 	</div>
-</div> -->
+</div>
 
 <main tipo="sort_personas" class="flex flex-col items-center justify-center grow gap-4 p-2">
 	{{ range .Personas -}}
@@ -123,7 +124,7 @@
 			</span>
 		</div>
 		<a class="block w-full"
-			href="/personas/{{ .PersonaID }}"
+			href="/h/{{ .PersonaID }}"
 			title="{{ .Nombre }}"
 			>
 			<h4 class="inline-block text-lg font-medium">
@@ -171,7 +172,7 @@
 	<div class="">
 		{{ range .Historias -}}
 		<a class="block"
-			href="/historias/{{ .HistoriaID }}"
+			href="/h/{{ .HistoriaID }}"
 			>
 			{{ .Nivel }}.{{ .Posicion }}:
 			{{ .Titulo }}
@@ -358,3 +359,5 @@
 	});
 
 </script>
+
+{{ end }}

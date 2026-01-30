@@ -19,7 +19,7 @@ func (s *writehdl) reordenarPersona(c *gecko.Context, tx *handlerTx) error {
 	if err != nil {
 		return err
 	}
-	return c.RedirOtrof("/proyectos/%v", pers.ProyectoID)
+	return c.RedirOtrof("/h/%v", pers.ProyectoID)
 }
 
 func (s *writehdl) reordenarHistoria(c *gecko.Context, tx *handlerTx) error {
@@ -42,9 +42,9 @@ func (s *writehdl) reordenarHistoria(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	if padre.EsPersona() {
-		return c.RedirOtrof("/personas/%v", his.PadreID)
+		return c.RedirOtrof("/h/%v", his.PadreID)
 	} else if padre.EsHistoriaDeUsuario() {
-		return c.RedirOtrof("/historias/%v", his.PadreID)
+		return c.RedirOtrof("/h/%v", his.PadreID)
 	}
 	return gko.ErrInesperado.Msgf("reordenarHistoria: padre %v no es persona ni historia, sino %v",
 		padre.NodoID, padre.Tipo)
@@ -59,7 +59,7 @@ func (s *writehdl) reordenarTramo(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.FormInt("historia_id"))
 }
 
 func (s *writehdl) reordenarRegla(c *gecko.Context, tx *handlerTx) error {
@@ -72,7 +72,7 @@ func (s *writehdl) reordenarRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.FormInt("historia_id"))
 }
 
 // ================================================================ //
@@ -114,7 +114,7 @@ func (s *writehdl) moverTramo(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", args.NewPadreID)
+	return c.RedirOtrof("/h/%v", args.NewPadreID)
 }
 
 func (s *writehdl) moverTarea(c *gecko.Context, tx *handlerTx) error {
@@ -127,5 +127,5 @@ func (s *writehdl) moverTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", args.NewPadreID)
+	return c.AskedForFallback("/h/%v", args.NewPadreID)
 }

@@ -23,7 +23,7 @@
 	</h3>
 	{{ range .TareasEnCurso -}}
 	<a class="flex gap-2 transition-colors hover:text-cyan-200"
-		href="{{ if eq .HistoriaID 1 }}/tareas{{ else }}/historias/{{ .HistoriaID }}#{{ .TareaID }}{{ end }}"
+		href="{{ if eq .HistoriaID 1 }}/tareas{{ else }}/h/{{ .HistoriaID }}#{{ .TareaID }}{{ end }}"
 		>
 		<span class="inline-block w-6 text-center">
 			<i class="text-slate-400 fa-solid fa-list-check"></i>
@@ -50,7 +50,7 @@
 		<div class="flex flex-col gap-1">
 			{{ range .Bugs -}}
 			<a class="flex w-full gap-2 transition-opacity opacity-75 hover:opacity-100"
-				href="/historias/{{ .HistoriaID }}#{{ .TareaID }}"
+				href="/h/{{ .HistoriaID }}#{{ .TareaID }}"
 				>
 				<span class="px-1">
 					{{- if .Finalizada }}
@@ -90,7 +90,7 @@
 
 	{{ range .Proyectos -}}
 	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg"
-		hx-get="/proyectos/{{ .ProyectoID }}"
+		hx-get="/h/{{ .ProyectoID }}"
 		hx-push-url="true"
 		hx-trigger="none"
 		>
@@ -99,7 +99,7 @@
 			<a
 				hx-boost="true"
 				hx-push-url="true"
-				href="/proyectos/{{ .ProyectoID }}"
+				href="/h/{{ .ProyectoID }}"
 				>
 				<img class="w-32 transition-opacity rounded-md hover:opacity-75"
 					alt="Portada del proyecto"
@@ -111,19 +111,19 @@
 		<div class="w-full p-2">
 			<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
 				<a class="rounded-md opacity-75 hover:opacity-100 text-lg"
-					href="/proyectos/{{ .ProyectoID }}/doc"
+					href="/h/{{ .ProyectoID }}/doc"
 					title="Documentación"
 					>
 					<i class="fa-solid fa-book"></i>
 				</a>
 				<a class="transition-opacity hover:opacity-75 w-full mr-10"
-					href="/proyectos/{{ .ProyectoID }}"
+					href="/h/{{ .ProyectoID }}"
 					>
 					{{ .Titulo }}
 				</a>
 			</h4>
 			<p class="mb-2 text-sm opacity-75 line-clamp-3">
-				<a href="/proyectos/{{ .ProyectoID }}">
+				<a href="/h/{{ .ProyectoID }}">
 					{{- enfatizar .Descripcion -}}
 				</a>
 			</p>
@@ -131,7 +131,7 @@
 				{{ range .Personas -}}
 				<li class="text-sm">
 					<a class="transition-opacity opacity-75 hover:opacity-100"
-						href="/personas/{{ .PersonaID}}"
+						href="/h/{{ .PersonaID}}"
 						>
 						{{ .Nombre }}
 					</a>
@@ -315,13 +315,13 @@
 	</header>
 	<div class="flex flex-wrap justify-end p-2 pb-0 gap-x-4 gap-y-2">
 		<a class="italic font-semibold text-cyan-500 underline transition-colors rounded-sm hover:text-cyan-400 whitespace-nowrap"
-			href="/proyectos/{{ .ProyectoID}}/exportar.json"
+			href="/h/{{ .ProyectoID}}/exportar.json"
 			target="_blank"
 			>
 			Exportar JSON
 		</a>
 		<a class="italic font-semibold text-cyan-500 underline transition-colors rounded-sm hover:text-cyan-400 whitespace-nowrap"
-			href="/proyectos/{{ .ProyectoID}}/exportar.md"
+			href="/h/{{ .ProyectoID}}/exportar.md"
 			target="_blank"
 			>
 			Exportar Markdown
@@ -409,7 +409,7 @@
 </dialog>
 {{ end 	}}
 
-<div hx-askfor="/proyectos">
+<div hx-askfor="/h">
 	{{ range .Proyectos }}
 	{{ template "proyecto_form" . }}
 	{{ end }}

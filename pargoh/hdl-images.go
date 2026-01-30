@@ -69,5 +69,5 @@ func (s *servidor) setImagenTramo(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.FormInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.FormInt("historia_id"))
 }

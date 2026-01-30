@@ -37,11 +37,12 @@ func (s *servidor) registrarRutas() {
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
 
+	s.GET("/h", s.r.getProyectosActivos)
 	s.GET("/h/{nodo_id}", s.r.getNodoCualquiera)
 	s.POS("/h", s.w.postNodo)
 
 	// Proyectos
-	s.GET("/proyectos", s.r.listaProyectos)
+	s.GET("/proyectos", s.r.getProyectosActivos)
 	s.GET("/proyectos/{proyecto_id}", s.r.getProyecto)
 	s.GET("/proyectos/{proyecto_id}/doc", s.r.getDocumentacionProyecto)
 

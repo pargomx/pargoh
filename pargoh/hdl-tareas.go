@@ -21,7 +21,7 @@ func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", args.PadreID)
+	return c.AskedForFallback("/h/%v", args.PadreID)
 }
 
 func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
@@ -43,7 +43,7 @@ func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v#%v", tarea.HistoriaID, tarea.TareaID)
+	return c.AskedForFallback("/h/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
 func (s *writehdl) ciclarImportanciaTarea(c *gecko.Context, tx *handlerTx) error {
@@ -61,7 +61,7 @@ func (s *writehdl) ciclarImportanciaTarea(c *gecko.Context, tx *handlerTx) error
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", nod.PadreID)
+	return c.AskedForFallback("/h/%v", nod.PadreID)
 }
 
 func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
@@ -79,7 +79,7 @@ func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v#%v", nod.PadreID, nod.NodoID)
+	return c.AskedForFallback("/h/%v#%v", nod.PadreID, nod.NodoID)
 }
 
 func (s *writehdl) iniciarTarea(c *gecko.Context, tx *handlerTx) error {
@@ -93,7 +93,7 @@ func (s *writehdl) iniciarTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", tar.PadreID)
+	return c.AskedForFallback("/h/%v", tar.PadreID)
 }
 
 func (s *writehdl) pausarTarea(c *gecko.Context, tx *handlerTx) error {
@@ -107,7 +107,7 @@ func (s *writehdl) pausarTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", tar.PadreID)
+	return c.AskedForFallback("/h/%v", tar.PadreID)
 }
 
 func (s *writehdl) terminarTarea(c *gecko.Context, tx *handlerTx) error {
@@ -121,7 +121,7 @@ func (s *writehdl) terminarTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", tar.PadreID)
+	return c.AskedForFallback("/h/%v", tar.PadreID)
 }
 
 /*
@@ -189,7 +189,7 @@ func (s *writehdl) patchIntervalo(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	// defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", padre.NodoID)
+	return c.AskedForFallback("/h/%v", padre.NodoID)
 }
 
 // ================================================================ //

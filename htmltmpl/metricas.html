@@ -106,7 +106,7 @@
 						{{ range .Tareas -}}
 							{{ range .Intervalos -}}
 								<rect x="{{ suma (mult $diaNum 60) 4 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="52" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}">
-									<title data-link="/historias/{{ .HistoriaID }}#{{ .TareaID }}">Tarea: {{ .TsIni }} - {{ .TsFin }}</title>
+									<title data-link="/h/{{ .HistoriaID }}#{{ .TareaID }}">Tarea: {{ .TsIni }} - {{ .TsFin }}</title>
 								</rect>
 							{{ end -}}
 						{{ end -}}
@@ -115,7 +115,7 @@
 					{{ range .Latidos -}}
 						<g>
 							<rect x="{{ suma (mult $diaNum 60) 10 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="38" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="{{ $color }}">
-								<title data-link="/personas/{{ .PersonaID }}">Persona: {{ .Timestamp }} ({{ .Segundos }} seg.)</title>
+								<title data-link="/h/{{ .PersonaID }}">Persona: {{ .Timestamp }} ({{ .Segundos }} seg.)</title>
 							</rect>
 							<rect x="{{ suma (mult $diaNum 60) 29 }}" y="{{ suma (div .MinutosSince6am 2) 90 }}" width="02" height="{{ if div .Segundos 120 }}{{ div .Segundos 120 }}{{ else }}1{{ end }}" fill="white"></rect>
 						</g>
@@ -363,7 +363,7 @@
 				<p class="py-1 pt-2 text-base font-bold">
 					<span class="inline-block w-16 px-2 py-1 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ segundosToString .Segundos }}</span>
 					<a
-						href="/historias/{{ .Historia.HistoriaID }}"
+						href="/h/{{ .Historia.HistoriaID }}"
 						class="transition-colors hover:text-cyan-400">
 						{{ enfatizar .Historia.Titulo }}
 					</a>
@@ -373,7 +373,7 @@
 					<p class="py-1 pl-16 text-sm opacity-75">
 						<span class="inline-block w-16 px-2 py-0 text-xs font-semibold text-center text-cyan-600 bg-cyan-950 rounded-md">{{ segundosToString .Segundos }}</span>
 						<a
-							href="/historias/{{ .Tarea.HistoriaID }}#{{ .Tarea.TareaID }}"
+							href="/h/{{ .Tarea.HistoriaID }}#{{ .Tarea.TareaID }}"
 							class="transition-colors hover:text-cyan-400">
 							<span class="inline-block w-6 text-center">
 								{{- if .Tarea.Finalizada }}<i class="text-green-600 fa-regular fa-square-check"></i>

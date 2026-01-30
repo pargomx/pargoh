@@ -11,6 +11,9 @@ const (
 	TipoTarea    = "TAR"
 	TipoViaje    = "VIA"
 	TipoRaiz     = "ROOT"
+
+	NODO_ROOT              = 1
+	NODO_PROYECTOS_ACTIVOS = 2
 )
 
 type Raiz struct {
@@ -89,6 +92,10 @@ func (nod Nodo) ToProyecto() Proyecto {
 	}
 }
 
+func (n Proyecto) Historias() []HistoriaDeUsuario {
+	return n.HisUsuario
+}
+
 // ================================================================ //
 
 // Persona de las historias de usuario descendientes. Para hacer mapa de
@@ -123,6 +130,28 @@ type Persona struct {
 	ProyectoID      string
 	SegundosGestion int
 	HorasGestion    int
+}
+
+func (n Persona) SegundosPresupuesto() int {
+	suma := 0
+	for _, h := range n.Historias {
+		suma += h.SegundosPresupuesto
+	}
+	return suma
+}
+func (n Persona) SegundosEstimado() int {
+	suma := 0
+	for _, h := range n.Historias {
+		suma += h.SegundosEstimado
+	}
+	return suma
+}
+func (n Persona) SegundosUtilizado() int {
+	suma := 0
+	for _, h := range n.Historias {
+		suma += h.SegundosUtilizado
+	}
+	return suma
 }
 
 func (nod Nodo) ToPersona() Persona {
@@ -187,6 +216,9 @@ type HistoriaDeUsuario struct {
 }
 
 func (his HistoriaDeUsuario) Descendientes() []HistoriaDeUsuario {
+	return his.HisUsuario
+}
+func (his HistoriaDeUsuario) Historias() []HistoriaDeUsuario {
 	return his.HisUsuario
 }
 

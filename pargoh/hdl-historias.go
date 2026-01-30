@@ -82,7 +82,7 @@ func (s *writehdl) postHistoriaDePersona(c *gecko.Context, tx *handlerTx) error 
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/personas/%v", args.PadreID)
+	return c.AskedForFallback("/h/%v", args.PadreID)
 }
 
 func (s *writehdl) postHistoriaDeHistoria(c *gecko.Context, tx *handlerTx) error {
@@ -97,7 +97,7 @@ func (s *writehdl) postHistoriaDeHistoria(c *gecko.Context, tx *handlerTx) error
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", args.PadreID)
+	return c.AskedForFallback("/h/%v", args.PadreID)
 }
 
 // Agregar historia de usuario como padre de la actual.
@@ -134,7 +134,7 @@ func (s *writehdl) postPadreParaHistoria(c *gecko.Context, tx *handlerTx) error 
 	}
 
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", newPadre.NodoID)
+	return c.AskedForFallback("/h/%v", newPadre.NodoID)
 }
 
 func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {

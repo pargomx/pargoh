@@ -47,12 +47,12 @@ func (s *writehdl) deleteHistoria(c *gecko.Context, tx *handlerTx) error {
 
 	// TODO: AskedFor
 	if padre.EsHistoriaDeUsuario() {
-		return c.RedirOtrof("/historias/%v", padre.NodoID)
+		return c.RedirOtrof("/h/%v", padre.NodoID)
 	} else if padre.EsPersona() {
-		return c.RedirOtrof("/personas/%v", padre.NodoID)
+		return c.RedirOtrof("/h/%v", padre.NodoID)
 	} else {
 		gko.LogWarnf("deleteHistoria: padre %v no es persona ni historia", padre.NodoID)
-		return c.RedirOtro("/proyectos")
+		return c.RedirOtro("/h")
 	}
 }
 
@@ -63,7 +63,7 @@ func (s *writehdl) deleteRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
 }
 
 func (s *writehdl) eliminarTarea(c *gecko.Context, tx *handlerTx) error {
@@ -72,7 +72,7 @@ func (s *writehdl) eliminarTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/historias/%v", padre.NodoID)
+	return c.AskedForFallback("/h/%v", padre.NodoID)
 }
 
 func (s *writehdl) deleteTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
@@ -81,7 +81,7 @@ func (s *writehdl) deleteTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
 }
 
 // ================================================================ //
@@ -92,5 +92,5 @@ func (s *servidor) deleteImagenTramo(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	defer s.reloader.brodcastReload(c)
-	return c.RedirOtrof("/historias/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
 }

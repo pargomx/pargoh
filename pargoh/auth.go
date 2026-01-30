@@ -41,7 +41,7 @@ func NewAuthService(adminUser, adminPass string) *authService {
 		nombreCookie:  "pargotoken",
 		pathLoginPage: "/",
 		pathLoginPost: "/login",
-		pathHomePage:  "/proyectos",
+		pathHomePage:  "/h",
 		pathLogout:    "/logout",
 		adminUser:     adminUser,
 		adminPass:     adminPass,

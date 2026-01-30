@@ -61,10 +61,10 @@
 
 		{{ with .Persona }}
 		<h3 id="{{ .PersonaID }}" class="mb-2 text-2xl group">
-			<a href="/personas/{{ .PersonaID }}/doc">
+			<a href="/h/{{ .PersonaID }}/doc">
 				{{- enfatizar .Nombre -}}
 			</a>
-			<a href="/personas/{{ .PersonaID }}" class="px-1 text-base opacity-0 group-hover:opacity-10 hover:opacity-75 transition-opacity">
+			<a href="/h/{{ .PersonaID }}" class="px-1 text-base opacity-0 group-hover:opacity-10 hover:opacity-75 transition-opacity">
 				<i class="fa-solid fa-pen-to-square"></i>
 			</a>
 		</h3>
@@ -77,7 +77,7 @@
 		<ul class="list-disc pl-6">
 			{{ range .Historias -}}
 			<li class="text-lg mb-1">
-				<a href="/personas/{{ .PersonaID }}/doc#{{ .HistoriaID }}"
+				<a href="/h/{{ .PersonaID }}/doc#{{ .HistoriaID }}"
 					class="opacity-75 hover:opacity-100 transition-opacity">
 					{{- enfatizar .Titulo -}}
 				</a>

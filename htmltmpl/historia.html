@@ -1,4 +1,4 @@
-{{ with .Agregado -}}
+{{ with .Historia -}}
 <script>
 	let historiaID = {{ .HistoriaID -}};
 </script>
@@ -12,7 +12,7 @@
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
-			<a href="/proyectos/{{ .Proyecto.ProyectoID }}">
+			<a href="/h/{{ .Proyecto.ProyectoID }}">
 				{{ enfatizar .Proyecto.Titulo }}
 			</a>
 		</h2>
@@ -21,7 +21,7 @@
 				<i class="fa-solid fa-person"></i>
 			</span>
 			<a class="text-xl"
-				href="/personas/{{ .Persona.PersonaID }}">
+				href="/h/{{ .Persona.PersonaID }}">
 				{{ .Persona.Nombre }}
 			</a>
 		</h3>
@@ -36,7 +36,7 @@
 </header>
 
 <main class="grow w-full max-w-5xl p-2 mx-auto"
-	hx-get="/historias/{{ .HistoriaID }}"
+	hx-get="/h/{{ .HistoriaID }}"
 	hx-select="main"
 	hx-swap="outerHTML"
 	hx-target="this"
@@ -47,7 +47,7 @@
 		<!--* PERSONA  -->
 		<h4 class="grow">
 			<a class="mx-1 rounded-md opacity-75 hover:opacity-100"
-				href="/personas/{{ .Persona.PersonaID }}/doc#{{ .HistoriaID }}"
+				href="/h/{{ .Persona.PersonaID }}/doc#{{ .HistoriaID }}"
 				title="Documentación"
 				>
 				<i class="fa-solid fa-book"></i>
@@ -56,7 +56,7 @@
 				Como
 			</span>
 			<a class="text-lg lowercase transition-colors hover:text-cyan-600"
-				href="/personas/{{ .Persona.PersonaID }}"
+				href="/h/{{ .Persona.PersonaID }}"
 				{{ if not .Ancestros }}tipo="ancestro_directo"{{ end }}
 				>
 				{{- .Persona.Nombre -}}
@@ -135,9 +135,9 @@
 		<ul class="pl-2 list-disc">
 			<li class="pt-1">
 				<a class="text-cyan-600 whitespace-pre-line transition-colors hover:text-cyan-400"
-					href="/historias/{{ .NodoID }}"
+					href="/h/{{ .NodoID }}"
 					title="Ir al ancestro"
-					{{ if eq (suma $i 1) (len $.Agregado.Ancestros) }}tipo="ancestro_directo"{{ end }}
+					{{ if eq (suma $i 1) (len $.Historia.Ancestros) }}tipo="ancestro_directo"{{ end }}
 					>
 					{{- enfatizar .Titulo -}}...
 				</a>
@@ -190,7 +190,7 @@
 		hx-target="#descendientesList"
 		hx-select-oob="#descendientesMenus"
 		>
-		{{ range .Descendientes }}
+		{{ range .Historias }}
 		<li tipo="sort_descendiente" class="">
 			<div class="flex gap-1 p-1 group">
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
@@ -233,7 +233,7 @@
 				</button>
 				<div class="grow">
 					<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
-						href="/historias/{{ .HistoriaID }}"
+						href="/h/{{ .HistoriaID }}"
 						>
 						{{- enfatizar .Titulo -}}
 					</a>
@@ -271,7 +271,7 @@
 					</div>
 					<div class="grow">
 						<a class="font-light text-cyan-400 whitespace-pre-line hover:text-cyan-300"
-							href="/historias/{{ .HistoriaID }}"
+							href="/h/{{ .HistoriaID }}"
 							>
 							{{- enfatizar .Titulo -}}
 						</a>
@@ -308,7 +308,7 @@
 
 	<!-- Menú contextextual de descendientes -->
 	<div id="descendientesMenus"
-		hx-askfor="/historias/{{ .HistoriaID }}"
+		hx-askfor="/h/{{ .HistoriaID }}"
 		hx-select="#descendientesList"
 		hx-target="#descendientesList"
 		hx-select-oob="#descendientesMenus"
@@ -340,7 +340,7 @@
 			</div>
 			<div class="grow">
 				<a class="text-cyan-400 whitespace-pre-line hover:text-cyan-300"
-					href="/historias/{{ .HistoriaID }}"
+					href="/h/{{ .HistoriaID }}"
 					>
 					{{- enfatizar .Titulo -}}
 				</a>
@@ -360,7 +360,7 @@
 
 	<!--* AVANCE  -->
 	<div id="progreso"
-		hx-get="/historias/{{ .HistoriaID }}"
+		hx-get="/h/{{ .HistoriaID }}"
 		hx-select="#progreso"
 		hx-target="#progreso"
 		hx-swap="outerHTML"
@@ -764,7 +764,7 @@
 	<h3 class="mb-2 text-xl text-cyan-600 group">
 		Viaje de usuario
 		<a class="mx-1 text-base opacity-0 group-hover:opacity-100 focus:opacity-100"
-			href="/personas/{{ .Persona.PersonaID }}/doc#{{ .HistoriaID }}"
+			href="/h/{{ .Persona.PersonaID }}/doc#{{ .HistoriaID }}"
 			title="Ver en documentación"
 			>
 			<i class="fa-solid fa-book"></i>
@@ -1210,7 +1210,7 @@
 			{{ end -}}
 			<button id="viewNotasBtn" class="mx-2 text-base hover:text-cyan-300 float-right hidden"
 				type="button"
-				hx-get="/historias/{{ .HistoriaID }}"
+				hx-get="/h/{{ .HistoriaID }}"
 				hx-select="#implementacion"
 				hx-target="#implementacion"
 				aria-label="Ver con formato"

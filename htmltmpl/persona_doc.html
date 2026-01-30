@@ -43,7 +43,7 @@
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
-			<a href="/proyectos/{{ .Proyecto.ProyectoID }}/doc">
+			<a href="/h/{{ .Proyecto.ProyectoID }}/doc">
 				{{ .Persona.Nombre }}
 			</a>
 		</h2>
@@ -70,7 +70,7 @@
 	
 	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl font-bold whitespace-pre-line group">
 		{{- enfatizar .Titulo -}}
-		<a href="/historias/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
+		<a href="/h/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
 	</h3>
 
 	<p class="mb-4 whitespace-pre-line opacity-75">
@@ -110,7 +110,7 @@
 	
 	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-xl font-bold whitespace-pre-line group">
 		{{- enfatizar .Titulo -}}
-		<a href="/historias/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
+		<a href="/h/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
 	</h3>
 
 	<p class="mb-4 whitespace-pre-line opacity-75">
@@ -179,7 +179,7 @@
 	{{ range .Relacionadas }}
 	<li class="flex items-baseline gap-2 opacity-75">
 		<i class="px-1 text-xs opacity-75 fa-regular fa-circle"></i>
-		<a href="/personas/{{ .PersonaID }}/doc#{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+		<a href="/h/{{ .PersonaID }}/doc#{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 			{{- enfatizar .Titulo -}} 
 		</a>
 	</li>

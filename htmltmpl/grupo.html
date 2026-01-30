@@ -36,7 +36,7 @@
 	<div class="w-full">
 		<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
 			<a class="transition-opacity hover:opacity-75 w-full mr-10"
-				href="/proyectos/{{ .GrupoID }}"
+				href="/h/{{ .GrupoID }}"
 				>
 				{{ .Nombre }}
 			</a>
@@ -47,7 +47,7 @@
 	
 	{{ range .Proyectos -}}
 	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg"
-		hx-get="/proyectos/{{ .ProyectoID }}"
+		hx-get="/h/{{ .ProyectoID }}"
 		hx-push-url="true"
 		hx-trigger="none"
 		>
@@ -56,7 +56,7 @@
 			<a
 				hx-boost="true"
 				hx-push-url="true"
-				href="/proyectos/{{ .ProyectoID }}"
+				href="/h/{{ .ProyectoID }}"
 				>
 				<img class="w-32 transition-opacity rounded-md hover:opacity-75"
 					alt="Portada del proyecto"
@@ -68,19 +68,19 @@
 		<div class="w-full p-2">
 			<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
 				<a class="rounded-md opacity-75 hover:opacity-100 text-lg"
-					href="/proyectos/{{ .ProyectoID }}/doc"
+					href="/h/{{ .ProyectoID }}/doc"
 					title="Documentación"
 					>
 					<i class="fa-solid fa-book"></i>
 				</a>
 				<a class="transition-opacity hover:opacity-75 w-full mr-10"
-					href="/proyectos/{{ .ProyectoID }}"
+					href="/h/{{ .ProyectoID }}"
 					>
 					{{ .Titulo }}
 				</a>
 			</h4>
 			<p class="mb-2 text-sm opacity-75 line-clamp-3">
-				<a href="/proyectos/{{ .ProyectoID }}">
+				<a href="/h/{{ .ProyectoID }}">
 					{{- enfatizar .Descripcion -}}
 				</a>
 			</p>
@@ -88,7 +88,7 @@
 				{{ range .Personas -}}
 				<li class="text-sm">
 					<a class="transition-opacity opacity-75 hover:opacity-100"
-						href="/personas/{{ .PersonaID}}"
+						href="/h/{{ .PersonaID}}"
 						>
 						{{ .Nombre }}
 					</a>
@@ -237,7 +237,7 @@
 </dialog>
 
 
-<div hx-askfor="/proyectos">
+<div hx-askfor="/h">
 	{{ range .Proyectos }}
 	{{ template "proyecto_form" . }}
 	{{ end }}

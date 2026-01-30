@@ -345,7 +345,7 @@ document.getElementById("tareasList").addEventListener("htmx:afterSwap", (event)
 // ================================================================ //
 // ========== TIME TRACKER ======================================== //
 
-let uri = 'ws:'; if (window.location.protocol === 'https:') { uri = 'wss:'; }; uri += '//' + window.location.host + `/historias/${historiaID}/ws`;
+let uri = 'ws:'; if (window.location.protocol === 'https:') { uri = 'wss:'; }; uri += '//' + window.location.host + `/h/${historiaID}/ws`;
 const ws = new WebSocket(uri)
 let wsID = 0
 ws.onopen = function() {

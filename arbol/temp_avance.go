@@ -22,37 +22,37 @@ type separadorHora struct {
 }
 
 // Medidas de avance, presupuesto, estimado y utilizado relativas a mil.
-func (h *HistoriaDeUsuario) AvanceRelativoMil() avanceEscalado {
+func (h HistoriaDeUsuario) AvanceRelativoMil() avanceEscalado {
 	return avanceEscalado{}
 }
 
-func (h *HistoriaDeUsuario) SegundosMaxPresupuestoEstimadoUtilizado() int {
+func (h HistoriaDeUsuario) SegundosMaxPresupuestoEstimadoUtilizado() int {
 	return 10
 }
 
 // Porcentaje utilizado del presupuesto.
-func (h *HistoriaDeUsuario) DesviacionPresupuestal() float64 {
+func (h HistoriaDeUsuario) DesviacionPresupuestal() float64 {
 	return 0
 }
 
 // Tiempo que debería haberse gastado del persupuesto según el avance obtenido.
-func (h *HistoriaDeUsuario) SegundosExpectativaAvancePresupuesto() int {
+func (h HistoriaDeUsuario) SegundosExpectativaAvancePresupuesto() int {
 	return 0
 }
 
 // ================================================================ //
 
 // Para valor en gráfico de barras.
-func (h *HistoriaDeUsuario) HorasPresupuesto() float64 {
+func (h HistoriaDeUsuario) HorasPresupuesto() float64 {
 	return 0
 }
-func (h *HistoriaDeUsuario) HorasEstimado() float64 {
+func (h HistoriaDeUsuario) HorasEstimado() float64 {
 	return 0
 }
-func (h *HistoriaDeUsuario) HorasUtilizado() float64 {
+func (h HistoriaDeUsuario) HorasUtilizado() float64 {
 	return 0
 }
-func (h *HistoriaDeUsuario) HorasExpectativaAvancePresupuesto() float64 {
+func (h HistoriaDeUsuario) HorasExpectativaAvancePresupuesto() float64 {
 	return 0
 }
 

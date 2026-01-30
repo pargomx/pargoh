@@ -11,13 +11,13 @@
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
 			<a tipo="ancestro_directo"
-				href="/proyectos/{{ .Proyecto.ProyectoID }}"
+				href="/h/{{ .Proyecto.ProyectoID }}"
 				>
 				{{ .Proyecto.Titulo }}
 			</a>
 		</h2>
 		<h3 class="flex items-center gap-1 py-1"
-			data-nodo-id="{{ .Persona.PersonaID }}"
+			data-nodo-id="{{ .PersonaID }}"
 			>
 			<span class="px-2 py-1 font-mono text-sm bg-black bg-opacity-40 rounded-md">
 				<i class="fa-solid fa-person"></i>
@@ -43,7 +43,7 @@
 	</h3>
 	{{ range .TareasEnCurso -}}
 	<a class="flex gap-2 transition-colors hover:text-cyan-200"
-		href="/historias/{{ .HistoriaID }}#{{ .TareaID }}"
+		href="/h/{{ .HistoriaID }}#{{ .TareaID }}"
 		>
 		<span class="inline-block w-6 text-center">
 			<i class="text-slate-400 fa-solid fa-list-check"></i>
@@ -62,6 +62,7 @@
 </div>
 {{ end -}}
 
+{{ with .Persona }}
 <main class="grow w-full max-w-5xl p-2 mx-auto">
 	<h3 class="mb-2 text-xl text-cyan-600"
 		title="Personaje"
@@ -72,18 +73,18 @@
 		<i class="fa-solid fa-user"></i>
 	</div>
 	<h4 class="mb-1 text-xl font-semibold text-center">
-		{{ .Persona.Nombre }}
+		{{ .Nombre }}
 	</h4>
 	<div class="mb-4">
 		<textarea id="personaDesc" class="w-full px-2 py-1 text-sm font-medium text-center transition-opacity bg-transparent border-b border-cyan-800 opacity-75 outline-hidden focus:opacity-100 focus:border-blue-400 placeholder:text-slate-600"
-			hx-patch="/personas/{{ .Persona.PersonaID }}/descripcion"
+			hx-patch="/personas/{{ .PersonaID }}/descripcion"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:30s"
 			name="value"
 			placeholder="Descripción del personaje..."
 			rows="1"
 			>
-			{{- .Persona.Descripcion -}}
+			{{- .Descripcion -}}
 		</textarea>
 	</div>
 
@@ -98,13 +99,13 @@
 			<i class="fa-solid fa-square-plus"></i>
 		</button>
 		<a class="float-right px-3 transition-opacity opacity-75 hover:opacity-100"
-			href="/personas/{{ .Persona.PersonaID }}/doc"
+			href="/h/{{ .PersonaID }}/doc"
 			title="Documentación de las historias"
 			>
 			<i class="fa-solid fa-book"></i>
 		</a>
 		<button class="float-right px-3 transition-opacity opacity-75 hover:opacity-100"
-			hx-post="/personas/{{ .Persona.PersonaID }}/docx"
+			hx-post="/h/{{ .PersonaID }}/docx"
 			hx-prompt="Unidoc API Key"
 			hx-swap="none"
 			title="Generar documento docx"
@@ -113,7 +114,7 @@
 		</button>
 	</h3>
 	<div tipo="sort_historias" class="flex flex-col items-stretch gap-4 pb-2"
-		hx-get="/personas/{{ .Persona.PersonaID }}"
+		hx-get="/h/{{ .PersonaID }}"
 		hx-select="[tipo='sort_historias'] > *"
 		hx-swap="innerHTML"
 		hx-target="this"
@@ -121,7 +122,7 @@
 		>
 
 		{{ range .Historias -}}
-		<article id="{{ .Historia.HistoriaID }}" tipo="sort_historia" class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if .Historia.EsPrioridadMust }} border-cyan-800 {{ else if .Historia.EsPrioridadShould }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if .Historia.EsPrioridadCould }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
+		<article id="{{ .HistoriaID }}" tipo="sort_historia" class="flex items-center bg-cyan-950 border-2 rounded-md shadow-lg {{- if .EsPrioridadMust }} border-cyan-800 {{ else if .EsPrioridadShould }} border-cyan-900 bg-cyan-950 opacity-75 {{ else if .EsPrioridadCould }} border-cyan-600 bg-transparent opacity-75 {{ else }} border-cyan-900 bg-transparent opacity-75 {{ end }}">
 			<span tipo="sort_handle" class="p-3 cursor-pointer">
 				<i class="fa-solid fa-grip-vertical"></i>
 				<form tipo="sort_form"
@@ -131,12 +132,12 @@
 					<input
 						type="hidden"
 						name="historia_id"
-						value="{{ .Historia.HistoriaID }}"
+						value="{{ .HistoriaID }}"
 						>
 					<input
 						type="hidden"
 						name="old_pos"
-						value="{{ .Historia.Posicion }}"
+						value="{{ .Posicion }}"
 						>
 					<input
 						type="hidden"
@@ -145,22 +146,22 @@
 				</form>
 			</span>
 			<a class="grow py-2"
-				href="/historias/{{ .Historia.HistoriaID }}"
+				href="/h/{{ .HistoriaID }}"
 				>
-				{{ enfatizar .Historia.Titulo }}
+				{{ enfatizar .Titulo }}
 			</a>
 			<span class="float-right text-sm opacity-75">
 				{{ segundosToString .SegundosPresupuesto }} |
 				{{ .AvancePorcentual }}%
 			</span>
 			<span class="p-3">
-				{{ if .Historia.Completada }}
+				{{ if .Completada }}
 				<i class="text-green-600 fa-solid fa-circle-check"></i>
-				{{- else if .Historia.EsPrioridadMust }}
+				{{- else if .EsPrioridadMust }}
 				<i class="text-orange-600 fa-solid fa-angles-up"></i>
-				{{- else if .Historia.EsPrioridadShould }}
+				{{- else if .EsPrioridadShould }}
 				<i class="text-orange-400 fa-solid fa-chevron-up"></i>
-				{{- else if .Historia.EsPrioridadCould }}
+				{{- else if .EsPrioridadCould }}
 				<i class="text-orange-200 fa-solid fa-minus"></i>
 				{{- end }}
 			</span>
@@ -170,7 +171,7 @@
 		<!-- Agregar historia -->
 		<div>
 			<textarea id="input_AddHistoria" class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/personas/{{ .Persona.PersonaID }}"
+				hx-post="/personas/{{ .PersonaID }}"
 				hx-target="#msgStack"
 				hx-trigger="keyup[key=='Enter']"
 				enterkeyhint="enter"
@@ -183,13 +184,13 @@
 
 	<!-- DESCRIPCIÓN DE LA PERSONA -->
 
-	{{ if .Persona.Descripcion -}}
-	<!-- <details class="py-4">
+	{{ if .Descripcion -}}
+	<details class="py-4">
 		<summary class="opacity-75">Mapa de empatía</summary>
 		<p class="opacity-50">
-			{{ .Persona.Descripcion }}
+			{{ .Descripcion }}
 		</p>
-	</details> -->
+	</details>
 	{{ end }}
 
 	<!--? COSTO DE LAS HISTORIAS -->
@@ -201,7 +202,7 @@
 	<div class="flex flex-wrap justify-around gap-4 mb-4 text-4xl">
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
 			<span class="text-3xl font-bold text-white">
-				{{ segundosToString .Historias.SegundosPresupuesto }}
+				{{ segundosToString .SegundosPresupuesto }}
 			</span>
 			<span class="text-sm text-cyan-200">
 				Presupuesto
@@ -209,15 +210,15 @@
 		</div>
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
 			<span class="text-3xl font-bold text-white">
-				{{ segundosToString .Historias.SegundosEstimado }}
+				{{ segundosToString .SegundosEstimado }}
 			</span>
 			<span class="text-sm text-cyan-200">
 				Estimación
 			</span>
 		</div>
 		<div class="flex flex-col items-center justify-center p-4 px-6 bg-cyan-800 rounded-lg shadow-md">
-			<span class="text-3xl font-bold {{ if gt .Historias.SegundosUtilizado .Historias.SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
-				{{ segundosToString .Historias.SegundosUtilizado }}
+			<span class="text-3xl font-bold {{ if gt .SegundosUtilizado .SegundosPresupuesto }}text-red-400 {{ else }}text-white{{ end }}">
+				{{ segundosToString .SegundosUtilizado }}
 			</span>
 			<span class="text-sm text-cyan-200">
 				Utilizado
@@ -252,7 +253,7 @@
 		new Chart(document.getElementById('chartHistoriasCosto'), {
 			type: 'bar',
 			data: {
-				labels: [{{ range .Historias }}'{{ .Historia.Titulo }}',{{ end }} 'Documentación'],
+				labels: [{{ range .Historias }}'{{ .Titulo }}',{{ end }} 'Documentación'],
 				datasets: [
 					{
 						// MARCA DE TIEMPO ESTIMADO
@@ -283,7 +284,7 @@
 					},
 					{
 						// RELLENO UTILIZADO
-						data: [{{ range .Historias }}{{ .HorasUtilizado }},{{ end }} {{ .Persona.HorasGestion }}],
+						data: [{{ range .Historias }}{{ .HorasUtilizado }},{{ end }} {{ .HorasGestion }}],
 						label: 'Utilizado',
 						backgroundColor: '#155e75',
 						categoryPercentage: 0.8,
@@ -377,7 +378,7 @@
 	{{ end }}
 
 	<!--? DIAS DE TRABAJO -->
-	{{ if .DiasTrabajo -}}
+	{{ if $.DiasTrabajo -}}
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
 		Tiempo invertido
 	</h3>
@@ -417,7 +418,7 @@
 	{{ end }}
 
 	<!--? DIAS DE TRABAJO OLD -->
-	{{ if .DiasTrabajoMapHoras -}}
+	{{ if $.DiasTrabajoMapHoras -}}
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
 		Tiempo invertido
 	</h3>
@@ -446,7 +447,7 @@
 	{{ end }}
 
 	<!--? PROGRESO EN EL PROYECTO -->
-	{{ with .PersonaCosto -}}
+	{{ with $.PersonaCosto -}}
 	<h3 class="mt-4 mb-4 text-xl text-cyan-600">
 		Avance del proyecto
 	</h3>
@@ -544,6 +545,7 @@
 	{{ end }}
 	
 </main>
+{{ end }}
 
 <div id="ctxMenu" tipo="ctxMenu" class="absolute hidden p-2 text-black bg-cyan-50 rounded-sm shadow-md"
 	gk-historia=""
@@ -642,7 +644,7 @@
 			required
 			>
 		<div id="navTreeHistoria" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/pers/{{ .Persona.PersonaID }}"
+			hx-get="/nav/pers/{{ .PersonaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navTreeHistoria"
 			hx-trigger="navTreeHistoriaShown"
@@ -676,7 +678,7 @@
 
 	function tableroHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}/tablero`
+		window.location.href = `/h/${historiaID}/tablero`
 	}
 
 	function priorizarHistoria(prioridad) {

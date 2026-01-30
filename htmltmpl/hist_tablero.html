@@ -4,7 +4,7 @@
 	{{ with .Persona -}}
 	<h3>
 		<a class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"
-			href="/personas/{{ .PersonaID }}"
+			href="/h/{{ .PersonaID }}"
 			>
 			1.
 			<i class="fa-solid fa-person"></i>
@@ -13,7 +13,7 @@
 			Como
 		</span>
 		<a class="text-xl lowercase"
-			href="/personas/{{ .PersonaID }}"
+			href="/h/{{ .PersonaID }}"
 			>
 			{{ .Nombre }}
 		</a>
@@ -25,12 +25,12 @@
 	{{ range .Ancestros -}}
 	<h3>
 		<a class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"
-			href="/historias/{{ .HistoriaID }}/tablero"
+			href="/h/{{ .HistoriaID }}/tablero"
 			>
 			{{ .Nivel }}.{{ .Posicion }}
 		</a>
 		<a class=""
-			href="/historias/{{ .PadreID }}/tablero#{{ .HistoriaID }}"
+			href="/h/{{ .PadreID }}/tablero#{{ .HistoriaID }}"
 			>
 			{{ .Titulo }}
 		</a>
@@ -39,7 +39,7 @@
 		</span>
 		{{ if .NumTareas }}
 		<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
-			href="/historias/{{ .HistoriaID }}"
+			href="/h/{{ .HistoriaID }}"
 			>
 			{{ .NumTareas }} tar.
 		</a>
@@ -49,12 +49,12 @@
 	{{ with .Historia -}}
 	<h3>
 		<a class="px-2 py-1 mr-1 font-mono text-sm bg-black bg-opacity-40 rounded-md"
-			href="/historias/{{ .HistoriaID }}/tablero"
+			href="/h/{{ .HistoriaID }}/tablero"
 			>
 			{{ .Nivel }}.{{ .Posicion }}
 		</a>
 		<a class=""
-			href="/historias/{{ .HistoriaID }}/tablero#{{ .HistoriaID }}"
+			href="/h/{{ .HistoriaID }}/tablero#{{ .HistoriaID }}"
 			>
 			{{ .Titulo }}
 		</a>
@@ -63,7 +63,7 @@
 		</span>
 		{{ if .NumTareas }}
 		<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
-			href="/historias/{{ .HistoriaID }}"
+			href="/h/{{ .HistoriaID }}"
 			>
 			{{ .NumTareas }} tar.
 		</a>
@@ -74,7 +74,7 @@
 </header>
 
 <main tipo="carriles_container" class="flex items-start grow gap-4 p-2 overflow-x-auto"
-	hx-get="/historias/{{ .Historia.HistoriaID }}/tablero"
+	hx-get="/h/{{ .Historia.HistoriaID }}/tablero"
 	hx-select="[tipo='carriles_container'] > *"
 	hx-swap="innerHTML"
 	hx-target="this"
@@ -98,7 +98,7 @@
 			</span>
 			{{ if .NumTareas }}
 			<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
-				href="/historias/{{ .HistoriaID }}"
+				href="/h/{{ .HistoriaID }}"
 				>
 				{{ .NumTareas }}&nbsp;tar.
 			</a>
@@ -127,14 +127,14 @@
 				</span>
 				{{ if .NumHistorias }}
 				<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
-					href="/historias/{{ .HistoriaID }}/tablero"
+					href="/h/{{ .HistoriaID }}/tablero"
 					>
 					{{ .NumHistorias }}&nbsp;his.
 				</a>
 				{{ end }}
 				{{ if .NumTareas }}
 				<a class="px-2 py-1 mr-1 text-sm bg-black bg-opacity-40 rounded-md"
-					href="/historias/{{ .HistoriaID }}"
+					href="/h/{{ .HistoriaID }}"
 					>
 					{{ .NumTareas }}&nbsp;tar.
 				</a>
@@ -276,17 +276,17 @@
 
 	function expandirHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}/tablero`
+		window.location.href = `/h/${historiaID}/tablero`
 	}
 
 	function tareasHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}`
+		window.location.href = `/h/${historiaID}`
 	}
 
 	function moverHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
-		window.location.href = `/historias/${historiaID}/mover`
+		window.location.href = `/h/${historiaID}/mover`
 	}
 
 	function priorizarHistoria(prioridad) {

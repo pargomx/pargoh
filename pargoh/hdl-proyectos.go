@@ -10,6 +10,23 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
+func (s *readhdl) getProyectosActivos(c *gecko.Context) error {
+	nodo, err := s.repo.GetNodo(arbol.NODO_PROYECTOS_ACTIVOS)
+	if err != nil {
+		return err
+	}
+	raiz := nodo.ToGrupo()
+	err = s.repo.AddHijosToGrupo(&raiz)
+	if err != nil {
+		return err
+	}
+	data := map[string]any{
+		"Titulo": raiz.Nombre,
+		"Grupo":  raiz,
+	}
+	return c.RenderOk("grupo", data)
+}
+
 func (s *readhdl) getNodoCualquiera(c *gecko.Context) error {
 
 	data := map[string]any{
@@ -58,6 +75,10 @@ func (s *readhdl) getNodoCualquiera(c *gecko.Context) error {
 		if err != nil {
 			return err
 		}
+		err = s.repo.AddAncestrosToHisUsuario(&raiz)
+		if err != nil {
+			return err
+		}
 		data["Titulo"] = raiz.Titulo
 		data["Historia"] = raiz
 		return c.RenderOk("historia", data)
@@ -72,18 +93,6 @@ func (s *readhdl) getNodoCualquiera(c *gecko.Context) error {
 
 	}
 	return gko.ErrNoSoportado.Msg("Nodo inválido")
-}
-
-func (s *readhdl) listaProyectos(c *gecko.Context) error {
-	raiz, err := s.repo.GetRaiz()
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo": "Pargo",
-		"Raiz":   raiz,
-	}
-	return c.RenderOk("proyectos", data)
 }
 
 func (s *readhdl) listaProyectosOld(c *gecko.Context) error {
