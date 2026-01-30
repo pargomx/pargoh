@@ -11,6 +11,18 @@ import (
 )
 
 func (s *readhdl) listaProyectos(c *gecko.Context) error {
+	raiz, err := s.repo.GetRaiz()
+	if err != nil {
+		return err
+	}
+	data := map[string]any{
+		"Titulo": "Pargo",
+		"Raiz":   raiz,
+	}
+	return c.RenderOk("proyectos", data)
+}
+
+func (s *readhdl) listaProyectosOld(c *gecko.Context) error {
 	type Pry struct {
 		ust.Proyecto
 		Personas []ust.NodoPersona
@@ -19,20 +31,6 @@ func (s *readhdl) listaProyectos(c *gecko.Context) error {
 	if err != nil {
 		return err
 	}
-
-	// Limitar acceso a proyectos...
-	// ses, ok := c.Sesion.(*Sesion)
-	// if !ok {
-	// 	return gko.ErrDatoInvalido.Msg("Sesión inválida")
-	// }
-	// if ses.Usuario != s.cfg.adminUser {
-	// 	pry, err := s.repoOld.GetProyecto(ses.Usuario)
-	// 	if err != nil {
-	// 		gko.Err(err).Strf("usuario '%v' no correspone a ningún proyecto", ses.Usuario).E(gko.ErrNoAutorizado).Log()
-	// 		return c.RedirFull("/logout")
-	// 	}
-	// 	Proyectos = []ust.Proyecto{*pry}
-	// }
 
 	res := make([]Pry, len(Proyectos))
 	for i, p := range Proyectos {

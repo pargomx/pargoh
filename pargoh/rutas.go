@@ -37,6 +37,8 @@ func (s *servidor) registrarRutas() {
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
 
+	s.GET("/n/{nodo_id}", s.r.listaProyectos)
+
 	// Proyectos
 	s.GET("/proyectos", s.r.listaProyectos)
 	s.GET("/proyectos/{proyecto_id}", s.r.getProyecto)

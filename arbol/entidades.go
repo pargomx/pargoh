@@ -1,5 +1,13 @@
 package arbol
 
+type Raiz struct {
+	Grupos        []Grupo
+	Proyectos     []Proyecto
+	TareasEnCurso []Tarea
+}
+
+// ================================================================ //
+
 // Grupo de proyectos para organizarlos en carpetas.
 //
 // Por default se generan dos grupos:

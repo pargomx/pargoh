@@ -75,6 +75,19 @@
 
 <main class="flex flex-col justify-start grow w-full max-w-5xl gap-4 p-2 mx-auto">
 	{{ template "busqueda_input" . }}
+	
+	{{ range .Raiz.Grupos -}}
+	<div class="w-full">
+		<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
+			<a class="transition-opacity hover:opacity-75 w-full mr-10"
+				href="/proyectos/{{ .GrupoID }}"
+				>
+				{{ .Nombre }}
+			</a>
+		</h4>
+		<hr>
+	</div>
+
 	{{ range .Proyectos -}}
 	<article id="{{ .ProyectoID }}" class="relative flex items-center w-full bg-cyan-950 rounded-md shadow-lg"
 		hx-get="/proyectos/{{ .ProyectoID }}"
@@ -98,7 +111,7 @@
 		<div class="w-full p-2">
 			<h4 class="mb-2 text-2xl font-medium flex items-center gap-2">
 				<a class="rounded-md opacity-75 hover:opacity-100 text-lg"
-					href="/proyectos/{{ .Proyecto.ProyectoID }}/doc"
+					href="/proyectos/{{ .ProyectoID }}/doc"
 					title="Documentación"
 					>
 					<i class="fa-solid fa-book"></i>
@@ -136,6 +149,10 @@
 		</button>
 	</article>
 	{{ end }}
+
+	{{ end }}
+
+
 	{{ if not .Proyectos -}}
 	<button class="px-2 py-1 bg-cyan-700 rounded-full"
 		type="button"

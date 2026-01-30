@@ -6,6 +6,51 @@ import (
 	"github.com/pargomx/gecko/gko"
 )
 
+const NODO_ROOT = 1
+
+func (s *Repositorio) GetRaiz() (*arbol.Raiz, error) {
+	op := gko.Op("GetRaiz")
+	desc, err := s.listDescendientes(NODO_ROOT)
+	if err != nil {
+		return nil, op.Err(err)
+	}
+	raiz := arbol.Raiz{
+		Grupos:    desc.Grupos,
+		Proyectos: desc.Proyectos,
+	}
+
+	for i, grupo := range raiz.Grupos {
+		desc, err := s.listDescendientes(grupo.GrupoID)
+		if err != nil {
+			return nil, op.Err(err)
+		}
+		raiz.Grupos[i].Proyectos = desc.Proyectos
+		for j, pry := range desc.Proyectos {
+			desc, err := s.listDescendientes(pry.ProyectoID)
+			if err != nil {
+				return nil, op.Err(err)
+			}
+			raiz.Grupos[i].Proyectos[j].Personas = desc.Personas
+			raiz.Grupos[i].Proyectos[j].HisUsuario = desc.HisUsuario
+			raiz.Grupos[i].Proyectos[j].HisGestion = desc.HisGestion
+			raiz.Grupos[i].Proyectos[j].HisTecnicas = desc.HisTecnicas
+		}
+	}
+
+	for i, pry := range raiz.Proyectos {
+		desc, err := s.listDescendientes(pry.ProyectoID)
+		if err != nil {
+			return nil, op.Err(err)
+		}
+		raiz.Proyectos[i].Personas = desc.Personas
+		raiz.Proyectos[i].HisUsuario = desc.HisUsuario
+		raiz.Proyectos[i].HisGestion = desc.HisGestion
+		raiz.Proyectos[i].HisTecnicas = desc.HisTecnicas
+	}
+
+	return &raiz, nil
+}
+
 func (s *Repositorio) GetProyecto(proyectoID int) (*arbol.Proyecto, error) {
 	op := gko.Op("GetProyecto").Ctx("proyectoID", proyectoID)
 	nod, err := s.GetNodo(proyectoID)
@@ -120,14 +165,17 @@ func (s *Repositorio) GetHistoria(historiaID int) (*arbol.HistoriaDeUsuario, err
 // las entidades de dominio recursivas. No se debería filtrar a la aplicación
 // porque es un detalle de implementación del repositorio.
 type descendientes struct {
+	Grupos    []arbol.Grupo
+	Proyectos []arbol.Proyecto
+
 	Personas    []arbol.Persona
 	HisUsuario  []arbol.HistoriaDeUsuario
 	HisTecnicas []arbol.HistoriaTecnica
 	HisGestion  []arbol.ActividadDeGestión
 
-	Tramos []arbol.Tramo
-	Tareas []arbol.Tarea
 	Reglas []arbol.Regla
+	Tareas []arbol.Tarea
+	Tramos []arbol.Tramo
 }
 
 func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
@@ -139,22 +187,31 @@ func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
 	}
 	for _, nod := range nodos {
 		switch nod.Tipo {
+
 		case "GRP":
-			gko.LogAlertf("Nodo descendiente %v es GRP", nod.NodoID)
+			if padreID != NODO_ROOT {
+				gko.LogAlertf("Nodo descendiente %v es GRP", nod.NodoID)
+			}
+			desc.Grupos = append(desc.Grupos, nod.ToGrupo())
+
 		case "PRY":
-			gko.LogAlertf("Nodo descendiente %v es PRY", nod.NodoID)
+			desc.Proyectos = append(desc.Proyectos, nod.ToProyecto())
 
 		case "PER":
 			desc.Personas = append(desc.Personas, nod.ToPersona())
+
 		case "HIS":
 			desc.HisUsuario = append(desc.HisUsuario, nod.ToHistoriaDeUsuario())
+
 		case "TEC":
 			desc.HisTecnicas = append(desc.HisTecnicas, nod.ToHistoriaTecnica())
+
 		case "GES":
 			desc.HisGestion = append(desc.HisGestion, nod.ToActividadDeGestión())
 
 		case "REG":
 			desc.Reglas = append(desc.Reglas, nod.ToRegla())
+
 		case "TAR":
 			tar := nod.ToTarea()
 			tar.Intervalos, err = s.ListIntervalosByNodoID(tar.TareaID)
@@ -165,6 +222,9 @@ func (s *Repositorio) listDescendientes(padreID int) (descendientes, error) {
 
 		case "VIA":
 			desc.Tramos = append(desc.Tramos, nod.ToTramo())
+
+		case "ROOT":
+			// Ignorar raíz padre de sí misma.
 
 		default:
 			gko.LogAlertf("Nodo descendiente %v tipo %v desconocido", nod.NodoID, nod.Tipo)

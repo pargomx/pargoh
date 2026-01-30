@@ -1,6 +1,8 @@
 package arbol
 
 type ReadRepo interface {
+	GetRaiz() (*Raiz, error)
+
 	GetProyecto(proyectoID int) (*Proyecto, error)
 	GetPersona(personaID int) (*Persona, error)
 	GetHistoria(historiaID int) (*HistoriaDeUsuario, error)
@@ -8,7 +10,6 @@ type ReadRepo interface {
 	GetNodo(NodoID int) (*Nodo, error)
 	ListNodosByPadreID(PadreID int) ([]Nodo, error)
 	ListNodosByPadreIDTipo(PadreID int, Tipo string) ([]Nodo, error)
-
 	ExisteNodo(NodoID int) error
 
 	ListLatidos(desde, hasta string) ([]Latido, error)
