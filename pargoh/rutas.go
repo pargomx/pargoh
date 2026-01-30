@@ -124,7 +124,7 @@ func (s *servidor) registrarRutas() {
 	s.PCH("/nodos/{nodo_id}/{param}", s.w.patchRawNodo)
 
 	// TIME TRACKER
-	s.POS("/nodos/{nodo_id}/time/{seg}", s.postAppTime)
+	s.POS("/nodos/{nodo_id}/time/{seg}", s.w.postAppTime)
 
 	// IMAGENES
 	s.POS("/imagenes", s.setImagenTramo)

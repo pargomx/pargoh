@@ -26,6 +26,28 @@ func NewAppTimeTracker(repo timeTrackerRepo, maxBuffer int) *AppTimeTracker {
 	}
 }
 
+func (s *AppTx) AddTimeSpent(NodoID int, segundos int) error {
+	op := gko.Op("AddTimeSpent")
+	nod, err := s.repo.GetNodo(NodoID)
+	if err != nil {
+		return op.Err(err)
+	}
+	if segundos < 0 {
+		return op.Str("el tiempo no puede ser negativo")
+	}
+	err = s.repo.InsertLatido(Latido{
+		TsLatido: gkt.Now().Format(gkt.FormatoFechaHora),
+		NodoID:   nod.NodoID,
+		Segundos: segundos,
+	})
+	if err != nil {
+		return op.Err(err)
+	}
+	return nil
+}
+
+// DEPRECATED: ya no se usa el buffer, y si se usa esta función dentro de una
+// transacción se queda abierta.
 func (s *AppTimeTracker) AddTimeSpent(NodoID int, segundos int) error {
 	op := gko.Op("AddTimeSpent")
 	nod, err := s.repo.GetNodo(NodoID)
