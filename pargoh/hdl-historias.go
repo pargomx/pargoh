@@ -11,24 +11,8 @@ import (
 // ================================================================ //
 // ========== READ ================================================ //
 
-func (s *readhdl) getHistoria(c *gecko.Context) error {
-	Historia, err := s.repo.GetHistoria(c.PathInt("historia_id"))
-	if err != nil {
-		return err
-	}
-
-	data := map[string]any{
-		"Titulo":          Historia.Titulo,
-		"Agregado":        Historia,
-		"ScriptsHistoria": true,
-		"OldGrafico":      c.QueryBool("old"),
-		"ListaTipoTarea":  ust.ListaTipoTarea,
-	}
-	return c.RenderOk("historia", data)
-}
-
 func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
-	Historia, err := dhistorias.GetHistoria(c.PathInt("historia_id"), dhistorias.GetDescendientes, s.repoOld)
+	Historia, err := dhistorias.GetHistoria(c.PathInt("nodo_id"), dhistorias.GetDescendientes, s.repoOld)
 	if err != nil {
 		return err
 	}

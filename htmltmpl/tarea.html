@@ -46,7 +46,7 @@
 			<tr class="font-mono text-sm text-slate-300">
 				<td class="whitespace-nowrap">
 					<input class="hidden form-control text-sm w-48"
-						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .TsIni }}/ini"
+						hx-patch="/h/{{ .TareaID }}/intervalos/{{ .TsIni }}/ini"
 						hx-select="#tareasList"
 						hx-target="#tareasList"
 						hx-select-oob="#tareasDialogs, #progreso"
@@ -64,7 +64,7 @@
 				</td>
 				<td class="whitespace-nowrap">
 					<input class="hidden form-control text-sm w-48"
-						hx-patch="/tareas/{{ .TareaID }}/intervalos/{{ .TsIni }}/fin"
+						hx-patch="/h/{{ .TareaID }}/intervalos/{{ .TsIni }}/fin"
 						hx-select="#tareasList"
 						hx-target="#tareasList"
 						hx-select-oob="#tareasDialogs, #progreso"

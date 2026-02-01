@@ -21,10 +21,7 @@ func (s *servidor) registrarRutas() {
 	s.gecko.GET("/assets/js/htmx.js", s.gecko.ServirHtmxMinJS())
 	s.gecko.GET("/assets/js/gecko.js", s.gecko.ServirGeckoJS())
 
-	// Imágenes de usuario
-	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)
-
-	// Sesiones
+	// Auth
 	s.gecko.GET("/", s.auth.getLogin)
 	s.gecko.GET("/login", s.auth.getLogin)
 	s.gecko.POS("/login", s.auth.postLogin)
@@ -37,26 +34,19 @@ func (s *servidor) registrarRutas() {
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
 
+	s.POS("/h", s.w.postNodo)
 	s.GET("/h", s.r.getProyectosActivos)
 	s.GET("/h/{nodo_id}", s.r.getNodoCualquiera)
-	s.POS("/h", s.w.postNodo)
+	s.GET("/h/{nodo_id}/tablero", s.r.getHistoriaTablero)
+	s.GET("/h/{nodo_id}/raw", s.r.getRawNodoEditor)
+	s.GET("/h/{nodo_id}/doc", s.r.getDocumentacionProyecto)
+	s.PCH("/h/{nodo_id}/{param}", s.w.patchRawNodo)
 
-	// Proyectos
-	s.GET("/proyectos", s.r.getProyectosActivos)
-	s.GET("/proyectos/{proyecto_id}", s.r.getProyecto)
-	s.GET("/proyectos/{proyecto_id}/doc", s.r.getDocumentacionProyecto)
+	// TIME TRACKER
+	s.POS("/h/{nodo_id}/time/{seg}", s.w.postAppTime)
+	s.GET("/h/{nodo_id}/ws", s.reloader.nuevoWS)
+	s.GET("/reload", s.brodcastReload)
 
-	// Personas
-	s.GET("/personas/{persona_id}", s.r.getPersona)
-	s.GET("/personas/{persona_id}/doc", s.r.getPersonaDoc)
-	s.GET("/personas/{persona_id}/debug", s.r.getPersonaDebug)
-
-	// Historias
-	s.GET("/historias/{historia_id}", s.r.getHistoria)
-	s.GET("/historias/{historia_id}/tablero", s.r.getHistoriaTablero)
-
-	// Tareas técnicas
-	s.GET("/tareas/{tarea_id}", s.r.getTarea)
 	s.GET("/intervalos", s.r.getIntervalos)
 
 	// Quick tasks
@@ -101,18 +91,18 @@ func (s *servidor) registrarRutas() {
 
 	// OTROS
 	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.w.marcarRegla)
-	s.POS("/historias/{historia_id}/priorizar", s.w.priorizarHistoria)
-	s.POS("/historias/{historia_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
-	s.POS("/historias/{historia_id}/marcar", s.w.marcarHistoria)
-	s.POS("/historias/{historia_id}/marcar/{completada}", s.w.marcarHistoria)
+	s.POS("/h/{historia_id}/priorizar", s.w.priorizarHistoria)
+	s.POS("/h/{historia_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
+	s.POS("/h/{historia_id}/marcar", s.w.marcarHistoria)
+	s.POS("/h/{historia_id}/marcar/{completada}", s.w.marcarHistoria)
 
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
-	s.PCH("/tareas/{tarea_id}/estimado", s.w.cambiarEstimadoTarea)
-	s.POS("/tareas/{tarea_id}/importancia", s.w.ciclarImportanciaTarea)
-	s.POS("/tareas/{tarea_id}/iniciar", s.w.iniciarTarea)
-	s.POS("/tareas/{tarea_id}/pausar", s.w.pausarTarea)
-	s.POS("/tareas/{tarea_id}/terminar", s.w.terminarTarea)
-	s.PCH("/tareas/{tarea_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
+	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoTarea)
+	s.POS("/h/{nodo_id}/importancia", s.w.ciclarImportanciaTarea)
+	s.POS("/h/{nodo_id}/iniciar", s.w.iniciarTarea)
+	s.POS("/h/{nodo_id}/pausar", s.w.pausarTarea)
+	s.POS("/h/{nodo_id}/terminar", s.w.terminarTarea)
+	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
 
 	// ELIMINAR
 	s.DEL("/proyectos/{proyecto_id}", s.w.deleteProyecto)
@@ -123,14 +113,8 @@ func (s *servidor) registrarRutas() {
 	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.w.deleteRegla)
 	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.w.deleteTramoDeViaje)
 
-	// Raw nodo
-	s.GET("/nodos/{nodo_id}", s.r.getRawNodoEditor)
-	s.PCH("/nodos/{nodo_id}/{param}", s.w.patchRawNodo)
-
-	// TIME TRACKER
-	s.POS("/nodos/{nodo_id}/time/{seg}", s.w.postAppTime)
-
 	// IMAGENES
+	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)
 	s.POS("/imagenes", s.setImagenTramo)
 	s.PUT("/proyectos/{proyecto_id}", s.setImagenProyecto)
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
@@ -159,9 +143,6 @@ func (s *servidor) registrarRutas() {
 	// s.GET("/metricas2", s.getMétricas2)
 	// s.GET("/materializar-tiempos", s.materializarTiemposTareas)
 	// s.GET("/materializar-historias", s.materializarHistorias)
-
-	s.GET("/reload", s.brodcastReload)
-	s.GET("/historias/{historia_id}/ws", s.reloader.nuevoWS)
 
 	// Mantenimiento
 	s.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })

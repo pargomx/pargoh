@@ -15,12 +15,12 @@
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2"
-		hx-patch="/tareas/{{ .TareaID }}"
+		hx-patch="/h/{{ .TareaID }}"
 		>
 		<div class="pt-2">
 			{{ if .NoIniciada -}}
 			<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
-				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				hx-post="/h/{{ .TareaID }}/iniciar"
 				type="button"
 				onclick="this.closest('dialog').close()"
 				title="Iniciar tarea"
@@ -31,7 +31,7 @@
 			{{ else if .EnCurso -}}
 			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
-					hx-post="/tareas/{{ .TareaID }}/pausar"
+					hx-post="/h/{{ .TareaID }}/pausar"
 					type="button"
 					onclick="this.closest('dialog').close()"
 					title="Pausar tarea"
@@ -40,7 +40,7 @@
 					Pausar
 				</button>
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
-					hx-post="/tareas/{{ .TareaID }}/terminar"
+					hx-post="/h/{{ .TareaID }}/terminar"
 					type="button"
 					onclick="this.closest('dialog').close()"
 					title="Marcar como finalizada"
@@ -52,7 +52,7 @@
 			{{ else if .EnPausa -}}
 			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
-					hx-post="/tareas/{{ .TareaID }}/iniciar"
+					hx-post="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					onclick="this.closest('dialog').close()"
 					title="Iniciar tarea"
@@ -61,7 +61,7 @@
 					Continuar
 				</button>
 				<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
-					hx-post="/tareas/{{ .TareaID }}/terminar"
+					hx-post="/h/{{ .TareaID }}/terminar"
 					type="button"
 					onclick="this.closest('dialog').close()"
 					title="Marcar como finalizada"
@@ -72,7 +72,7 @@
 			</div>
 			{{ else if .Finalizada -}}
 			<button class="inline-block w-full px-4 py-2 text-lg text-slate-100 transition-colors rounded-sm shadow-md bg-cyan-700/70 hover:bg-cyan-700"
-				hx-post="/tareas/{{ .TareaID }}/iniciar"
+				hx-post="/h/{{ .TareaID }}/iniciar"
 				type="button"
 				onclick="this.closest('dialog').close()"
 				title="Iniciar tarea"
@@ -167,7 +167,7 @@
 		</div>
 		<div class="grid grid-cols-1 gap-3 pt-2 md:grid-cols-2">
 			<button class="inline-block w-full px-6 py-2 font-medium text-red-500 transition-colors border-2 border-red-500 rounded-sm shadow-md hover:text-slate-100 hover:bg-red-800 hover:border-transparent"
-				hx-delete="/tareas/{{ .TareaID }}"
+				hx-delete="/h/{{ .TareaID }}"
 				type="button"
 				onclick="this.closest('dialog').close()"
 				>

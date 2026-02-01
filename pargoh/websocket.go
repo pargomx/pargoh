@@ -29,7 +29,7 @@ func (s *reloader) nuevoWS(c *gecko.Context) error {
 		socket := socket{
 			id:         strconv.Itoa(s.lastID),
 			ws:         ws,
-			historiaID: c.PathInt("historia_id"),
+			historiaID: c.PathInt("nodo_id"),
 		}
 		s.sockets = append(s.sockets, socket)
 		// gko.LogDebugf("socket(%v) creado", socket.id)

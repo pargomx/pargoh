@@ -135,6 +135,19 @@ func (s *Repositorio) AddHijosToHisUsuario(raiz *arbol.HistoriaDeUsuario) error 
 		if err != nil {
 			return op.Err(err)
 		}
+
+		raiz.SegundosPresupuesto += raiz.HisUsuario[i].SegundosPresupuesto
+		raiz.SegundosEstimado += raiz.HisUsuario[i].SegundosEstimado
+	}
+
+	for i := range raiz.Tareas {
+		err := s.AddHijosToTarea(&raiz.Tareas[i])
+		if err != nil {
+			return op.Err(err)
+		}
+
+		raiz.SegundosUtilizado += raiz.Tareas[i].SegundosUtilizado
+		raiz.SegundosEstimado += raiz.Tareas[i].SegundosEstimado
 	}
 
 	relacionadas, err := s.ListNodosRelacionados(raiz.HistoriaID)
@@ -145,6 +158,19 @@ func (s *Repositorio) AddHijosToHisUsuario(raiz *arbol.HistoriaDeUsuario) error 
 		raiz.Relacionadas = append(raiz.Relacionadas, nod.ToHistoriaDeUsuario())
 	}
 
+	return nil
+}
+
+func (s *Repositorio) AddHijosToTarea(raiz *arbol.Tarea) error {
+	op := gko.Op("AddHijosToTarea").Ctx("TareaID", raiz.TareaID)
+	desc, err := s.ListIntervalosByNodoID(raiz.TareaID)
+	if err != nil {
+		return op.Err(err)
+	}
+	raiz.Intervalos = desc
+	for _, v := range raiz.Intervalos {
+		raiz.SegundosUtilizado += v.Segundos()
+	}
 	return nil
 }
 

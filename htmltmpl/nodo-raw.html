@@ -7,7 +7,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">NodoID</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/nodo_id"
+				hx-patch="/h/{{ .NodoID }}/nodo_id"
 				type="text"
 				name="nodo_id"
 				value="{{ .NodoID }}">
@@ -15,7 +15,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">PadreID</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/padre_id"
+				hx-patch="/h/{{ .NodoID }}/padre_id"
 				type="text"
 				name="padre_id"
 				value="{{ .PadreID }}">
@@ -23,7 +23,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Tipo</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/tipo"
+				hx-patch="/h/{{ .NodoID }}/tipo"
 				type="text"
 				name="tipo"
 				value="{{ .Tipo }}">
@@ -31,7 +31,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Posicion</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/posicion"
+				hx-patch="/h/{{ .NodoID }}/posicion"
 				type="text"
 				name="posicion"
 				value="{{ .Posicion }}">
@@ -42,7 +42,7 @@
 		<label class="grid gap-1 col-span-2">
 			<span class="text-sm font-medium">Titulo</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/titulo"
+				hx-patch="/h/{{ .NodoID }}/titulo"
 				type="text"
 				name="titulo"
 				value="{{ .Titulo }}">
@@ -50,7 +50,7 @@
 		<label class="grid gap-1 col-span-2">
 			<span class="text-sm font-medium">Descripcion</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/descripcion"
+				hx-patch="/h/{{ .NodoID }}/descripcion"
 				type="text"
 				name="descripcion"
 				value="{{ .Descripcion }}">
@@ -58,7 +58,7 @@
 		<label class="grid gap-1 col-span-2">
 			<span class="text-sm font-medium">Objetivo</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/objetivo"
+				hx-patch="/h/{{ .NodoID }}/objetivo"
 				type="text"
 				name="objetivo"
 				value="{{ .Objetivo }}">
@@ -66,7 +66,7 @@
 		<label class="grid gap-1 col-span-2">
 			<span class="text-sm font-medium">Notas</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/notas"
+				hx-patch="/h/{{ .NodoID }}/notas"
 				type="text"
 				name="notas"
 				value="{{ .Notas }}">
@@ -77,7 +77,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Color</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/color"
+				hx-patch="/h/{{ .NodoID }}/color"
 				type="text"
 				name="color"
 				value="{{ .Color }}">
@@ -85,7 +85,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Imagen</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/imagen"
+				hx-patch="/h/{{ .NodoID }}/imagen"
 				type="text"
 				name="imagen"
 				value="{{ .Imagen }}">
@@ -96,7 +96,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Prioridad</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/prioridad"
+				hx-patch="/h/{{ .NodoID }}/prioridad"
 				type="text"
 				name="prioridad"
 				value="{{ .Prioridad }}">
@@ -104,7 +104,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Estatus</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/estatus"
+				hx-patch="/h/{{ .NodoID }}/estatus"
 				type="text"
 				name="estatus"
 				value="{{ .Estatus }}">
@@ -112,7 +112,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Segundos</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/segundos"
+				hx-patch="/h/{{ .NodoID }}/segundos"
 				type="text"
 				name="segundos"
 				value="{{ .Segundos }}">
@@ -120,7 +120,7 @@
 		<label class="grid gap-1">
 			<span class="text-sm font-medium">Centavos</span>
 			<input class="p-2 text-white bg-black/20 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-				hx-patch="/nodos/{{ .NodoID }}/centavos"
+				hx-patch="/h/{{ .NodoID }}/centavos"
 				type="text"
 				name="centavos"
 				value="{{ .Centavos }}">

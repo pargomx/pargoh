@@ -30,7 +30,7 @@ func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 		return err
 	}
 	tarea := ust.Tarea{
-		TareaID:          c.FormInt("tarea_id"),
+		TareaID:          c.FormInt("nodo_id"),
 		HistoriaID:       c.FormInt("historia_id"),
 		Tipo:             ust.SetTipoTareaDB(c.FormVal("tipo")),
 		Descripcion:      c.FormVal("descripcion"),
@@ -38,7 +38,7 @@ func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 		SegundosEstimado: estimado,
 		Importancia:      ust.SetImportanciaTareaDB(c.FormVal("importancia")),
 	}
-	err = dhistorias.ActualizarTarea(c.PathInt("tarea_id"), tarea, s.repoOld)
+	err = dhistorias.ActualizarTarea(c.PathInt("nodo_id"), tarea, s.repoOld)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 
 func (s *writehdl) ciclarImportanciaTarea(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("tarea_id"),
+		NodoID: c.PathInt("nodo_id"),
 		Campo:  "importancia",
 		NewVal: "",
 	}
@@ -66,7 +66,7 @@ func (s *writehdl) ciclarImportanciaTarea(c *gecko.Context, tx *handlerTx) error
 
 func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("tarea_id"),
+		NodoID: c.PathInt("nodo_id"),
 		Campo:  "estimado",
 		NewVal: c.PromptVal(),
 	}
@@ -83,7 +83,7 @@ func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) iniciarTarea(c *gecko.Context, tx *handlerTx) error {
-	tareaID := c.PathInt("tarea_id")
+	tareaID := c.PathInt("nodo_id")
 	err := tx.app.IniciarTarea(tareaID)
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func (s *writehdl) iniciarTarea(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) pausarTarea(c *gecko.Context, tx *handlerTx) error {
-	tareaID := c.PathInt("tarea_id")
+	tareaID := c.PathInt("nodo_id")
 	err := tx.app.PausarTarea(tareaID)
 	if err != nil {
 		return err
@@ -111,7 +111,7 @@ func (s *writehdl) pausarTarea(c *gecko.Context, tx *handlerTx) error {
 }
 
 func (s *writehdl) terminarTarea(c *gecko.Context, tx *handlerTx) error {
-	tareaID := c.PathInt("tarea_id")
+	tareaID := c.PathInt("nodo_id")
 	err := tx.app.FinalizarTarea(tareaID)
 	if err != nil {
 		return err
@@ -134,23 +134,6 @@ func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
 }
 */
 
-func (s *readhdl) getTarea(c *gecko.Context) error {
-	nod, err := s.repo.GetNodo(c.PathInt("tarea_id"))
-	if err != nil {
-		return err
-	}
-	tarea := nod.ToTarea()
-	intervalos, err := s.repo.ListIntervalosByNodoID(tarea.TareaID)
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Tarea":      tarea,
-		"Intervalos": intervalos,
-	}
-	return c.RenderOk("tarea", data)
-}
-
 func (s *readhdl) getIntervalos(c *gecko.Context) error {
 	recientes, err := s.repoOld.ListIntervalosRecientes()
 	if err != nil {
@@ -170,7 +153,7 @@ func (s *readhdl) getIntervalos(c *gecko.Context) error {
 
 func (s *writehdl) patchIntervalo(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharIntervalo{
-		NodoID: c.PathInt("tarea_id"),
+		NodoID: c.PathInt("nodo_id"),
 		TsID:   c.PathVal("ts_id"),
 	}
 	if c.PathVal("cambiar") == "ini" {

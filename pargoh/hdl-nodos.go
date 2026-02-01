@@ -31,5 +31,5 @@ func (s *writehdl) patchRawNodo(c *gecko.Context, tx *handlerTx) error {
 	if err != nil {
 		return err
 	}
-	return c.RedirOtrof("/nodos/%v", c.PathInt("nodo_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("nodo_id"))
 }

@@ -8,47 +8,6 @@ import (
 	"github.com/pargomx/gecko"
 )
 
-func (s *readhdl) getPersona(c *gecko.Context) error {
-	Per, err := s.repo.GetPersona(c.PathInt("persona_id"))
-	if err != nil {
-		return err
-	}
-
-	Persona, err := s.repoOld.GetPersona(c.PathInt("persona_id"))
-	if err != nil {
-		return err
-	}
-	Proyecto, err := s.repoOld.GetProyecto(Persona.ProyectoID)
-	if err != nil {
-		return err
-	}
-	// Historias, err := dhistorias.GetHistoriasDescendientes(Persona.PersonaID, 0, s.repo)
-	hists, err := s.repoOld.ListHistoriasByPadreID(Persona.PersonaID)
-	if err != nil {
-		return err
-	}
-	Historias := make(dhistorias.HistoriaAgregadoList, len(hists))
-	for i, h := range hists {
-		agg, err := dhistorias.GetHistoria(h.HistoriaID, dhistorias.GetDescendientes, s.repoOld)
-		if err != nil {
-			return err
-		}
-		Historias[i] = *agg
-	}
-	TareasEnCurso, err := s.repoOld.ListTareasEnCurso()
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":        Persona.Nombre + " - " + Proyecto.Titulo,
-		"Persona":       Per,
-		"Proyecto":      Proyecto,
-		"Historias":     Historias,
-		"TareasEnCurso": TareasEnCurso,
-	}
-	return c.RenderOk("persona", data)
-}
-
 func (s *readhdl) getPersonaDoc(c *gecko.Context) error {
 	Persona, err := s.repoOld.GetPersona(c.PathInt("persona_id"))
 	if err != nil {

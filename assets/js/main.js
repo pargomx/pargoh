@@ -453,7 +453,7 @@ let interactionTimeout;
 
 // Enviar un pulso de actividad al servidor.
 function sendHeartbeat() {
-	fetch(`/nodos/${timeNodoID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
+	fetch(`/h/${timeNodoID}/time/${segundosParaEnviarHeartbeat}`, { method: 'POST' }).then(response => {
 	    if (!response.ok) {
 			// TODO: no dar error al usuario, pero guardar en localStorage y enviar cuando se pueda.
 			// localStorage.setItem('timeActive', segundosContados);

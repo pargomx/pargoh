@@ -329,7 +329,7 @@ function showMoverTarea(tareaID, descripcion) {
  */
 function showIntervalos(tareaID) {
 	let intervalosList = document.getElementById("intervalosList")
-	intervalosList.setAttribute("hx-get", "/tareas/" + tareaID)
+	intervalosList.setAttribute("hx-get", "/h/" + tareaID)
 	htmx.process(intervalosList)
 	intervalosList.dispatchEvent(new Event("cargarIntervalos"))
 	document.getElementById("modalIntervalos").showModal()

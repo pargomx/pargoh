@@ -81,7 +81,19 @@ func (s *readhdl) getNodoCualquiera(c *gecko.Context) error {
 		}
 		data["Titulo"] = raiz.Titulo
 		data["Historia"] = raiz
+		data["ScriptsHistoria"] = true
 		return c.RenderOk("historia", data)
+
+	case arbol.TipoTarea:
+		raiz := nodo.ToTarea()
+		intervalos, err := s.repo.ListIntervalosByNodoID(raiz.TareaID)
+		if err != nil {
+			return err
+		}
+		data["Titulo"] = raiz.Descripcion
+		data["Tarea"] = raiz
+		data["Intervalos"] = intervalos
+		return c.RenderOk("tarea", data)
 
 	case "ROOT":
 		// Ignorar raíz padre de sí misma.
@@ -187,7 +199,7 @@ func (s *readhdl) getProyecto(c *gecko.Context) error {
 }
 
 func (s *readhdl) getDocumentacionProyecto(c *gecko.Context) error {
-	Proyecto, err := s.repoOld.GetProyecto(c.PathVal("proyecto_id"))
+	Proyecto, err := s.repoOld.GetProyecto(c.PathVal("nodo_id"))
 	if err != nil {
 		return err
 	}

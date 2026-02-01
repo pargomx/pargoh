@@ -71,7 +71,7 @@
 <div class="p-2">
 	<div>
 		<textarea
-			hx-patch="/proyectos/{{ .ProyectoID }}/titulo"
+			hx-patch="/h/{{ .ProyectoID }}/titulo"
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:2s"
 			name="value"
@@ -82,7 +82,7 @@
 	</div>
 	<div>
 		<textarea
-			hx-patch="/proyectos/{{ .ProyectoID }}/descripcion"
+			hx-patch="/h/{{ .ProyectoID }}/descripcion"
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:2s"
 			name="value"
