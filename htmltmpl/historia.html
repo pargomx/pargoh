@@ -841,7 +841,7 @@
 					{{ end }}
 					<button class="ml-1 transition-opacity opacity-0 cursor-pointer group-hover:opacity-80 focus:opacity-80"
 						type="button"
-						onclick="showMoverTramo('{{ .HistoriaID }}','{{ .Posicion }}','{{ .Texto }}')"
+						onclick="showMoverTramo('{{ .TramoID }}','{{ .Posicion }}','{{ .Texto }}')"
 						title="Mover tarea"
 						>
 						<i class="fa-solid fa-person-walking"></i>
@@ -1397,11 +1397,11 @@
 	</header>
 	<form class="flex flex-col gap-2 p-2">
 		<p class="mb-2 italic">
-			Nombre de la tramo
+			Nombre del tramo
 		</p>
 		<input
 			type="hidden"
-			name="historia_id"
+			name="nodo_id"
 			required
 			>
 		<input
@@ -1410,7 +1410,7 @@
 			required
 			>
 		<div id="navTreeTramo" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
+			hx-get="/nav/{{ .Historia.HistoriaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navTreeTramo"
 			hx-trigger="navTreeTramoShown"
@@ -1418,7 +1418,7 @@
 			<!-- nav_tree -->
 		</div>
 		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
-			hx-post="/mover/tramo"
+			hx-post="/mover"
 			hx-select="main"
 			hx-swap="outerHTML"
 			hx-target="main"
@@ -1451,11 +1451,11 @@
 		</p>
 		<input
 			type="hidden"
-			name="tarea_id"
+			name="nodo_id"
 			required
 			>
 		<div class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav{{ if . }}/hist/{{ . }}{{ end }}"
+			hx-get="/nav/{{ . }}"
 			hx-swap="innerHTML"
 			hx-target="this"
 			hx-trigger="intersect once"
@@ -1463,7 +1463,7 @@
 			<!-- nav_tree -->
 		</div>
 		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
-			hx-post="/mover/tarea"
+			hx-post="/mover"
 			hx-select="main"
 			hx-swap="outerHTML"
 			hx-target="main"
@@ -1495,11 +1495,11 @@
 		</p>
 		<input
 			type="hidden"
-			name="historia_id"
+			name="nodo_id"
 			required
 			>
 		<div id="navTreeHistoria" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
+			hx-get="/nav/{{ .Historia.HistoriaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navTreeHistoria"
 			hx-trigger="navTreeHistoriaShown"
@@ -1507,7 +1507,7 @@
 			<!-- nav_tree -->
 		</div>
 		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
-			hx-post="/mover/historia"
+			hx-post="/mover"
 			hx-select="main"
 			hx-swap="outerHTML"
 			hx-target="main"
@@ -1534,7 +1534,7 @@
 	</header>
 	<form class="flex flex-col gap-2 p-2">
 		<div id="navAddReferencia" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/hist/{{ .Historia.HistoriaID }}"
+			hx-get="/nav/{{ .Historia.HistoriaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navAddReferencia"
 			hx-trigger="navAddReferenciaShown"

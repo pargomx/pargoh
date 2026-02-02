@@ -2,6 +2,7 @@ package arbol
 
 type ReadRepo interface {
 	GetNodo(NodoID int) (*Nodo, error)
+	GetNodoConArbol(nodoID int) (*NodoConSuArbol, error)
 
 	GetProyecto(proyectoID int) (*Proyecto, error)
 	GetPersona(personaID int) (*Persona, error)

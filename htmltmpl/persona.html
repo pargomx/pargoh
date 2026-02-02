@@ -640,11 +640,11 @@
 		</p>
 		<input
 			type="hidden"
-			name="historia_id"
+			name="nodo_id"
 			required
 			>
 		<div id="navTreeHistoria" class="flex flex-col gap-1 sm:w-96"
-			hx-get="/nav/pers/{{ .PersonaID }}"
+			hx-get="/nav/{{ .PersonaID }}"
 			hx-swap="innerHTML"
 			hx-target="#navTreeHistoria"
 			hx-trigger="navTreeHistoriaShown"
@@ -652,7 +652,7 @@
 			<!-- nav_tree -->
 		</div>
 		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
-			hx-post="/mover/historia"
+			hx-post="/mover"
 			hx-select="main"
 			hx-swap="outerHTML"
 			hx-target="main"
@@ -671,8 +671,9 @@
 		historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let mov = document.getElementById('moverHistoria');
 		mov.showModal();
-		mov.querySelector('input[name=historia_id]').value = historiaID;
-		mov.querySelector('p').innerText = descripcion;
+		mov.querySelector('input[name=nodo_id]').value = historiaID;
+		// mov.querySelector('p').innerText = descripcion;
+		mov.querySelector('p').innerText = document.getElementById(historiaID).innerText;
 		document.getElementById('navTreeHistoria').dispatchEvent(new Event('navTreeHistoriaShown'));
 	}
 

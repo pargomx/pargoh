@@ -66,8 +66,6 @@ func (s *servidor) registrarRutas() {
 	s.POS("/h/{nodo_id}/marcar", s.w.marcarHistoria)
 	s.POS("/h/{nodo_id}/marcar/{completada}", s.w.marcarHistoria)
 
-	s.GET("/h/{nodo_id}/mover", s.r.moverHistoriaForm)
-
 	// TIME TRACKER
 	s.POS("/h/{nodo_id}/time/{seg}", s.w.postAppTime)
 	s.GET("/h/{nodo_id}/ws", s.reloader.nuevoWS)
@@ -81,15 +79,10 @@ func (s *servidor) registrarRutas() {
 
 	// Navegador del árbol de historias
 	s.GET("/nav", s.r.navDesdeRoot)
-	s.GET("/nav/proy/{proyecto_id}", s.r.navDesdeProyecto)
-	s.GET("/nav/pers/{persona_id}", s.r.navDesdePersona)
-	s.GET("/nav/hist/{historia_id}", s.r.navDesdeHistoria)
+	s.GET("/nav/{nodo_id}", s.r.navDesdeNodo)
 
 	// MOVER
-	s.POS("/historias/{historia_id}/mover", s.w.moverHistoria)
-	s.POS("/mover/tramo", s.w.moverTramo)
-	s.POS("/mover/tarea", s.w.moverTarea)
-	s.POS("/mover/historia", s.w.moverHistoria)
+	s.POS("/mover", s.w.moverNodo)
 
 	// REORDENAR
 	s.POS("/reordenar", s.w.reordenarNodo)

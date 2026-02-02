@@ -1,8 +1,6 @@
 package main
 
 import (
-	"monorepo/dhistorias"
-
 	"github.com/pargomx/gecko"
 )
 
@@ -27,20 +25,3 @@ func (s *servidor) materializarHistorias(c *gecko.Context) error {
 	return c.StringOk("Proyecto y persona materializados para historias")
 }
 */
-
-func (s *readhdl) moverHistoriaForm(c *gecko.Context) error {
-	historia, err := s.repoOld.GetNodoHistoria(c.PathInt("nodo_id"))
-	if err != nil {
-		return err
-	}
-	arboles, err := dhistorias.GetArbolCompleto(s.repoOld)
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":   "Mover historia",
-		"Arboles":  arboles,
-		"Historia": historia,
-	}
-	return c.RenderOk("hist_mover", data)
-}

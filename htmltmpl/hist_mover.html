@@ -3,7 +3,7 @@
 	<li>
 		<input id="{{ .Historia.HistoriaID }}"
 			type="radio"
-			name="nuevo_padre_id"
+			name="new_padre_id"
 			value="{{ .Historia.HistoriaID }}"
 			>
 		<label for="{{ .Historia.HistoriaID }}">
@@ -32,7 +32,7 @@
 	</p>
 </header>
 <form id="formMoverHistoria" class="flex flex-col items-start grow p-4 overflow-y-auto"
-	action="/h/{{ .Historia.HistoriaID }}/mover"
+	action="/mover"
 	method="POST"
 	>
 	<ul class="grow px-4">
@@ -40,7 +40,7 @@
 		<li class="pt-4">
 			<input id="{{ .Persona.PersonaID }}"
 				type="radio"
-				name="nuevo_padre_id"
+				name="new_padre_id"
 				value="{{ .Persona.PersonaID }}"
 				>
 			<label class="text-lg"

@@ -44,11 +44,11 @@ function initSortableTramos() {
 	logTimeHasta("initSortableTramos", sortableElement)
 }
 
-function showMoverTramo(historiaID, posicion, descripcion) {
-	console.log(`showMoverTramo(${historiaID},${posicion})`);
+function showMoverTramo(tramoID, posicion, descripcion) {
+	console.log(`showMoverTramo(${tramoID},${posicion})`);
 	let mov = document.getElementById('moverTramo');
 	mov.showModal();
-	mov.querySelector('input[name=historia_id]').value = historiaID;
+	mov.querySelector('input[name=nodo_id]').value = tramoID;
 	mov.querySelector('input[name=posicion]').value = posicion;
 	mov.querySelector('p').innerText = descripcion;
 	document.getElementById('navTreeTramo').dispatchEvent(new Event('navTreeTramoShown'));
@@ -280,7 +280,7 @@ function showMoverHistoria(historiaID, descripcion) {
 	console.log(`showMoverHistoria(${historiaID})`);
 	let mov = document.getElementById('moverHistoria');
 	mov.showModal();
-	mov.querySelector('input[name=historia_id]').value = historiaID;
+	mov.querySelector('input[name=nodo_id]').value = historiaID;
 	mov.querySelector('p').innerText = descripcion;
 	document.getElementById('navTreeHistoria').dispatchEvent(new Event('navTreeHistoriaShown'));
 }
@@ -319,7 +319,7 @@ function editNotasImplementacion(btn) {
 function showMoverTarea(tareaID, descripcion) {
 	let mov = document.getElementById('moverTareaDialog');
 	mov.showModal();
-	mov.querySelector('input[name=tarea_id]').value = tareaID;
+	mov.querySelector('input[name=nodo_id]').value = tareaID;
 	mov.querySelector('p').innerText = descripcion;
 }
 

@@ -22,6 +22,31 @@ type Raiz struct {
 	TareasEnCurso []Tarea
 }
 
+type NodoConSuArbol struct {
+	Nodo
+	Ancestros []Nodo
+	Descendientes
+	NodosHijo []Nodo
+}
+
+// Para obtener del repositorio todos los Descendientes de un nodo y hacer lo
+// que sea al respecto. Solo debe utilizarce como DTO interno entre los nodos y
+// las entidades de dominio recursivas. No se debería filtrar a la aplicación
+// porque es un detalle de implementación del repositorio.
+type Descendientes struct {
+	Grupos    []Grupo
+	Proyectos []Proyecto
+
+	Personas    []Persona
+	HisUsuario  []HistoriaDeUsuario
+	HisTecnicas []HistoriaTecnica
+	HisGestion  []ActividadDeGestión
+
+	Reglas []Regla
+	Tareas []Tarea
+	Tramos []Tramo
+}
+
 // ================================================================ //
 
 // Grupo de proyectos para organizarlos en carpetas.
