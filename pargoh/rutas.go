@@ -92,10 +92,7 @@ func (s *servidor) registrarRutas() {
 	s.POS("/mover/historia", s.w.moverHistoria)
 
 	// REORDENAR
-	s.POS("/reordenar-persona", s.w.reordenarPersona)
-	s.POS("/reordenar-historia", s.w.reordenarHistoria)
-	s.POS("/reordenar-tramo", s.w.reordenarTramo)
-	s.POS("/reordenar-regla", s.w.reordenarRegla)
+	s.POS("/reordenar", s.w.reordenarNodo)
 
 	// IMAGENES
 	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)

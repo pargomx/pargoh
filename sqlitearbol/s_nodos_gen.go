@@ -208,7 +208,7 @@ func (s *Repositorio) ListNodosByPadreID(PadreID int) ([]arbol.Nodo, error) {
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodo+" "+fromNodo+
-			"WHERE padre_id = ?",
+			"WHERE padre_id = ? ORDER BY tipo, posicion",
 		PadreID,
 	)
 	if err != nil {
@@ -230,7 +230,7 @@ func (s *Repositorio) ListNodosByPadreIDTipo(PadreID int, Tipo string) ([]arbol.
 	}
 	rows, err := s.db.Query(
 		"SELECT "+columnasNodo+" "+fromNodo+
-			"WHERE padre_id = ? AND tipo = ?",
+			"WHERE padre_id = ? AND tipo = ? ORDER BY posicion",
 		PadreID, Tipo,
 	)
 	if err != nil {

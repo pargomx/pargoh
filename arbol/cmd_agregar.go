@@ -58,11 +58,31 @@ func (s *AppTx) AgregarHoja(args ArgsAgregarHoja) error {
 		return op.Msg("el nodo padre no puede tener descendientes")
 	}
 
+	hermanos, err := s.repo.ListNodosByPadreIDTipo(padre.NodoID, args.Tipo)
+	if err != nil {
+		return op.Err(err)
+	}
+	siguientePosicion := 1
+
+	// Comprobar posiciones de hermanos y corregir automáticamente.
+	for i, hermano := range hermanos {
+		if hermano.Posicion != siguientePosicion {
+			gko.LogWarnf("Corrigiendo posición de %vº hijo de %v: debería ser %v pero era %v", i+1, hermano.PadreID, siguientePosicion, hermano.Posicion)
+			hermano.Posicion = siguientePosicion
+			err = s.repo.UpdateNodo(hermano.NodoID, hermano)
+			if err != nil {
+				return op.Err(err).Str("imposible corregir posición de hermano")
+			}
+		}
+		siguientePosicion++
+	}
+
 	err = s.repo.InsertNodo(Nodo{
-		NodoID:  args.NodoID,
-		PadreID: args.PadreID,
-		Tipo:    args.Tipo,
-		Titulo:  args.Titulo,
+		NodoID:   args.NodoID,
+		PadreID:  args.PadreID,
+		Tipo:     args.Tipo,
+		Titulo:   args.Titulo,
+		Posicion: siguientePosicion,
 	})
 	if err != nil {
 		return op.Err(err)

@@ -126,12 +126,12 @@
 			<span tipo="sort_handle" class="p-3 cursor-pointer">
 				<i class="fa-solid fa-grip-vertical"></i>
 				<form tipo="sort_form"
-					hx-post="/reordenar-historia"
+					hx-post="/reordenar"
 					hx-trigger="reordenarEnd"
 					>
 					<input
 						type="hidden"
-						name="historia_id"
+						name="nodo_id"
 						value="{{ .HistoriaID }}"
 						>
 					<input

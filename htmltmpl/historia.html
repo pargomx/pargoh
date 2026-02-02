@@ -196,12 +196,12 @@
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 					⣿
 					<form tipo="sort_form"
-						hx-post="/reordenar-historia"
+						hx-post="/reordenar"
 						hx-trigger="reordenarEnd"
 						>
 						<input
 							type="hidden"
-							name="historia_id"
+							name="nodo_id"
 							value="{{ .HistoriaID }}"
 							>
 						<input
@@ -683,15 +683,15 @@
 				>
 				⣿
 				<form tipo="sort_form"
-					hx-post="/reordenar-regla"
+					hx-post="/reordenar"
 					hx-select="#reglasDeNegocio"
 					hx-target="#reglasDeNegocio"
 					hx-trigger="reordenarEnd"
 					>
 					<input
 						type="hidden"
-						name="historia_id"
-						value="{{ .HistoriaID }}"
+						name="nodo_id"
+						value="{{ .ReglaID }}"
 						>
 					<input
 						type="hidden"
@@ -793,15 +793,15 @@
 				<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 					⣿
 					<form tipo="sort_form"
-						hx-post="/reordenar-tramo"
+						hx-post="/reordenar"
 						hx-select="#viajeList"
 						hx-target="#viajeList"
 						hx-trigger="reordenarEnd"
 						>
 						<input
 							type="hidden"
-							name="historia_id"
-							value="{{ .HistoriaID }}"
+							name="nodo_id"
+							value="{{ .TramoID }}"
 							>
 						<input
 							type="hidden"
@@ -1009,13 +1009,13 @@
 			<div tipo="sort_handle" class="hidden transition-opacity opacity-0 cursor-pointer md:block group-hover:opacity-100">
 				⣿
 				<form tipo="sort_form"
-					hx-post="/reordenar-tarea"
+					hx-post="/reordenar"
 					hx-trigger="reordenarEnd"
 					>
 					<input
 						type="hidden"
-						name="historia_id"
-						value="{{ .HistoriaID }}"
+						name="nodo_id"
+						value="{{ .TareaID }}"
 						>
 					<input
 						type="hidden"
