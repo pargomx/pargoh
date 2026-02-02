@@ -204,46 +204,23 @@
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2"
-		hx-post="/personas"
+		hx-post="/h/{{ .ProyectoID }}/persona"
 		>
-		<div>
-			<label for="newPers_00">
-				Proyecto
-			</label>
-			<select id="newPers_00" class="form-control"
-				name="proyecto_id"
-				>
-				{{ range $.Proyectos -}}
-				<option value="{{ .ProyectoID }}" {{ if eq $.Proyecto.ProyectoID .ProyectoID }}selected{{ end }}>
-					{{ .Titulo }}
-				</option>
-				{{ end }}
-			</select>
-		</div>
 		<div>
 			<label for="newPers_01">
 				Nombre
 			</label>
 			<input id="newPers_01" class="form-control"
 				type="text"
-				name="nombre"
+				name="titulo"
 				value=""
 				>
-		</div>
-		<div>
-			<label for="newPers_02">
-				Descripción
-			</label>
-			<textarea id="newPers_02" class="form-control"
-				name="descripcion"
-				rows="1"
-				></textarea>
 		</div>
 		<button class="grow p-2 text-lg font-semibold transition-colors bg-cyan-700 rounded-sm shadow-md hover:bg-cyan-600"
 			type="submit"
 			onclick="this.closest('dialog').close()"
 			>
-			Guardar
+			Agregar
 		</button>
 	</form>
 </dialog>

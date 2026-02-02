@@ -295,7 +295,7 @@
 					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 				</span>
 				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-					hx-post="/h/{{ .HistoriaID }}"
+					hx-post="/h/{{ .HistoriaID }}/historia"
 					hx-trigger="keyup[key=='Enter']"
 					enterkeyhint="enter"
 					name="titulo"
@@ -748,12 +748,12 @@
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 			</div>
 			<textarea id="input_AddRegla" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/h/{{ .HistoriaID }}/reglas"
+				hx-post="/h/{{ .HistoriaID }}/regla"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				hx-trigger="keyup[key=='Enter']"
 				enterkeyhint="enter"
-				name="texto"
+				name="titulo"
 				placeholder="Agregar regla"
 				rows="1"
 				></textarea>
@@ -869,11 +869,11 @@
 			</div>
 			<textarea id="input_AddTramo" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
 				hx-post="/h/{{ .HistoriaID }}/viaje"
-				hx-select="#viajeList"
+				hx-select="#viajeList"c
 				hx-target="#viajeList"
 				hx-trigger="keyup[key=='Enter']"
 				enterkeyhint="enter"
-				name="texto"
+				name="titulo"
 				placeholder="Agregar un tramo al viaje"
 				rows="1"
 				></textarea>

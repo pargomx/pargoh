@@ -2,29 +2,12 @@ package main
 
 import (
 	"monorepo/arbol"
-	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
 )
 
 // ================================================================ //
 // ========== REGLAS DE NEGOCIO =================================== //
-
-func (s *writehdl) postRegla(c *gecko.Context, tx *handlerTx) error {
-	args := arbol.ArgsAgregarHoja{
-		Tipo:    "REG",
-		NodoID:  ust.NewRandomID(),
-		PadreID: c.PathInt("nodo_id"),
-		Titulo:  c.FormValue("texto"),
-	}
-	err := tx.app.AgregarHoja(args)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/h/%v", args.PadreID)
-}
 
 func (s *writehdl) patchRegla(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{

@@ -148,7 +148,7 @@
 
 		<footer class="p-1 pt-2">
 			<input class="block w-full p-3 bg-slate-800 rounded-md shadow-lg opacity-50 focus:opacity-100"
-				hx-post="/h/{{ .HistoriaID }}"
+				hx-post="/h/{{ .HistoriaID }}/historia"
 				hx-target="#msgStack"
 				type="text"
 				name="titulo"
@@ -159,7 +159,7 @@
 	{{ end }}
 	
 	<input class="inline-block p-3 bg-cyan-900 rounded-md shadow-lg opacity-50 focus:opacity-100"
-		hx-post="/h/{{ .Historia.HistoriaID }}"
+		hx-post="/h/{{ .Historia.HistoriaID }}/historia"
 		hx-target="#msgStack"
 		type="text"
 		name="titulo"

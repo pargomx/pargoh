@@ -171,7 +171,7 @@
 		<!-- Agregar historia -->
 		<div>
 			<textarea id="input_AddHistoria" class="inline-block w-full p-2 bg-transparent border-b border-cyan-800 outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/personas/{{ .PersonaID }}"
+				hx-post="/h/{{ .PersonaID }}/historia"
 				hx-target="#msgStack"
 				hx-trigger="keyup[key=='Enter']"
 				enterkeyhint="enter"

@@ -6,12 +6,13 @@ import (
 	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
+	"github.com/pargomx/gecko/gko"
 )
 
 // ================================================================ //
 // ========== READ ================================================ //
 
-func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
+func (s *readhdl) getNodoTablero(c *gecko.Context) error {
 	Historia, err := dhistorias.GetHistoria(c.PathInt("nodo_id"), dhistorias.GetDescendientes, s.repoOld)
 	if err != nil {
 		return err
@@ -27,65 +28,60 @@ func (s *readhdl) getHistoriaTablero(c *gecko.Context) error {
 // ========== WRITE =============================================== //
 
 func (s *writehdl) postNodo(c *gecko.Context, tx *handlerTx) error {
+	padreID := c.PathInt("nodo_id")
 	args := arbol.ArgsAgregarHoja{
 		Tipo:    c.FormVal("tipo"),
 		NodoID:  ust.NewRandomID(),
-		PadreID: c.FormInt("padre_id"),
+		PadreID: padreID,
 		Titulo:  c.FormVal("titulo"),
 	}
 	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}
-	return c.RedirOtrof("/n/%v", c.FormInt("padre_id"))
+	// defer s.reloader.brodcastReload(c)
+	return c.RedirOtrof("/h/%v", padreID)
 }
 
-func (s *writehdl) postProyecto(c *gecko.Context, tx *handlerTx) error {
-	args := arbol.ArgsAgregarHoja{
-		Tipo:    "PRY",
-		NodoID:  ust.NewRandomID(),
-		PadreID: arbol.NodoProyectosActivos,
-		Titulo:  c.FormVal("titulo"),
-	}
-	err := tx.app.AgregarHoja(args)
-	if err != nil {
-		return err
-	}
-	return c.RedirOtro("/")
-}
+func (s *writehdl) postNodoDeTipo(c *gecko.Context, tx *handlerTx) error {
+	padreID := c.PathInt("nodo_id")
 
-func (s *writehdl) postHistoriaDePersona(c *gecko.Context, tx *handlerTx) error {
-	args := arbol.ArgsAgregarHoja{
-		Tipo:    "HIS",
-		NodoID:  ust.NewRandomID(),
-		PadreID: c.PathInt("persona_id"),
-		Titulo:  c.FormVal("titulo"),
+	tipo := ""
+	switch c.PathVal("tipo") {
+	case "grupo":
+		tipo = arbol.TipoGrupo
+	case "proyecto":
+		tipo = arbol.TipoProyecto
+	case "persona":
+		tipo = arbol.TipoPersona
+	case "historia":
+		tipo = arbol.TipoHistoria
+	case "tarea":
+		tipo = arbol.TipoTarea
+	case "regla":
+		tipo = arbol.TipoRegla
+	case "viaje":
+		tipo = arbol.TipoViaje
+	default:
+		return gko.ErrDatoInvalido.Msgf("No se puede agregar nodo de tipo '%v'", c.PathVal("tipo"))
 	}
-	err := tx.app.AgregarHoja(args)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/h/%v", args.PadreID)
-}
 
-func (s *writehdl) postHistoriaDeHistoria(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsAgregarHoja{
-		Tipo:    "HIS",
+		Tipo:    tipo,
 		NodoID:  ust.NewRandomID(),
-		PadreID: c.PathInt("nodo_id"),
+		PadreID: padreID,
 		Titulo:  c.FormVal("titulo"),
 	}
 	err := tx.app.AgregarHoja(args)
 	if err != nil {
 		return err
 	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/h/%v", args.PadreID)
+	// defer s.reloader.brodcastReload(c)
+	return c.RedirOtrof("/h/%v", padreID)
 }
 
 // Agregar historia de usuario como padre de la actual.
-func (s *writehdl) postPadreParaHistoria(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) postNodoPadre(c *gecko.Context, tx *handlerTx) error {
 	nod, err := tx.repo.GetNodo(c.PathInt("nodo_id"))
 	if err != nil {
 		return err

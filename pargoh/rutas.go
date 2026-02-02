@@ -34,23 +34,30 @@ func (s *servidor) registrarRutas() {
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
 
-	s.POS("/h", s.w.postNodo)
+	// Ver el árbol
 	s.GET("/h", s.r.getProyectosActivos)
 	s.GET("/h/{nodo_id}", s.r.getNodoCualquiera)
-	s.GET("/h/{nodo_id}/tablero", s.r.getHistoriaTablero)
 	s.GET("/h/{nodo_id}/raw", s.r.getRawNodoEditor)
 	s.GET("/h/{nodo_id}/doc", s.r.getDocumentacionProyecto)
+	s.GET("/h/{nodo_id}/tablero", s.r.getNodoTablero)
 
+	// Agregar al árbol
+	// s.POS("/h", s.w.postNodo)
+	s.POS("/h/{nodo_id}", s.w.postNodo)
+	s.POS("/h/{nodo_id}/{tipo}", s.w.postNodoDeTipo)
+	s.POS("/h/{nodo_id}/padre", s.w.postNodoPadre)
+
+	s.POS("/h/{nodo_id}/tareas", s.w.postTarea)
+
+	// Eliminar del árbol
+	s.DEL("/h/{nodo_id}", s.w.eliminarNodo)
+	s.DEL("/h/{nodo_id}/definitivo", s.w.eliminarRama)
+
+	// Modificar en el árbol
 	s.PCH("/h/{nodo_id}/{param}", s.w.patchRawNodo)
 	// s.PCH("/h/{nodo_id}/{param}", s.w.patchHistoria)
 
-	s.POS("/h/{nodo_id}/tareas", s.w.postTarea)
 	s.GET("/h/{nodo_id}/mover", s.r.moverHistoriaForm)
-
-	s.POS("/h/{nodo_id}", s.w.postHistoriaDeHistoria)
-	s.POS("/h/{nodo_id}/padre", s.w.postPadreParaHistoria)
-	s.POS("/h/{nodo_id}/reglas", s.w.postRegla)
-	s.POS("/h/{nodo_id}/viaje", s.w.postTramoDeViaje)
 
 	// TIME TRACKER
 	s.POS("/h/{nodo_id}/time/{seg}", s.w.postAppTime)
@@ -74,11 +81,6 @@ func (s *servidor) registrarRutas() {
 	s.POS("/mover/tramo", s.w.moverTramo)
 	s.POS("/mover/tarea", s.w.moverTarea)
 	s.POS("/mover/historia", s.w.moverHistoria)
-
-	// AGREGAR HOJA
-	s.POS("/proyectos", s.w.postProyecto)
-	s.POS("/personas", s.w.postPersona)
-	s.POS("/personas/{persona_id}", s.w.postHistoriaDePersona)
 
 	// REORDENAR
 	s.POS("/reordenar-persona", s.w.reordenarPersona)
@@ -105,10 +107,6 @@ func (s *servidor) registrarRutas() {
 	s.POS("/h/{nodo_id}/pausar", s.w.pausarTarea)
 	s.POS("/h/{nodo_id}/terminar", s.w.terminarTarea)
 	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
-
-	// ELIMINAR
-	s.DEL("/h/{nodo_id}/definitivo", s.w.eliminarRama)
-	s.DEL("/h/{nodo_id}", s.w.eliminarNodo)
 
 	// IMAGENES
 	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)

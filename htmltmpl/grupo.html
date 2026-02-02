@@ -168,10 +168,8 @@
 		</button>
 	</header>
 	<form class="flex flex-col gap-2 p-2"
-		hx-post="/h"
+		hx-post="/h/{{ .Grupo.GrupoID }}"
 		>
-		<input type="hidden" name="padre_id" value="{{ .Grupo.GrupoID }}" required>
-
 		<label>
 			Tipo
 			<select class="form-control"
@@ -238,7 +236,7 @@
 
 
 <div hx-askfor="/h">
-	{{ range .Proyectos }}
+	{{ range .Grupo.Proyectos }}
 	{{ template "proyecto_form" . }}
 	{{ end }}
 </div>

@@ -3,7 +3,6 @@ package main
 import (
 	"monorepo/arbol"
 	"monorepo/dhistorias"
-	"monorepo/ust"
 
 	"github.com/pargomx/gecko"
 )
@@ -73,20 +72,6 @@ func (s *readhdl) getPersonaDebug(c *gecko.Context) error {
 		"Historias": Historias,
 	}
 	return c.RenderOk("persona_debug", data)
-}
-
-func (s *writehdl) postPersona(c *gecko.Context, tx *handlerTx) error {
-	args := arbol.ArgsAgregarHoja{
-		Tipo:    "PER",
-		NodoID:  ust.NewRandomID(),
-		PadreID: c.FormInt("proyecto_id"),
-		Titulo:  c.FormVal("nombre"),
-	}
-	err := tx.app.AgregarHoja(args)
-	if err != nil {
-		return err
-	}
-	return c.RefreshHTMX()
 }
 
 func (s *writehdl) patchPersona(c *gecko.Context, tx *handlerTx) error {
