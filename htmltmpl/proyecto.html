@@ -311,7 +311,7 @@
 			</button>
 			<button class="p-2 transition-opacity bg-red-800 rounded-sm shadow-md opacity-75 hover:opacity-100 focus:opacity-100"
 				hx-confirm="¿Eliminar persona {{ .Nombre }}? Se perderá el tiempo de gestión contabilizado."
-				hx-delete="/personas/{{ .PersonaID}}"
+				hx-delete="/h/{{ .PersonaID}}"
 				type="button"
 				onclick="this.closest('dialog').close()"
 				>

@@ -127,9 +127,9 @@ func SetFotoTramo(HistoriaID int, Posicion int, foto io.Reader, directorio strin
 	return nil
 }
 
-func EliminarFotoTramo(HistoriaID int, Posicion int, directorio string, repo Repo) error {
+func EliminarImagen(NodoID int, Posicion int, directorio string, repo Repo) error {
 	op := gko.Op("EliminarFotoTramo")
-	Tramo, err := repo.GetTramo(HistoriaID, Posicion)
+	Tramo, err := repo.GetTramo(NodoID, Posicion)
 	if err != nil {
 		return op.Err(err)
 	}

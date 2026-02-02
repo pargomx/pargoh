@@ -689,20 +689,20 @@
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let formData = new FormData();
 		formData.append("prioridad", prioridad);
-		fetch(`/historias/${historiaID}/priorizar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
+		fetch(`/h/${historiaID}/priorizar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
 	}
 
 	function marcarHistoria(completada) {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let formData = new FormData();
 		formData.append("completada", completada);
-		fetch(`/historias/${historiaID}/marcar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
+		fetch(`/h/${historiaID}/marcar`, { method: 'POST', body: formData }).then(response => handleResponse(response));
 	}
 
 	function eliminarHistoria() {
 		let historiaID = document.querySelector("[tipo='ctxMenu']").getAttribute("gk-historia")
 		let formData = new FormData();
-		fetch(`/historias/${historiaID}`, { method: 'DELETE' }).then(response => handleResponse(response));
+		fetch(`/h/${historiaID}`, { method: 'DELETE' }).then(response => handleResponse(response));
 	}
 
 	// ================================================================ //

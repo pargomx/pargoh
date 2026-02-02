@@ -68,7 +68,7 @@
 		<!--* INSERTAR PADRE  -->
 		<div>
 			<button class="mx-1 rounded-md opacity-75 hover:opacity-100"
-				hx-post="/historias/{{ .HistoriaID }}/padre"
+				hx-post="/h/{{ .HistoriaID }}/padre"
 				hx-prompt="Insertar historia padre con el título..."
 				type="button"
 				title="Insertar historia padre"
@@ -79,7 +79,7 @@
 		<!--* PRIORIDAD -->
 		<div>
 			<select class="form-control"
-				hx-patch="/historias/{{ .HistoriaID }}/prioridad"
+				hx-patch="/h/{{ .HistoriaID }}/prioridad"
 				hx-swap="none"
 				name="value"
 				>
@@ -100,7 +100,7 @@
 		<!--* COMPLETADA -->
 		<div>
 			<select class="form-control"
-				hx-patch="/historias/{{ .HistoriaID }}/completada"
+				hx-patch="/h/{{ .HistoriaID }}/completada"
 				hx-swap="none"
 				name="value"
 				>
@@ -115,7 +115,7 @@
 		<div class="flex items-center gap-1">
 			<input class="form-control max-w-32"
 				hx-askfor="reloadProgreso"
-				hx-patch="/historias/{{ .HistoriaID }}/presupuesto"
+				hx-patch="/h/{{ .HistoriaID }}/presupuesto"
 				hx-swap="none"
 				type="number"
 				max="30"
@@ -153,7 +153,7 @@
 	<div class="mt-2 mb-1">
 		<textarea class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 resize-none outline-hidden focus:border-blue-400"
 			data-nodo-id="{{ .HistoriaID }}"
-			hx-patch="/historias/{{ .HistoriaID }}/titulo"
+			hx-patch="/h/{{ .HistoriaID }}/titulo"
 			hx-swap="none"
 			enterkeyhint="enter"
 			name="value"
@@ -168,7 +168,7 @@
 	<!--* CONTEXTO -->
 	<div class="mb-4">
 		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-			hx-patch="/historias/{{ .HistoriaID }}/objetivo"
+			hx-patch="/h/{{ .HistoriaID }}/objetivo"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			enterkeyhint="enter"
@@ -295,7 +295,7 @@
 					<i class="w-5 text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 				</span>
 				<textarea class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-					hx-post="/historias/{{ .HistoriaID }}"
+					hx-post="/h/{{ .HistoriaID }}"
 					hx-trigger="keyup[key=='Enter']"
 					enterkeyhint="enter"
 					name="titulo"
@@ -346,7 +346,7 @@
 				</a>
 			</div>
 			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
-				hx-delete="/historias/{{ $.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
+				hx-delete="/h/{{ $.Historia.HistoriaID }}/referencias/{{ .HistoriaID }}"
 				hx-select="#relacionadasList"
 				hx-target="#relacionadasList"
 				type="button"
@@ -376,7 +376,7 @@
 			<div class="flex items-center gap-1">
 				<input class="form-control max-w-32"
 					hx-askfor="reloadProgreso"
-					hx-patch="/historias/{{ .HistoriaID }}/presupuesto"
+					hx-patch="/h/{{ .HistoriaID }}/presupuesto"
 					hx-swap="none"
 					type="number"
 					max="30"
@@ -705,7 +705,7 @@
 				</form>
 			</div>
 			<button class="pr-2"
-				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}/marcar"
+				hx-patch="/h/{{ .ReglaID }}/marcar"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				type="button"
@@ -719,7 +719,7 @@
 				{{ end }}
 			</button>
 			<textarea id="input_Regla{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-patch="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-patch="/h/{{ .ReglaID }}"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				enterkeyhint="enter"
@@ -730,7 +730,7 @@
 			</textarea>
 			<button class="hidden ml-2 transition opacity-0 cursor-pointer md:block group-hover:opacity-80 focus:opacity-80 hover:text-red-600"
 				hx-confirm="¿Eliminar regla? {{ .Texto }}"
-				hx-delete="/historias/{{ .HistoriaID }}/reglas/{{ .Posicion }}"
+				hx-delete="/h/{{ .ReglaID }}"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				type="button"
@@ -748,7 +748,7 @@
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
 			</div>
 			<textarea id="input_AddRegla" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/historias/{{ .HistoriaID }}/reglas"
+				hx-post="/h/{{ .HistoriaID }}/reglas"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				hx-trigger="keyup[key=='Enter']"
@@ -772,7 +772,7 @@
 	</h3>
 	<div class="mb-2">
 		<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-			hx-patch="/historias/{{ .HistoriaID }}/descripcion"
+			hx-patch="/h/{{ .HistoriaID }}/descripcion"
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			enterkeyhint="enter"
@@ -818,7 +818,7 @@
 					</span>
 				</div>
 				<textarea id="input_Tramo{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-					hx-patch="/historias/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
+					hx-patch="/h/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
 					hx-select="#viajeList"
 					hx-target="#viajeList"
 					enterkeyhint="enter"
@@ -868,7 +868,7 @@
 				</span>
 			</div>
 			<textarea id="input_AddTramo" class="inline-block w-full bg-transparent border-b border-transparent outline-hidden text-white/50 focus:text-white read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-post="/historias/{{ .HistoriaID }}/viaje"
+				hx-post="/h/{{ .HistoriaID }}/viaje"
 				hx-select="#viajeList"
 				hx-target="#viajeList"
 				hx-trigger="keyup[key=='Enter']"
@@ -1171,7 +1171,7 @@
 			<input id="input_AddTarea" class="inline-block w-full text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 				hx-include="closest li"
 				hx-on:htmx:validation:validate="if(this.value == '') { this.setCustomValidity('Introduzca un valor'); this.reportValidity(); this.addEventListener('input',function fn(){ console.log('input'); this.setCustomValidity(''); this.removeEventListener('input',fn); }); }"
-				hx-post="/historias/{{ .HistoriaID }}/tareas"
+				hx-post="/h/{{ .HistoriaID }}/tareas"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				type="text"
@@ -1181,7 +1181,7 @@
 				>
 			<input class="inline-block text-white bg-transparent border-b border-cyan-800 outline-hidden invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 focus:border-blue-400"
 				hx-include="closest li"
-				hx-post="/historias/{{ .HistoriaID }}/tareas"
+				hx-post="/h/{{ .HistoriaID }}/tareas"
 				hx-trigger="keyup[key=='Enter']"
 				hx-validate="true"
 				type="text"
@@ -1226,7 +1226,7 @@
 		{{ end -}}
 		<div id="notasImplEdit" class="{{ if .Notas -}}hidden{{ end }}">
 			<textarea class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 text-white/75 placeholder:text-slate-600"
-				hx-patch="/historias/{{ .HistoriaID }}/notas"
+				hx-patch="/h/{{ .HistoriaID }}/notas"
 				hx-swap="none"
 				hx-trigger="change, keyup changed delay:60s"
 				enterkeyhint="enter"
@@ -1245,7 +1245,7 @@
 	<div class="text-center">
 		<button class="px-4 py-2 transition-opacity bg-red-800 rounded-md opacity-75 hover:opacity-100"
 			hx-confirm="¿Eliminar historia vacía?"
-			hx-delete="/historias/{{ .HistoriaID }}"
+			hx-delete="/h/{{ .HistoriaID }}"
 			type="button"
 			>
 			<i class="mr-2 fa-solid fa-trash"></i>
@@ -1292,7 +1292,7 @@
 			Prioridad
 		</div>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadMust }}font-bold{{ end }}"
-			hx-post="/historias/{{ .HistoriaID }}/priorizar/3"
+			hx-post="/h/{{ .HistoriaID }}/priorizar/3"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1301,7 +1301,7 @@
 			Must
 		</button>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadShould }}font-bold{{ end }}"
-			hx-post="/historias/{{ .HistoriaID }}/priorizar/2"
+			hx-post="/h/{{ .HistoriaID }}/priorizar/2"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1310,7 +1310,7 @@
 			Should
 		</button>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadCould }}font-bold{{ end }}"
-			hx-post="/historias/{{ .HistoriaID }}/priorizar/1"
+			hx-post="/h/{{ .HistoriaID }}/priorizar/1"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1319,7 +1319,7 @@
 			Would
 		</button>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .EsPrioridadWont }}font-bold{{ end }}"
-			hx-post="/historias/{{ .HistoriaID }}/priorizar/0"
+			hx-post="/h/{{ .HistoriaID }}/priorizar/0"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1332,7 +1332,7 @@
 			Estatus
 		</div>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if .Completada }}font-bold{{ end }}"
-			hx-post="/historias/{{ .HistoriaID }}/marcar/1"
+			hx-post="/h/{{ .HistoriaID }}/marcar/1"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1341,7 +1341,7 @@
 			Lista
 		</button>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700 {{ if not .Completada }}font-bold{{ end }}"
-			hx-post="/historias/{{ .HistoriaID }}/marcar/0"
+			hx-post="/h/{{ .HistoriaID }}/marcar/0"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1364,7 +1364,7 @@
 		</button>
 		<button class="block w-full p-1 pr-2 text-left transition-colors rounded-sm hover:shadow-md hover:bg-cyan-700"
 			hx-confirm="¿Eliminar historia? {{ .Titulo }}"
-			hx-delete="/historias/{{ .HistoriaID }}"
+			hx-delete="/h/{{ .HistoriaID }}"
 			type="button"
 			>
 			<span class="inline-block w-5 text-center">
@@ -1539,7 +1539,7 @@
 			<!-- nav_tree -->
 		</div>
 		<button class="inline-block w-full px-6 py-2 font-medium text-slate-100 transition-colors bg-blue-700 rounded-sm shadow-md hover:bg-blue-600"
-			hx-post="/historias/{{ .Historia.HistoriaID }}/referencias"
+			hx-post="/h/{{ .Historia.HistoriaID }}/referencias"
 			hx-select="main"
 			hx-swap="outerHTML"
 			hx-target="main"

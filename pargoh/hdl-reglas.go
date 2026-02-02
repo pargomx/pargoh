@@ -14,7 +14,7 @@ func (s *writehdl) postRegla(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsAgregarHoja{
 		Tipo:    "REG",
 		NodoID:  ust.NewRandomID(),
-		PadreID: c.PathInt("historia_id"),
+		PadreID: c.PathInt("nodo_id"),
 		Titulo:  c.FormValue("texto"),
 	}
 	err := tx.app.AgregarHoja(args)
@@ -37,7 +37,7 @@ func (s *writehdl) patchRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("nodo_id"))
 }
 
 func (s *writehdl) marcarRegla(c *gecko.Context, tx *handlerTx) error {
@@ -51,5 +51,5 @@ func (s *writehdl) marcarRegla(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	// TODO: Solo enviar el fragmento.
-	return c.RedirOtrof("/h/%v", c.PathInt("historia_id"))
+	return c.RedirOtrof("/h/%v", c.PathInt("nodo_id"))
 }

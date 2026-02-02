@@ -12,7 +12,7 @@ func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsAgregarTarea{
 		Tipo:     "TAR",
 		NodoID:   ust.NewRandomID(),
-		PadreID:  c.PathInt("historia_id"),
+		PadreID:  c.PathInt("nodo_id"),
 		Titulo:   c.FormVal("descripcion"),
 		Estimado: c.FormVal("segundos_estimado"),
 	}
@@ -23,6 +23,28 @@ func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
 	defer s.reloader.brodcastReload(c)
 	return c.AskedForFallback("/h/%v", args.PadreID)
 }
+
+func (s *writehdl) postQuickTask(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarTarea{
+		Tipo:     "TAR",
+		NodoID:   ust.NewRandomID(),
+		PadreID:  dhistorias.QUICK_TASK_HISTORIA_ID, // TODO: poner default historia en migración?
+		Titulo:   c.PromptVal(),
+		Estimado: "1h",
+	}
+	err := tx.app.AgregarTarea(args)
+	if err != nil {
+		return err
+	}
+	// _, err = dhistorias.IniciarTarea(tarea.TareaID, s.repoOld)
+	// if err != nil {
+	// 	return err
+	// }
+	defer s.reloader.brodcastReload(c)
+	return c.AskedForFallback("/tareas")
+}
+
+// ================================================================ //
 
 func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 	estimado, err := ust.NuevaDuraciónSegundos(c.FormVal("segundos_estimado"))
@@ -124,15 +146,8 @@ func (s *writehdl) terminarTarea(c *gecko.Context, tx *handlerTx) error {
 	return c.AskedForFallback("/h/%v", tar.PadreID)
 }
 
-/*
-func (s *servidor) materializarTiemposTareas(c *gecko.Context) error {
-	err := dhistorias.MaterializarTiempoRealTareas(s.repo)
-	if err != nil {
-		return err
-	}
-	return c.StringOk("Tiempos actualizados según los intervalos de trabajo")
-}
-*/
+// ================================================================ //
+// ========== Intervalos ========================================== //
 
 func (s *readhdl) getIntervalos(c *gecko.Context) error {
 	recientes, err := s.repoOld.ListIntervalosRecientes()
@@ -177,26 +192,6 @@ func (s *writehdl) patchIntervalo(c *gecko.Context, tx *handlerTx) error {
 
 // ================================================================ //
 // ========== QUICK TASKS ========================================= //
-
-func (s *writehdl) postQuickTask(c *gecko.Context, tx *handlerTx) error {
-	args := arbol.ArgsAgregarTarea{
-		Tipo:     "TAR",
-		NodoID:   ust.NewRandomID(),
-		PadreID:  0, // TODO: poner default historia en migración?
-		Titulo:   c.PromptVal(),
-		Estimado: "1h",
-	}
-	err := tx.app.AgregarTarea(args)
-	if err != nil {
-		return err
-	}
-	// _, err = dhistorias.IniciarTarea(tarea.TareaID, s.repoOld)
-	// if err != nil {
-	// 	return err
-	// }
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/tareas")
-}
 
 func (s *readhdl) getQuickTasks(c *gecko.Context) error {
 	tareas, err := s.repoOld.ListTareasByHistoriaID(dhistorias.QUICK_TASK_HISTORIA_ID)

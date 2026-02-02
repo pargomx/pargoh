@@ -75,4 +75,4 @@ func (tareas TareasList) ValorPorcentual(tareaID int) float64 {
 // Tareas sin proyecto.
 //
 //	INSERT INTO historias(historia_id, titulo, objetivo, prioridad, completada) VALUES (1,'QuickTasksParent','Esta historia sirve de padre para las tareas sin proyecto',0,0);
-const QUICK_TASK_HISTORIA_ID = 1
+const QUICK_TASK_HISTORIA_ID = 9

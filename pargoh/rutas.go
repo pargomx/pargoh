@@ -40,7 +40,17 @@ func (s *servidor) registrarRutas() {
 	s.GET("/h/{nodo_id}/tablero", s.r.getHistoriaTablero)
 	s.GET("/h/{nodo_id}/raw", s.r.getRawNodoEditor)
 	s.GET("/h/{nodo_id}/doc", s.r.getDocumentacionProyecto)
+
 	s.PCH("/h/{nodo_id}/{param}", s.w.patchRawNodo)
+	// s.PCH("/h/{nodo_id}/{param}", s.w.patchHistoria)
+
+	s.POS("/h/{nodo_id}/tareas", s.w.postTarea)
+	s.GET("/h/{nodo_id}/mover", s.r.moverHistoriaForm)
+
+	s.POS("/h/{nodo_id}", s.w.postHistoriaDeHistoria)
+	s.POS("/h/{nodo_id}/padre", s.w.postPadreParaHistoria)
+	s.POS("/h/{nodo_id}/reglas", s.w.postRegla)
+	s.POS("/h/{nodo_id}/viaje", s.w.postTramoDeViaje)
 
 	// TIME TRACKER
 	s.POS("/h/{nodo_id}/time/{seg}", s.w.postAppTime)
@@ -51,13 +61,13 @@ func (s *servidor) registrarRutas() {
 
 	// Quick tasks
 	s.GET("/tareas", s.r.getQuickTasks)
+	s.POS("/tareas", s.w.postQuickTask)
 
 	// Navegador del árbol de historias
 	s.GET("/nav", s.r.navDesdeRoot)
 	s.GET("/nav/proy/{proyecto_id}", s.r.navDesdeProyecto)
 	s.GET("/nav/pers/{persona_id}", s.r.navDesdePersona)
 	s.GET("/nav/hist/{historia_id}", s.r.navDesdeHistoria)
-	s.GET("/historias/{historia_id}/mover", s.r.moverHistoriaForm)
 
 	// MOVER
 	s.POS("/historias/{historia_id}/mover", s.w.moverHistoria)
@@ -69,12 +79,6 @@ func (s *servidor) registrarRutas() {
 	s.POS("/proyectos", s.w.postProyecto)
 	s.POS("/personas", s.w.postPersona)
 	s.POS("/personas/{persona_id}", s.w.postHistoriaDePersona)
-	s.POS("/historias/{historia_id}", s.w.postHistoriaDeHistoria)
-	s.POS("/historias/{historia_id}/padre", s.w.postPadreParaHistoria)
-	s.POS("/historias/{historia_id}/reglas", s.w.postRegla)
-	s.POS("/historias/{historia_id}/viaje", s.w.postTramoDeViaje)
-	s.POS("/historias/{historia_id}/tareas", s.w.postTarea)
-	s.POS("/tareas", s.w.postQuickTask)
 
 	// REORDENAR
 	s.POS("/reordenar-persona", s.w.reordenarPersona)
@@ -85,16 +89,14 @@ func (s *servidor) registrarRutas() {
 	// PARCHAR
 	s.PCH("/proyectos/{proyecto_id}/{param}", s.w.patchProyecto)
 	s.PCH("/personas/{persona_id}/{param}", s.w.patchPersona)
-	s.PCH("/historias/{historia_id}/{param}", s.w.patchHistoria)
-	s.PCH("/historias/{historia_id}/reglas/{posicion}", s.w.patchRegla)
-	s.PCH("/historias/{historia_id}/viaje/{posicion}", s.w.patchTramoDeViaje)
+	s.PCH("/h/{nodo_id}/reglas/{posicion}", s.w.patchRegla)
+	s.PCH("/h/{nodo_id}/viaje/{posicion}", s.w.patchTramoDeViaje)
 
-	// OTROS
-	s.PCH("/historias/{historia_id}/reglas/{posicion}/marcar", s.w.marcarRegla)
-	s.POS("/h/{historia_id}/priorizar", s.w.priorizarHistoria)
-	s.POS("/h/{historia_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
-	s.POS("/h/{historia_id}/marcar", s.w.marcarHistoria)
-	s.POS("/h/{historia_id}/marcar/{completada}", s.w.marcarHistoria)
+	s.PCH("/h/{nodo_id}/reglas/{posicion}/marcar", s.w.marcarRegla)
+	s.POS("/h/{nodo_id}/priorizar", s.w.priorizarHistoria)
+	s.POS("/h/{nodo_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
+	s.POS("/h/{nodo_id}/marcar", s.w.marcarHistoria)
+	s.POS("/h/{nodo_id}/marcar/{completada}", s.w.marcarHistoria)
 
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
 	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoTarea)
@@ -105,23 +107,18 @@ func (s *servidor) registrarRutas() {
 	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
 
 	// ELIMINAR
-	s.DEL("/proyectos/{proyecto_id}", s.w.deleteProyecto)
-	s.DEL("/proyectos/{proyecto_id}/definitivo", s.w.deleteProyectoPorCompleto)
-	s.DEL("/personas/{persona_id}", s.w.deletePersona)
-	s.DEL("/historias/{historia_id}", s.w.deleteHistoria)
-	s.DEL("/tareas/{tarea_id}", s.w.eliminarTarea)
-	s.DEL("/historias/{historia_id}/reglas/{posicion}", s.w.deleteRegla)
-	s.DEL("/historias/{historia_id}/viaje/{posicion}", s.w.deleteTramoDeViaje)
+	s.DEL("/h/{nodo_id}/definitivo", s.w.eliminarRama)
+	s.DEL("/h/{nodo_id}", s.w.eliminarNodo)
 
 	// IMAGENES
 	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)
 	s.POS("/imagenes", s.setImagenTramo)
 	s.PUT("/proyectos/{proyecto_id}", s.setImagenProyecto)
-	s.DEL("/imagenes/{historia_id}/{posicion}", s.deleteImagenTramo)
+	s.DEL("/imagenes/{historia_id}/{posicion}", s.eliminarImagen)
 
 	// Referencias
-	s.POS("/historias/{nodo_id}/referencias", s.w.postReferencia)
-	s.DEL("/historias/{nodo_id}/referencias/{ref_nodo_id}", s.w.deleteReferencia)
+	s.POS("/h/{nodo_id}/referencias", s.w.postReferencia)
+	s.DEL("/h/{nodo_id}/referencias/{ref_nodo_id}", s.w.deleteReferencia)
 
 	// Exportar e importar
 	/*

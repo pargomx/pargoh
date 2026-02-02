@@ -14,7 +14,7 @@ func (s *writehdl) postTramoDeViaje(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsAgregarHoja{
 		Tipo:    "VIA",
 		NodoID:  ust.NewRandomID(),
-		PadreID: c.PathInt("historia_id"),
+		PadreID: c.PathInt("nodo_id"),
 		Titulo:  c.FormValue("texto"),
 	}
 	err := tx.app.AgregarHoja(args)

@@ -397,7 +397,7 @@
 			</button>
 			<button class="p-2 transition-opacity bg-red-800 rounded-sm shadow-md opacity-75 hover:opacity-100 focus:opacity-100"
 				hx-confirm="Se sugiere exportar JSON antes de continuar. ¿Eliminar proyecto {{ .Titulo }} junto con todo lo que contiene?"
-				hx-delete="/proyectos/{{ .ProyectoID}}/definitivo"
+				hx-delete="/h/{{ .ProyectoID}}/definitivo"
 				hx-prompt="Escribe 'eliminar_{{ .ProyectoID}}' para confirmar"
 				type="button"
 				onclick="this.closest('dialog').close()"

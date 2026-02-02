@@ -29,7 +29,7 @@ func (s *servidor) materializarHistorias(c *gecko.Context) error {
 */
 
 func (s *readhdl) moverHistoriaForm(c *gecko.Context) error {
-	historia, err := s.repoOld.GetNodoHistoria(c.PathInt("historia_id"))
+	historia, err := s.repoOld.GetNodoHistoria(c.PathInt("nodo_id"))
 	if err != nil {
 		return err
 	}

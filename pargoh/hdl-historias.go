@@ -73,7 +73,7 @@ func (s *writehdl) postHistoriaDeHistoria(c *gecko.Context, tx *handlerTx) error
 	args := arbol.ArgsAgregarHoja{
 		Tipo:    "HIS",
 		NodoID:  ust.NewRandomID(),
-		PadreID: c.PathInt("historia_id"),
+		PadreID: c.PathInt("nodo_id"),
 		Titulo:  c.FormVal("titulo"),
 	}
 	err := tx.app.AgregarHoja(args)
@@ -86,7 +86,7 @@ func (s *writehdl) postHistoriaDeHistoria(c *gecko.Context, tx *handlerTx) error
 
 // Agregar historia de usuario como padre de la actual.
 func (s *writehdl) postPadreParaHistoria(c *gecko.Context, tx *handlerTx) error {
-	nod, err := tx.repo.GetNodo(c.PathInt("historia_id"))
+	nod, err := tx.repo.GetNodo(c.PathInt("nodo_id"))
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (s *writehdl) postPadreParaHistoria(c *gecko.Context, tx *handlerTx) error 
 
 func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {
 	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("historia_id"),
+		NodoID: c.PathInt("nodo_id"),
 		Campo:  c.PathVal("param"),
 		NewVal: c.FormValue("value"),
 	})
@@ -136,7 +136,7 @@ func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {
 
 func (s *writehdl) priorizarHistoria(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("historia_id"),
+		NodoID: c.PathInt("nodo_id"),
 		Campo:  "prioridad",
 		NewVal: c.FormVal("prioridad"),
 	}
@@ -152,7 +152,7 @@ func (s *writehdl) priorizarHistoria(c *gecko.Context, tx *handlerTx) error {
 
 func (s *writehdl) marcarHistoria(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("historia_id"),
+		NodoID: c.PathInt("nodo_id"),
 		Campo:  "completada",
 		NewVal: c.FormVal("completada"),
 	}
