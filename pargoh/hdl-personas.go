@@ -1,7 +1,6 @@
 package main
 
 import (
-	"monorepo/arbol"
 	"monorepo/dhistorias"
 
 	"github.com/pargomx/gecko"
@@ -72,16 +71,4 @@ func (s *readhdl) getPersonaDebug(c *gecko.Context) error {
 		"Historias": Historias,
 	}
 	return c.RenderOk("persona_debug", data)
-}
-
-func (s *writehdl) patchPersona(c *gecko.Context, tx *handlerTx) error {
-	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("persona_id"),
-		Campo:  c.PathVal("param"),
-		NewVal: c.FormValue("value"),
-	})
-	if err != nil {
-		return err
-	}
-	return c.RefreshHTMX()
 }

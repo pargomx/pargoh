@@ -81,7 +81,7 @@
 			<select class="form-control"
 				hx-patch="/h/{{ .HistoriaID }}/prioridad"
 				hx-swap="none"
-				name="value"
+				name="prioridad"
 				>
 				<option value="0" {{ if .EsPrioridadWont }}selected{{ end }}>
 					🚫 Won't
@@ -102,7 +102,7 @@
 			<select class="form-control"
 				hx-patch="/h/{{ .HistoriaID }}/completada"
 				hx-swap="none"
-				name="value"
+				name="completada"
 				>
 				<option value="0">
 					Pendiente
@@ -120,7 +120,7 @@
 				type="number"
 				max="30"
 				min="0"
-				name="value"
+				name="presupuesto"
 				placeholder="Presupuesto"
 				value="{{ if .SegundosPresupuesto }}{{ div .SegundosPresupuesto 3600 }}{{ end }}"
 				>
@@ -156,7 +156,7 @@
 			hx-patch="/h/{{ .HistoriaID }}/titulo"
 			hx-swap="none"
 			enterkeyhint="enter"
-			name="value"
+			name="titulo"
 			placeholder="Hacer algo de valor..."
 			rows="1"
 			title="Título de la historia"
@@ -172,7 +172,7 @@
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			enterkeyhint="enter"
-			name="value"
+			name="objetivo"
 			placeholder="Porque me sirve para..."
 			rows="1"
 			title="Objetivo empático de la historia"
@@ -381,7 +381,7 @@
 					type="number"
 					max="30"
 					min="0"
-					name="value"
+					name="presupuesto"
 					placeholder="Presupuesto"
 					value="{{ if .SegundosPresupuesto }}{{ div .SegundosPresupuesto 3600 }}{{ end }}"
 					>
@@ -710,16 +710,18 @@
 				hx-target="#reglasDeNegocio"
 				type="button"
 				>
-				{{ if and .Implementada .Probada }}
+				{{ if eq .Estatus 2 }}
 				<i class="text-sm text-green-500 fa-solid fa-arrow-right"></i>
-				{{ else if .Implementada }}
+				{{ else if eq .Estatus 1 }}
 				<i class="text-sm text-orange-500 fa-solid fa-arrow-right"></i>
-				{{ else }}
+				{{ else if eq .Estatus 0 }}
 				<i class="text-sm text-slate-400 fa-solid fa-arrow-right"></i>
+				{{ else }}
+				<i class="text-sm text-slate-400 fa-solid fa-question-circle"></i>
 				{{ end }}
 			</button>
 			<textarea id="input_Regla{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-				hx-patch="/h/{{ .ReglaID }}"
+				hx-patch="/h/{{ .ReglaID }}/texto"
 				hx-select="#reglasDeNegocio"
 				hx-target="#reglasDeNegocio"
 				enterkeyhint="enter"
@@ -776,7 +778,7 @@
 			hx-swap="none"
 			hx-trigger="change, keyup changed delay:60s"
 			enterkeyhint="enter"
-			name="value"
+			name="descripcion"
 			placeholder="Descripción para el usuario en infinitivo..."
 			rows="1"
 			title="Descripción de la historia"
@@ -818,7 +820,7 @@
 					</span>
 				</div>
 				<textarea id="input_Tramo{{ .Posicion }}" class="inline-block w-full text-white bg-transparent border-b border-transparent outline-hidden read-only:border-transparent invalid:border-red-500 invalid:focus:border-red-500 placeholder:text-slate-600 read-only:focus:border-transparent focus:border-blue-400"
-					hx-patch="/h/{{ .HistoriaID }}/viaje/{{ .Posicion }}"
+					hx-patch="/h/{{ .TramoID }}/texto"
 					hx-select="#viajeList"
 					hx-target="#viajeList"
 					enterkeyhint="enter"
@@ -1230,7 +1232,7 @@
 				hx-swap="none"
 				hx-trigger="change, keyup changed delay:60s"
 				enterkeyhint="enter"
-				name="value"
+				name="notas"
 				placeholder="Notas de implementación..."
 				rows="1"
 				title="Detalles de implementación"

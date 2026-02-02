@@ -91,7 +91,7 @@ func (s *AppTx) ParcharNodo(args ArgsParcharNodo) error {
 			nod.Estatus = 0
 		}
 
-	case "marcar_regla":
+	case "marcar":
 		regla := nod.ToRegla()
 		regla.Estatus = (regla.Estatus + 1) % 3
 		nod.Estatus = regla.Estatus

@@ -18,7 +18,7 @@ func (s *readhdl) getRawNodoEditor(c *gecko.Context) error {
 	})
 }
 
-func (s *writehdl) patchRawNodo(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) parcharNodo(c *gecko.Context, tx *handlerTx) error {
 	propiedad := c.PathVal("param")
 	if propiedad == "" {
 		return gko.ErrDatoIndef.Msg("Propiedad a parchar indefinida")
@@ -31,5 +31,8 @@ func (s *writehdl) patchRawNodo(c *gecko.Context, tx *handlerTx) error {
 	if err != nil {
 		return err
 	}
-	return c.RedirOtrof("/h/%v", c.PathInt("nodo_id"))
+	defer s.reloader.brodcastReload(c)
+	return c.AskedForFallback("/h/%v", c.PathInt("nodo_id"))
+	// return c.AskedFor("Cambio guardado")
+	// return c.RedirOtrof("/h/%v", c.PathInt("nodo_id"))
 }

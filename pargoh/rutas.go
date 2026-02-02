@@ -54,8 +54,13 @@ func (s *servidor) registrarRutas() {
 	s.DEL("/h/{nodo_id}/definitivo", s.w.eliminarRama)
 
 	// Modificar en el árbol
-	s.PCH("/h/{nodo_id}/{param}", s.w.patchRawNodo)
-	// s.PCH("/h/{nodo_id}/{param}", s.w.patchHistoria)
+	s.PCH("/h/{nodo_id}/{param}", s.w.parcharNodo)
+	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoTarea)
+
+	s.POS("/h/{nodo_id}/priorizar", s.w.priorizarHistoria)
+	s.POS("/h/{nodo_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
+	s.POS("/h/{nodo_id}/marcar", s.w.marcarHistoria)
+	s.POS("/h/{nodo_id}/marcar/{completada}", s.w.marcarHistoria)
 
 	s.GET("/h/{nodo_id}/mover", s.r.moverHistoriaForm)
 
@@ -88,20 +93,7 @@ func (s *servidor) registrarRutas() {
 	s.POS("/reordenar-tramo", s.w.reordenarTramo)
 	s.POS("/reordenar-regla", s.w.reordenarRegla)
 
-	// PARCHAR
-	s.PCH("/proyectos/{proyecto_id}/{param}", s.w.patchProyecto)
-	s.PCH("/personas/{persona_id}/{param}", s.w.patchPersona)
-	s.PCH("/h/{nodo_id}/reglas/{posicion}", s.w.patchRegla)
-	s.PCH("/h/{nodo_id}/viaje/{posicion}", s.w.patchTramoDeViaje)
-
-	s.PCH("/h/{nodo_id}/reglas/{posicion}/marcar", s.w.marcarRegla)
-	s.POS("/h/{nodo_id}/priorizar", s.w.priorizarHistoria)
-	s.POS("/h/{nodo_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
-	s.POS("/h/{nodo_id}/marcar", s.w.marcarHistoria)
-	s.POS("/h/{nodo_id}/marcar/{completada}", s.w.marcarHistoria)
-
 	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
-	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoTarea)
 	s.POS("/h/{nodo_id}/importancia", s.w.ciclarImportanciaTarea)
 	s.POS("/h/{nodo_id}/iniciar", s.w.iniciarTarea)
 	s.POS("/h/{nodo_id}/pausar", s.w.pausarTarea)
@@ -111,7 +103,7 @@ func (s *servidor) registrarRutas() {
 	// IMAGENES
 	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)
 	s.POS("/imagenes", s.setImagenTramo)
-	s.PUT("/proyectos/{proyecto_id}", s.setImagenProyecto)
+	s.PUT("/h/{proyecto_id}/imagen", s.setImagenProyecto)
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.eliminarImagen)
 
 	// Referencias

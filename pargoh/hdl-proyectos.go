@@ -144,6 +144,7 @@ func (s *readhdl) listaProyectosOld(c *gecko.Context) error {
 
 func (s *servidor) setImagenProyecto(c *gecko.Context, tx *handlerTx) error {
 	hdr, err := c.FormFile("imagen")
+	return gko.ErrNoDisponible.Msg("Falta terminar de migrar")
 	if err == nil {
 		file, err := hdr.Open()
 		if err != nil {
@@ -157,18 +158,6 @@ func (s *servidor) setImagenProyecto(c *gecko.Context, tx *handlerTx) error {
 		}
 	}
 	return c.AskedFor("Proyecto actualizado")
-}
-
-func (s *writehdl) patchProyecto(c *gecko.Context, tx *handlerTx) error {
-	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("proyecto_id"),
-		Campo:  c.PathVal("param"),
-		NewVal: c.FormValue("value"),
-	})
-	if err != nil {
-		return err
-	}
-	return c.RefreshHTMX()
 }
 
 func (s *writehdl) postAppTime(c *gecko.Context, tx *handlerTx) error {

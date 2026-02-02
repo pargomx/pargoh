@@ -74,7 +74,7 @@
 			hx-patch="/h/{{ .ProyectoID }}/titulo"
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:2s"
-			name="value"
+			name="titulo"
 			rows="1"
 			class="w-full px-2 py-1 text-2xl font-medium text-white bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400">
 			{{- .Titulo -}}
@@ -85,7 +85,7 @@
 			hx-patch="/h/{{ .ProyectoID }}/descripcion"
 			hx-swap="none" 
 			hx-trigger="change, keyup changed delay:2s"
-			name="value"
+			name="descripcion"
 			rows="1"
 			placeholder="Descripción del proyecto..." 
 			class="w-full px-2 py-1 text-base font-medium bg-transparent border-b border-cyan-800 outline-hidden focus:border-blue-400 placeholder:text-slate-600">
@@ -241,29 +241,16 @@
 			<i class="fa-solid fa-xmark"></i>
 		</button>
 	</header>
-	<form class="flex flex-col gap-2 p-2"
-		hx-put="/personas/{{ .PersonaID }}"
+	<div class="flex flex-col gap-2 p-2"
+		hx-askfor="/h/{{ .PadreID }}"
 		>
-		<div>
-			<label for="newPers_00">
-				Proyecto
-			</label>
-			<select id="newPers_00" class="form-control"
-				name="proyecto_id"
-				>
-				{{ range $.Proyectos -}}
-				<option value="{{ .ProyectoID }}" {{ if eq $persona.ProyectoID .ProyectoID }}selected{{ end }}>
-					{{ .Titulo }}
-				</option>
-				{{ end }}
-			</select>
-		</div>
 		<div>
 			<label for="{{ .PersonaID }}_01">
 				Nombre
 			</label>
 			<input id="{{ .PersonaID }}_01" class="form-control"
 				type="text"
+				hx-patch="/h/{{ .PersonaID }}/nombre"
 				name="nombre"
 				value="{{ .Nombre }}"
 				>
@@ -274,6 +261,7 @@
 			</label>
 			<textarea id="{{ .PersonaID }}_02" class="form-control"
 				name="descripcion"
+				hx-patch="/h/{{ .PersonaID }}/descripcion"
 				rows="1"
 				>
 				{{- .Descripcion -}}
@@ -295,7 +283,7 @@
 				Eliminar
 			</button>
 		</div>
-	</form>
+	</div>
 </dialog>
 {{ end 	}}
 

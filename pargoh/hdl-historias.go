@@ -117,18 +117,7 @@ func (s *writehdl) postNodoPadre(c *gecko.Context, tx *handlerTx) error {
 	return c.AskedForFallback("/h/%v", newPadre.NodoID)
 }
 
-func (s *writehdl) patchHistoria(c *gecko.Context, tx *handlerTx) error {
-	err := tx.app.ParcharNodo(arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("nodo_id"),
-		Campo:  c.PathVal("param"),
-		NewVal: c.FormValue("value"),
-	})
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedFor("Historia parchada")
-}
+// ================================================================ //
 
 func (s *writehdl) priorizarHistoria(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharNodo{

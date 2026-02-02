@@ -327,26 +327,15 @@
 			Exportar Markdown
 		</a>
 	</div>
-	<form class="flex flex-col gap-2 p-2"
-		hx-encoding="multipart/form-data"
-		hx-put="/proyectos/{{ .ProyectoID }}"
-		>
+	<div class="flex flex-col gap-2 p-2">
 		<label>
 			Título
 			<input class="form-control"
 				type="text"
+				hx-patch="/h/{{ .ProyectoID }}/titulo"
 				name="titulo"
 				required
 				value="{{ .Titulo }}"
-				>
-		</label>
-		<label>
-			Clave
-			<input class="form-control"
-				type="text"
-				name="clave"
-				required
-				value="{{ .ProyectoID }}"
 				>
 		</label>
 		<label>
@@ -354,6 +343,7 @@
 			<textarea class="form-control"
 				name="descripcion"
 				rows="1"
+				hx-patch="/h/{{ .ProyectoID }}/descripcion"
 				>
 				{{- .Descripcion -}}
 			</textarea>
@@ -370,6 +360,8 @@
 				accept="image/png, image/jpeg, image/gif"
 				name="imagen"
 				onchange="showImagen(this)"
+				hx-encoding="multipart/form-data"
+				hx-put="/h/{{ .ProyectoID }}/imagen"
 				>
 		</label>
 		<label>
@@ -377,15 +369,8 @@
 			<input class="form-control"
 				type="text"
 				name="color"
+				hx-patch="/h/{{ .ProyectoID }}/color"
 				value="{{ .Color }}"
-				>
-		</label>
-		<label>
-			Posición
-			<input class="form-control"
-				type="number"
-				name="posicion"
-				value="{{ .Posicion }}"
 				>
 		</label>
 		<div class="flex flex-row-reverse pt-4 gap-x-4 gap-y-2">
@@ -405,7 +390,7 @@
 				Eliminar
 			</button>
 		</div>
-	</form>
+	</div>
 </dialog>
 {{ end 	}}
 
