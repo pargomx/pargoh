@@ -1002,6 +1002,7 @@
 		hx-target="#tareasList"
 		hx-select-oob="#tareasDialogs, #progreso"
 		hx-swap="innerHTML"
+		hx-askfor="/h/{{ .HistoriaID }}"
 		>
 		{{ range .Tareas }}
 		<li id="{{ .TareaID }}" tipo="sort_tarea" class="flex gap-1 p-1 group">
@@ -1103,7 +1104,7 @@
 			<div class="items-start hidden gap-2 md:flex">
 				{{ if .NoIniciada -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
-					hx-post="/h/{{ .TareaID }}/iniciar"
+					hx-patch="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					title="Iniciar tarea"
 					>
@@ -1111,14 +1112,14 @@
 				</button>
 				{{ else if .EnCurso -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
-					hx-post="/h/{{ .TareaID }}/pausar"
+					hx-patch="/h/{{ .TareaID }}/pausar"
 					type="button"
 					title="Pausar tarea"
 					>
 					<i class="fa-solid fa-pause"></i>
 				</button>
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
-					hx-post="/h/{{ .TareaID }}/terminar"
+					hx-patch="/h/{{ .TareaID }}/terminar"
 					type="button"
 					title="Marcar como finalizada"
 					>
@@ -1126,7 +1127,7 @@
 				</button>
 				{{ else if .EnPausa -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
-					hx-post="/h/{{ .TareaID }}/iniciar"
+					hx-patch="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					title="Iniciar tarea"
 					>
@@ -1134,7 +1135,7 @@
 				</button>
 				{{ else if .Finalizada -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
-					hx-post="/h/{{ .TareaID }}/iniciar"
+					hx-patch="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					title="Iniciar tarea"
 					>

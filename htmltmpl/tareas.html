@@ -95,7 +95,7 @@
 				{{ if .NoIniciada -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
 					hx-askfor="/tareas"
-					hx-post="/h/{{ .TareaID }}/iniciar"
+					hx-patch="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					title="Iniciar tarea"
 					>
@@ -104,7 +104,7 @@
 				{{ else if .EnCurso -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
 					hx-askfor="/tareas"
-					hx-post="/h/{{ .TareaID }}/pausar"
+					hx-patch="/h/{{ .TareaID }}/pausar"
 					type="button"
 					title="Pausar tarea"
 					>
@@ -112,7 +112,7 @@
 				</button>
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
 					hx-askfor="/tareas"
-					hx-post="/h/{{ .TareaID }}/terminar"
+					hx-patch="/h/{{ .TareaID }}/terminar"
 					type="button"
 					title="Marcar como finalizada"
 					>
@@ -121,7 +121,7 @@
 				{{ else if .EnPausa -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
 					hx-askfor="/tareas"
-					hx-post="/h/{{ .TareaID }}/iniciar"
+					hx-patch="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					title="Iniciar tarea"
 					>
@@ -130,7 +130,7 @@
 				{{ else if .Finalizada -}}
 				<button class="inline-block px-2 text-lg text-slate-100 transition-opacity shadow-md opacity-0 group-hover:opacity-80 focus:opacity-100"
 					hx-askfor="/tareas"
-					hx-post="/h/{{ .TareaID }}/iniciar"
+					hx-patch="/h/{{ .TareaID }}/iniciar"
 					type="button"
 					title="Iniciar tarea"
 					>

@@ -55,7 +55,11 @@ func (s *servidor) registrarRutas() {
 
 	// Modificar en el árbol
 	s.PCH("/h/{nodo_id}/{param}", s.w.parcharNodo)
-	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoTarea)
+	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoPrompt)
+
+	s.PCH("/h/{tarea_id}", s.modificarTarea)
+
+	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
 
 	s.POS("/h/{nodo_id}/priorizar", s.w.priorizarHistoria)
 	s.POS("/h/{nodo_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
@@ -92,13 +96,6 @@ func (s *servidor) registrarRutas() {
 	s.POS("/reordenar-historia", s.w.reordenarHistoria)
 	s.POS("/reordenar-tramo", s.w.reordenarTramo)
 	s.POS("/reordenar-regla", s.w.reordenarRegla)
-
-	s.PCH("/tareas/{tarea_id}", s.modificarTarea)
-	s.POS("/h/{nodo_id}/importancia", s.w.ciclarImportanciaTarea)
-	s.POS("/h/{nodo_id}/iniciar", s.w.iniciarTarea)
-	s.POS("/h/{nodo_id}/pausar", s.w.pausarTarea)
-	s.POS("/h/{nodo_id}/terminar", s.w.terminarTarea)
-	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
 
 	// IMAGENES
 	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)

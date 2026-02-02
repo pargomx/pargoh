@@ -15,30 +15,27 @@ const EvTareaPausada gko.EventKey = "tarea.pausada"
 const EvTareaFinalizada gko.EventKey = "tarea.finalizada"
 
 type evTareaIniciada struct {
-	NodoID int
-	TS     string
+	TareaID int
 }
 
 func (e evTareaIniciada) ToMsg(t string) string {
-	return fmt.Sprintf("TareaIniciada %+v", e)
+	return fmt.Sprintf("TareaIniciada %v", e.TareaID)
 }
 
 type evTareaPausada struct {
-	NodoID int
-	TS     string
+	TareaID int
 }
 
 func (e evTareaPausada) ToMsg(t string) string {
-	return fmt.Sprintf("TareaPausada %+v", e)
+	return fmt.Sprintf("TareaPausada %v", e.TareaID)
 }
 
 type evTareaFinalizada struct {
-	NodoID int
-	TS     string
+	TareaID int
 }
 
 func (e evTareaFinalizada) ToMsg(t string) string {
-	return fmt.Sprintf("TareaFinalizada %+v", e)
+	return fmt.Sprintf("TareaFinalizada %v", e.TareaID)
 }
 
 func (s *AppTx) IniciarTarea(TareaID int) error {
@@ -80,8 +77,7 @@ func (s *AppTx) IniciarTarea(TareaID int) error {
 	}
 
 	return s.riseEvent(EvTareaIniciada, evTareaIniciada{
-		NodoID: interv.NodoID,
-		TS:     interv.TsIni,
+		TareaID: TareaID,
 	})
 }
 
@@ -126,8 +122,7 @@ func (s *AppTx) PausarTarea(TareaID int) error {
 	}
 
 	return s.riseEvent(EvTareaPausada, evTareaPausada{
-		NodoID: interv.NodoID,
-		TS:     interv.TsIni,
+		TareaID: TareaID,
 	})
 }
 
@@ -170,8 +165,7 @@ func (s *AppTx) FinalizarTarea(TareaID int) error {
 	}
 
 	return s.riseEvent(EvTareaFinalizada, evTareaFinalizada{
-		NodoID: interv.NodoID,
-		TS:     interv.TsIni,
+		TareaID: TareaID,
 	})
 }
 

@@ -123,6 +123,27 @@ func (s *AppTx) ParcharNodo(args ArgsParcharNodo) error {
 			return op.E(gko.ErrDatoInvalido).Msg("El estimado debe ser mayor a 0")
 		}
 
+	case "iniciar":
+		err = s.IniciarTarea(args.NodoID)
+		if err != nil {
+			return op.Err(err)
+		}
+		return nil
+
+	case "pausar":
+		err = s.PausarTarea(args.NodoID)
+		if err != nil {
+			return op.Err(err)
+		}
+		return nil
+
+	case "terminar", "finalizar":
+		err = s.FinalizarTarea(args.NodoID)
+		if err != nil {
+			return op.Err(err)
+		}
+		return nil
+
 	default:
 		return op.E(gko.ErrDatoInvalido).Strf("campo no soportado: %v", args.Campo).Msg("No se pudo guardar el cambio")
 	}

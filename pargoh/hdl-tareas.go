@@ -68,25 +68,7 @@ func (s *servidor) modificarTarea(c *gecko.Context, tx *handlerTx) error {
 	return c.AskedForFallback("/h/%v#%v", tarea.HistoriaID, tarea.TareaID)
 }
 
-func (s *writehdl) ciclarImportanciaTarea(c *gecko.Context, tx *handlerTx) error {
-	args := arbol.ArgsParcharNodo{
-		NodoID: c.PathInt("nodo_id"),
-		Campo:  "importancia",
-		NewVal: "",
-	}
-	err := tx.app.ParcharNodo(args)
-	if err != nil {
-		return err
-	}
-	nod, err := tx.repo.GetNodo(args.NodoID)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/h/%v", nod.PadreID)
-}
-
-func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
+func (s *writehdl) cambiarEstimadoPrompt(c *gecko.Context, tx *handlerTx) error {
 	args := arbol.ArgsParcharNodo{
 		NodoID: c.PathInt("nodo_id"),
 		Campo:  "estimado",
@@ -102,48 +84,6 @@ func (s *writehdl) cambiarEstimadoTarea(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	return c.AskedForFallback("/h/%v#%v", nod.PadreID, nod.NodoID)
-}
-
-func (s *writehdl) iniciarTarea(c *gecko.Context, tx *handlerTx) error {
-	tareaID := c.PathInt("nodo_id")
-	err := tx.app.IniciarTarea(tareaID)
-	if err != nil {
-		return err
-	}
-	tar, err := tx.repo.GetNodo(tareaID)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/h/%v", tar.PadreID)
-}
-
-func (s *writehdl) pausarTarea(c *gecko.Context, tx *handlerTx) error {
-	tareaID := c.PathInt("nodo_id")
-	err := tx.app.PausarTarea(tareaID)
-	if err != nil {
-		return err
-	}
-	tar, err := tx.repo.GetNodo(tareaID)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/h/%v", tar.PadreID)
-}
-
-func (s *writehdl) terminarTarea(c *gecko.Context, tx *handlerTx) error {
-	tareaID := c.PathInt("nodo_id")
-	err := tx.app.FinalizarTarea(tareaID)
-	if err != nil {
-		return err
-	}
-	tar, err := tx.repo.GetNodo(tareaID)
-	if err != nil {
-		return err
-	}
-	defer s.reloader.brodcastReload(c)
-	return c.AskedForFallback("/h/%v", tar.PadreID)
 }
 
 // ================================================================ //
