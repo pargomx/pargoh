@@ -74,6 +74,13 @@ func (s *Repositorio) AddHijosToPersona(raiz *arbol.Persona) error {
 		}
 	}
 
+	for i := range raiz.Historias {
+		err := s.AddHijosToHisUsuario(&raiz.Historias[i])
+		if err != nil {
+			return op.Err(err)
+		}
+	}
+
 	return nil
 }
 

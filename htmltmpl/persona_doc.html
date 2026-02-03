@@ -33,76 +33,77 @@
 </html>
 
 {{ define "persona_doc_content" }}
-{{ if not $.Print }}
-<header class="relative flex items-center w-full bg-cyan-950 shadow-lg print:bg-transparent">
-	<div class="p-1">
-		<img
-			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
-			alt="Portada del proyecto"
-			class="w-24 rounded-md">
-	</div>
-	<div class="w-full p-2">
-		<h2 class="text-2xl font-medium">
-			<a href="/h/{{ .Proyecto.ProyectoID }}/doc">
-				{{ .Persona.Nombre }}
-			</a>
-		</h2>
-		<p>
-			Documentación para el usuario
+	{{ if not $.Print }}
+	<header class="relative flex items-center w-full bg-cyan-950 shadow-lg print:bg-transparent">
+		<div class="p-1">
+			<img
+				src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+				alt="Portada del proyecto"
+				class="w-24 rounded-md">
+		</div>
+		<div class="w-full p-2">
+			<h2 class="text-2xl font-medium">
+				<a href="/h/{{ .Proyecto.ProyectoID }}/doc">
+					{{ .Persona.Nombre }}
+				</a>
+			</h2>
+			<p>
+				Documentación para el usuario
+			</p>
+		</div>
+	</header>
+	{{ end }}
+
+	{{ with .Nodo }}
+	<main class="grow max-w-4xl px-6 py-4 mx-auto">
+
+		<!--* PERSONA -->
+		<p class="mb-4 whitespace-pre-line opacity-75">
+			{{- .Descripcion -}}
 		</p>
-	</div>
-</header>
-{{ end }}
 
-<main class="grow max-w-4xl px-6 py-4 mx-auto">
+		<!--* HISTORIAS -->
+		{{ range $i, $v := .Historias -}}
+			{{ if $i -}}
+			<hr class="my-4 mt-16 border-t-2 border-cyan-600 opacity-50">
+			{{ end -}}
+			
+			<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl font-bold whitespace-pre-line group">
+				{{- enfatizar .Titulo -}}
+				<a href="/h/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
+			</h3>
 
-	<!--* PERSONA -->
-	<!-- <p class="mb-4 whitespace-pre-line opacity-75">
-		{{- .Persona.Descripcion -}}
-	</p> -->
+			<p class="mb-4 whitespace-pre-line opacity-75">
+				{{- enfatizar .Objetivo -}}
+			</p>
+			
+			{{ if .Reglas -}}
+				{{ template "historia_doc_reglas" }}
+			{{ end }}
 
-	<!--* HISTORIAS -->
-	{{ range $i, $v := .Historias -}}
-	{{ if $i -}}
-	<hr class="my-4 mt-16 border-t-2 border-cyan-600 opacity-50">
-	{{ end -}}
-	{{ with .Historia -}}
-	
-	<h3 id="{{ .HistoriaID }}" class="relative mb-2 text-2xl font-bold whitespace-pre-line group">
-		{{- enfatizar .Titulo -}}
-		<a href="/h/{{ .HistoriaID }}" class="absolute px-2 text-lg opacity-10 -left-6 top-1 group-hover:opacity-90"><i class="fa-solid fa-section"></i></a>
-	</h3>
+			<p class="mb-4 whitespace-pre-line opacity-75">
+				{{- enfatizar .Descripcion -}}
+			</p>
 
-	<p class="mb-4 whitespace-pre-line opacity-75">
-		{{- enfatizar .Objetivo -}}
-	</p>
-	
-	{{ end 	}}
+			{{ if .Tramos -}}
+				{{ template "historia_doc_tramos" . }}
+			{{ end }}
 
-	{{ if .Reglas -}}
-		{{ template "historia_doc_reglas" . }}
+			{{ if .Relacionadas -}}
+				{{ template "historia_doc_relacionadas" . }}
+			{{ end }}
+
+			{{ range .HisUsuario -}}
+			<div class="lg:mx-4">
+				{{ template "historia_doc_desc" . }}
+			</div>
+			{{ end }}
+
+		{{ end }}
+
+	</main>
 	{{ end }}
 
-	<p class="mb-4 whitespace-pre-line opacity-75">
-		{{- enfatizar .Historia.Descripcion -}}
-	</p>
-
-	{{ if .Tramos -}}
-		{{ template "historia_doc_tramos" . }}
-	{{ end }}
-
-	{{ if .Relacionadas -}}
-		{{ template "historia_doc_relacionadas" . }}
-	{{ end }}
-
-	{{ range .Descendientes -}}
-	<div class="lg:mx-4">
-		{{ template "historia_doc_desc" . }}
-	</div>
-	{{ end }}
-
-	{{ end }}
-</main>
 {{ end }}
 
 {{- define "historia_doc_desc" -}}
@@ -179,7 +180,7 @@
 	{{ range .Relacionadas }}
 	<li class="flex items-baseline gap-2 opacity-75">
 		<i class="px-1 text-xs opacity-75 fa-regular fa-circle"></i>
-		<a href="/h/{{ .PersonaID }}/doc#{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
+		<a href="/h/{{ .PadreID }}/doc#{{ .HistoriaID }}" class="text-cyan-400 whitespace-pre-line hover:text-cyan-300">
 			{{- enfatizar .Titulo -}} 
 		</a>
 	</li>

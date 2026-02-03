@@ -34,16 +34,18 @@
 </html>
 
 {{ define "proyecto_doc_content" }}
+
+{{ with .Nodo }}
 <header class="relative flex items-center w-full bg-cyan-950 shadow-lg print:bg-transparent">
 	<div class="p-1">
 		<img
-			src="{{ if .Proyecto.Imagen }}/imagenes/{{ .Proyecto.Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
+			src="{{ if .Imagen }}/imagenes/{{ .Imagen }}{{ else }}/assets/img/Elegantthemes-Softies-Tools.256.png{{ end }}"
 			alt="Portada del proyecto"
 			class="w-24 rounded-md">
 	</div>
 	<div class="w-full p-2">
 		<h2 class="text-2xl font-medium">
-			{{ .Proyecto.Titulo }}
+			{{ .Titulo }}
 		</h2>
 		<p>
 			Documentación para el usuario
@@ -53,13 +55,12 @@
 
 <main class="flex flex-col gap-4 grow w-full max-w-4xl px-6 py-4 mx-auto">
 	<p class="opacity-75">
-		{{ .Proyecto.Descripcion }}
+		{{ .Descripcion }}
 	</p>
 
-	{{ range .Personajes }}
+	{{ range .Personas }}
 	<div class="p-4 border-cyan-900 bg-gradient-to-b from-cyan-500/20 to-transparent border-2 rounded-md shadow-md">
 
-		{{ with .Persona }}
 		<h3 id="{{ .PersonaID }}" class="mb-2 text-2xl group">
 			<a href="/h/{{ .PersonaID }}/doc">
 				{{- enfatizar .Nombre -}}
@@ -68,16 +69,15 @@
 				<i class="fa-solid fa-pen-to-square"></i>
 			</a>
 		</h3>
-		{{ end }}
 
 		<!-- <p class="whitespace-pre-line opacity-75">
-			{{- .Persona.Descripcion -}}
+			{{- .Descripcion -}}
 		</p> -->
 
 		<ul class="list-disc pl-6">
 			{{ range .Historias -}}
 			<li class="text-lg mb-1">
-				<a href="/h/{{ .PersonaID }}/doc#{{ .HistoriaID }}"
+				<a href="/h/{{ .HistoriaID }}/doc"
 					class="opacity-75 hover:opacity-100 transition-opacity">
 					{{- enfatizar .Titulo -}}
 				</a>
@@ -89,4 +89,5 @@
 	{{ end }}
 </main>
 
+{{ end }}
 {{ end }}

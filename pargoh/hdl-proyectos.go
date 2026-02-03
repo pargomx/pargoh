@@ -188,33 +188,29 @@ func (s *readhdl) getProyecto(c *gecko.Context) error {
 }
 
 func (s *readhdl) getDocumentacionProyecto(c *gecko.Context) error {
-	Proyecto, err := s.repoOld.GetProyecto(c.PathVal("nodo_id"))
+	nodo, err := s.repo.GetNodo(c.PathInt("nodo_id"))
 	if err != nil {
 		return err
 	}
-	Personas, err := s.repoOld.ListNodosPersonas(Proyecto.ProyectoID)
-	if err != nil {
-		return err
+	data := map[string]any{
+		"Titulo": nodo.Titulo,
+		"Nodo":   nodo,
 	}
-	type Personaje struct {
-		Persona   ust.NodoPersona
-		Historias []ust.Historia
-	}
-	Personajes := make([]Personaje, len(Personas))
-	for i, p := range Personas {
-		hists, err := s.repoOld.ListHistoriasByPadreID(p.PersonaID)
+	if nodo.EsPersona() {
+		per := nodo.ToPersona()
+		err = s.repo.AddHijosToPersona(&per)
 		if err != nil {
 			return err
 		}
-		Personajes[i] = Personaje{
-			Persona:   Personas[i],
-			Historias: hists,
+		data["Nodo"] = per
+		return c.Render(200, "persona_doc", data)
+	} else {
+		pry := nodo.ToProyecto()
+		err = s.repo.AddHijosToProyecto(&pry)
+		if err != nil {
+			return err
 		}
+		data["Nodo"] = pry
+		return c.RenderOk("proyecto_doc", data)
 	}
-	data := map[string]any{
-		"Titulo":     Proyecto.Titulo,
-		"Proyecto":   Proyecto,
-		"Personajes": Personajes,
-	}
-	return c.RenderOk("proyecto_doc", data)
 }
