@@ -10,21 +10,6 @@ import (
 )
 
 // ================================================================ //
-// ========== READ ================================================ //
-
-func (s *readhdl) getNodoTablero(c *gecko.Context) error {
-	Historia, err := dhistorias.GetHistoria(c.PathInt("nodo_id"), dhistorias.GetDescendientes, s.repoOld)
-	if err != nil {
-		return err
-	}
-	data := map[string]any{
-		"Titulo":   Historia.Historia.Titulo,
-		"Agregado": Historia,
-	}
-	return c.RenderOk("hist_tablero", data)
-}
-
-// ================================================================ //
 // ========== WRITE =============================================== //
 
 func (s *writehdl) postNodo(c *gecko.Context, tx *handlerTx) error {
@@ -115,6 +100,42 @@ func (s *writehdl) postNodoPadre(c *gecko.Context, tx *handlerTx) error {
 
 	defer s.reloader.brodcastReload(c)
 	return c.AskedForFallback("/h/%v", newPadre.NodoID)
+}
+
+func (s *writehdl) postTarea(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarTarea{
+		Tipo:     "TAR",
+		NodoID:   ust.NewRandomID(),
+		PadreID:  c.PathInt("nodo_id"),
+		Titulo:   c.FormVal("descripcion"),
+		Estimado: c.FormVal("segundos_estimado"),
+	}
+	err := tx.app.AgregarTarea(args)
+	if err != nil {
+		return err
+	}
+	defer s.reloader.brodcastReload(c)
+	return c.AskedForFallback("/h/%v", args.PadreID)
+}
+
+func (s *writehdl) postQuickTask(c *gecko.Context, tx *handlerTx) error {
+	args := arbol.ArgsAgregarTarea{
+		Tipo:     "TAR",
+		NodoID:   ust.NewRandomID(),
+		PadreID:  dhistorias.QUICK_TASK_HISTORIA_ID, // TODO: poner default historia en migración?
+		Titulo:   c.PromptVal(),
+		Estimado: "1h",
+	}
+	err := tx.app.AgregarTarea(args)
+	if err != nil {
+		return err
+	}
+	// _, err = dhistorias.IniciarTarea(tarea.TareaID, s.repoOld)
+	// if err != nil {
+	// 	return err
+	// }
+	defer s.reloader.brodcastReload(c)
+	return c.AskedForFallback("/tareas")
 }
 
 // ================================================================ //

@@ -30,93 +30,62 @@ func (s *servidor) registrarRutas() {
 
 	// General
 	s.GET("/buscar", s.r.buscar)
+	s.GET("/metricas", s.r.getMétricas)
 
 	s.GET("/continuar", s.continuar)
 	s.GET("/offline", s.offline)
+	s.GET("/reload", s.brodcastReload)
 
 	// Ver el árbol
 	s.GET("/h", s.r.getProyectosActivos)
 	s.GET("/h/{nodo_id}", s.r.getNodoCualquiera)
 	s.GET("/h/{nodo_id}/raw", s.r.getRawNodoEditor)
-	s.GET("/h/{nodo_id}/doc", s.r.getDocumentacionProyecto)
+	s.GET("/h/{nodo_id}/doc", s.r.getDocumentacion)
 	s.GET("/h/{nodo_id}/tablero", s.r.getNodoTablero)
 
 	// Agregar al árbol
-	// s.POS("/h", s.w.postNodo)
 	s.POS("/h/{nodo_id}", s.w.postNodo)
-	s.POS("/h/{nodo_id}/{tipo}", s.w.postNodoDeTipo)
 	s.POS("/h/{nodo_id}/padre", s.w.postNodoPadre)
-
+	s.POS("/h/{nodo_id}/{tipo}", s.w.postNodoDeTipo)
 	s.POS("/h/{nodo_id}/tareas", s.w.postTarea)
 
 	// Eliminar del árbol
 	s.DEL("/h/{nodo_id}", s.w.eliminarNodo)
 	s.DEL("/h/{nodo_id}/definitivo", s.w.eliminarRama)
 
-	// Modificar en el árbol
+	// Mover el árbol
+	s.GET("/nav", s.r.navDesdeRoot)
+	s.GET("/nav/{nodo_id}", s.r.navDesdeNodo)
+	s.POS("/mover", s.w.moverNodo)
+	s.POS("/reordenar", s.w.reordenarNodo)
+	// Referencias
+	s.POS("/h/{nodo_id}/referencias", s.w.postReferencia)
+	s.DEL("/h/{nodo_id}/referencias/{ref_nodo_id}", s.w.deleteReferencia)
+
+	// Modificar nodos
+	s.PCH("/h/{nodo_id}", s.modificarTarea)
 	s.PCH("/h/{nodo_id}/{param}", s.w.parcharNodo)
 	s.PCH("/h/{nodo_id}/estimado", s.w.cambiarEstimadoPrompt)
-
-	s.PCH("/h/{tarea_id}", s.modificarTarea)
-
-	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
-
 	s.POS("/h/{nodo_id}/priorizar", s.w.priorizarHistoria)
 	s.POS("/h/{nodo_id}/priorizar/{prioridad}", s.w.priorizarHistoria)
 	s.POS("/h/{nodo_id}/marcar", s.w.marcarHistoria)
 	s.POS("/h/{nodo_id}/marcar/{completada}", s.w.marcarHistoria)
 
-	// TIME TRACKER
-	s.POS("/h/{nodo_id}/time/{seg}", s.w.postAppTime)
-	s.GET("/h/{nodo_id}/ws", s.reloader.nuevoWS)
-	s.GET("/reload", s.brodcastReload)
-
+	// Time tracker
 	s.GET("/intervalos", s.r.getIntervalos)
+	s.GET("/h/{nodo_id}/ws", s.reloader.nuevoWS)
+	s.POS("/h/{nodo_id}/time/{seg}", s.w.postAppTime)
+	s.PCH("/h/{nodo_id}/intervalos/{ts_id}/{cambiar}", s.w.patchIntervalo)
 
 	// Quick tasks
 	s.GET("/tareas", s.r.getQuickTasks)
 	s.POS("/tareas", s.w.postQuickTask)
 
-	// Navegador del árbol de historias
-	s.GET("/nav", s.r.navDesdeRoot)
-	s.GET("/nav/{nodo_id}", s.r.navDesdeNodo)
-
-	// MOVER
-	s.POS("/mover", s.w.moverNodo)
-
-	// REORDENAR
-	s.POS("/reordenar", s.w.reordenarNodo)
-
-	// IMAGENES
+	// Imágenes
 	s.gecko.StaticSub("/imagenes", s.cfg.ImagesDir)
 	s.POS("/imagenes", s.setImagenTramo)
 	s.PUT("/h/{proyecto_id}/imagen", s.setImagenProyecto)
 	s.DEL("/imagenes/{historia_id}/{posicion}", s.eliminarImagen)
-
-	// Referencias
-	s.POS("/h/{nodo_id}/referencias", s.w.postReferencia)
-	s.DEL("/h/{nodo_id}/referencias/{ref_nodo_id}", s.w.deleteReferencia)
-
-	// Exportar e importar
-	/*
-		s.GET("/arbol", s.exportarArbolTXT)
-		s.GET("/fake", func(c *gecko.Context) error { return dhistorias.ImportarFake(s.repo) })
-		s.POS("/proyectos/importar", s.importarJSON)
-		s.GET("/proyectos/{proyecto_id}/exportar.json", s.exportarJSON)
-		s.GET("/proyectos/{proyecto_id}/exportar.md", s.exportarMarkdown)
-			s.GET("/proyectos/{proyecto_id}/exportar.docx", s.exportarProyectoDocx)
-			s.GET("/proyectos/{proyecto_id}/exportar.tex", s.exportarProyectoTeX)
-			s.GET("/proyectos/{proyecto_id}/exportar.pdf", s.exportarPDF)
-			s.GET("/personas/{persona_id}/exportar.pdf", s.exportarPersonaPDF)
-			s.POS("/personas/{persona_id}/docx", s.exportarPersonaDocx(s.cfg.unidocApiKey))
-			s.gecko.StaticSub("/exports", s.cfg.exportDir) // TODO: autenticar
-	*/
-
-	// General
-	s.GET("/metricas", s.r.getMétricas)
-	// s.GET("/metricas2", s.getMétricas2)
-	// s.GET("/materializar-tiempos", s.materializarTiemposTareas)
-	// s.GET("/materializar-historias", s.materializarHistorias)
 
 	// Mantenimiento
 	s.GET("/log", func(c *gecko.Context) error { s.db.ToggleLog(); return c.StatusOk("Log toggled") })

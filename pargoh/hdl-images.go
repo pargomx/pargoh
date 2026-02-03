@@ -3,6 +3,7 @@ package main
 import (
 	"monorepo/dhistorias"
 	"os"
+	"strings"
 
 	"github.com/pargomx/gecko"
 	"github.com/pargomx/gecko/gko"
@@ -70,4 +71,22 @@ func (s *servidor) setImagenTramo(c *gecko.Context, tx *handlerTx) error {
 	}
 	defer s.reloader.brodcastReload(c)
 	return c.RedirOtrof("/h/%v", c.FormInt("historia_id"))
+}
+
+func (s *servidor) setImagenProyecto(c *gecko.Context, tx *handlerTx) error {
+	hdr, err := c.FormFile("imagen")
+	return gko.ErrNoDisponible.Msg("Falta terminar de migrar")
+	if err == nil {
+		file, err := hdr.Open()
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		gko.LogDebugf("Imagen recibida: %v\t Tamaño: %v\t MIME:%v", hdr.Filename, hdr.Size, hdr.Header.Get("Content-Type"))
+		err = dhistorias.SetImagenProyecto(c.PathVal("proyecto_id"), strings.TrimPrefix(hdr.Header.Get("Content-Type"), "image/"), file, s.cfg.ImagesDir, s.repoOld)
+		if err != nil {
+			return err
+		}
+	}
+	return c.AskedFor("Proyecto actualizado")
 }

@@ -27,11 +27,11 @@ func (s *readhdl) buscar(c *gecko.Context) error {
 		return err
 	}
 	for i, r := range resultados {
-		if strings.HasPrefix(r.Texto, "... ") {
-			resultados[i].Texto = "..." + strings.TrimPrefix(r.Texto, "... ")
+		if after, ok := strings.CutPrefix(r.Texto, "... "); ok {
+			resultados[i].Texto = "..." + after
 		}
-		if strings.HasSuffix(r.Texto, " ...") {
-			resultados[i].Texto = strings.TrimSuffix(r.Texto, " ...") + "..."
+		if before, ok := strings.CutSuffix(r.Texto, " ..."); ok {
+			resultados[i].Texto = before + "..."
 		}
 		resultados[i].Subrallado = highlight(resultados[i].Texto)
 	}
